@@ -1,3 +1,5 @@
+![Pixel's World — brown-gray tabby pixel art banner](assets/banner.svg)
+
 # Pixel's World 🐈
 
 *A cozy pixel-art sandbox about a small cat and a very big mess.*
