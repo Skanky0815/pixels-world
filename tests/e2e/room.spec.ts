@@ -408,7 +408,7 @@ test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren'
   expect((await state(page)).chaos.score).toBe(0);
 });
 
-test('Produktionsbuild enthält keine Test-Schnittstelle', async ({ page }) => {
+test('Produktionsbuild enthält weder Test-Schnittstelle noch Animationsvergleich', async ({ page }) => {
   await page.goto('http://127.0.0.1:4175/');
   await expect.poll(async () => {
     await page.clock.runFor(32);
@@ -424,6 +424,13 @@ test('Produktionsbuild enthält keine Test-Schnittstelle', async ({ page }) => {
     expect(response.ok()).toBe(true);
     const source = await response.text();
     expect(source).not.toContain('__pixelTest');
+    expect(source).not.toContain('Vergleichsansicht unvollständig');
+  }
+  for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175']) {
+    for (const path of ['/animation-compare.html', '/src/animation-compare.ts', '/src/animation-compare.css']) {
+      const response = await page.request.get(base + path);
+      expect(response.status(), `${base}${path} ist kein Build-Artefakt`).toBe(404);
+    }
   }
 });
 
