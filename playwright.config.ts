@@ -2,10 +2,11 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
-  fullyParallel: false,
+  fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
-  workers: 1,
+  // Each test owns its browser context and clock. Keep GPU/CPU contention bounded.
+  workers: 2,
   timeout: 60_000,
   expect: { timeout: 5_000 },
   reporter: [['list'], ['html', { open: 'never' }]],
