@@ -1,6 +1,33 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { CouchScratching, COUCH_SCRATCH } from '../../src/couch-scratching.ts';
+import { ChaosScore } from '../../src/chaos.ts';
+
+test('Ungültige Punktwerte werden schon beim Erzeugen des Sofamodells abgelehnt', () => {
+  for (const damageValue of [-1, 0.5, NaN, Infinity, -Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    assert.throws(
+      () => new CouchScratching({ ...COUCH_SCRATCH, damageValue }),
+      /Invalid scratch configuration/,
+      `damageValue: ${damageValue}`,
+    );
+  }
+});
+
+test('Gültige Sofapunktwerte einschließlich null erreichen das Ledger unverändert', () => {
+  for (const damageValue of [0, 7, Number.MAX_SAFE_INTEGER]) {
+    const couch = new CouchScratching({ ...COUCH_SCRATCH, damageValue });
+    const score = new ChaosScore();
+    assert.deepEqual(couch.snapshot(), { state: 'idle', damage: 0 });
+    const event = couch.update(COUCH_SCRATCH.delayMs, true);
+    assert.ok(event);
+    assert.equal(event.value, damageValue);
+    assert.equal(score.award(`couch-scratch-${event.stage}`, event.value, event.objectId), true);
+    assert.equal(score.score, damageValue);
+    assert.equal(score.count, 1);
+    assert.equal(score.award(`couch-scratch-${event.stage}`, event.value, event.objectId), false);
+    assert.equal(score.score, damageValue);
+  }
+});
 
 test('Kratzen beginnt erst nach zwei Sekunden und emittiert begrenzte Intervalle', () => {
   const couch = new CouchScratching();
