@@ -6,6 +6,11 @@ export interface GameTestState {
   readonly room: { readonly width: number; readonly height: number };
   readonly camera: { readonly x: number; readonly y: number; readonly width: number; readonly height: number; readonly zoom: number };
   readonly chaos: { readonly score: number; readonly damagedObjects: number; readonly anger: string };
+  readonly hud: {
+    readonly statusText: string; readonly scoreText: string;
+    readonly climbHintText: string; readonly climbHintAlpha: number;
+    readonly angerRatio: number; readonly angerColor: number; readonly elements: number;
+  };
   readonly vases: ReadonlyArray<{
     readonly id: string; readonly x: number; readonly y: number; readonly bottom: number;
     readonly velocityX: number; readonly velocityY: number;

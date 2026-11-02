@@ -4,7 +4,7 @@ Stand und Begründung: [Review #22](../reviews/2026-11-02-architecture.md), gepr
 
 ## Ist
 
-`src/main.ts` startet Phaser und enthält zugleich `LivingRoom`. Die Szene liest Tasten, steuert den Physikkörper und das sichtbare Pixel-Sprite, zeichnet den Raum und HUD, verwaltet Vasen, Sofa-/Vorhang-/Pflanzenfeedback und Reset. `Vase` ist schon ein konkretes Phaser-Spielobjekt. Drei reine Interaktionsmodelle und der Punktezähler sind separate Module. `pixel-animations.ts` enthält Animationsdaten und eine reine Auswahlfunktion. Der ausschließlich lesbare Testbeobachter ist nur im E2E-Build vorhanden.
+`src/main.ts` startet Phaser und enthält zugleich `LivingRoom`. Die Szene liest Tasten, steuert den Physikkörper und das sichtbare Pixel-Sprite, zeichnet den Raum, verwaltet Vasen, Sofa-/Vorhang-/Pflanzenfeedback und Reset. `Vase` ist schon ein konkretes Phaser-Spielobjekt. Drei reine Interaktionsmodelle und der Punktezähler sind separate Module. `pixel-animations.ts` enthält Animationsdaten und eine reine Auswahlfunktion. `src/game/ui/GameHud.ts` besitzt jetzt Texte, Ärgerbalken und Kletterhinweis. Die Szene übergibt nach den Spielupdates einen lesbaren `HudState`; Score und Aktionsauswahl bleiben im Gameplay. Die Anzeige ist in einem Container ohne Kamerascroll gebündelt; Szenen-Shutdown zerstört ihn samt Kindern. Der ausschließlich lesbare Testbeobachter ist nur im E2E-Build vorhanden und beobachtet auch die dargestellten HUD-Werte.
 
 ## Vorgeschlagene Zuständigkeiten
 
@@ -99,6 +99,6 @@ Damit können neue Räume und Objektvarianten durch Datenpflege entstehen. Eine 
 
 [#43](https://github.com/Skanky0815/pixels-world/issues/43) ergänzt später JSON auf demselben erprobten Vertrag. Eingelesenes JSON benötigt eine Laufzeit-/Importvalidierung; TypeScript-Typen allein prüfen es nicht. Fehler müssen Datei und Datenpfad nennen, bevor Objekte erzeugt werden. Eine versionierte gemeinsame Schemaquelle oder Konsistenztests verhindern doppelte, auseinanderlaufende Definitionen. Keine ausführbaren Skripte, frei instanziierbaren Klassennamen oder allgemeine JSON-Regelsprache.
 
-Die Abhängigkeit ist gerichtet: #37/#38 → #42 → optional #43. #39 kann nach der Szenen-/Input-Trennung unabhängig folgen. Der spätere Generator #29 verwendet denselben Raumvertrag; JSON ist dafür keine Voraussetzung. #32 kann den aktuellen Prototyp unabhängig von diesen Content-Arbeiten veröffentlichen.
+Die Abhängigkeit ist gerichtet: #37/#38 → #42 → optional #43. #39 wurde als unabhängiger erster Extraktionsschritt vor #37 umgesetzt. Der spätere Generator #29 verwendet denselben Raumvertrag; JSON ist dafür keine Voraussetzung. #32 kann den aktuellen Prototyp unabhängig von diesen Content-Arbeiten veröffentlichen.
 
-Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Alle genannten Extraktionen und Content-Schritte sind geplant, noch nicht umgesetzt.
+Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Die HUD-Extraktion #39 ist in diesem Stand umgesetzt; die übrigen Extraktionen und Content-Schritte bleiben geplant.

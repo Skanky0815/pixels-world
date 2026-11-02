@@ -24,4 +24,6 @@ Die QA-Laufzeitoptimierung aus #24 ist mit PR #25 gemergt: lokal zwei Worker, CI
 
 ## Verbleibender Meilenstein-Abschluss
 
-Nach Abgleich am 2026-11-02 sind in Phase 1 noch [#22 – Architekturreview](https://github.com/Skanky0815/pixels-world/issues/22) und [#32 – GitHub Pages](https://github.com/Skanky0815/pixels-world/issues/32) offen. Der [Reviewbericht](reviews/2026-11-02-architecture.md) und das [Zielbild](architecture/gameplay.md) liegen in diesem Dokumentations-PR vor. Die Folgeissues #37–#40 sind zunächst ohne Meilenstein angelegt und noch nicht umgesetzt; #22 wird nach Review/Merge abgeschlossen.
+Das Architekturreview #22 ist mit PR #41 abgeschlossen; der Sofakonfigurationsfehler #40 mit PR #45 und die pfadgefilterte Game-QA #44 mit PR #46. Rico hat #37–#40, #42 und #44 dem Phase-1-Meilenstein für eine solide 0.1.0 zugeordnet. #43 (späterer JSON-Import) bleibt außerhalb.
+
+Die HUD-Extraktion #39 ist in diesem Stand implementiert und wird separat reviewt. Noch offen bleiben die Szenen-/Pixel-/Controls-Trennung #37, Objektgrenzen #38, typisierte Inhalte #42 und Veröffentlichung über GitHub Pages #32. GitHub bleibt für Review und Merge maßgeblich.
