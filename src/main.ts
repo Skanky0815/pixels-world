@@ -3,11 +3,12 @@ import './style.css';
 import { ChaosScore, VASES, angerFor } from './chaos';
 import { Vase } from './vase';
 import { COUCH_SCRATCH, CouchScratching, type CouchDamageEvent } from './couch-scratching';
+import { CURTAIN_SLIDE, CurtainSliding, type CurtainDamageEvent } from './curtain-sliding';
 
 const WIDTH = 960;
 const HEIGHT = 540;
 const FLOOR_Y = 468;
-const MAX_CHAOS_SCORE = VASES.reduce((sum, vase) => sum + vase.points, 0) + COUCH_SCRATCH.maxDamage * COUCH_SCRATCH.damageValue;
+const MAX_CHAOS_SCORE = VASES.reduce((sum, vase) => sum + vase.points, 0) + COUCH_SCRATCH.maxDamage * COUCH_SCRATCH.damageValue + CURTAIN_SLIDE.maxDamage * CURTAIN_SLIDE.damageValue;
 const CURTAIN = new Phaser.Geom.Rectangle(744, 112, 112, 356);
 
 class LivingRoom extends Phaser.Scene {
@@ -31,6 +32,12 @@ class LivingRoom extends Phaser.Scene {
   private scratchingPaws!: Phaser.GameObjects.Graphics;
   private couchEvents = 0;
   private lastCouchDamage: CouchDamageEvent | null = null;
+  private readonly curtainSlide = new CurtainSliding();
+  private curtainMarks!: Phaser.GameObjects.Graphics;
+  private curtainEvents = 0;
+  private lastCurtainDamage: CurtainDamageEvent | null = null;
+  private previousCurtainY: number | null = null;
+  private previousCurtainSpeed = 0;
 
   constructor() { super('LivingRoom'); }
 
@@ -38,6 +45,7 @@ class LivingRoom extends Phaser.Scene {
     this.drawRoom();
     this.makeCatTexture();
     this.scratchMarks = this.add.graphics();
+    this.curtainMarks = this.add.graphics();
     this.scratchingPaws = this.add.graphics();
     this.makeVaseTexture();
     this.platforms = this.physics.add.staticGroup();
@@ -69,7 +77,7 @@ class LivingRoom extends Phaser.Scene {
     this.cursors = keyboard.createCursorKeys();
     this.jump = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.reset = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-    this.climbHint = this.add.text(800, 90, '↑ / ↓ CLIMB', { fontFamily: 'monospace', fontSize: '12px', color: '#fff1cf', backgroundColor: '#615047' }).setPadding(7, 5).setOrigin(0.5);
+    this.climbHint = this.add.text(800, 90, '↑ KLETTERN\nLOSLASSEN: RUTSCHEN', { fontFamily: 'monospace', fontSize: '12px', color: '#fff1cf', backgroundColor: '#615047' }).setPadding(7, 5).setOrigin(0.5);
     this.status = this.add.text(26, 25, 'PIXEL · HOME ALONE', { fontFamily: 'monospace', fontSize: '12px', color: '#584637' });
     this.scoreText = this.add.text(26, 48, '', { fontFamily: 'monospace', fontSize: '12px', color: '#584637' });
     this.angerBar = this.add.graphics();
@@ -88,6 +96,7 @@ class LivingRoom extends Phaser.Scene {
             chaos: { score: this.chaos.score, damagedObjects: this.chaos.count, anger: angerFor(this.chaos.score).id },
             vases: this.vases.map(vase => vase.snapshot()),
             couch: { ...this.couchScratch.snapshot(), events: this.couchEvents, lastDamage: this.lastCouchDamage },
+            curtain: { ...this.curtainSlide.snapshot(), events: this.curtainEvents, lastDamage: this.lastCurtainDamage },
             pixel: {
               x: this.pixel.x, y: this.pixel.y, bottom: body.bottom,
               velocityX: body.velocity.x, velocityY: body.velocity.y,
@@ -207,6 +216,12 @@ class LivingRoom extends Phaser.Scene {
     this.fragments = [];
     this.chaos.reset();
     this.couchScratch.reset();
+    this.curtainSlide.reset();
+    this.previousCurtainY = null;
+    this.previousCurtainSpeed = 0;
+    this.curtainEvents = 0;
+    this.lastCurtainDamage = null;
+    this.curtainMarks.clear();
     this.couchEvents = 0;
     this.lastCouchDamage = null;
     this.scratchMarks.clear();
@@ -274,6 +289,30 @@ class LivingRoom extends Phaser.Scene {
     }
   }
 
+  private updateCurtain(movingUp: boolean) {
+    const body = this.pixel.body as Phaser.Physics.Arcade.Body;
+    const state = !this.climbing ? 'detached' : movingUp ? 'climbing' : 'sliding';
+    // Derive elapsed slide time from actual travel and the previous commanded speed.
+    // Render frames without a physics step must neither create damage nor reset its timer.
+    const distance = this.previousCurtainY === null ? 0 : body.y - this.previousCurtainY;
+    const movementMs = distance > 0 && this.previousCurtainSpeed > 0 ? distance / this.previousCurtainSpeed * 1000 : 0;
+    this.previousCurtainY = body.y;
+    this.previousCurtainSpeed = state === 'sliding' ? body.velocity.y : 0;
+    const event = this.curtainSlide.update(movementMs, state, movementMs > 0 && !body.blocked.down);
+    if (!event) return;
+    this.curtainEvents++;
+    this.lastCurtainDamage = event;
+    if (this.chaos.award(`curtain-tear-${event.stage}`, event.value, event.objectId)) this.updateScore();
+    this.events.emit('object-damaged', event);
+    const side = this.pixel.x > CURTAIN.centerX ? -1 : 1;
+    const x = Phaser.Math.Clamp(this.pixel.x + side * (22 + (event.stage % 3) * 4), CURTAIN.left + 8, CURTAIN.right - 8);
+    const y = Phaser.Math.Clamp(this.pixel.y - 14, CURTAIN.top + 4, CURTAIN.bottom - 38);
+    this.curtainMarks.lineStyle(3, 0x59443d).beginPath();
+    this.curtainMarks.moveTo(x, y).lineTo(x - 3, y + 8).lineTo(x + 2, y + 18).lineTo(x - 2, y + 30).strokePath();
+    this.curtainMarks.lineStyle(1, 0xeac791);
+    for (let i = 0; i < 4; i++) this.curtainMarks.lineBetween(x - 5, y + i * 7, x + 5, y + i * 7 + 2);
+  }
+
   update(time: number, delta: number) {
     if (!this.pixel) return;
     const body = this.pixel.body as Phaser.Physics.Arcade.Body;
@@ -289,14 +328,15 @@ class LivingRoom extends Phaser.Scene {
     if (!overlapsCurtain) this.mustLeaveCurtain = false;
     const canGrab = !this.mustLeaveCurtain && time >= this.grabBlockedUntil && !jumpPressed;
     const jumpingIntoCurtain = !body.blocked.down && horizontal !== 0 && Math.abs(body.velocity.y) > 1;
-    if (!this.climbing && canGrab && overlapsCurtain && (vertical !== 0 || jumpingIntoCurtain)) this.climbing = true;
-    if (this.climbing && !overlapsCurtain) {
+    if (!this.climbing && canGrab && overlapsCurtain && (vertical < 0 || (vertical > 0 && !body.blocked.down) || jumpingIntoCurtain)) this.climbing = true;
+    if (this.climbing && (!overlapsCurtain || (vertical >= 0 && body.blocked.down))) {
       this.climbing = false;
-      this.grabBlockedUntil = time + 250;
+      this.grabBlockedUntil = overlapsCurtain ? time : time + 250;
     }
     body.setAllowGravity(!this.climbing);
     if (this.climbing) {
-      this.pixel.setVelocity(horizontal * 110, vertical * 125);
+      const speedY = vertical < 0 ? -CURTAIN_SLIDE.climbSpeed : vertical > 0 ? CURTAIN_SLIDE.descendSpeed : CURTAIN_SLIDE.slideSpeed;
+      this.pixel.setVelocity(horizontal * 110, speedY);
       if (jumpPressed) {
         this.climbing = false;
         this.grabBlockedUntil = time + 250;
@@ -311,8 +351,9 @@ class LivingRoom extends Phaser.Scene {
     }
     if (horizontal !== 0) this.pixel.setFlipX(horizontal < 0);
     this.climbHint.setAlpha(overlapsCurtain ? 1 : 0.65);
+    this.updateCurtain(vertical < 0);
     this.updateCouch(delta);
-    this.status.setText(this.couchScratch.snapshot().state === 'scratching' ? 'PIXEL · SOFA KRATZEN' : this.climbing ? 'PIXEL · CURTAIN CLIMBING' : 'PIXEL · HOME ALONE');
+    this.status.setText(this.couchScratch.snapshot().state === 'scratching' ? 'PIXEL · SOFA KRATZEN' : this.curtainSlide.snapshot().state === 'sliding' ? 'PIXEL · VORHANG RUTSCHEN' : this.climbing ? 'PIXEL · CURTAIN CLIMBING' : 'PIXEL · HOME ALONE');
   }
 }
 

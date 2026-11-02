@@ -1,0 +1,61 @@
+export const CURTAIN_SLIDE = {
+  climbSpeed: 125,
+  slideSpeed: 35,
+  descendSpeed: 125,
+  damageIntervalMs: 600,
+  maxDamage: 8,
+  damageValue: 4,
+} as const;
+
+export type CurtainState = 'detached' | 'climbing' | 'sliding';
+export interface CurtainDamageEvent {
+  readonly objectId: 'curtain';
+  readonly kind: 'tear';
+  readonly stage: number;
+  readonly value: number;
+}
+interface TearConfig {
+  readonly damageIntervalMs: number;
+  readonly maxDamage: number;
+  readonly damageValue: number;
+}
+
+/** Damage follows actual descent; climbing, support and detaching interrupt its timer. */
+export class CurtainSliding {
+  private phase: CurtainState = 'detached';
+  private elapsed = 0;
+  private damage = 0;
+  private readonly config: TearConfig;
+
+  constructor(config: TearConfig = CURTAIN_SLIDE) {
+    if (!Number.isFinite(config.damageIntervalMs) || config.damageIntervalMs <= 0 ||
+      !Number.isSafeInteger(config.maxDamage) || config.maxDamage <= 0 ||
+      !Number.isSafeInteger(config.damageValue) || config.damageValue < 0) throw new Error('Invalid curtain configuration');
+    this.config = { ...config };
+  }
+
+  update(deltaMs: number, state: CurtainState, descending: boolean): CurtainDamageEvent | undefined {
+    if (this.phase !== state) this.elapsed = 0;
+    this.phase = state;
+    if (state !== 'sliding') {
+      this.elapsed = 0;
+      return;
+    }
+    if (!descending) return;
+    this.elapsed += Number.isFinite(deltaMs) ? Math.max(0, deltaMs) : 0;
+    if (this.elapsed < this.config.damageIntervalMs) return;
+    // Never emit a backlog of damage events after a delayed frame.
+    this.elapsed %= this.config.damageIntervalMs;
+    if (this.damage >= this.config.maxDamage) return;
+    this.damage++;
+    return Object.freeze({ objectId: 'curtain', kind: 'tear', stage: this.damage, value: this.config.damageValue });
+  }
+
+  snapshot() { return { state: this.phase, damage: this.damage }; }
+
+  reset() {
+    this.phase = 'detached';
+    this.elapsed = 0;
+    this.damage = 0;
+  }
+}

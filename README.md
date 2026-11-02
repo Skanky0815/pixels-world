@@ -102,7 +102,7 @@ Die von Vite ausgegebene lokale Adresse öffnen, üblicherweise http://127.0.0.1
 
 - **← / →:** bewegen.
 - **Leertaste:** springen; horizontaler Schwung bleibt beim Loslassen erhalten. Richtungstasten steuern in der Luft begrenzt nach. Vor der Sofakante abspringen, um über die feste Seite zu kommen.
-- **↑ / ↓ am markierten Vorhang:** greifen und klettern; Anspringen greift automatisch. Loslassen zum Hängenbleiben, seitlich die Fläche verlassen oder mit Leertaste abspringen – standardmäßig nach links, sonst in die gehaltene Richtung.
+- **↑ / ↓ am markierten Vorhang:** greifen und klettern; Anspringen greift automatisch. Ohne ↑ rutscht Pixel langsam hinunter; ↓ beschleunigt den Abstieg. Seitlich die Fläche verlassen oder mit Leertaste abspringen – standardmäßig nach links, sonst in die gehaltene Richtung.
 - **R:** Durchlauf neu starten: Pixel, sämtliche Vasen, Splitter und Punkte zurücksetzen.
 
 Bücher, Pflanze, Sofalehne und Bild sind Dekoration. Die Sitzfläche und Regalbretter bilden die festen Möbelplattformen.
@@ -121,10 +121,10 @@ Der Build prüft TypeScript und erzeugt die statische Website unter `dist/`. Pha
 1. Lokal starten: Der gesamte Raum, Pixel, Sofa, Regale und der markierte Vorhang sind sichtbar.
 2. Links und rechts laufen: Boden und Raumgrenzen halten Pixel auf.
 3. Von der Startposition nach rechts aufs Sofa springen. Zur rechten Kante laufen und auf das erste Regal springen; danach das nächste Regal erreichen. Pixel landet auf den sichtbaren Flächen.
-4. Am Vorhang ↑ halten: Pixel klettert. Loslassen zum Hängenbleiben, ↓ zum Absteigen und Leertaste mit einer Richtung zum Abspringen. Nach dem Verlassen wirkt wieder Schwerkraft.
+4. Am Vorhang ↑ halten: Pixel klettert. Loslassen zum langsamen Abrutschen mit Stoffschaden, ↓ zum schnelleren Absteigen und Leertaste mit einer Richtung zum Abspringen. Nach dem Verlassen wirkt wieder Schwerkraft.
 5. Auf einer Plattform oder beim Klettern R drücken: Pixel kehrt zur Startposition zurück.
 6. Die erste Vase auf dem Regal von links anschubsen. Beim Kontakt bleiben die Punkte unverändert; erst der Bodenaufprall liefert 25 Punkte und sichtbare Splitter. Warten/erneutes Berühren zählt nicht nochmals.
-7. Am Vorhang zur zweiten Vase klettern und sie nach links vom Regal schieben. Nach deren Bruch zeigt das HUD insgesamt 60 Punkte und die wütende Vorschau.
+7. Am Vorhang zur zweiten Vase klettern und sie nach links vom Regal schieben. Nach deren Bruch liefern die beiden Vasen zusammen 60 Punkte; Vorhangrisse können zusätzliche Punkte beitragen. Beim seitlichen Regalwechsel wegen des Abrutschens etwas höher ansetzen.
 8. R drücken: alle Vasen stehen wieder, Splitter verschwinden und Punkte/Ärger-Vorschau sind zurückgesetzt.
 9. Browsergröße ändern: Der gesamte Raum bleibt im ursprünglichen Seitenverhältnis sichtbar.
 
@@ -177,7 +177,7 @@ Nur `vite build --mode e2e` enthält die lesbare, unveränderliche Beobachtungss
 | Blaue Vase auf dem mittleren Regal | 35 |
 | Erbstück auf dem oberen Regal | 40 |
 
-Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt** ab 25 und **wütend** ab 60. Die Leiste reicht bis zu den insgesamt möglichen 118 Punkten: 100 für Vasen und 18 für Sofakratzer. Werte und Schwellen stehen in [src/chaos.ts](src/chaos.ts). Berührung, Anschubsen und ein Zwischenstopp auf einem anderen Regal zählen noch nicht als Schaden. Jedes Objekt zählt erst beim tatsächlichen Bodenbruch und höchstens einmal pro Durchlauf.
+Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt** ab 25 und **wütend** ab 60. Die Leiste reicht bis zu den insgesamt möglichen 150 Punkten: 100 für Vasen, 18 für Sofakratzer und 32 für Vorhangrisse. Werte und Schwellen stehen in [src/chaos.ts](src/chaos.ts). Berührung, Anschubsen und ein Zwischenstopp auf einem anderen Regal zählen noch nicht als Schaden. Vasen zählen erst beim tatsächlichen Bodenbruch und höchstens einmal pro Durchlauf. Sofa- und Vorhangschäden zählen je neuer Schadensstufe einmal; dasselbe Möbel zählt dabei als ein beschädigtes Objekt.
 
 Die Vasen verwenden dieselbe Arcade-Physik wie Pixel. Nach einem seitlichen Anschubser gleiten sie über die Kante, fallen mit Schwerkraft und zeigen beim Bodenaufprall einfache Splitter. Die sichtbare Drehung ist Platzhalterfeedback; es gibt noch keine vollständige Starrkörper-/Stoffsimulation. Mehrere Vasen dienen dem Test der Punktebereiche; Bücher und Pflanze bleiben Dekoration. Weitere Objektarten gehören zu #11.
 
@@ -193,3 +193,14 @@ Bewegen oder Springen beendet die Aktion sofort. Vorhandene Kratzer bleiben, bei
 Jede neue Spur emittiert über die Phaser-Szene ein unveränderliches `object-damaged`-Ereignis mit `objectId: couch`, `kind: scratch`, Schadensstufe und `value: 3`. Das vorhandene Scoring zählt jede neue Kratzstufe einmal: **3 Punkte je Stufe, höchstens 18 pro Durchlauf**. Wiederholtes Ausgeben derselben Stufe kann keine zusätzlichen Punkte erzeugen. Das Sofa zählt als ein beschädigtes Objekt; die Vasen behalten ihre bisherigen Werte. R setzt sowohl Kratzschaden als auch Punkte zurück.
 
 Zum manuellen Prüfen am Boden auf Höhe des Sofas anhalten: vor zwei Sekunden kein Kratzen, danach Animation und schrittweise Spuren. Weglaufen oder springen beendet die Animation; R entfernt den Schaden. Unit- und E2E-Tests prüfen Verzögerung, Intervalle, Abbruch, Animation, Schadensgrenze und Neustart.
+
+
+## Vorhangrutschen und Risse (Phase 1)
+
+Am Vorhang hält **↑** Pixel beim Hochklettern. Ohne Aufwärts-Eingabe rutscht sie mit **35 px/s** hinunter; **↓** beschleunigt auf **125 px/s**. Das bisherige bewegungslose Hängenbleiben entfällt. Weiterklettern und Abspringen beenden die Rutschphase; Plattformkollisionen bleiben aktiv. Trifft Pixel beim Rutschen auf Boden oder eine Plattform, löst sie den Griff automatisch. Vom Boden lässt sich mit ↑ sofort erneut greifen und klettern.
+
+Nur beim tatsächlichen Hinabrutschen entsteht alle **600 ms** ein sichtbarer Riss. Jeder neue Riss gibt **4 Chaospunkte**, höchstens achtmal bzw. 32 Punkte pro Durchlauf. Weiterklettern oder Ablösen unterbricht das laufende Schadensintervall; bestehende Risse bleiben erhalten. **R** entfernt Risse und setzt Vorhangzustand, Ereignisse und Punkte zurück.
+
+Geschwindigkeiten, Schadensintervall, Schadensgrenze und Ereigniswert stehen in [src/curtain-sliding.ts](src/curtain-sliding.ts). Risse emittieren eingefrorene `object-damaged`-Ereignisse mit `objectId: curtain`, `kind: tear`, Stufe und Wert. Es gibt keine Ereignisflut pro Frame oder nach einem langen Frame. Das ist ein spielbarer Stoffschaden mit Platzhalterlinien, keine Stoffsimulation.
+
+Zum Prüfen hinaufklettern und loslassen: Pixel rutscht sichtbar, nach dem Intervall entstehen Risse und Punkte. ↑ stoppt den Rissfortschritt, Leertaste löst den Griff. Am Boden endet das Rutschen; ↑ greift erneut, R stellt den unbeschädigten Vorhang wieder her. Automatisierte Tests prüfen Zustandswechsel, Bewegung, Punkte, Unterbrechungen, Bodenbegrenzung und Neustart.
