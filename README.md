@@ -103,9 +103,9 @@ Die von Vite ausgegebene lokale Adresse öffnen, üblicherweise http://127.0.0.1
 - **← / →:** bewegen.
 - **Leertaste:** springen; horizontaler Schwung bleibt beim Loslassen erhalten. Richtungstasten steuern in der Luft begrenzt nach. Vor der Sofakante abspringen, um über die feste Seite zu kommen.
 - **↑ / ↓ am markierten Vorhang:** greifen und klettern; Anspringen greift automatisch. Ohne ↑ rutscht Pixel langsam hinunter; ↓ beschleunigt den Abstieg. Seitlich die Fläche verlassen oder mit Leertaste abspringen – standardmäßig nach links, sonst in die gehaltene Richtung.
-- **R:** Durchlauf neu starten: Pixel, sämtliche Vasen, Splitter und Punkte zurücksetzen.
+- **R:** Durchlauf neu starten: Pixel, sämtliche Vasen, Sofakratzer, Vorhangrisse, Pflanze, Splitter und Punkte zurücksetzen.
 
-Bücher, Pflanze, Sofalehne und Bild sind Dekoration. Die Sitzfläche und Regalbretter bilden die festen Möbelplattformen.
+Bücher, Sofalehne und Bild sind Dekoration. Der Katzengrastopf links ist interaktiv: kurz daneben stehen bleiben, um zu knabbern; Weglaufen oder Springen verhindert das spätere Umkippen. Die Sitzfläche und Regalbretter bilden die festen Möbelplattformen.
 
 ## Build und Vorschau
 
@@ -182,9 +182,9 @@ Nur `vite build --mode e2e` enthält die lesbare, unveränderliche Beobachtungss
 | Blaue Vase auf dem mittleren Regal | 35 |
 | Erbstück auf dem oberen Regal | 40 |
 
-Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt** ab 25 und **wütend** ab 60. Die Leiste reicht bis zu den insgesamt möglichen 150 Punkten: 100 für Vasen, 18 für Sofakratzer und 32 für Vorhangrisse. Werte und Schwellen stehen in [src/chaos.ts](src/chaos.ts). Berührung, Anschubsen und ein Zwischenstopp auf einem anderen Regal zählen noch nicht als Schaden. Vasen zählen erst beim tatsächlichen Bodenbruch und höchstens einmal pro Durchlauf. Sofa- und Vorhangschäden zählen je neuer Schadensstufe einmal; dasselbe Möbel zählt dabei als ein beschädigtes Objekt.
+Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt** ab 25 und **wütend** ab 60. Die Leiste reicht bis zu den insgesamt möglichen 162 Punkten: 100 für Vasen, 18 für Sofakratzer, 32 für Vorhangrisse und 12 für die Pflanze. Werte und Schwellen stehen in [src/chaos.ts](src/chaos.ts). Berührung, Anschubsen und ein Zwischenstopp auf einem anderen Regal zählen noch nicht als Schaden. Vasen zählen erst beim tatsächlichen Bodenbruch und höchstens einmal pro Durchlauf. Sofa-, Vorhang- und Pflanzenschäden zählen je neuer Schadensstufe einmal; dasselbe Möbel zählt dabei als ein beschädigtes Objekt.
 
-Die Vasen verwenden dieselbe Arcade-Physik wie Pixel. Nach einem seitlichen Anschubser gleiten sie über die Kante, fallen mit Schwerkraft und zeigen beim Bodenaufprall einfache Splitter. Die sichtbare Drehung ist Platzhalterfeedback; es gibt noch keine vollständige Starrkörper-/Stoffsimulation. Mehrere Vasen dienen dem Test der Punktebereiche; Bücher und Pflanze bleiben Dekoration. Weitere Objektarten gehören zu #11.
+Die Vasen verwenden dieselbe Arcade-Physik wie Pixel. Nach einem seitlichen Anschubser gleiten sie über die Kante, fallen mit Schwerkraft und zeigen beim Bodenaufprall einfache Splitter. Die sichtbare Drehung ist Platzhalterfeedback; es gibt noch keine vollständige Starrkörper-/Stoffsimulation. Mehrere Vasen dienen dem Test der Punktebereiche; Bücher bleiben Dekoration; die Pflanze hat ihre eigene kleine Interaktion. Weitere Objektarten gehören zu #11.
 
 Der HUD-Ausblick ist noch keine heimgekehrte oder tatsächlich reagierende Sara. Timer/Heimkehr (#6), Saras Reaktion und Phasenwechsel (#8), Versöhnung (#9) sowie die vollständige Ergebnisrunde (#10) bleiben eigenständige nächste Schritte. Animationen und Feinschliff (#2) folgen nach dem Gameplay-Kern.
 
@@ -209,3 +209,14 @@ Nur beim tatsächlichen Hinabrutschen entsteht alle **600 ms** ein sichtbarer Ri
 Geschwindigkeiten, Schadensintervall, Schadensgrenze und Ereigniswert stehen in [src/curtain-sliding.ts](src/curtain-sliding.ts). Risse emittieren eingefrorene `object-damaged`-Ereignisse mit `objectId: curtain`, `kind: tear`, Stufe und Wert. Es gibt keine Ereignisflut pro Frame oder nach einem langen Frame. Das ist ein spielbarer Stoffschaden mit Platzhalterlinien, keine Stoffsimulation.
 
 Zum Prüfen hinaufklettern und loslassen: Pixel rutscht sichtbar, nach dem Intervall entstehen Risse und Punkte. ↑ stoppt den Rissfortschritt, Leertaste löst den Griff. Am Boden endet das Rutschen; ↑ greift erneut, R stellt den unbeschädigten Vorhang wieder her. Automatisierte Tests prüfen Zustandswechsel, Bewegung, Punkte, Unterbrechungen, Bodenbegrenzung und Neustart.
+
+
+## Katzengras anknabbern und Topf umwerfen (Phase 1)
+
+Links am Boden steht ein Platzhalter für Katzengras. Geh von der Startposition ein kleines Stück nach links und bleib neben dem Topf stehen. Nach **zwei Sekunden** beginnt Pixel automatisch zu knabbern; zwei Animationsframes und bewegte Halme zeigen die Aktion. Nach **einer weiteren Sekunde** wackelt der Topf deutlich, begleitet vom Hinweis im HUD. Erst nach **1,2 Sekunden Warnzeit** kippt er nach links und Erde bleibt am Boden liegen. Es gibt keine Zufallsentscheidung und keine Aktionstaste.
+
+Bewegung, Richtungseingaben oder Springen unterbrechen die Folge sofort; vor dem Kippen richtet sich der Topf wieder auf. Ein vorhandener Biss bleibt sichtbar. Bei erneuter Annäherung läuft die volle Wartezeit von vorn. Am Startpunkt, außerhalb der Reichweite und in der Luft beginnt keine Interaktion. Der erste Biss gibt einmal **2 Chaospunkte**, das Kippen weitere **10**. Auch nach erneutem Annähern gibt es denselben Schaden nicht doppelt; die Pflanze zählt als ein beschädigtes Objekt.
+
+**R** stellt Topf und Halme aufrecht wieder her, entfernt Erde, Ereignisse und Punkte und beendet die Knabberanimation. Wartezeit, Knabberdauer, Warnzeit, Reichweite und Punkte stehen in [src/plant-nibbling.ts](src/plant-nibbling.ts). Eingefrorene `object-damaged`-Ereignisse enthalten `objectId: plant`, `kind: nibble` bzw. `tip`, Stufe und Wert. Langframes können nicht mehrere Phasen auf einmal überspringen. Das Kippen ist eine feste Platzhalterdarstellung, keine zusätzliche Starrkörperphysik.
+
+Zum Prüfen erst bis zum Wackeln warten und weglaufen: Der Topf bleibt stehen. Dann erneut warten, bis er kippt: insgesamt 12 Punkte, keine weitere Punktevergabe. R stellt alles wieder her. Unit- und Browser-Tests prüfen Phasengrenzen, Unterbrechungen, Animation, Warnung, einmalige Punkte und Reset.

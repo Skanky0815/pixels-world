@@ -4,11 +4,12 @@ import { ChaosScore, VASES, angerFor } from './chaos';
 import { Vase } from './vase';
 import { COUCH_SCRATCH, CouchScratching, type CouchDamageEvent } from './couch-scratching';
 import { CURTAIN_SLIDE, CurtainSliding, type CurtainDamageEvent } from './curtain-sliding';
+import { PLANT_NIBBLE, PlantNibbling, type PlantDamageEvent } from './plant-nibbling';
 
 const WIDTH = 960;
 const HEIGHT = 540;
 const FLOOR_Y = 468;
-const MAX_CHAOS_SCORE = VASES.reduce((sum, vase) => sum + vase.points, 0) + COUCH_SCRATCH.maxDamage * COUCH_SCRATCH.damageValue + CURTAIN_SLIDE.maxDamage * CURTAIN_SLIDE.damageValue;
+const MAX_CHAOS_SCORE = VASES.reduce((sum, vase) => sum + vase.points, 0) + COUCH_SCRATCH.maxDamage * COUCH_SCRATCH.damageValue + CURTAIN_SLIDE.maxDamage * CURTAIN_SLIDE.damageValue + PLANT_NIBBLE.nibbleValue + PLANT_NIBBLE.tipValue;
 const CURTAIN = new Phaser.Geom.Rectangle(744, 112, 112, 356);
 
 class LivingRoom extends Phaser.Scene {
@@ -38,11 +39,19 @@ class LivingRoom extends Phaser.Scene {
   private lastCurtainDamage: CurtainDamageEvent | null = null;
   private previousCurtainY: number | null = null;
   private previousCurtainSpeed = 0;
+  private readonly plantNibble = new PlantNibbling();
+  private plantGraphic!: Phaser.GameObjects.Graphics;
+  private spilledSoil!: Phaser.GameObjects.Graphics;
+  private plantEvents = 0;
+  private lastPlantDamage: PlantDamageEvent | null = null;
 
   constructor() { super('LivingRoom'); }
 
   create() {
     this.drawRoom();
+    this.plantGraphic = this.add.graphics({ x: PLANT_NIBBLE.x, y: FLOOR_Y });
+    this.spilledSoil = this.add.graphics();
+    this.drawPlant();
     this.makeCatTexture();
     this.scratchMarks = this.add.graphics();
     this.curtainMarks = this.add.graphics();
@@ -97,6 +106,7 @@ class LivingRoom extends Phaser.Scene {
             vases: this.vases.map(vase => vase.snapshot()),
             couch: { ...this.couchScratch.snapshot(), events: this.couchEvents, lastDamage: this.lastCouchDamage },
             curtain: { ...this.curtainSlide.snapshot(), events: this.curtainEvents, lastDamage: this.lastCurtainDamage },
+            plant: { ...this.plantNibble.snapshot(), angle: this.plantGraphic.angle, events: this.plantEvents, lastDamage: this.lastPlantDamage },
             pixel: {
               x: this.pixel.x, y: this.pixel.y, bottom: body.bottom,
               velocityX: body.velocity.x, velocityY: body.velocity.y,
@@ -160,11 +170,9 @@ class LivingRoom extends Phaser.Scene {
       rect(x + 12, y + 16, 8, 20, 0x87644a); rect(x + w - 20, y + 16, 8, 20, 0x87644a);
     }
     rect(536, 270, 12, 34, 0xa7614e); rect(550, 278, 10, 26, 0x778775); rect(562, 266, 12, 38, 0xc6a36e);
-    // Framed picture, plant, rug: decorative placeholders only.
+    // Framed picture and rug: decorative placeholders only.
     rect(282, 112, 108, 112, 0x795a43); rect(290, 120, 92, 96, 0xefe0ba);
     rect(302, 168, 68, 36, 0xa0a486); rect(322, 146, 28, 28, 0xd1a167);
-    rect(60, 420, 44, 48, 0xb47655); rect(78, 356, 6, 64, 0x596d57);
-    rect(58, 370, 24, 14, 0x718463); rect(82, 386, 26, 14, 0x718463);
     rect(245, 493, 430, 30, 0xbe906c); rect(255, 501, 410, 3, 0xddba8b);
     this.add.text(525, 336, 'SHELVES', { fontFamily: 'monospace', fontSize: '10px', color: '#725b46' });
   }
@@ -222,6 +230,12 @@ class LivingRoom extends Phaser.Scene {
     this.curtainEvents = 0;
     this.lastCurtainDamage = null;
     this.curtainMarks.clear();
+    this.plantNibble.reset();
+    this.plantEvents = 0;
+    this.lastPlantDamage = null;
+    this.plantGraphic.setAngle(0).setPosition(PLANT_NIBBLE.x, FLOOR_Y);
+    this.spilledSoil.clear();
+    this.drawPlant();
     this.couchEvents = 0;
     this.lastCouchDamage = null;
     this.scratchMarks.clear();
@@ -236,7 +250,7 @@ class LivingRoom extends Phaser.Scene {
     if (this.textures.exists('pixel')) return;
     const g = this.make.graphics({ x: 0, y: 0 });
     const rect = (x: number, y: number, w: number, h: number, color: number) => { g.fillStyle(color); g.fillRect(x, y, w, h); };
-    for (const [index, key] of ['pixel', 'pixel-scratch-0', 'pixel-scratch-1'].entries()) {
+    for (const [index, key] of ['pixel', 'pixel-scratch-0', 'pixel-scratch-1', 'pixel-nibble-0', 'pixel-nibble-1'].entries()) {
       g.clear();
       rect(1, 14, 7, 5, 0x66574c); rect(1, 8, 4, 10, 0x66574c);
       rect(6, 13, 22, 15, 0x9b8a70); rect(21, 7, 13, 17, 0x9b8a70);
@@ -245,14 +259,20 @@ class LivingRoom extends Phaser.Scene {
       rect(8, 27, 5, 5, 0x66574c); rect(23, 27, 5, 5, 0x66574c);
       rect(28, 13, 4, 3, 0xd9cf84); rect(31, 13, 1, 3, 0x302e2d);
       rect(28, 19, 7, 4, 0xe3cba4);
-      if (index > 0) {
+      if (index === 1 || index === 2) {
         rect(26, index === 1 ? 12 : 19, 9, 4, 0xe3cba4);
         rect(29, 17, 4, 10, 0x66574c);
+      }
+      if (index >= 3) {
+        rect(27, 17, 8, 5, 0xe3cba4);
+        rect(31, index === 3 ? 19 : 17, 4, 2, 0x59443d);
+        rect(29, 23, 5, 3, 0x718463);
       }
       g.generateTexture(key, 36, 32);
     }
     g.destroy();
     if (!this.anims.exists('scratch')) this.anims.create({ key: 'scratch', frames: [{ key: 'pixel-scratch-0' }, { key: 'pixel-scratch-1' }], frameRate: 8, repeat: -1 });
+    if (!this.anims.exists('nibble')) this.anims.create({ key: 'nibble', frames: [{ key: 'pixel-nibble-0' }, { key: 'pixel-nibble-1' }], frameRate: 6, repeat: -1 });
   }
 
   private updateCouch(delta: number) {
@@ -283,7 +303,57 @@ class LivingRoom extends Phaser.Scene {
         this.scratchingPaws.lineBetween(this.pixel.x + direction * 9, this.pixel.y - 4 + i * 4,
           this.pixel.x + direction * 20, this.pixel.y - (body.bottom > 400 ? 35 : 20) + lift + i * 4);
       }
-    } else if (this.pixel.anims.isPlaying) {
+    } else if (this.pixel.anims.isPlaying && this.pixel.anims.currentAnim?.key === 'scratch') {
+      this.pixel.anims.stop();
+      this.pixel.setTexture('pixel');
+    }
+  }
+
+  private drawPlant() {
+    const g = this.plantGraphic.clear();
+    const bitten = this.plantNibble.snapshot().damage > 0;
+    // A tuft of cat grass, without Monstera's broad split leaves.
+    g.lineStyle(3, 0x596d57);
+    for (let i = 0; i < 7; i++) {
+      const x = (i - 3) * 4;
+      const height = 22 + (i % 3) * 5 - (bitten && i > 3 ? 9 : 0);
+      g.lineBetween(x, -19, x + (i - 3) * 2, -19 - height);
+    }
+    g.fillStyle(0x718463);
+    for (let i = 0; i < 5; i++) g.fillRect((i - 2) * 6, -30 - (i % 2) * 9, 3, 12);
+    g.fillStyle(0xb47655).fillRect(-17, -20, 34, 20);
+    g.fillStyle(0xc98a64).fillRect(-20, -23, 40, 5);
+    g.fillStyle(0x59443d).fillRect(-15, -23, 30, 3);
+    if (bitten) g.fillStyle(0x91a07a).fillRect(8, -29, 5, 3);
+  }
+
+  private updatePlant(time: number, delta: number) {
+    const body = this.pixel.body as Phaser.Physics.Arcade.Body;
+    const hasInput = this.cursors.left.isDown || this.cursors.right.isDown || this.cursors.up.isDown || this.cursors.down.isDown || this.jump.isDown;
+    const eligible = this.pixel.x >= PLANT_NIBBLE.minX && this.pixel.x <= PLANT_NIBBLE.maxX &&
+      Math.abs(body.bottom - FLOOR_Y) < 2 && body.blocked.down && !this.climbing && !hasInput && Math.abs(body.velocity.x) < 1 && Math.abs(body.velocity.y) < 1;
+    const event = this.plantNibble.update(delta, eligible);
+    if (event) {
+      this.plantEvents++;
+      this.lastPlantDamage = event;
+      if (this.chaos.award(`plant-${event.kind}`, event.value, event.objectId)) this.updateScore();
+      this.events.emit('object-damaged', event);
+      this.drawPlant();
+      if (event.kind === 'tip') {
+        this.plantGraphic.setAngle(-80).setPosition(PLANT_NIBBLE.x + 10, FLOOR_Y - 17);
+        this.spilledSoil.fillStyle(0x59443d);
+        for (let i = 0; i < 12; i++) this.spilledSoil.fillRect(36 + (i * 13) % 74, FLOOR_Y - 2 - i % 3, 4 + i % 3, 3);
+      }
+    }
+    const { state, progress } = this.plantNibble.snapshot();
+    const active = state === 'nibbling' || state === 'wobbling';
+    if (state !== 'tipped') {
+      this.plantGraphic.setAngle(state === 'wobbling' ? Math.sin(progress * Math.PI * 8) * (5 + progress * 12) : active ? Math.sin(time / 80) * 2 : 0);
+    }
+    if (active) {
+      this.pixel.setFlipX(this.pixel.x > PLANT_NIBBLE.x);
+      this.pixel.play('nibble', true);
+    } else if (this.pixel.anims.isPlaying && this.pixel.anims.currentAnim?.key === 'nibble') {
       this.pixel.anims.stop();
       this.pixel.setTexture('pixel');
     }
@@ -353,7 +423,9 @@ class LivingRoom extends Phaser.Scene {
     this.climbHint.setAlpha(overlapsCurtain ? 1 : 0.65);
     this.updateCurtain(vertical < 0);
     this.updateCouch(delta);
-    this.status.setText(this.couchScratch.snapshot().state === 'scratching' ? 'PIXEL · SOFA KRATZEN' : this.curtainSlide.snapshot().state === 'sliding' ? 'PIXEL · VORHANG RUTSCHEN' : this.climbing ? 'PIXEL · CURTAIN CLIMBING' : 'PIXEL · HOME ALONE');
+    this.updatePlant(time, delta);
+    const plantState = this.plantNibble.snapshot().state;
+    this.status.setText(plantState === 'wobbling' ? 'PIXEL · VORSICHT, DER TOPF WACKELT!' : plantState === 'nibbling' ? 'PIXEL · KATZENGRAS KNABBERN' : this.couchScratch.snapshot().state === 'scratching' ? 'PIXEL · SOFA KRATZEN' : this.curtainSlide.snapshot().state === 'sliding' ? 'PIXEL · VORHANG RUTSCHEN' : this.climbing ? 'PIXEL · CURTAIN CLIMBING' : 'PIXEL · HOME ALONE');
   }
 }
 
