@@ -11,6 +11,8 @@ export function installTestObserver(read: () => GameTestState) {
         room: Object.freeze(state.room),
         camera: Object.freeze(state.camera),
         pixel: Object.freeze(state.pixel),
+        chaos: Object.freeze(state.chaos),
+        vases: Object.freeze(state.vases.map(vase => Object.freeze(vase))),
       });
     },
   });

@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import './style.css';
+import { ChaosScore, VASES, angerFor } from './chaos';
+import { Vase } from './vase';
 
 const WIDTH = 960;
 const HEIGHT = 540;
@@ -15,16 +17,23 @@ class LivingRoom extends Phaser.Scene {
   private climbHint!: Phaser.GameObjects.Text;
   private status!: Phaser.GameObjects.Text;
   private platforms!: Phaser.Physics.Arcade.StaticGroup;
-  private platformCollider!: Phaser.Physics.Arcade.Collider;
+  private grabBlockedUntil = 0;
+  private mustLeaveCurtain = false;
+  private readonly chaos = new ChaosScore();
+  private vases: Vase[] = [];
+  private fragments: Phaser.GameObjects.Rectangle[] = [];
+  private scoreText!: Phaser.GameObjects.Text;
+  private angerBar!: Phaser.GameObjects.Graphics;
 
   constructor() { super('LivingRoom'); }
 
   create() {
     this.drawRoom();
     this.makeCatTexture();
+    this.makeVaseTexture();
     this.platforms = this.physics.add.staticGroup();
     // Keep rendered furniture and its collision surfaces in the same coordinates.
-    this.addPlatform(0, FLOOR_Y, WIDTH, HEIGHT - FLOOR_Y);
+    const floor = this.addPlatform(0, FLOOR_Y, WIDTH, HEIGHT - FLOOR_Y);
     this.addPlatform(180, 370, 254, 28);
     this.addPlatform(518, 304, 146, 16);
     this.addPlatform(648, 224, 96, 16);
@@ -32,7 +41,20 @@ class LivingRoom extends Phaser.Scene {
     this.pixel = this.physics.add.sprite(110, FLOOR_Y - 16, 'pixel');
     this.pixel.setBodySize(26, 26).setOffset(5, 6).setCollideWorldBounds(true);
     this.pixel.setMaxVelocity(260, 600);
-    this.platformCollider = this.physics.add.collider(this.pixel, this.platforms);
+    this.physics.add.collider(this.pixel, this.platforms);
+    this.vases = VASES.map(config => {
+      const vase = new Vase(this, config);
+      this.physics.add.collider(vase, this.platforms, (_object, surface) => {
+        if (surface === floor && vase.breakOnFloor()) this.breakVase(vase);
+      });
+      this.physics.add.collider(this.pixel, vase, () => {
+        const body = vase.body as Phaser.Physics.Arcade.Body;
+        if (body.touching.left || body.touching.right) {
+          vase.push(this.pixel.x < vase.x ? 1 : -1);
+        }
+      });
+      return vase;
+    });
     const keyboard = this.input.keyboard;
     if (!keyboard) throw new Error('Pixel’s World requires keyboard input.');
     this.cursors = keyboard.createCursorKeys();
@@ -40,6 +62,9 @@ class LivingRoom extends Phaser.Scene {
     this.reset = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
     this.climbHint = this.add.text(800, 90, '↑ / ↓ CLIMB', { fontFamily: 'monospace', fontSize: '12px', color: '#fff1cf', backgroundColor: '#615047' }).setPadding(7, 5).setOrigin(0.5);
     this.status = this.add.text(26, 25, 'PIXEL · HOME ALONE', { fontFamily: 'monospace', fontSize: '12px', color: '#584637' });
+    this.scoreText = this.add.text(26, 48, '', { fontFamily: 'monospace', fontSize: '12px', color: '#584637' });
+    this.angerBar = this.add.graphics();
+    this.updateScore();
     this.cameras.main.setBounds(0, 0, WIDTH, HEIGHT);
     if (import.meta.env.MODE === 'e2e') {
       void import('./test-observer').then(({ installTestObserver }) => {
@@ -51,6 +76,8 @@ class LivingRoom extends Phaser.Scene {
             ready: this.scene.isActive(), scene: this.scene.key, frame: this.game.loop.frame,
             room: { width: WIDTH, height: HEIGHT },
             camera: { x: camera.scrollX, y: camera.scrollY, width: camera.width, height: camera.height, zoom: camera.zoom },
+            chaos: { score: this.chaos.score, damagedObjects: this.chaos.count, anger: angerFor(this.chaos.score).id },
+            vases: this.vases.map(vase => vase.snapshot()),
             pixel: {
               x: this.pixel.x, y: this.pixel.y, bottom: body.bottom,
               velocityX: body.velocity.x, velocityY: body.velocity.y,
@@ -73,6 +100,7 @@ class LivingRoom extends Phaser.Scene {
     const surface = this.add.rectangle(x + width / 2, y + height / 2, width, height, 0, 0);
     this.physics.add.existing(surface, true);
     this.platforms.add(surface);
+    return surface;
   }
 
   private drawRoom() {
@@ -120,6 +148,56 @@ class LivingRoom extends Phaser.Scene {
     this.add.text(525, 336, 'SHELVES', { fontFamily: 'monospace', fontSize: '10px', color: '#725b46' });
   }
 
+  private makeVaseTexture() {
+    if (this.textures.exists('vase')) return;
+    const g = this.make.graphics({ x: 0, y: 0 });
+    g.fillStyle(0xffffff);
+    g.fillRect(5, 0, 8, 8);
+    g.fillRect(2, 8, 14, 16);
+    g.fillRect(4, 24, 10, 4);
+    g.fillStyle(0xd3d3d3);
+    g.fillRect(5, 0, 8, 3);
+    g.fillRect(12, 9, 3, 14);
+    g.generateTexture('vase', 18, 28);
+    g.destroy();
+  }
+
+  private updateScore() {
+    const anger = angerFor(this.chaos.score);
+    this.scoreText.setText(`CHAOS: ${this.chaos.score}  ·  SARAS ÄRGER (VORSCHAU): ${anger.label}`);
+    this.angerBar.clear().fillStyle(0x705547, 0.25).fillRect(26, 70, 160, 6);
+    this.angerBar.fillStyle(anger.color).fillRect(26, 70, 160 * Math.min(this.chaos.score / 100, 1), 6);
+  }
+
+  private breakVase(vase: Vase) {
+    if (!this.chaos.award(vase.config.id, vase.config.points)) return;
+    // Deterministic placeholder shards: visible feedback without a second physics system.
+    for (let i = 0; i < 7; i++) {
+      const shard = this.add.rectangle(vase.x, FLOOR_Y - 3, 4 + i % 3, 3, vase.config.color);
+      this.fragments.push(shard);
+      this.tweens.add({ targets: shard, x: Phaser.Math.Clamp(vase.x + (i - 3) * 9, 4, WIDTH - 4), y: FLOOR_Y - 2 - i % 2, angle: i * 31, duration: 240 });
+    }
+    this.updateScore();
+  }
+
+  private resetRoom() {
+    this.climbing = false;
+    this.grabBlockedUntil = 0;
+    this.mustLeaveCurtain = false;
+    const body = this.pixel.body as Phaser.Physics.Arcade.Body;
+    body.reset(110, FLOOR_Y - 16);
+    body.setAllowGravity(true);
+    for (const vase of this.vases) vase.restore();
+    for (const shard of this.fragments) {
+      this.tweens.killTweensOf(shard);
+      shard.destroy();
+    }
+    this.fragments = [];
+    this.chaos.reset();
+    this.status.setText('PIXEL · HOME ALONE');
+    this.updateScore();
+  }
+
   private makeCatTexture() {
     if (this.textures.exists('pixel')) return;
     const g = this.make.graphics({ x: 0, y: 0 });
@@ -134,7 +212,7 @@ class LivingRoom extends Phaser.Scene {
     g.generateTexture('pixel', 36, 32); g.destroy();
   }
 
-  update() {
+  update(time: number, delta: number) {
     if (!this.pixel) return;
     const body = this.pixel.body as Phaser.Physics.Arcade.Body;
     const horizontal = Number(this.cursors.right.isDown) - Number(this.cursors.left.isDown);
@@ -142,28 +220,31 @@ class LivingRoom extends Phaser.Scene {
     const overlapsCurtain = Phaser.Geom.Intersects.RectangleToRectangle(new Phaser.Geom.Rectangle(body.x, body.y, body.width, body.height), CURTAIN);
     const jumpPressed = Phaser.Input.Keyboard.JustDown(this.jump);
     if (Phaser.Input.Keyboard.JustDown(this.reset)) {
-      this.climbing = false;
-      // Reset physics history too, so the previous frame cannot move the spawn.
-      body.reset(110, FLOOR_Y - 16);
-      body.setAllowGravity(true);
-      this.platformCollider.active = true;
+      this.resetRoom();
       return;
     }
-    // Attach deliberately with Up/Down; jumping past the curtain remains possible.
-    if (!this.climbing && overlapsCurtain && vertical !== 0 && !jumpPressed) this.climbing = true;
-    if (this.climbing && !overlapsCurtain) this.climbing = false;
+    for (const vase of this.vases) vase.updateFall();
+    if (!overlapsCurtain) this.mustLeaveCurtain = false;
+    const canGrab = !this.mustLeaveCurtain && time >= this.grabBlockedUntil && !jumpPressed;
+    const jumpingIntoCurtain = !body.blocked.down && horizontal !== 0 && Math.abs(body.velocity.y) > 1;
+    if (!this.climbing && canGrab && overlapsCurtain && (vertical !== 0 || jumpingIntoCurtain)) this.climbing = true;
+    if (this.climbing && !overlapsCurtain) {
+      this.climbing = false;
+      this.grabBlockedUntil = time + 250;
+    }
     body.setAllowGravity(!this.climbing);
-    this.platformCollider.active = !this.climbing;
     if (this.climbing) {
       this.pixel.setVelocity(horizontal * 110, vertical * 125);
       if (jumpPressed) {
         this.climbing = false;
+        this.grabBlockedUntil = time + 250;
+        this.mustLeaveCurtain = true;
         body.setAllowGravity(true);
-        this.platformCollider.active = true;
         this.pixel.setVelocity((horizontal || -1) * 240, -340);
       }
     } else {
-      this.pixel.setVelocityX(horizontal * 230);
+      if (body.blocked.down) this.pixel.setVelocityX(horizontal * 230);
+      else if (horizontal !== 0) this.pixel.setVelocityX(Phaser.Math.Clamp(body.velocity.x + horizontal * 700 * Math.min(delta, 50) / 1000, -240, 240));
       if (jumpPressed && body.blocked.down) this.pixel.setVelocityY(-480);
     }
     if (horizontal !== 0) this.pixel.setFlipX(horizontal < 0);

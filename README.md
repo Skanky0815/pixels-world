@@ -18,7 +18,7 @@ Spiele **Pixel**, einen neugierigen, frechen Kater, der allein in Saras Wohnung 
 
 Sara soll später zu einem unvorhersehbaren Zeitpunkt heimkommen und das Chaos entdecken. Wie verärgert sie ist, hängt vom Schaden ab. Pixel hat dann kurz Zeit, sie mit Schnurren, Kuscheln und Köpfchengeben zu versöhnen. Je ruhiger Sara am Ende ist, desto mehr Leckerlis bekommt Pixel.
 
-**Designrichtung:** zuerst die Physik-Sandbox, später Punkte und Versöhnung. Sockenverstecken war die ursprüngliche Idee und bleibt eine optionale spätere Mechanik.
+**Designrichtung:** zuerst Bewegung, Physik und Chaospunkte als Grundlage für Saras Ärger; danach Rundenablauf und Versöhnung. Grafik und Animationen folgen dem spielbaren Kern. Sockenverstecken war die ursprüngliche Idee und bleibt eine optionale spätere Mechanik.
 
 ## Geplanter Spielablauf
 
@@ -49,7 +49,7 @@ Sara soll später zu einem unvorhersehbaren Zeitpunkt heimkommen und das Chaos e
 | Leertaste + ← / → | Richtung beim Sprung steuern |
 | Leertaste beim Klettern | Von der Fläche abspringen |
 
-Klettern soll langsamer und kontrollierter sein als Springen. Automatisches Greifen beim Sprung gegen eine Kletterfläche ist für die weitere Bewegungsentwicklung vorgesehen; im aktuellen Raumprototyp erfolgt das Greifen bewusst mit ↑ oder ↓.
+Klettern ist langsamer als Springen. Beim Anspringen greift Pixel den Vorhang automatisch; ↑ oder ↓ greift auch bewusst. Nach dem Absprung muss Pixel die Kletterfläche verlassen, bevor er sie erneut automatisch greifen kann. Plattformkollisionen bleiben beim Klettern aktiv. Sprünge behalten ihren horizontalen Schwung, Richtungstasten erlauben begrenzte Luftsteuerung.
 
 ## Visuelle Richtung
 
@@ -78,15 +78,16 @@ Der Raumprototyp verwendet Phaser 3, TypeScript und Vite. Weitere Spielsysteme s
 
 - [x] Spielbarer Raum mit Boden, Sofa, Regalen, Vorhang und Plattformen
 - [ ] Pixel-Sprite mit grundlegenden Stand-, Lauf-, Sprung- und Kletteranimationen
-- [ ] Vollständige Pfeiltasten- und Leertastensteuerung
-- [ ] Vollständige Bewegung mit Schwerkraft, Kollisionen, Klettern, Greifen und Absprung
-- [ ] Interaktive Vase mit Fall- und Bruchverhalten
+- [x] Pfeiltasten- und Leertastensteuerung, ohne optionales Ducken
+- [x] Bewegung mit Schwerkraft, Kollisionen, Sprungschwung, Klettern, automatischem Greifen und Absprung
+- [x] Interaktive Vasen mit Fall- und Bruchverhalten
+- [x] Chaospunkte und konfigurierbare Ärger-Vorschau
 
-Für den ersten Prototyp brauchen wir weder Saras Rückkehr noch Ärgeranzeige, Leckerlis, eine vollständige Runde oder Benutzerkonten. Zunächst soll es Spaß machen, sich zu bewegen und Unordnung zu stiften.
+Der spielbare Kern umfasst jetzt Bewegung, Zerstörung und Punkte. Saras tatsächliche Rückkehr, Versöhnung, Leckerlis und eine vollständige Runde folgen später; Benutzerkonten sind nicht erforderlich.
 
 ## Projektstatus
 
-**Wohnzimmerprototyp umgesetzt (Issue #1).** Der Raum verwendet geometrische Platzhalter, einen festen Boden, Sofa- und Regalplattformen sowie einen markierten kletterbaren Vorhang. Die Kamera zeigt den ganzen Raum mit 960×540 logischen Pixeln und skaliert ihn passend zum Browser. Zur Laufzeit sind weder Backend noch Konten oder externe Grafikdownloads nötig. Vaseninteraktionen und vollständige Sprite-Animationen folgen später.
+**Spielbare Chaos-Sandbox mit Platzhaltern.** Der Raum verwendet geometrische Platzhalter, einen festen Boden, Sofa- und Regalplattformen sowie einen markierten kletterbaren Vorhang. Die Kamera zeigt den ganzen Raum mit 960×540 logischen Pixeln und skaliert ihn passend zum Browser. Zur Laufzeit sind weder Backend noch Konten oder externe Grafikdownloads nötig. Drei Vasen lassen sich durch Kontakt anschubsen und zerbrechen beim Bodenaufprall. Vollständige Sprite-Animationen, Saras Heimkehr und der Rundenablauf folgen später. Der [Issue-Abgleich](docs/gameplay-status.md) unterscheidet bereits gemergte Grundlagen und den aktuellen Gameplay-PR.
 
 ## Lokal starten
 
@@ -100,9 +101,9 @@ npm run dev
 Die von Vite ausgegebene lokale Adresse öffnen, üblicherweise http://127.0.0.1:5173. Eine Tastatur ist erforderlich; Touch-Steuerung ist noch nicht enthalten.
 
 - **← / →:** bewegen.
-- **Leertaste:** springen; eine Richtung halten, um sich im Sprung zu bewegen. Vor der Sofakante abspringen, um über die feste Seite zu kommen.
-- **↑ / ↓ am markierten Vorhang:** greifen und klettern. Loslassen zum Hängenbleiben, seitlich die Fläche verlassen oder mit Leertaste abspringen – standardmäßig nach links, sonst in die gehaltene Richtung.
-- **R:** Pixel auf die Startposition am Boden zurücksetzen.
+- **Leertaste:** springen; horizontaler Schwung bleibt beim Loslassen erhalten. Richtungstasten steuern in der Luft begrenzt nach. Vor der Sofakante abspringen, um über die feste Seite zu kommen.
+- **↑ / ↓ am markierten Vorhang:** greifen und klettern; Anspringen greift automatisch. Loslassen zum Hängenbleiben, seitlich die Fläche verlassen oder mit Leertaste abspringen – standardmäßig nach links, sonst in die gehaltene Richtung.
+- **R:** Durchlauf neu starten: Pixel, sämtliche Vasen, Splitter und Punkte zurücksetzen.
 
 Bücher, Pflanze, Sofalehne und Bild sind Dekoration. Die Sitzfläche und Regalbretter bilden die festen Möbelplattformen.
 
@@ -122,17 +123,21 @@ Der Build prüft TypeScript und erzeugt die statische Website unter `dist/`. Pha
 3. Von der Startposition nach rechts aufs Sofa springen. Zur rechten Kante laufen und auf das erste Regal springen; danach das nächste Regal erreichen. Pixel landet auf den sichtbaren Flächen.
 4. Am Vorhang ↑ halten: Pixel klettert. Loslassen zum Hängenbleiben, ↓ zum Absteigen und Leertaste mit einer Richtung zum Abspringen. Nach dem Verlassen wirkt wieder Schwerkraft.
 5. Auf einer Plattform oder beim Klettern R drücken: Pixel kehrt zur Startposition zurück.
-6. Browsergröße ändern: Der gesamte Raum bleibt im ursprünglichen Seitenverhältnis sichtbar.
+6. Die erste Vase auf dem Regal von links anschubsen. Beim Kontakt bleiben die Punkte unverändert; erst der Bodenaufprall liefert 25 Punkte und sichtbare Splitter. Warten/erneutes Berühren zählt nicht nochmals.
+7. Am Vorhang zur zweiten Vase klettern und sie nach links vom Regal schieben. Nach deren Bruch zeigt das HUD insgesamt 60 Punkte und die wütende Vorschau.
+8. R drücken: alle Vasen stehen wieder, Splitter verschwinden und Punkte/Ärger-Vorschau sind zurückgesetzt.
+9. Browsergröße ändern: Der gesamte Raum bleibt im ursprünglichen Seitenverhältnis sichtbar.
 
 ## Qualitätsprüfungen
 
 ```sh
 npm run lint       # ESLint mit TypeScript-Regeln; Warnungen führen zum Fehler
 npm run typecheck  # Strenge TypeScript-Prüfung
-npm run qa         # Lint, Typprüfung und Produktionsbuild
+npm run test:unit  # Punkte, Doppeltzählung, Reset und Ärgerschwellen
+npm run qa         # Lint, Unit-Tests, Typprüfung und Produktionsbuild
 ```
 
-GitHub Actions führt diese Prüfungen für jeden Pull Request und jeden Push nach `main` aus; ein manueller Start ist ebenfalls möglich. CI installiert mit `npm ci` aus dem Lockfile auf Node.js 22. Der manuelle Spieltest ergänzt die statischen Prüfungen. Der separate CI-Job **Playwright (Chromium)** prüft Start und Rendering, Tastaturbewegung, Boden/Raumgrenze, Sofa-/Regalsprünge, Vorhangklettern mit Absprung, Reset und einen kleinen Viewport. Außerdem prüft er, dass der Produktionsbuild keine Test-Schnittstelle enthält.
+GitHub Actions führt diese Prüfungen für jeden Pull Request und jeden Push nach `main` aus; ein manueller Start ist ebenfalls möglich. CI installiert mit `npm ci` aus dem Lockfile auf Node.js 22. Der manuelle Spieltest ergänzt die statischen Prüfungen. Der separate CI-Job **Playwright (Chromium)** prüft Start und Rendering, Tastaturbewegung, Boden/Raumgrenze, Sofa-/Regalsprünge, Vorhangklettern mit Absprung, Reset und einen kleinen Viewport. Zusätzliche Gameplay-Tests prüfen Sprungschwung, automatisches Greifen, Kletterkollisionen, fallende Vasen, einmalige Punktevergabe, Ärgerstufen und vollständigen Reset. Außerdem prüft er, dass der Produktionsbuild keine Test-Schnittstelle enthält.
 
 ## Beiträge
 
@@ -159,6 +164,21 @@ npm run test:e2e:debug              # Sichtbarer Browser und Playwright Inspecto
 npm run test:e2e:report             # Letzten HTML-Bericht öffnen
 ```
 
-Auf Linux bei Bedarf einmal `npx playwright install --with-deps chromium` ausführen. CI führt jeden Test zweimal ohne automatische Retries aus, installiert Chromium samt Systemabhängigkeiten und speichert den HTML-Bericht sowie Screenshots/Traces fehlgeschlagener Tests für 14 Tage als `playwright-results`. Ein Trace lässt sich mit `npx playwright show-trace <pfad-zur-trace.zip>` öffnen. Tests laufen isoliert mit einem Worker, geben Tasten im Cleanup frei und warten mit begrenzten Zustandsabfragen statt fester Pausen auf die Physik.
+Auf Linux bei Bedarf einmal `npx playwright install --with-deps chromium` ausführen. CI führt jeden Test zweimal ohne automatische Retries aus, installiert Chromium samt Systemabhängigkeiten und speichert den HTML-Bericht sowie Screenshots/Traces fehlgeschlagener Tests für 14 Tage als `playwright-results`. Ein Trace lässt sich mit `npx playwright show-trace <pfad-zur-trace.zip>` öffnen. Tests laufen isoliert mit einem Worker und geben Tasten im Cleanup frei. Playwrights Browser-Uhr ist vor dem Laden installiert und pausiert; zwischen Zustandsabfragen werden Timer und Animationen in kleinen Simulationsschritten weitergeführt. So verlängert die Antwortzeit eines langsamen CI-Runners keine Tastatureingaben. Abbruchgrenzen und tolerante Ergebnisprüfungen ersetzen feste Echtzeitpausen und exakte Frame-Positionen.
 
 Nur `vite build --mode e2e` enthält die lesbare, unveränderliche Beobachtungsschnittstelle `window.__pixelTest`. Sie liefert Bereitschaft, Szene, Frame, Kamera und Pixels Bewegungszustand als eingefrorene Kopien, ohne Mutatoren oder Phaser-Objekte. `npm run build` entfernt den gesamten Beobachter durch Vites Modusauswertung; ein eigener Test prüft den ausgelieferten Produktionscode darauf. Der manuelle Spieltest bleibt für das Spielgefühl sinnvoll; Cross-Browser- und pixelgenaue Screenshot-Tests sind noch nicht enthalten.
+
+
+## Chaospunkte und Ärger-Vorschau
+
+| Objekt | Punkte beim Bodenbruch |
+| --- | ---: |
+| Kleine Vase auf dem ersten Regal | 25 |
+| Blaue Vase auf dem mittleren Regal | 35 |
+| Erbstück auf dem oberen Regal | 40 |
+
+Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt** ab 25 und **wütend** ab 60. Die Leiste reicht bis zu den insgesamt möglichen 100 Punkten. Werte und Schwellen stehen in [src/chaos.ts](src/chaos.ts). Berührung, Anschubsen und ein Zwischenstopp auf einem anderen Regal zählen noch nicht als Schaden. Jedes Objekt zählt erst beim tatsächlichen Bodenbruch und höchstens einmal pro Durchlauf.
+
+Die Vasen verwenden dieselbe Arcade-Physik wie Pixel. Nach einem seitlichen Anschubser gleiten sie über die Kante, fallen mit Schwerkraft und zeigen beim Bodenaufprall einfache Splitter. Die sichtbare Drehung ist Platzhalterfeedback; es gibt noch keine vollständige Starrkörper-/Stoffsimulation. Mehrere Vasen dienen dem Test der Punktebereiche; Bücher und Pflanze bleiben Dekoration. Weitere Objektarten gehören zu #11.
+
+Der HUD-Ausblick ist noch keine heimgekehrte oder tatsächlich reagierende Sara. Timer/Heimkehr (#6), Saras Reaktion und Phasenwechsel (#8), Versöhnung (#9) sowie die vollständige Ergebnisrunde (#10) bleiben eigenständige nächste Schritte. Animationen und Feinschliff (#2) folgen nach dem Gameplay-Kern.
