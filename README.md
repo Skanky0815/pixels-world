@@ -140,7 +140,7 @@ npm run test:unit  # Punkte, Doppeltzählung, Reset und Ärgerschwellen
 npm run qa         # Lint, Unit-Tests, Typprüfung und Produktionsbuild
 ```
 
-GitHub Actions führt diese Prüfungen für jeden Pull Request und jeden Push nach `main` aus; ein manueller Start ist ebenfalls möglich. CI installiert mit `npm ci` aus dem Lockfile auf Node.js 22. Der manuelle Spieltest ergänzt die statischen Prüfungen. Der separate CI-Job **Playwright (Chromium)** prüft Start und Rendering, Tastaturbewegung, Boden/Raumgrenze, Sofa-/Regalsprünge, Vorhangklettern mit Absprung, Reset und einen kleinen Viewport. Zusätzliche Gameplay-Tests prüfen Sprungschwung, automatisches Greifen, Kletterkollisionen, fallende Vasen, einmalige Punktevergabe, Ärgerstufen und vollständigen Reset. Außerdem prüft er, dass der Produktionsbuild keine Test-Schnittstelle enthält.
+GitHub Actions startet die vollständige Game-QA bei Pull Requests und Pushes nach `main`, die Spielcode, Assets, Tests, Werkzeuge oder gemeinsame Konfigurationen ändern. Reine Dokumentationsänderungen starten sie nicht. Ein manueller Start prüft immer vollständig. Pfadregeln und Hinweise zum Branch-Schutz stehen in [Gezielte Game-QA](docs/qa.md). CI installiert mit `npm ci` aus dem Lockfile auf Node.js 22. Der manuelle Spieltest ergänzt die statischen Prüfungen. Der separate CI-Job **Playwright (Chromium)** prüft Start und Rendering, Tastaturbewegung, Boden/Raumgrenze, Sofa-/Regalsprünge, Vorhangklettern mit Absprung, Reset und einen kleinen Viewport. Zusätzliche Gameplay-Tests prüfen Sprungschwung, automatisches Greifen, Kletterkollisionen, fallende Vasen, einmalige Punktevergabe, Ärgerstufen und vollständigen Reset. Außerdem prüft er, dass der Produktionsbuild keine Test-Schnittstelle enthält.
 
 ## Beiträge
 
