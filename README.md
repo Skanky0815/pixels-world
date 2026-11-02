@@ -14,7 +14,7 @@ Die QA-Plakette zeigt den letzten Push auf `main`; die Release-Plakette zeigt ve
 
 ## Die Idee
 
-Spiele **Pixel**, einen neugierigen, frechen Kater, der allein in Saras Wohnung ist. Erkunde das Zimmer, springe auf Möbel, klettere an Vorhängen und wirf Dinge um. Im Mittelpunkt stehen Bewegung, spielerische Physik und eine Umgebung, die auf Pixel reagiert.
+Spiele **Pixel**, einen neugierigen, frechen Kater, der allein in Saras Wohnung ist. Erkunde das Zimmer, springe auf Möbel, klettere an Vorhängen und wirf Dinge um. Im Mittelpunkt stehen Bewegung, spielerische Physik und eine Umgebung, die auf Pixel reagiert. **Geplant für Phase 2:** Jedes Level gibt Pixel genau ein Hauptziel, das aus ihren Bedürfnissen entsteht – etwa Futter finden, spielen oder einen gemütlichen Schlafplatz erreichen. Wie viel Unsinn sie auf dem Weg anstellt, bleibt dir überlassen.
 
 Sara soll später zu einem unvorhersehbaren Zeitpunkt heimkommen und das Chaos entdecken. Wie verärgert sie ist, hängt vom Schaden ab. Pixel hat dann kurz Zeit, sie mit Schnurren, Kuscheln und Köpfchengeben zu versöhnen. Je ruhiger Sara am Ende ist, desto mehr Leckerlis bekommt Pixel.
 
@@ -22,10 +22,13 @@ Sara soll später zu einem unvorhersehbaren Zeitpunkt heimkommen und das Chaos e
 
 ## Geplanter Spielablauf
 
-1. **Allein zu Hause:** erkunden, springen, klettern und Unsinn machen.
-2. **Sara kommt heim:** eine unvorhersehbare Ankunft beendet die Chaosphase.
-3. **Wiedergutmachen:** schnurren, kuscheln und Sara um die Pfote wickeln.
-4. **Leckerlis:** die Belohnung hängt davon ab, wie verärgert Sara noch ist.
+1. **Ein Level, ein Katzenziel:** Pixel bekommt ein klares Hauptziel aus ihren Bedürfnissen, z. B. **Hunger → Futternapf**, **Spieltrieb → Spielzeug** oder **Gemütlichkeit → Schlafplatz**. Das Ziel gibt Orientierung, ohne eine feste Route vorzuschreiben.
+2. **Allein zu Hause:** bewege Pixel frei durch den Raum, springe, klettere und erreiche ihr Ziel. Unterwegs sind automatische Katzenaktionen und Chaosobjekte optional – Pixel darf auch ganz friedlich sein.
+3. **Sara kommt heim:** eine unvorhersehbare Ankunft beendet die Chaosphase. Wie verärgert Sara ist, hängt vom angerichteten Schaden ab.
+4. **Wiedergutmachen:** schnurren, kuscheln und Sara um die Pfote wickeln.
+5. **Rundenergebnis und Leckerlis:** **Ziel erreicht?**, **wie viel Chaos?** und **Saras Reaktion** werden getrennt betrachtet. Wie viele Leckerlis Pixel erhält, hängt davon ab, wie verärgert Sara am Ende noch ist.
+
+**Umsetzungsstand:** Der spielbare Prototyp bietet bereits Bewegung, Interaktionen und Chaospunkte. Hauptziele und Bedürfnisse sind für [Phase 2 (#30)](https://github.com/Skanky0815/pixels-world/issues/30) geplant. Die spätere [Levelgenerierung (#29)](https://github.com/Skanky0815/pixels-world/issues/29) wählt Raum, Möbel und **genau ein erreichbares Hauptziel** gemeinsam aus. Ein identischer Seed soll auch dasselbe Ziel liefern.
 
 ## Interaktionen als Ideen
 
