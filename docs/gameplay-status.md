@@ -11,7 +11,7 @@ Geprüft gegen [Phase 1 – First Chaos (v0.1)](https://github.com/Skanky0815/pi
 | [#5 – Vase](https://github.com/Skanky0815/pixels-world/issues/5) | Abgeschlossen mit PR #16: Anschubsen, Fall und Bodenbruch |
 | [#13 – E2E](https://github.com/Skanky0815/pixels-world/issues/13) | Abgeschlossen mit PR #15; bei Gameplay-Änderungen erweitert |
 | [#17 – Sofa kratzen](https://github.com/Skanky0815/pixels-world/issues/17) | Abgeschlossen mit PR #20: automatisches Kratzen, Animation, progressive Spuren, begrenzte Schadensereignisse und Punkte/Reset |
-| [#18 – Vorhang rutschen/reißen](https://github.com/Skanky0815/pixels-world/issues/18) | In diesem PR: Rutschen statt Hängenbleiben, progressive Risse, Punkte, Ablösen an Boden/Plattformen und Reset |
+| [#18 – Vorhang rutschen/reißen](https://github.com/Skanky0815/pixels-world/issues/18) | Mit [PR #23](https://github.com/Skanky0815/pixels-world/pull/23) gemergt: Rutschen statt Hängenbleiben, progressive Risse, Punkte, Ablösen an Boden/Plattformen und Reset |
 | [#19 – Pflanze anknabbern/umwerfen](https://github.com/Skanky0815/pixels-world/issues/19) | Offen; die Pflanze ist bislang Dekoration |
 
 Reihenfolge nach Ricos Vorgabe: **#17 → #18 → #19 → #2**. Platzhalter reichen für die Interaktionen. Keine Heimkehr-, Runden- oder Versöhnungsfunktionen in diesen Phase-1-Interaktionen.
