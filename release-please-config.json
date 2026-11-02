@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "include-component-in-tag": false,
+  "include-v-in-tag": true,
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "pull-request-title-pattern": "chore${scope}: Version ${version} vorbereiten",
+  "pull-request-header": "Bewusst vorbereiteter Spielrelease. Version, Changelog und QA prüfen; kein automatischer Merge.",
+  "pull-request-footer": "Refs #14\nhttps://github.com/Skanky0815/pixels-world/issues/14",
+  "changelog-sections": [
+    { "type": "feat", "section": "Funktionen" },
+    { "type": "fix", "section": "Fehlerkorrekturen" },
+    { "type": "perf", "section": "Leistung" },
+    { "type": "deps", "section": "Abhängigkeiten" },
+    { "type": "docs", "section": "Dokumentation" }
+  ],
+  "packages": {
+    ".": { "release-type": "node", "initial-version": "0.1.0" }
+  }
+}

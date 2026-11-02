@@ -1,0 +1,56 @@
+name: Spielrelease
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Versions-PR vorbereiten oder gemergten Versions-PR veröffentlichen
+        type: choice
+        options: [prepare, publish]
+        default: prepare
+        required: true
+
+permissions: {}
+
+concurrency:
+  group: game-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run qa
+      - name: Veröffentlichung auf geprüften Versions-Merge begrenzen
+        if: inputs.mode == 'publish'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current_main=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          test "$current_main" = "$GITHUB_SHA"
+          candidates=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" | jq --arg sha "$GITHUB_SHA" '[.[] | select(.merged_at != null and .base.ref == "main" and .merge_commit_sha == $sha and any(.labels[]; .name == "autorelease: pending"))] | length')
+          test "$candidates" = 1
+      - uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ github.token }}
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          skip-github-release: ${{ inputs.mode == 'prepare' }}
+          skip-github-pull-request: ${{ inputs.mode == 'publish' }}

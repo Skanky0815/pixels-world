@@ -1,81 +1,143 @@
-![Pixel's World — Pixel knocking a vase off a shelf in a cozy autumn living room](assets/banner.png)
+![Pixel’s World – Pixel wirft in einem gemütlichen herbstlichen Wohnzimmer eine Vase vom Regal](assets/banner.png)
 
-**One room. One cat. Absolutely no respect for gravity or expensive vases.**
+# Pixel’s World
 
-*A cozy pixel-art sandbox about a small cat and a very big mess.*
+[![QA auf main](https://github.com/Skanky0815/pixels-world/actions/workflows/qa.yml/badge.svg?branch=main&event=push)](https://github.com/Skanky0815/pixels-world/actions/workflows/qa.yml) [![Status – Spielbarer Prototyp](https://img.shields.io/badge/Status-Spielbarer_Prototyp-C49464)](#projektstatus) [![Veröffentlichte Spielversion](https://img.shields.io/github/v/release/Skanky0815/pixels-world?label=Release&color=58b879)](https://github.com/Skanky0815/pixels-world/releases)
 
-## The idea
+[![Phaser 3 – Spielengine](https://img.shields.io/badge/Phaser_3-Spielengine-A5654E)](https://phaser.io/) [![TypeScript – Sprache](https://img.shields.io/badge/TypeScript-Sprache-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Vite – Build](https://img.shields.io/badge/Vite-Build-646CFF?logo=vite&logoColor=white)](https://vite.dev/) [![Node.js – Entwicklungswerkzeuge](https://img.shields.io/badge/Node.js-Entwicklungswerkzeuge-417E38?logo=nodedotjs&logoColor=white)](#lokal-starten)
 
-Play as **Pixel**, a curious, mischievous tabby cat home alone in Sara's apartment. Explore a room, jump onto furniture, climb curtains and knock things over. The fun starts with tactile movement, playful physics and an environment that reacts to Pixel.
+Die QA-Plakette zeigt den letzten Push auf `main`; die Release-Plakette zeigt veröffentlichte GitHub Releases. Das Spiel läuft im Browser, Node.js wird für die Entwicklungswerkzeuge benötigt.
 
-When Sara returns home at an unpredictable time, she discovers the chaos. Her frustration depends on the damage. Pixel then has a limited window to make amends by purring, cuddling and giving affectionate head bumps. The calmer Sara is at the end, the more treats Pixel earns.
+**Ein Zimmer. Eine Katze. Absolut kein Respekt vor Schwerkraft oder teuren Vasen.**
 
-**Design direction:** physics-driven sandbox first, scoring and reconciliation later. Sock hiding was the original hook, but is now an optional future mechanic.
+*Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich großes Chaos.*
 
-## Gameplay loop (planned)
+## Die Idee
 
-1. **Home alone:** explore, jump, climb and cause mischief.
-2. **Sara returns:** an unpredictable arrival ends the chaos phase.
-3. **Make amends:** purr, cuddle and charm Sara before time runs out.
-4. **Treats:** rewards depend on Sara's remaining frustration.
+Spiele **Pixel**, einen neugierigen, frechen Kater, der allein in Saras Wohnung ist. Erkunde das Zimmer, springe auf Möbel, klettere an Vorhängen und wirf Dinge um. Im Mittelpunkt stehen Bewegung, spielerische Physik und eine Umgebung, die auf Pixel reagiert.
 
-## Interactions (ideas)
+Sara soll später zu einem unvorhersehbaren Zeitpunkt heimkommen und das Chaos entdecken. Wie verärgert sie ist, hängt vom Schaden ab. Pixel hat dann kurz Zeit, sie mit Schnurren, Kuscheln und Köpfchengeben zu versöhnen. Je ruhiger Sara am Ende ist, desto mehr Leckerlis bekommt Pixel.
 
-| Action | World reaction |
+**Designrichtung:** zuerst die Physik-Sandbox, später Punkte und Versöhnung. Sockenverstecken war die ursprüngliche Idee und bleibt eine optionale spätere Mechanik.
+
+## Geplanter Spielablauf
+
+1. **Allein zu Hause:** erkunden, springen, klettern und Unsinn machen.
+2. **Sara kommt heim:** eine unvorhersehbare Ankunft beendet die Chaosphase.
+3. **Wiedergutmachen:** schnurren, kuscheln und Sara um die Pfote wickeln.
+4. **Leckerlis:** die Belohnung hängt davon ab, wie verärgert Sara noch ist.
+
+## Interaktionen als Ideen
+
+| Aktion | Reaktion der Umgebung |
 | --- | --- |
-| Push a vase | It tips, falls and breaks on impact |
-| Scratch couch or wallpaper | Visible scratches |
-| Climb curtains | Fabric reacts; perhaps the curtain falls |
-| Knock books off shelves | Books fall and scatter |
-| Tip over a water bowl | A puddle forms |
-| Walk through water | Wet paw prints appear |
+| Vase schubsen | Sie kippt, fällt und zerbricht beim Aufprall |
+| Sofa oder Tapete kratzen | Sichtbare Kratzer |
+| Vorhang hochklettern | Der Stoff reagiert; vielleicht fällt der Vorhang herunter |
+| Bücher vom Regal schubsen | Bücher fallen und verteilen sich |
+| Wassernapf umkippen | Eine Pfütze entsteht |
+| Durch Wasser laufen | Nasse Pfotenabdrücke bleiben zurück |
 
-## Controls (planned)
+## Steuerung und Bewegungsrichtung
 
-| Input | Action |
+| Eingabe | Aktion |
 | --- | --- |
-| ← / → | Move |
-| ↑ / ↓ | Climb up/down when attached to a climbable surface |
-| ↓ | Crouch when on the ground |
-| Space | Jump |
-| Space + ← / → | Directional jump |
-| Space while climbing | Jump away from the surface |
+| ← / → | Bewegen |
+| ↑ / ↓ | An einer Kletterfläche auf- und absteigen |
+| ↓ am Boden | Ducken, später optional |
+| Leertaste | Springen |
+| Leertaste + ← / → | Richtung beim Sprung steuern |
+| Leertaste beim Klettern | Von der Fläche abspringen |
 
-Climbing should feel slower and more deliberate than jumping. Pixel may automatically grab a climbable surface after jumping against it.
+Klettern soll langsamer und kontrollierter sein als Springen. Automatisches Greifen beim Sprung gegen eine Kletterfläche ist für die weitere Bewegungsentwicklung vorgesehen; im aktuellen Raumprototyp erfolgt das Greifen bewusst mit ↑ oder ↓.
 
-## Visual direction
+## Visuelle Richtung
 
-- Cozy **2D side-view pixel art** with a warm, slightly autumnal apartment palette.
-- **32×32 px** as the preferred starting point for Pixel's sprite, not a fixed screen resolution or color depth.
-- Pixel is a short-haired brown-gray tabby with dark stripes, a forehead M, cream-colored muzzle, yellow-green eyes and a ringed tail.
-- Animations to explore: idle, run, jump/land, **back-view climbing**, sneak, push, scratch, purr, cuddle and head bump.
-- Frame counts and final asset sizes are still to be tested.
+- Gemütliche **2D-Seitenansicht in Pixel-Art** mit warmer, leicht herbstlicher Wohnungspalette.
+- **32×32 px** als bevorzugter Ausgangspunkt für Pixels Sprite, keine feste Bildschirmauflösung oder Farbtiefe.
+- Pixel ist ein kurzhaariger braun-grauer Tigerkater mit dunklen Streifen, einem M auf der Stirn, heller Schnauze, gelbgrünen Augen und geringeltem Schwanz.
+- Geplante Animationen: stehen, laufen, springen/landen, **Klettern in Rückansicht**, schleichen, schubsen, kratzen, schnurren, kuscheln und Köpfchengeben.
+- Frame-Anzahl und endgültige Asset-Größen müssen noch erprobt werden.
 
-## Proposed tech stack
+## Technik
 
-| Area | Choice |
+| Bereich | Wahl |
 | --- | --- |
-| Language | TypeScript |
+| Sprache | TypeScript |
 | Engine | Phaser 3 |
-| Platform | Web browser |
-| Rendering | 2D pixel art at a fixed logical resolution |
-| Physics | Phaser-compatible arcade-style collisions to start; richer object behavior as needed |
-| Backend/accounts | None planned for the prototype |
+| Plattform | Webbrowser |
+| Darstellung | 2D-Pixel-Art mit fester logischer Auflösung |
+| Physik | Zunächst Arcade-Kollisionen; komplexeres Objektverhalten bei Bedarf |
+| Backend und Konten | Für den Prototyp nicht erforderlich |
 
-These are **planned choices**, not claims that the project is already bootstrapped.
+Der Raumprototyp verwendet Phaser 3, TypeScript und Vite. Weitere Spielsysteme sind geplant.
 
-## First playable prototype
+## Erster spielbarer Prototyp
 
-**Goal:** Pixel can jump from the floor onto a couch, climb toward a shelf, and knock a vase down so it falls and breaks.
+**Ziel:** Pixel kann vom Boden aufs Sofa springen, zum Regal klettern und eine Vase herunterstoßen, die fällt und zerbricht.
 
-- [ ] One playable room with floor, couch, shelf, curtain and platforms
-- [ ] Pixel sprite and basic idle/run/jump/climb animations
-- [ ] Arrow-key and space-bar controls
-- [ ] Gravity, collisions, climbing, grabbing and jumping off
-- [ ] One interactive vase with falling and breaking behavior
+- [x] Spielbarer Raum mit Boden, Sofa, Regalen, Vorhang und Plattformen
+- [ ] Pixel-Sprite mit grundlegenden Stand-, Lauf-, Sprung- und Kletteranimationen
+- [ ] Vollständige Pfeiltasten- und Leertastensteuerung
+- [ ] Vollständige Bewegung mit Schwerkraft, Kollisionen, Klettern, Greifen und Absprung
+- [ ] Interaktive Vase mit Fall- und Bruchverhalten
 
-The first prototype does **not** need Sara's return, a frustration meter, treats, a complete round or user accounts. We should first establish that moving and making a mess feels fun.
+Für den ersten Prototyp brauchen wir weder Saras Rückkehr noch Ärgeranzeige, Leckerlis, eine vollständige Runde oder Benutzerkonten. Zunächst soll es Spaß machen, sich zu bewegen und Unordnung zu stiften.
 
-## Project status
+## Projektstatus
 
-**Concept / prototype planning.** This README records design decisions and proposals, not implemented features. Issues and milestones will be tracked here as development begins.
+**Wohnzimmerprototyp umgesetzt (Issue #1).** Der Raum verwendet geometrische Platzhalter, einen festen Boden, Sofa- und Regalplattformen sowie einen markierten kletterbaren Vorhang. Die Kamera zeigt den ganzen Raum mit 960×540 logischen Pixeln und skaliert ihn passend zum Browser. Zur Laufzeit sind weder Backend noch Konten oder externe Grafikdownloads nötig. Vaseninteraktionen und vollständige Sprite-Animationen folgen später.
+
+## Lokal starten
+
+Voraussetzung: Node.js 22.12+ oder eine unterstützte neuere LTS-Version sowie npm.
+
+```sh
+npm ci
+npm run dev
+```
+
+Die von Vite ausgegebene lokale Adresse öffnen, üblicherweise http://127.0.0.1:5173. Eine Tastatur ist erforderlich; Touch-Steuerung ist noch nicht enthalten.
+
+- **← / →:** bewegen.
+- **Leertaste:** springen; eine Richtung halten, um sich im Sprung zu bewegen. Vor der Sofakante abspringen, um über die feste Seite zu kommen.
+- **↑ / ↓ am markierten Vorhang:** greifen und klettern. Loslassen zum Hängenbleiben, seitlich die Fläche verlassen oder mit Leertaste abspringen – standardmäßig nach links, sonst in die gehaltene Richtung.
+- **R:** Pixel auf die Startposition am Boden zurücksetzen.
+
+Bücher, Pflanze, Sofalehne und Bild sind Dekoration. Die Sitzfläche und Regalbretter bilden die festen Möbelplattformen.
+
+## Build und Vorschau
+
+```sh
+npm run build
+npm run preview
+```
+
+Der Build prüft TypeScript und erzeugt die statische Website unter `dist/`. Phaser wird lokal gebündelt; Vite kann wegen der Engine einen Hinweis zur Bundle-Größe ausgeben.
+
+## Manueller Spieltest
+
+1. Lokal starten: Der gesamte Raum, Pixel, Sofa, Regale und der markierte Vorhang sind sichtbar.
+2. Links und rechts laufen: Boden und Raumgrenzen halten Pixel auf.
+3. Von der Startposition nach rechts aufs Sofa springen. Zur rechten Kante laufen und auf das erste Regal springen; danach das nächste Regal erreichen. Pixel landet auf den sichtbaren Flächen.
+4. Am Vorhang ↑ halten: Pixel klettert. Loslassen zum Hängenbleiben, ↓ zum Absteigen und Leertaste mit einer Richtung zum Abspringen. Nach dem Verlassen wirkt wieder Schwerkraft.
+5. Auf einer Plattform oder beim Klettern R drücken: Pixel kehrt zur Startposition zurück.
+6. Browsergröße ändern: Der gesamte Raum bleibt im ursprünglichen Seitenverhältnis sichtbar.
+
+## Qualitätsprüfungen
+
+```sh
+npm run lint       # ESLint mit TypeScript-Regeln; Warnungen führen zum Fehler
+npm run typecheck  # Strenge TypeScript-Prüfung
+npm run qa         # Lint, Typprüfung und Produktionsbuild
+```
+
+GitHub Actions führt diese Prüfungen für jeden Pull Request und jeden Push nach `main` aus; ein manueller Start ist ebenfalls möglich. CI installiert mit `npm ci` aus dem Lockfile auf Node.js 22. Der manuelle Spieltest ergänzt die statischen Prüfungen. Automatisierte Playwright-Tests sind in [Issue #13](https://github.com/Skanky0815/pixels-world/issues/13) geplant.
+
+## Beiträge
+
+Sprache, Commits und Review-Ablauf sind in [CONTRIBUTING.md](CONTRIBUTING.md) beschrieben. Die Arbeitsregeln für Agenten stehen in [AGENTS.md](AGENTS.md).
+
+## Versionierung
+
+Startversion ist `0.1.0`. Release Please bereitet aus Conventional Commits einen Versions-PR samt Changelog vor. Nach Review, Merge und erneuter QA wird ein GitHub Release mit Tag `vX.Y.Z` bewusst veröffentlicht. Der Ablauf steht unter [Versionierung und Releases](CONTRIBUTING.md#versionierung-und-releases). Ein Eintrag in `package.json` allein bedeutet noch keinen veröffentlichten Release.
