@@ -9,11 +9,12 @@
     "preview": "vite preview --host 127.0.0.1",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "qa": "npm run lint && npm run build",
+    "qa": "npm run lint && npm run test:unit && npm run build",
     "build:e2e": "npm run typecheck && vite build --mode e2e --outDir dist-e2e",
     "test:e2e": "playwright test",
     "test:e2e:debug": "playwright test --project=chromium --debug",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "test:unit": "node --experimental-strip-types --test tests/unit/*.test.ts"
   },
   "dependencies": {
     "phaser": "^3.90.0"

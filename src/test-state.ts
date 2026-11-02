@@ -5,6 +5,12 @@ export interface GameTestState {
   readonly frame: number;
   readonly room: { readonly width: number; readonly height: number };
   readonly camera: { readonly x: number; readonly y: number; readonly width: number; readonly height: number; readonly zoom: number };
+  readonly chaos: { readonly score: number; readonly damagedObjects: number; readonly anger: string };
+  readonly vases: ReadonlyArray<{
+    readonly id: string; readonly x: number; readonly y: number; readonly bottom: number;
+    readonly velocityX: number; readonly velocityY: number;
+    readonly state: string; readonly points: number;
+  }>;
   readonly pixel: {
     readonly x: number;
     readonly y: number;
