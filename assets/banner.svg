@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="280" viewBox="0 0 960 280">
+<rect width="960" height="280" fill="#24202d"/><rect y="206" width="960" height="74" fill="#51404b"/>
+<rect x="60" y="48" width="7" height="7" fill="#e8ac74"/><rect x="95" y="90" width="6" height="6" fill="#e8ac74"/><rect x="850" y="48" width="8" height="8" fill="#e8ac74"/>
+<g shape-rendering="crispEdges">
+<rect x="640" y="90" width="140" height="116" fill="#81766c"/><rect x="655" y="70" width="35" height="40" fill="#81766c"/><rect x="735" y="70" width="35" height="40" fill="#81766c"/>
+<rect x="670" y="112" width="96" height="68" fill="#9d9082"/><rect x="685" y="95" width="18" height="25" fill="#433a39"/><rect x="720" y="95" width="18" height="25" fill="#433a39"/>
+<rect x="690" y="130" width="18" height="15" fill="#c3cc7e"/><rect x="735" y="130" width="18" height="15" fill="#c3cc7e"/>
+<rect x="712" y="150" width="20" height="13" fill="#d8c2a5"/><rect x="719" y="153" width="7" height="6" fill="#a77972"/>
+<rect x="690" y="104" width="12" height="12" fill="#403a37"/><rect x="715" y="104" width="12" height="20" fill="#403a37"/><rect x="745" y="104" width="12" height="12" fill="#403a37"/>
+<rect x="655" y="178" width="24" height="28" fill="#62584f"/><rect x="744" y="178" width="24" height="28" fill="#62584f"/>
+<rect x="777" y="167" width="55" height="18" fill="#81766c"/><rect x="815" y="149" width="18" height="36" fill="#81766c"/><rect x="815" y="153" width="18" height="10" fill="#403a37"/>
+</g>
+<text x="62" y="120" fill="#f4dfc7" font-family="monospace" font-size="62" font-weight="bold">PIXEL'S</text>
+<text x="62" y="186" fill="#e9a979" font-family="monospace" font-size="62" font-weight="bold">WORLD</text>
+<text x="64" y="238" fill="#f1d6bc" font-family="monospace" font-size="17">ONE ROOM. ONE CAT. TOTAL CHAOS.</text>
+</svg>
