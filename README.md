@@ -1,5 +1,7 @@
 # Pixel's World 🐈
 
+**One room. One cat. Absolutely no respect for gravity or expensive vases.**
+
 *A cozy pixel-art sandbox about a small cat and a very big mess.*
 
 ## The idea
@@ -77,7 +79,3 @@ The first prototype does **not** need Sara's return, a frustration meter, treats
 ## Project status
 
 **Concept / prototype planning.** This README records design decisions and proposals, not implemented features. Issues and milestones will be tracked here as development begins.
-
----
-
-**One room. One cat. Absolutely no respect for gravity or expensive vases.**
