@@ -202,6 +202,8 @@ Bewegen oder Springen beendet die Aktion sofort. Vorhandene Kratzer bleiben, bei
 
 Jede neue Spur emittiert über die Phaser-Szene ein unveränderliches `object-damaged`-Ereignis mit `objectId: couch`, `kind: scratch`, Schadensstufe und `value: 3`. Das vorhandene Scoring zählt jede neue Kratzstufe einmal: **3 Punkte je Stufe, höchstens 18 pro Durchlauf**. Wiederholtes Ausgeben derselben Stufe kann keine zusätzlichen Punkte erzeugen. Das Sofa zählt als ein beschädigtes Objekt; die Vasen behalten ihre bisherigen Werte. R setzt sowohl Kratzschaden als auch Punkte zurück.
 
+Konfigurierte Sofapunktwerte müssen nicht negative sichere Ganzzahlen sein; null ist erlaubt. Ungültige Werte werden bereits beim Erzeugen des Sofamodells abgelehnt, bevor die Interaktion Schaden erzeugen kann.
+
 Zum manuellen Prüfen am Boden auf Höhe des Sofas anhalten: vor zwei Sekunden kein Kratzen, danach Animation und schrittweise Spuren. Weglaufen oder springen beendet die Animation; R entfernt den Schaden. Unit- und E2E-Tests prüfen Verzögerung, Intervalle, Abbruch, Animation, Schadensgrenze und Neustart.
 
 

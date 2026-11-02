@@ -33,7 +33,7 @@ export class CouchScratching {
     if (!Number.isFinite(config.delayMs) || config.delayMs < 0 ||
       !Number.isFinite(config.damageIntervalMs) || config.damageIntervalMs <= 0 ||
       !Number.isSafeInteger(config.maxDamage) || config.maxDamage <= 0 ||
-      !Number.isFinite(config.damageValue) || config.damageValue < 0) throw new Error('Invalid scratch configuration');
+      !Number.isSafeInteger(config.damageValue) || config.damageValue < 0) throw new Error('Invalid scratch configuration');
     this.config = { ...config };
   }
 
