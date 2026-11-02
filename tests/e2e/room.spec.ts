@@ -1,9 +1,13 @@
 import { test as base, expect, type Page } from '@playwright/test';
+import { PNG } from 'pngjs';
 import type { GameTestState } from '../../src/test-state';
 
 const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'r'];
 const test = base.extend<{ healthyBrowser: void }>({
   healthyBrowser: [async ({ page }, use) => {
+    const clockStart = new Date('2026-01-01T00:00:00Z');
+    await page.clock.install({ time: clockStart });
+    await page.clock.pauseAt(new Date(clockStart.getTime() + 1000));
     const failures: string[] = [];
     page.on('pageerror', error => failures.push(error.message));
     page.on('requestfailed', request => failures.push(`${request.method()} ${request.url()}: ${request.failure()?.errorText}`));
@@ -29,17 +33,22 @@ async function state(page: Page): Promise<GameTestState> {
 
 async function start(page: Page) {
   await page.goto('/');
+  await expect.poll(async () => {
+    await page.clock.runFor(32);
+    return page.evaluate(() => window.__pixelTest?.ready);
+  }, { intervals: [0], timeout: 15_000 }).toBe(true);
   await expect(page.locator('canvas')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.__pixelTest?.ready)).toBe(true);
-  await expect.poll(async () => (await state(page)).pixel.grounded).toBe(true);
+  await until(page, s => s.pixel.grounded);
   await page.locator('#game').focus();
 }
 
 async function until(page: Page, check: (s: GameTestState) => boolean) {
   await expect.poll(async () => {
+    // Real keyboard input, deterministic simulation steps: runner latency must not hold a key longer.
+    await page.clock.runFor(32);
     const snapshot = await state(page);
     return check(snapshot) ? { matched: true } : { matched: false, snapshot };
-  }, { intervals: [16, 25, 50], timeout: 5_000 }).toMatchObject({ matched: true });
+  }, { intervals: [0], timeout: 15_000 }).toMatchObject({ matched: true });
 }
 
 async function holdUntil(page: Page, held: string[], check: (s: GameTestState) => boolean) {
@@ -82,21 +91,21 @@ test('Raum startet und zeichnet sichtbaren Inhalt', async ({ page }) => {
   const snapshot = await state(page);
   expect(snapshot.scene).toBe('LivingRoom');
   expect(snapshot.room).toEqual({ width: 960, height: 540 });
-  // Sample actual rendered pixels, not just canvas dimensions or scene readiness.
-  const colors = await page.locator('canvas').evaluate(canvas => new Promise<number>(resolve => {
-    requestAnimationFrame(() => {
-      const copy = document.createElement('canvas');
-      copy.width = 960; copy.height = 540;
-      const context = copy.getContext('2d');
-      if (!context) throw new Error('Canvas-Kontext fehlt');
-      context.drawImage(canvas as HTMLCanvasElement, 0, 0);
-      const data = context.getImageData(0, 0, 960, 540).data;
-      const colors = new Set<string>();
-      for (let i = 0; i < data.length; i += 4 * 97) colors.add(`${data[i]},${data[i + 1]},${data[i + 2]}`);
-      resolve(colors.size);
-    });
-  }));
-  expect(colors).toBeGreaterThan(8);
+  // Sample the composited browser screenshot; WebGL's back buffer may already be cleared.
+  const bounds = await page.locator('canvas').boundingBox();
+  if (!bounds) throw new Error('Canvas nicht sichtbar');
+  const scroll = await page.evaluate(() => ({ x: scrollX, y: scrollY }));
+  const image = PNG.sync.read(await page.screenshot({ fullPage: true }));
+  const colors = new Set<string>();
+  const left = Math.max(0, Math.ceil(bounds.x + scroll.x));
+  const top = Math.max(0, Math.ceil(bounds.y + scroll.y));
+  for (let y = top; y < Math.min(image.height, top + bounds.height); y += 13) {
+    for (let x = left; x < Math.min(image.width, left + bounds.width); x += 13) {
+      const index = (y * image.width + x) * 4;
+      colors.add(`${image.data[index]},${image.data[index + 1]},${image.data[index + 2]}`);
+    }
+  }
+  expect(colors.size).toBeGreaterThan(8);
   expect(await page.evaluate(() => {
     const descriptor = Object.getOwnPropertyDescriptor(window, '__pixelTest');
     return !descriptor?.set && Object.isFrozen(window.__pixelTest) && Object.isFrozen(window.__pixelTest?.pixel);
@@ -275,6 +284,10 @@ test('Alle drei Vasen sind erreichbar und summieren Schaden über die Ärgerstuf
 
 test('Produktionsbuild enthält keine Test-Schnittstelle', async ({ page }) => {
   await page.goto('http://127.0.0.1:4175/');
+  await expect.poll(async () => {
+    await page.clock.runFor(32);
+    return page.locator('canvas').count();
+  }, { intervals: [0], timeout: 15_000 }).toBe(1);
   await expect(page.locator('canvas')).toBeVisible();
   expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
   // Also inspect delivered JS, so a delayed dynamic import cannot hide a leak.
