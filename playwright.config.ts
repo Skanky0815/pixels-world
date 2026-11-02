@@ -5,8 +5,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
-  // Each test owns its browser context and clock. Keep GPU/CPU contention bounded.
-  workers: 2,
+  // CI parallelizes across runners; software rendering needs an uncontended worker.
+  workers: process.env.CI ? 1 : 2,
   timeout: 60_000,
   expect: { timeout: 5_000 },
   reporter: [['list'], ['html', { open: 'never' }]],
