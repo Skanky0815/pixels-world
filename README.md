@@ -62,13 +62,13 @@ Climbing should feel slower and more deliberate than jumping. Pixel may automati
 | Physics | Phaser-compatible arcade-style collisions to start; richer object behavior as needed |
 | Backend/accounts | None planned for the prototype |
 
-These are **planned choices**, not claims that the project is already bootstrapped.
+The room prototype now uses Phaser 3, TypeScript and Vite. Later gameplay systems remain planned.
 
 ## First playable prototype
 
 **Goal:** Pixel can jump from the floor onto a couch, climb toward a shelf, and knock a vase down so it falls and breaks.
 
-- [ ] One playable room with floor, couch, shelf, curtain and platforms
+- [x] One playable room with floor, couch, shelf, curtain and platforms
 - [ ] Pixel sprite and basic idle/run/jump/climb animations
 - [ ] Arrow-key and space-bar controls
 - [ ] Gravity, collisions, climbing, grabbing and jumping off
@@ -78,4 +78,51 @@ The first prototype does **not** need Sara's return, a frustration meter, treats
 
 ## Project status
 
-**Concept / prototype planning.** This README records design decisions and proposals, not implemented features. Issues and milestones will be tracked here as development begins.
+**Living room prototype implemented (Issue #1).** The room uses geometric placeholder art, solid floor/couch/shelves and a highlighted climbable curtain. The camera shows the full 960×540 room and scales it to the browser. No backend, accounts or external art downloads are required at runtime. Vase interactions and full sprite animations are future work.
+
+## Run locally
+
+Requires Node.js 22.12+ (or a supported newer LTS version) and npm.
+
+```sh
+npm ci
+npm run dev
+```
+
+Open the local URL printed by Vite (normally http://127.0.0.1:5173). Keyboard required; touch controls are not included.
+
+- **← / →:** move.
+- **Space:** jump; hold a direction to move through the jump. Start a little before the couch edge to clear its solid side.
+- **↑ / ↓ while overlapping the outlined curtain:** attach and climb. Release to hang, move sideways to leave, or press Space to jump away (left by default, or the held direction).
+- **R:** reset Pixel to the floor.
+
+The books, plant, couch back and picture are decorative. Collision platforms are the couch seat and shelf boards.
+
+## Build and preview
+
+```sh
+npm run build
+npm run preview
+```
+
+The build checks TypeScript and generates the static site in `dist/`. Phaser is bundled locally; Vite may report a bundle-size advisory for the engine.
+
+## Manual smoke check
+
+1. Launch locally: the complete room, Pixel, couch, shelves and outlined curtain are visible.
+2. Walk left/right: the floor and room boundaries stop Pixel.
+3. From the starting position, jump right onto the couch. Walk toward its right edge, then jump onto the first shelf and onward to the next shelf. Pixel lands on the visible surfaces.
+4. Reach the curtain and hold Up: Pixel climbs; release to hang, use Down to descend, and Space with a direction to jump away. Gravity resumes after leaving.
+5. Press R while on a platform or climbing: Pixel returns to the starting floor position.
+6. Resize the browser: the whole room remains framed with its original aspect ratio.
+
+
+## Quality checks
+
+```sh
+npm run lint       # ESLint, including TypeScript rules; warnings fail
+npm run typecheck  # strict TypeScript checks
+npm run qa         # lint, type checks and production build
+```
+
+GitHub Actions runs these checks on every pull request and every push to `main`, with a manual run option. CI installs the lockfile with `npm ci` on Node.js 22. The manual gameplay smoke check above complements static checks; gameplay is not covered by automated browser tests yet.
