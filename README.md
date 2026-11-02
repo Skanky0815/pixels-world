@@ -77,7 +77,7 @@ Der Raumprototyp verwendet Phaser 3, TypeScript und Vite. Weitere Spielsysteme s
 **Ziel:** Pixel kann vom Boden aufs Sofa springen, zum Regal klettern und eine Vase herunterstoßen, die fällt und zerbricht.
 
 - [x] Spielbarer Raum mit Boden, Sofa, Regalen, Vorhang und Plattformen
-- [ ] Pixel-Sprite mit grundlegenden Stand-, Lauf-, Sprung- und Kletteranimationen
+- [x] Pixel-Sprite mit grundlegenden Stand-, Lauf-, Sprung- und Kletteranimationen
 - [x] Pfeiltasten- und Leertastensteuerung, ohne optionales Ducken
 - [x] Bewegung mit Schwerkraft, Kollisionen, Sprungschwung, Klettern, automatischem Greifen und Absprung
 - [x] Interaktive Vasen mit Fall- und Bruchverhalten
@@ -87,7 +87,7 @@ Der spielbare Kern umfasst jetzt Bewegung, Zerstörung und Punkte. Saras tatsäc
 
 ## Projektstatus
 
-**Spielbare Chaos-Sandbox mit Platzhaltern.** Der Raum verwendet geometrische Platzhalter, einen festen Boden, Sofa- und Regalplattformen sowie einen markierten kletterbaren Vorhang. Die Kamera zeigt den ganzen Raum mit 960×540 logischen Pixeln und skaliert ihn passend zum Browser. Zur Laufzeit sind weder Backend noch Konten oder externe Grafikdownloads nötig. Drei Vasen lassen sich durch Kontakt anschubsen und zerbrechen beim Bodenaufprall. Vollständige Sprite-Animationen, Saras Heimkehr und der Rundenablauf folgen später. Der [Issue-Abgleich](docs/gameplay-status.md) unterscheidet bereits gemergte Grundlagen und den aktuellen Gameplay-PR.
+**Spielbare Chaos-Sandbox mit Platzhaltern.** Der Raum verwendet geometrische Platzhalter, einen festen Boden, Sofa- und Regalplattformen sowie einen markierten kletterbaren Vorhang. Die Kamera zeigt den ganzen Raum mit 960×540 logischen Pixeln und skaliert ihn passend zum Browser. Zur Laufzeit sind weder Backend noch Konten oder externe Grafikdownloads nötig. Drei Vasen lassen sich durch Kontakt anschubsen und zerbrechen beim Bodenaufprall. Pixel verwendet jetzt den bestätigten 32×32-Master mit Idle-, Lauf-, Sprung-/Lande- und Kletteranimationen. Saras Heimkehr und der Rundenablauf folgen später. Der [Issue-Abgleich](docs/gameplay-status.md) unterscheidet bereits gemergte Grundlagen und den aktuellen Gameplay-PR.
 
 ## Lokal starten
 
@@ -186,12 +186,12 @@ Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt
 
 Die Vasen verwenden dieselbe Arcade-Physik wie Pixel. Nach einem seitlichen Anschubser gleiten sie über die Kante, fallen mit Schwerkraft und zeigen beim Bodenaufprall einfache Splitter. Die sichtbare Drehung ist Platzhalterfeedback; es gibt noch keine vollständige Starrkörper-/Stoffsimulation. Mehrere Vasen dienen dem Test der Punktebereiche; Bücher bleiben Dekoration; die Pflanze hat ihre eigene kleine Interaktion. Weitere Objektarten gehören zu #11.
 
-Der HUD-Ausblick ist noch keine heimgekehrte oder tatsächlich reagierende Sara. Timer/Heimkehr (#6), Saras Reaktion und Phasenwechsel (#8), Versöhnung (#9) sowie die vollständige Ergebnisrunde (#10) bleiben eigenständige nächste Schritte. Animationen und Feinschliff (#2) folgen nach dem Gameplay-Kern.
+Der HUD-Ausblick ist noch keine heimgekehrte oder tatsächlich reagierende Sara. Timer/Heimkehr (#6), Saras Reaktion und Phasenwechsel (#8), Versöhnung (#9) sowie die vollständige Ergebnisrunde (#10) bleiben eigenständige nächste Schritte. Die Grundanimationen aus #2 ergänzen jetzt den Gameplay-Kern; weitere grafische Verfeinerung bleibt möglich.
 
 
 ## Automatisches Sofakratzen (Phase 1)
 
-Bleibt Pixel etwa **zwei Sekunden** am Sofa stehen, beginnt sie ohne Aktionstaste zu kratzen. Das funktioniert am Boden vor dem Sofa und auf seiner Sitzfläche. Zwei Platzhalter-Frames und bewegte Pfoten zeigen das Kratzen; alle **750 ms** kommt eine sichtbare Spur hinzu. Pro Durchlauf sind höchstens **sechs Schadensstufen** möglich.
+Bleibt Pixel etwa **zwei Sekunden** am Sofa stehen, beginnt sie ohne Aktionstaste zu kratzen. Das funktioniert am Boden vor dem Sofa und auf seiner Sitzfläche. Drei 32×32-Frames und bewegte Pfoten zeigen das Kratzen; alle **750 ms** kommt eine sichtbare Spur hinzu. Pro Durchlauf sind höchstens **sechs Schadensstufen** möglich.
 
 Bewegen oder Springen beendet die Aktion sofort. Vorhandene Kratzer bleiben, beim erneuten Stillstehen läuft die volle Wartezeit von vorn. **R** entfernt die Kratzer und setzt Interaktion und Ereigniszähler zurück. Reichweite, Wartezeit, Intervall, Schadensgrenze und Ereigniswert stehen in [src/couch-scratching.ts](src/couch-scratching.ts).
 
@@ -220,3 +220,12 @@ Bewegung, Richtungseingaben oder Springen unterbrechen die Folge sofort; vor dem
 **R** stellt Topf und Halme aufrecht wieder her, entfernt Erde, Ereignisse und Punkte und beendet die Knabberanimation. Wartezeit, Knabberdauer, Warnzeit, Reichweite und Punkte stehen in [src/plant-nibbling.ts](src/plant-nibbling.ts). Eingefrorene `object-damaged`-Ereignisse enthalten `objectId: plant`, `kind: nibble` bzw. `tip`, Stufe und Wert. Langframes können nicht mehrere Phasen auf einmal überspringen. Das Kippen ist eine feste Platzhalterdarstellung, keine zusätzliche Starrkörperphysik.
 
 Zum Prüfen erst bis zum Wackeln warten und weglaufen: Der Topf bleibt stehen. Dann erneut warten, bis er kippt: insgesamt 12 Punkte, keine weitere Punktevergabe. R stellt alles wieder her. Unit- und Browser-Tests prüfen Phasengrenzen, Unterbrechungen, Animation, Warnung, einmalige Punkte und Reset.
+
+
+## Pixels Animationen: 32×32-Grafik, 64×64-Darstellung
+
+Der erste Idle-Frame ist exakt der von Rico bestätigte Pixel-Master v3. Das lokale Sprite-Sheet enthält 25 Zellen à **32×32 Pixel**: Sitzen mit Atmen/Blinzeln, einen seitlichen Laufzyklus, Aufstieg/Scheitelpunkt/Fall, kurze Landung sowie Klettern und Rutschen in **Rückansicht**. Kratzen und Knabbern verwenden ebenfalls Posen aus diesem Sheet. Linksbewegung spiegelt den seitlichen Lauf; Klettern zeigt den Rücken.
+
+Die Animation folgt der vorhandenen Physik. Neue Bewegung unterbricht die Landepose; Springen und Klettern verdrängen Bodenaktionen. R setzt auf Idle zurück. Die Grunddarstellung des 32×32-Originals ist ohne Glättung **64×64**. Ein sichtbares Sprite folgt dem festen Physikkörper am Pfotenanker: kompakter Lauf und Idle verwenden Faktor 2, Klettern/Rutschen Faktor 2,5 (80×80); die ursprünglich kleiner angelegten Aktionsposen eine größere Zeichenfläche (94×94 für Sprung/Fall/Landung, 80×80 beim Knabbern und Kratzen). So schrumpft Pixel beim Zustandswechsel nicht in die alte, kleinere Körperwirkung zurück; gestreckte Posen dürfen eine größere Zeichenfläche belegen. Die ebenfalls skalierte Kollisionsfläche misst **52×52** Spielpixel und ist horizontal zentriert; Start und Reset richten die Pfoten am Boden aus. Animationsframes verändern weder Reichweiten, Bewegungsgeschwindigkeiten noch Schadensintervalle.
+
+[Sheet, Framebelegung und Aufbereitung](assets/pixel/README.md) dokumentieren Originalvorlage, Bildwerkzeug-Prompt und reproduzierbares Packen. Die Engine lädt nur das kleine 160×160-Sheet; Vorlage und Kontrollansicht werden nicht mitgeliefert. Einstellungen und Zustandsauswahl stehen in [src/pixel-animations.ts](src/pixel-animations.ts). Zum Prüfen kurz stehen bleiben, laufen und Richtung wechseln, senkrecht springen/landen und am Vorhang hochklettern. Bei der obersten Vase erst links neben ihr auf dem Regal landen und dann seitlich anschubsen; von ganz oben kann Pixel darübersteigen.

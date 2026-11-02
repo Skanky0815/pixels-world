@@ -25,10 +25,18 @@ export interface GameTestState {
   };
   readonly pixel: {
     readonly animation: string | null;
+    readonly animationFrame: number;
+    readonly flipX: boolean;
     readonly texture: string;
     readonly x: number;
     readonly y: number;
     readonly bottom: number;
+    readonly left: number;
+    readonly top: number;
+    readonly bodyWidth: number;
+    readonly bodyHeight: number;
+    readonly displayWidth: number;
+    readonly displayHeight: number;
     readonly velocityX: number;
     readonly velocityY: number;
     readonly grounded: boolean;
