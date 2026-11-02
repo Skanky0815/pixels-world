@@ -3,7 +3,43 @@ name: QA
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - 'tests/**'
+      - 'tools/**'
+      - '*.html'
+      - '*.css'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig*.json'
+      - 'vite.config.*'
+      - 'eslint.config.*'
+      - 'playwright.config.*'
+      - '.npmrc'
+      - '.nvmrc'
+      - '.node-version'
+      - '.github/workflows/**'
+      - '.github/scripts/**'
   pull_request:
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - 'tests/**'
+      - 'tools/**'
+      - '*.html'
+      - '*.css'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig*.json'
+      - 'vite.config.*'
+      - 'eslint.config.*'
+      - 'playwright.config.*'
+      - '.npmrc'
+      - '.nvmrc'
+      - '.node-version'
+      - '.github/workflows/**'
+      - '.github/scripts/**'
   workflow_dispatch:
 
 permissions:
@@ -60,11 +96,12 @@ jobs:
   e2e:
     name: Playwright (Chromium)
     if: ${{ always() }}
-    needs: e2e-shard
+    needs: [quality, e2e-shard]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Beide Teil-Suites müssen erfolgreich sein
+      - name: Qualität und beide Teil-Suites müssen erfolgreich sein
         env:
+          QUALITY_RESULT: ${{ needs.quality.result }}
           SHARD_RESULT: ${{ needs.e2e-shard.result }}
-        run: test "$SHARD_RESULT" = success
+        run: test "$QUALITY_RESULT" = success && test "$SHARD_RESULT" = success
