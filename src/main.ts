@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import './style.css';
+import pixelSheetUrl from '../assets/pixel/pixel-sheet.png?url';
+import { PIXEL_ANIMATIONS, pixelAnimation } from './pixel-animations';
 import { ChaosScore, VASES, angerFor } from './chaos';
 import { Vase } from './vase';
 import { COUCH_SCRATCH, CouchScratching, type CouchDamageEvent } from './couch-scratching';
@@ -9,11 +11,13 @@ import { PLANT_NIBBLE, PlantNibbling, type PlantDamageEvent } from './plant-nibb
 const WIDTH = 960;
 const HEIGHT = 540;
 const FLOOR_Y = 468;
+const PIXEL_SCALE = 2;
 const MAX_CHAOS_SCORE = VASES.reduce((sum, vase) => sum + vase.points, 0) + COUCH_SCRATCH.maxDamage * COUCH_SCRATCH.damageValue + CURTAIN_SLIDE.maxDamage * CURTAIN_SLIDE.damageValue + PLANT_NIBBLE.nibbleValue + PLANT_NIBBLE.tipValue;
 const CURTAIN = new Phaser.Geom.Rectangle(744, 112, 112, 356);
 
 class LivingRoom extends Phaser.Scene {
   private pixel!: Phaser.Physics.Arcade.Sprite;
+  private pixelVisual!: Phaser.GameObjects.Sprite;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private jump!: Phaser.Input.Keyboard.Key;
   private reset!: Phaser.Input.Keyboard.Key;
@@ -44,15 +48,21 @@ class LivingRoom extends Phaser.Scene {
   private spilledSoil!: Phaser.GameObjects.Graphics;
   private plantEvents = 0;
   private lastPlantDamage: PlantDamageEvent | null = null;
+  private wasAirborne = false;
+  private landingUntil = 0;
 
   constructor() { super('LivingRoom'); }
+
+  preload() {
+    this.load.spritesheet('pixel', pixelSheetUrl, { frameWidth: 32, frameHeight: 32 });
+  }
 
   create() {
     this.drawRoom();
     this.plantGraphic = this.add.graphics({ x: PLANT_NIBBLE.x, y: FLOOR_Y });
     this.spilledSoil = this.add.graphics();
     this.drawPlant();
-    this.makeCatTexture();
+    this.makeCatAnimations();
     this.scratchMarks = this.add.graphics();
     this.curtainMarks = this.add.graphics();
     this.scratchingPaws = this.add.graphics();
@@ -64,9 +74,10 @@ class LivingRoom extends Phaser.Scene {
     this.addPlatform(518, 304, 146, 16);
     this.addPlatform(648, 224, 96, 16);
     this.addPlatform(856, 154, 80, 16);
-    this.pixel = this.physics.add.sprite(110, FLOOR_Y - 16, 'pixel');
-    this.pixel.setBodySize(26, 26).setOffset(5, 6).setCollideWorldBounds(true);
-    this.pixel.setMaxVelocity(260, 600);
+    this.pixel = this.physics.add.sprite(110, FLOOR_Y - 16 * PIXEL_SCALE, 'pixel').setScale(PIXEL_SCALE);
+    this.pixel.setBodySize(26, 26).setOffset(3, 6).setCollideWorldBounds(true);
+    this.pixel.setMaxVelocity(260, 600).setVisible(false);
+    this.pixelVisual = this.add.sprite(110, FLOOR_Y - 32, 'pixel', 0).setScale(PIXEL_SCALE);
     this.physics.add.collider(this.pixel, this.platforms);
     this.vases = VASES.map(config => {
       const vase = new Vase(this, config);
@@ -109,9 +120,13 @@ class LivingRoom extends Phaser.Scene {
             plant: { ...this.plantNibble.snapshot(), angle: this.plantGraphic.angle, events: this.plantEvents, lastDamage: this.lastPlantDamage },
             pixel: {
               x: this.pixel.x, y: this.pixel.y, bottom: body.bottom,
+              left: body.left, top: body.top, bodyWidth: body.width, bodyHeight: body.height,
+              displayWidth: this.pixelVisual.displayWidth, displayHeight: this.pixelVisual.displayHeight,
               velocityX: body.velocity.x, velocityY: body.velocity.y,
               grounded: body.blocked.down, climbing: this.climbing, gravity: body.allowGravity,
-              animation: this.pixel.anims.isPlaying ? this.pixel.anims.currentAnim?.key ?? null : null,
+              animation: this.pixel.anims.currentAnim?.key ?? null,
+              animationFrame: Number(this.pixel.frame.name),
+              flipX: this.pixel.flipX,
               texture: this.pixel.texture.key,
             },
           };
@@ -214,7 +229,7 @@ class LivingRoom extends Phaser.Scene {
     this.grabBlockedUntil = 0;
     this.mustLeaveCurtain = false;
     const body = this.pixel.body as Phaser.Physics.Arcade.Body;
-    body.reset(110, FLOOR_Y - 16);
+    body.reset(110, FLOOR_Y - 16 * PIXEL_SCALE);
     body.setAllowGravity(true);
     for (const vase of this.vases) vase.restore();
     for (const shard of this.fragments) {
@@ -241,38 +256,46 @@ class LivingRoom extends Phaser.Scene {
     this.scratchMarks.clear();
     this.scratchingPaws.clear();
     this.pixel.anims.stop();
-    this.pixel.setTexture('pixel');
+    this.pixel.setTexture('pixel', 0);
+    this.wasAirborne = false;
+    this.landingUntil = 0;
+    this.pixel.play('idle');
+    this.syncPixelVisual('idle');
     this.status.setText('PIXEL · HOME ALONE');
     this.updateScore();
   }
 
-  private makeCatTexture() {
-    if (this.textures.exists('pixel')) return;
-    const g = this.make.graphics({ x: 0, y: 0 });
-    const rect = (x: number, y: number, w: number, h: number, color: number) => { g.fillStyle(color); g.fillRect(x, y, w, h); };
-    for (const [index, key] of ['pixel', 'pixel-scratch-0', 'pixel-scratch-1', 'pixel-nibble-0', 'pixel-nibble-1'].entries()) {
-      g.clear();
-      rect(1, 14, 7, 5, 0x66574c); rect(1, 8, 4, 10, 0x66574c);
-      rect(6, 13, 22, 15, 0x9b8a70); rect(21, 7, 13, 17, 0x9b8a70);
-      rect(21, 2, 4, 9, 0x66574c); rect(30, 2, 4, 9, 0x66574c);
-      rect(10, 14, 3, 9, 0x66574c); rect(17, 14, 3, 8, 0x66574c);
-      rect(8, 27, 5, 5, 0x66574c); rect(23, 27, 5, 5, 0x66574c);
-      rect(28, 13, 4, 3, 0xd9cf84); rect(31, 13, 1, 3, 0x302e2d);
-      rect(28, 19, 7, 4, 0xe3cba4);
-      if (index === 1 || index === 2) {
-        rect(26, index === 1 ? 12 : 19, 9, 4, 0xe3cba4);
-        rect(29, 17, 4, 10, 0x66574c);
-      }
-      if (index >= 3) {
-        rect(27, 17, 8, 5, 0xe3cba4);
-        rect(31, index === 3 ? 19 : 17, 4, 2, 0x59443d);
-        rect(29, 23, 5, 3, 0x718463);
-      }
-      g.generateTexture(key, 36, 32);
+  private makeCatAnimations() {
+    for (const [key, config] of Object.entries(PIXEL_ANIMATIONS)) {
+      if (!this.anims.exists(key)) this.anims.create({
+        key, frames: config.frames.map(frame => ({ key: 'pixel', frame })),
+        frameRate: config.frameRate, repeat: config.repeat,
+      });
     }
-    g.destroy();
-    if (!this.anims.exists('scratch')) this.anims.create({ key: 'scratch', frames: [{ key: 'pixel-scratch-0' }, { key: 'pixel-scratch-1' }], frameRate: 8, repeat: -1 });
-    if (!this.anims.exists('nibble')) this.anims.create({ key: 'nibble', frames: [{ key: 'pixel-nibble-0' }, { key: 'pixel-nibble-1' }], frameRate: 6, repeat: -1 });
+  }
+
+  private updateAnimation(time: number) {
+    const body = this.pixel.body as Phaser.Physics.Arcade.Body;
+    if (this.wasAirborne && body.blocked.down && body.velocity.y >= 0) this.landingUntil = time + 140;
+    this.wasAirborne = !this.climbing && (!body.blocked.down || body.velocity.y < -1);
+    const plant = this.plantNibble.snapshot().state;
+    const animation = pixelAnimation({
+      climbing: this.climbing, sliding: this.curtainSlide.snapshot().state === 'sliding',
+      grounded: body.blocked.down, velocityX: body.velocity.x, velocityY: body.velocity.y,
+      scratching: this.couchScratch.snapshot().state === 'scratching',
+      nibbling: plant === 'nibbling' || plant === 'wobbling', landing: time < this.landingUntil,
+    });
+    this.pixel.play(animation, true);
+    if (this.climbing) this.pixel.setFlipX(false);
+    this.syncPixelVisual(animation);
+  }
+
+  private syncPixelVisual(animation: keyof typeof PIXEL_ANIMATIONS) {
+    const body = this.pixel.body as Phaser.Physics.Arcade.Body;
+    const scale = PIXEL_ANIMATIONS[animation].scale;
+    // Pose proportions vary; rendering follows the feet, never resizes the physics body.
+    this.pixelVisual.setTexture('pixel', this.pixel.frame.name).setFlipX(this.pixel.flipX)
+      .setScale(scale).setPosition(body.center.x, body.bottom - 16 * scale);
   }
 
   private updateCouch(delta: number) {
@@ -295,17 +318,15 @@ class LivingRoom extends Phaser.Scene {
     this.scratchingPaws.clear();
     if (this.couchScratch.snapshot().state === 'scratching') {
       this.pixel.setFlipX(this.pixel.x > 307);
-      this.pixel.play('scratch', true);
       const direction = this.pixel.flipX ? -1 : 1;
-      const lift = this.pixel.texture.key === 'pixel-scratch-0' ? 0 : 6;
+      const pawScale = PIXEL_ANIMATIONS.scratch.scale;
+      const pawY = body.bottom - 16 * pawScale;
+      const lift = Number(this.pixel.frame.name) % 2 === 0 ? 0 : 6;
       this.scratchingPaws.lineStyle(3, 0xe3cba4);
       for (let i = 0; i < 2; i++) {
-        this.scratchingPaws.lineBetween(this.pixel.x + direction * 9, this.pixel.y - 4 + i * 4,
-          this.pixel.x + direction * 20, this.pixel.y - (body.bottom > 400 ? 35 : 20) + lift + i * 4);
+        this.scratchingPaws.lineBetween(this.pixel.x + direction * 9 * pawScale, pawY - 4 + i * 4,
+          this.pixel.x + direction * 20 * pawScale, pawY - (body.bottom > 400 ? 35 : 20) + lift + i * 4);
       }
-    } else if (this.pixel.anims.isPlaying && this.pixel.anims.currentAnim?.key === 'scratch') {
-      this.pixel.anims.stop();
-      this.pixel.setTexture('pixel');
     }
   }
 
@@ -352,10 +373,6 @@ class LivingRoom extends Phaser.Scene {
     }
     if (active) {
       this.pixel.setFlipX(this.pixel.x > PLANT_NIBBLE.x);
-      this.pixel.play('nibble', true);
-    } else if (this.pixel.anims.isPlaying && this.pixel.anims.currentAnim?.key === 'nibble') {
-      this.pixel.anims.stop();
-      this.pixel.setTexture('pixel');
     }
   }
 
@@ -375,7 +392,7 @@ class LivingRoom extends Phaser.Scene {
     if (this.chaos.award(`curtain-tear-${event.stage}`, event.value, event.objectId)) this.updateScore();
     this.events.emit('object-damaged', event);
     const side = this.pixel.x > CURTAIN.centerX ? -1 : 1;
-    const x = Phaser.Math.Clamp(this.pixel.x + side * (22 + (event.stage % 3) * 4), CURTAIN.left + 8, CURTAIN.right - 8);
+    const x = Phaser.Math.Clamp(this.pixel.x + side * (22 * PIXEL_SCALE + (event.stage % 3) * 4), CURTAIN.left + 8, CURTAIN.right - 8);
     const y = Phaser.Math.Clamp(this.pixel.y - 14, CURTAIN.top + 4, CURTAIN.bottom - 38);
     this.curtainMarks.lineStyle(3, 0x59443d).beginPath();
     this.curtainMarks.moveTo(x, y).lineTo(x - 3, y + 8).lineTo(x + 2, y + 18).lineTo(x - 2, y + 30).strokePath();
@@ -424,6 +441,7 @@ class LivingRoom extends Phaser.Scene {
     this.updateCurtain(vertical < 0);
     this.updateCouch(delta);
     this.updatePlant(time, delta);
+    this.updateAnimation(time);
     const plantState = this.plantNibble.snapshot().state;
     this.status.setText(plantState === 'wobbling' ? 'PIXEL · VORSICHT, DER TOPF WACKELT!' : plantState === 'nibbling' ? 'PIXEL · KATZENGRAS KNABBERN' : this.couchScratch.snapshot().state === 'scratching' ? 'PIXEL · SOFA KRATZEN' : this.curtainSlide.snapshot().state === 'sliding' ? 'PIXEL · VORHANG RUTSCHEN' : this.climbing ? 'PIXEL · CURTAIN CLIMBING' : 'PIXEL · HOME ALONE');
   }

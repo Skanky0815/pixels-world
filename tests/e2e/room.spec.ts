@@ -88,8 +88,10 @@ async function reset(page: Page) {
 
 test('Raum startet und zeichnet sichtbaren Inhalt', async ({ page }) => {
   await start(page);
+  await until(page, s => s.pixel.animation === 'idle');
   const snapshot = await state(page);
   expect(snapshot.scene).toBe('LivingRoom');
+  expect(snapshot.pixel).toMatchObject({ displayWidth: 64, displayHeight: 64, bodyWidth: 52, bodyHeight: 52 });
   expect(snapshot.room).toEqual({ width: 960, height: 540 });
   // Sample the composited browser screenshot; WebGL's back buffer may already be cleared.
   const bounds = await page.locator('canvas').boundingBox();
@@ -115,7 +117,7 @@ test('Raum startet und zeichnet sichtbaren Inhalt', async ({ page }) => {
 test('Pfeiltasten bewegen Pixel; Boden und Raumgrenze halten ihn auf', async ({ page }) => {
   await start(page);
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x > 150);
-  await holdUntil(page, ['ArrowLeft'], s => s.pixel.x <= 13.1);
+  await holdUntil(page, ['ArrowLeft'], s => s.pixel.left <= 0.1);
   await framesPass(page);
   const { pixel } = await state(page);
   expect(pixel.x).toBeGreaterThanOrEqual(0);
@@ -209,13 +211,13 @@ test('Klettern kollidiert mit Regalunterseite und Boden', async ({ page }) => {
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 680);
   await holdUntil(page, ['Space', 'ArrowRight'], s => s.pixel.climbing);
   // On the left edge of the curtain, the second shelf extends overhead to x=744.
-  await holdUntil(page, ['ArrowUp'], s => s.pixel.y <= 252);
+  await holdUntil(page, ['ArrowUp'], s => s.pixel.top <= 242);
   await page.keyboard.down('ArrowUp');
   try {
     await framesPass(page, 20);
     const blocked = await state(page);
-    expect(blocked.pixel.y).toBeGreaterThanOrEqual(249);
-    expect(blocked.pixel.y).toBeLessThan(253);
+    expect(blocked.pixel.top).toBeGreaterThanOrEqual(239);
+    expect(blocked.pixel.top).toBeLessThan(243);
     expect(blocked.pixel.climbing).toBe(true);
   } finally { await page.keyboard.up('ArrowUp'); }
   await holdUntil(page, ['ArrowDown'], s => s.pixel.bottom >= 467);
@@ -280,6 +282,9 @@ test('Alle drei Vasen sind erreichbar und summieren Schaden über die Ärgerstuf
   expect((await state(page)).chaos.score).toBe(60 + (await state(page)).curtain.damage * 4);
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 800);
   await holdUntil(page, ['ArrowUp'], s => s.pixel.bottom <= 116);
+  // With the larger body, first land beside the vase instead of stepping over it.
+  await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 850);
+  await holdUntil(page, ['ArrowDown'], s => s.pixel.grounded && Math.abs(s.pixel.bottom - 154) < 2);
   await holdUntil(page, ['ArrowRight'], s => s.vases[2].state !== 'resting');
   await until(page, s => s.vases[2].state === 'broken');
   const complete = await state(page);
@@ -299,11 +304,12 @@ test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegung
   await until(page, s => s.couch.state === 'scratching' && s.couch.damage === 1);
   const first = await state(page);
   expect(first.pixel.animation).toBe('scratch');
+  expect(first.pixel).toMatchObject({ displayWidth: 80, displayHeight: 80, bodyWidth: 52, bodyHeight: 52 });
   expect(first.couch.events).toBe(1);
   expect(first.chaos.score).toBe(3);
   expect(first.chaos.damagedObjects).toBe(1);
   expect(first.couch.lastDamage).toEqual({ objectId: 'couch', kind: 'scratch', stage: 1, value: 3 });
-  await until(page, s => s.pixel.texture !== first.pixel.texture);
+  await until(page, s => s.pixel.animationFrame !== first.pixel.animationFrame);
   expect((await state(page)).couch.damage).toBe(1);
   await until(page, s => s.couch.damage === 2);
   const screenshot = testInfo.outputPath('couch-scratching.png');
@@ -311,7 +317,7 @@ test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegung
   await testInfo.attach('Automatisches Sofakratzen', { path: screenshot, contentType: 'image/png' });
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 490);
   expect((await state(page)).couch.state).toBe('idle');
-  expect((await state(page)).pixel.animation).toBeNull();
+  expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   const stopped = (await state(page)).couch.damage;
   await page.clock.runFor(1500);
   expect((await state(page)).couch.damage).toBe(stopped);
@@ -324,7 +330,7 @@ test('Sofa: Springen unterbricht, erneutes Warten und Reset entfernen den Schade
   await until(page, s => s.couch.damage === 1);
   await holdUntil(page, ['Space'], s => !s.pixel.grounded);
   expect((await state(page)).couch.state).toBe('idle');
-  expect((await state(page)).pixel.animation).toBeNull();
+  expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   await until(page, s => s.pixel.grounded && s.couch.state === 'waiting');
   await page.clock.runFor(1500);
   expect((await state(page)).couch.damage).toBe(1);
@@ -332,7 +338,7 @@ test('Sofa: Springen unterbricht, erneutes Warten und Reset entfernen den Schade
   await reset(page);
   expect((await state(page)).couch).toEqual({ state: 'idle', damage: 0, events: 0, lastDamage: null });
   expect((await state(page)).chaos.score).toBe(0);
-  expect((await state(page)).pixel.animation).toBeNull();
+  expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   await besideCouch(page);
   await page.clock.runFor(1500);
   expect((await state(page)).couch.damage).toBe(0);
@@ -402,7 +408,7 @@ test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren'
   expect((await state(page)).chaos.score).toBe(0);
 });
 
-test('Produktionsbuild enthält keine Test-Schnittstelle', async ({ page }) => {
+test('Produktionsbuild enthält weder Test-Schnittstelle noch Animationsvergleich', async ({ page }) => {
   await page.goto('http://127.0.0.1:4175/');
   await expect.poll(async () => {
     await page.clock.runFor(32);
@@ -416,7 +422,15 @@ test('Produktionsbuild enthält keine Test-Schnittstelle', async ({ page }) => {
   for (const url of scripts) {
     const response = await page.request.get(url);
     expect(response.ok()).toBe(true);
-    expect(await response.text()).not.toContain('__pixelTest');
+    const source = await response.text();
+    expect(source).not.toContain('__pixelTest');
+    expect(source).not.toContain('Vergleichsansicht unvollständig');
+  }
+  for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175']) {
+    for (const path of ['/animation-compare.html', '/src/animation-compare.ts', '/src/animation-compare.css']) {
+      const response = await page.request.get(base + path);
+      expect(response.status(), `${base}${path} ist kein Build-Artefakt`).toBe(404);
+    }
   }
 });
 
@@ -433,9 +447,10 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   await until(page, s => s.plant.state === 'nibbling');
   const first = await state(page);
   expect(first.pixel.animation).toBe('nibble');
+  expect(first.pixel).toMatchObject({ displayWidth: 80, displayHeight: 80, bodyWidth: 52, bodyHeight: 52 });
   expect(first.plant.lastDamage).toEqual({ objectId: 'plant', kind: 'nibble', stage: 1, value: 2 });
   expect(first.chaos).toEqual({ score: 2, damagedObjects: 1, anger: 'calm' });
-  await until(page, s => s.pixel.texture !== first.pixel.texture);
+  await until(page, s => s.pixel.animationFrame !== first.pixel.animationFrame);
   await until(page, s => s.plant.state === 'wobbling' && Math.abs(s.plant.angle) > 4);
   const screenshot = testInfo.outputPath('plant-warning.png');
   await page.screenshot({ path: screenshot, fullPage: true });
@@ -443,7 +458,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 120);
   expect((await state(page)).plant.state).toBe('idle');
   expect((await state(page)).plant.angle).toBe(0);
-  expect((await state(page)).pixel.animation).toBeNull();
+  expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   await page.clock.runFor(1500);
   expect((await state(page)).plant.damage).toBe(1);
   expect((await state(page)).chaos.score).toBe(2);
@@ -460,7 +475,7 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
   const tipped = await state(page);
   expect(tipped.plant).toMatchObject({ damage: 2, events: 2, angle: -80, lastDamage: { objectId: 'plant', kind: 'tip', stage: 2, value: 10 } });
   expect(tipped.chaos).toEqual({ score: 12, damagedObjects: 1, anger: 'calm' });
-  expect(tipped.pixel.animation).toBeNull();
+  expect(tipped.pixel.animation).toBe('idle');
   const screenshot = testInfo.outputPath('plant-tipped.png');
   await page.screenshot({ path: screenshot, fullPage: true });
   await testInfo.attach('Gekippter Katzengrastopf und Erde', { path: screenshot, contentType: 'image/png' });
@@ -482,7 +497,7 @@ test('Katzengras: Springen bricht ab; erneutes Knabbern dupliziert keinen Schade
   await until(page, s => s.plant.state === 'nibbling');
   await holdUntil(page, ['Space'], s => !s.pixel.grounded);
   expect((await state(page)).plant.state).toBe('idle');
-  expect((await state(page)).pixel.animation).toBeNull();
+  expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   await until(page, s => s.pixel.grounded && s.plant.state === 'waiting');
   await page.clock.runFor(1500);
   expect((await state(page)).plant.state).toBe('waiting');
@@ -493,4 +508,50 @@ test('Katzengras: Springen bricht ab; erneutes Knabbern dupliziert keinen Schade
   await page.clock.runFor(2500);
   expect((await state(page)).plant.state).toBe('idle');
   expect((await state(page)).plant.events).toBe(0);
+});
+
+test('Pixel: bestätigter Idle, Blinzeln und seitlicher Laufzyklus in beiden Richtungen', async ({ page }, testInfo) => {
+  await start(page);
+  await until(page, s => s.pixel.animation === 'idle' && s.pixel.animationFrame === 0);
+  expect((await state(page)).pixel.texture).toBe('pixel');
+  await until(page, s => s.pixel.animationFrame === 2);
+  await until(page, s => s.pixel.animationFrame === 0);
+  await holdUntil(page, ['ArrowRight'], s => s.pixel.animation === 'walk' && s.pixel.x > 145);
+  expect((await state(page)).pixel.flipX).toBe(false);
+  expect((await state(page)).pixel).toMatchObject({ displayWidth: 64, displayHeight: 64, bodyWidth: 52, bodyHeight: 52 });
+  await page.keyboard.down('ArrowRight');
+  try {
+    const frame = (await state(page)).pixel.animationFrame;
+    await until(page, s => s.pixel.animationFrame !== frame);
+    const screenshot = testInfo.outputPath('pixel-walking.png');
+    await page.screenshot({ path: screenshot, fullPage: true });
+    await testInfo.attach('Pixel läuft im Raum', { path: screenshot, contentType: 'image/png' });
+  } finally { await page.keyboard.up('ArrowRight'); }
+  await holdUntil(page, ['ArrowLeft'], s => s.pixel.animation === 'walk' && s.pixel.flipX);
+  await reset(page);
+  expect((await state(page)).pixel.animation).toBe('idle');
+});
+
+test('Pixel: Sprung, Scheitelpunkt, Fall, Landung und Klettern in Rückansicht', async ({ page }, testInfo) => {
+  await start(page);
+  await holdUntil(page, ['Space'], s => s.pixel.animation === 'jump' && !s.pixel.grounded);
+  expect((await state(page)).pixel).toMatchObject({ displayWidth: 94, displayHeight: 94, bodyWidth: 52, bodyHeight: 52 });
+  await until(page, s => s.pixel.animation === 'apex');
+  await until(page, s => s.pixel.animation === 'fall');
+  await until(page, s => s.pixel.animation === 'land' && s.pixel.grounded);
+  await until(page, s => s.pixel.animation === 'idle');
+  await curtain(page);
+  await page.keyboard.down('ArrowUp');
+  try {
+    await until(page, s => s.pixel.animation === 'climb');
+    const first = (await state(page)).pixel.animationFrame;
+    await until(page, s => s.pixel.animationFrame !== first);
+    expect((await state(page)).pixel.flipX).toBe(false);
+    expect((await state(page)).pixel).toMatchObject({ displayWidth: 80, displayHeight: 80, bodyWidth: 52, bodyHeight: 52 });
+    const screenshot = testInfo.outputPath('pixel-climbing.png');
+    await page.screenshot({ path: screenshot, fullPage: true });
+    await testInfo.attach('Pixel klettert in Rückansicht', { path: screenshot, contentType: 'image/png' });
+  } finally { await page.keyboard.up('ArrowUp'); }
+  await until(page, s => s.pixel.animation === 'slide' && s.pixel.animationFrame === 19);
+  await holdUntil(page, ['Space', 'ArrowLeft'], s => s.pixel.animation === 'jump' && !s.pixel.climbing);
 });
