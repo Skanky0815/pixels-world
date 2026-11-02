@@ -16,6 +16,6 @@ Geprüft gegen [Phase 1 – First Chaos (v0.1)](https://github.com/Skanky0815/pi
 
 Reihenfolge nach Ricos Vorgabe: **#17 → #18 → #19 → #2**. Platzhalter reichen für die Interaktionen. Keine weiteren Phase-2-Funktionen im Sofa-Issue.
 
-#7 (Vasenscoring und Ärger-Vorschau) ist bereits mit PR #16 umgesetzt, gehört jedoch zu Phase 2. #6 (Timer/Heimkehr), #8 (Saras Reaktion), #9 (Versöhnung), #10 (Rundenergebnis) und #11 (weitere Chaosobjekte) gehören ebenfalls zu Phase 2 und bleiben offen. Sofa-Schadensereignisse werden vorerst nicht in den Punktestand übernommen.
+#7 (Vasenscoring und Ärger-Vorschau) ist bereits mit PR #16 umgesetzt, gehört jedoch zu Phase 2. #6 (Timer/Heimkehr), #8 (Saras Reaktion), #9 (Versöhnung), #10 (Rundenergebnis) und #11 (weitere Chaosobjekte) gehören ebenfalls zu Phase 2 und bleiben offen. Auf Ricos Wunsch werden neue Sofa-Schadensstufen an das bereits vorhandene Scoring angeschlossen: 3 Punkte je Stufe, maximal 18 pro Durchlauf. Es entsteht kein zusätzliches Punktesystem.
 
 Die Release-Konfiguration aus #14 ist gemergt; der erste tatsächliche Versions-PR und Release-Durchlauf stehen noch aus.

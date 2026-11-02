@@ -296,6 +296,8 @@ test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegung
   const first = await state(page);
   expect(first.pixel.animation).toBe('scratch');
   expect(first.couch.events).toBe(1);
+  expect(first.chaos.score).toBe(3);
+  expect(first.chaos.damagedObjects).toBe(1);
   expect(first.couch.lastDamage).toEqual({ objectId: 'couch', kind: 'scratch', stage: 1, value: 3 });
   await until(page, s => s.pixel.texture !== first.pixel.texture);
   expect((await state(page)).couch.damage).toBe(1);
@@ -309,7 +311,7 @@ test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegung
   const stopped = (await state(page)).couch.damage;
   await page.clock.runFor(1500);
   expect((await state(page)).couch.damage).toBe(stopped);
-  expect((await state(page)).chaos.score).toBe(0);
+  expect((await state(page)).chaos.score).toBe(stopped * 3);
 });
 
 test('Sofa: Springen unterbricht, erneutes Warten und Reset entfernen den Schaden', async ({ page }) => {
@@ -325,6 +327,7 @@ test('Sofa: Springen unterbricht, erneutes Warten und Reset entfernen den Schade
   await until(page, s => s.couch.damage === 2);
   await reset(page);
   expect((await state(page)).couch).toEqual({ state: 'idle', damage: 0, events: 0, lastDamage: null });
+  expect((await state(page)).chaos.score).toBe(0);
   expect((await state(page)).pixel.animation).toBeNull();
   await besideCouch(page);
   await page.clock.runFor(1500);
@@ -341,9 +344,11 @@ test('Sofa: gedeckelter Schaden, keine Punkteflut und kein Kratzen außerhalb de
   const damaged = await state(page);
   expect(damaged.couch.damage).toBe(6);
   expect(damaged.couch.events).toBe(6);
-  expect(damaged.chaos.score).toBe(0);
+  expect(damaged.chaos.score).toBe(18);
+  expect(damaged.chaos.damagedObjects).toBe(1);
   await page.clock.runFor(2000);
   expect((await state(page)).couch.events).toBe(6);
+  expect((await state(page)).chaos.score).toBe(18);
 });
 
 test('Produktionsbuild enthält keine Test-Schnittstelle', async ({ page }) => {

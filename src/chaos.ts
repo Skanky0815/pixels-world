@@ -14,18 +14,20 @@ export function angerFor(score: number) {
   return [...ANGER_LEVELS].reverse().find(level => score >= level.min) ?? ANGER_LEVELS[0];
 }
 
-/** Award damage once per object per run; contact alone never awards points. */
+/** Award each damage event once; count distinct damaged objects separately. */
 export class ChaosScore {
   private total = 0;
   private readonly damaged = new Set<string>();
+  private readonly objects = new Set<string>();
 
   get score() { return this.total; }
-  get count() { return this.damaged.size; }
+  get count() { return this.objects.size; }
 
-  award(id: string, points: number): boolean {
+  award(id: string, points: number, objectId = id): boolean {
     if (!Number.isSafeInteger(points) || points < 0) throw new Error('Invalid damage value');
     if (this.damaged.has(id)) return false;
     this.damaged.add(id);
+    this.objects.add(objectId);
     this.total += points;
     return true;
   }
@@ -33,5 +35,6 @@ export class ChaosScore {
   reset() {
     this.total = 0;
     this.damaged.clear();
+    this.objects.clear();
   }
 }

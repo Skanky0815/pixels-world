@@ -7,6 +7,7 @@ import { COUCH_SCRATCH, CouchScratching, type CouchDamageEvent } from './couch-s
 const WIDTH = 960;
 const HEIGHT = 540;
 const FLOOR_Y = 468;
+const MAX_CHAOS_SCORE = VASES.reduce((sum, vase) => sum + vase.points, 0) + COUCH_SCRATCH.maxDamage * COUCH_SCRATCH.damageValue;
 const CURTAIN = new Phaser.Geom.Rectangle(744, 112, 112, 356);
 
 class LivingRoom extends Phaser.Scene {
@@ -177,7 +178,7 @@ class LivingRoom extends Phaser.Scene {
     const anger = angerFor(this.chaos.score);
     this.scoreText.setText(`CHAOS: ${this.chaos.score}  ·  SARAS ÄRGER (VORSCHAU): ${anger.label}`);
     this.angerBar.clear().fillStyle(0x705547, 0.25).fillRect(26, 70, 160, 6);
-    this.angerBar.fillStyle(anger.color).fillRect(26, 70, 160 * Math.min(this.chaos.score / 100, 1), 6);
+    this.angerBar.fillStyle(anger.color).fillRect(26, 70, 160 * Math.min(this.chaos.score / MAX_CHAOS_SCORE, 1), 6);
   }
 
   private breakVase(vase: Vase) {
@@ -249,6 +250,7 @@ class LivingRoom extends Phaser.Scene {
     if (event) {
       this.couchEvents++;
       this.lastCouchDamage = event;
+      if (this.chaos.award(`couch-scratch-${event.stage}`, event.value, event.objectId)) this.updateScore();
       this.events.emit('object-damaged', event);
       const x = Phaser.Math.Clamp(this.pixel.x + (this.pixel.x > 307 ? -12 : 12) + (event.stage % 3) * 3, 184, 426);
       const y = body.bottom > 400 ? 408 : 331;
