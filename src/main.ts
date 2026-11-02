@@ -41,6 +41,26 @@ class LivingRoom extends Phaser.Scene {
     this.climbHint = this.add.text(800, 90, '↑ / ↓ CLIMB', { fontFamily: 'monospace', fontSize: '12px', color: '#fff1cf', backgroundColor: '#615047' }).setPadding(7, 5).setOrigin(0.5);
     this.status = this.add.text(26, 25, 'PIXEL · HOME ALONE', { fontFamily: 'monospace', fontSize: '12px', color: '#584637' });
     this.cameras.main.setBounds(0, 0, WIDTH, HEIGHT);
+    if (import.meta.env.MODE === 'e2e') {
+      void import('./test-observer').then(({ installTestObserver }) => {
+        if (!this.scene.isActive()) return;
+        const removeObserver = installTestObserver(() => {
+          const body = this.pixel.body as Phaser.Physics.Arcade.Body;
+          const camera = this.cameras.main;
+          return {
+            ready: this.scene.isActive(), scene: this.scene.key, frame: this.game.loop.frame,
+            room: { width: WIDTH, height: HEIGHT },
+            camera: { x: camera.scrollX, y: camera.scrollY, width: camera.width, height: camera.height, zoom: camera.zoom },
+            pixel: {
+              x: this.pixel.x, y: this.pixel.y, bottom: body.bottom,
+              velocityX: body.velocity.x, velocityY: body.velocity.y,
+              grounded: body.blocked.down, climbing: this.climbing, gravity: body.allowGravity,
+            },
+          };
+        });
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, removeObserver);
+      });
+    }
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.input.keyboard?.clearCaptures());
     // A lost key-up on tab switch must never leave Pixel moving.
     this.game.events.on(Phaser.Core.Events.BLUR, this.releaseKeys, this);
@@ -123,7 +143,8 @@ class LivingRoom extends Phaser.Scene {
     const jumpPressed = Phaser.Input.Keyboard.JustDown(this.jump);
     if (Phaser.Input.Keyboard.JustDown(this.reset)) {
       this.climbing = false;
-      this.pixel.setPosition(110, FLOOR_Y - 16).setVelocity(0, 0);
+      // Reset physics history too, so the previous frame cannot move the spawn.
+      body.reset(110, FLOOR_Y - 16);
       body.setAllowGravity(true);
       this.platformCollider.active = true;
       return;

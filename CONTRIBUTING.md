@@ -16,7 +16,7 @@ Jeder Implementierungs-PR verweist auf sein Issue: `Refs #N` für Teilschritte, 
 
 ## Prüfen und Review
 
-Für Code- oder Tooling-Änderungen `npm ci` und `npm run qa` ausführen. Bei Bewegungs- oder Physikänderungen zusätzlich den manuellen Spieltest aus der README durchführen. Automatisierte E2E-Tests sind in [Issue #13](https://github.com/Skanky0815/pixels-world/issues/13) geplant. Bei reinen Dokumentationsänderungen Sprache, Aussagen und Links prüfen.
+Für Code- oder Tooling-Änderungen `npm ci` und `npm run qa` ausführen. Bei Bewegungs- oder Physikänderungen zusätzlich den manuellen Spieltest aus der README durchführen. Bei Gameplay-, Rendering- oder Teständerungen zusätzlich `npm run test:e2e` ausführen; Installation und Debugging stehen in der [README](README.md#end-to-end-tests). Bei reinen Dokumentationsänderungen Sprache, Aussagen und Links prüfen.
 
 Sara übernimmt ihre Issues und PRs als `Sara-Pixel42`; fertige PRs gehen zur Review an `Skanky0815`, sofern Rico niemand anderen bestimmt. Issue, Branch und PR nachvollziehbar verknüpfen. Bestehende Branches nicht für eine Verknüpfung löschen oder neu erstellen; bei fehlender API-Unterstützung die Grenze und den direkten Branch-Link im Issue dokumentieren. Review- und Branch-Schutzregeln bleiben verbindlich.
 
