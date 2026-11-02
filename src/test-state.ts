@@ -11,6 +11,10 @@ export interface GameTestState {
     readonly velocityX: number; readonly velocityY: number;
     readonly state: string; readonly points: number;
   }>;
+  readonly curtain: {
+    readonly state: string; readonly damage: number; readonly events: number;
+    readonly lastDamage: { readonly objectId: string; readonly kind: string; readonly stage: number; readonly value: number } | null;
+  };
   readonly couch: {
     readonly state: string; readonly damage: number; readonly events: number;
     readonly lastDamage: { readonly objectId: string; readonly kind: string; readonly stage: number; readonly value: number } | null;

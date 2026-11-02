@@ -133,15 +133,16 @@ test('Tastatursprünge landen auf Sofa und erstem Regal', async ({ page }) => {
   expect((await state(page)).pixel.x).toBeLessThan(664);
 });
 
-test('Vorhang: hoch, hängen, herunter und abspringen mit Schwerkraft', async ({ page }) => {
+test('Vorhang: hoch, langsam rutschen, herunter und abspringen mit Schwerkraft', async ({ page }) => {
   await start(page);
   await curtain(page);
-  await until(page, s => s.pixel.climbing && s.pixel.velocityY === 0);
-  const hanging = await state(page);
+  await until(page, s => s.curtain.state === 'sliding');
+  const slidingStart = await state(page);
   await framesPass(page);
-  expect((await state(page)).pixel.y).toBeCloseTo(hanging.pixel.y, 0);
+  expect((await state(page)).pixel.y).toBeGreaterThan(slidingStart.pixel.y + 4);
+  expect((await state(page)).pixel.y).toBeLessThan(slidingStart.pixel.y + 20);
   expect((await state(page)).pixel.gravity).toBe(false);
-  await holdUntil(page, ['ArrowDown'], s => s.pixel.y > hanging.pixel.y + 35);
+  await holdUntil(page, ['ArrowDown'], s => s.pixel.y > slidingStart.pixel.y + 35);
   await page.keyboard.down('ArrowLeft');
   try {
     await holdUntil(page, ['Space'], s => !s.pixel.climbing && s.pixel.gravity && s.pixel.velocityY < -100);
@@ -149,7 +150,7 @@ test('Vorhang: hoch, hängen, herunter und abspringen mit Schwerkraft', async ({
   } finally {
     await page.keyboard.up('ArrowLeft');
   }
-  expect((await state(page)).pixel.x).toBeLessThan(hanging.pixel.x - 50);
+  expect((await state(page)).pixel.x).toBeLessThan(slidingStart.pixel.x - 50);
 });
 
 test('R setzt Pixel von einer Plattform zurück', async ({ page }) => {
@@ -198,7 +199,8 @@ test('Vorhang wird beim Anspringen ohne Hoch/Runter automatisch gegriffen', asyn
   await start(page);
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 680);
   await holdUntil(page, ['Space', 'ArrowRight'], s => s.pixel.climbing);
-  await until(page, s => s.pixel.velocityY === 0 && s.pixel.velocityX === 0);
+  await until(page, s => s.curtain.state === 'sliding' && s.pixel.velocityX === 0);
+  expect((await state(page)).pixel.velocityY).toBe(35);
   expect((await state(page)).pixel.gravity).toBe(false);
 });
 
@@ -268,18 +270,20 @@ test('Alle drei Vasen sind erreichbar und summieren Schaden über die Ärgerstuf
   await firstVase(page);
   await until(page, s => s.vases[0].state === 'broken');
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 800);
-  await holdUntil(page, ['ArrowUp'], s => s.pixel.bottom <= 223);
+  await holdUntil(page, ['ArrowUp'], s => s.pixel.bottom <= 195);
   await holdUntil(page, ['ArrowLeft'], s => s.vases[1].state !== 'resting');
-  expect((await state(page)).chaos.score).toBe(25);
+  expect((await state(page)).chaos.score).toBe(25 + (await state(page)).curtain.damage * 4);
   await until(page, s => s.vases[1].state === 'broken');
-  expect((await state(page)).chaos).toEqual({ score: 60, damagedObjects: 2, anger: 'angry' });
+  const second = await state(page);
+  expect(second.chaos).toEqual({ score: 60 + second.curtain.damage * 4, damagedObjects: 2 + Number(second.curtain.damage > 0), anger: 'angry' });
   await framesPass(page, 30);
-  expect((await state(page)).chaos.score).toBe(60);
+  expect((await state(page)).chaos.score).toBe(60 + (await state(page)).curtain.damage * 4);
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 800);
-  await holdUntil(page, ['ArrowUp'], s => s.pixel.bottom <= 140);
+  await holdUntil(page, ['ArrowUp'], s => s.pixel.bottom <= 116);
   await holdUntil(page, ['ArrowRight'], s => s.vases[2].state !== 'resting');
   await until(page, s => s.vases[2].state === 'broken');
-  expect((await state(page)).chaos).toEqual({ score: 100, damagedObjects: 3, anger: 'angry' });
+  const complete = await state(page);
+  expect(complete.chaos).toEqual({ score: 100 + complete.curtain.damage * 4, damagedObjects: 3 + Number(complete.curtain.damage > 0), anger: 'angry' });
 });
 
 async function besideCouch(page: Page) {
@@ -349,6 +353,53 @@ test('Sofa: gedeckelter Schaden, keine Punkteflut und kein Kratzen außerhalb de
   await page.clock.runFor(2000);
   expect((await state(page)).couch.events).toBe(6);
   expect((await state(page)).chaos.score).toBe(18);
+});
+
+test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung stoppen Schaden', async ({ page }, testInfo) => {
+  await start(page);
+  await curtain(page);
+  await holdUntil(page, ['ArrowUp'], s => s.pixel.y < 230);
+  await until(page, s => s.curtain.state === 'sliding');
+  const beginning = await state(page);
+  await page.clock.runFor(300);
+  const slipping = await state(page);
+  expect(slipping.pixel.y).toBeGreaterThan(beginning.pixel.y + 6);
+  expect(slipping.pixel.y).toBeLessThan(beginning.pixel.y + 20);
+  expect(slipping.curtain.damage).toBe(0);
+  await until(page, s => s.curtain.damage === 1);
+  expect((await state(page)).chaos).toEqual({ score: 4, damagedObjects: 1, anger: 'calm' });
+  expect((await state(page)).curtain.lastDamage).toEqual({ objectId: 'curtain', kind: 'tear', stage: 1, value: 4 });
+  const screenshot = testInfo.outputPath('curtain-tearing.png');
+  await page.screenshot({ path: screenshot, fullPage: true });
+  await testInfo.attach('Rutschender Pixel und Vorhangriss', { path: screenshot, contentType: 'image/png' });
+  await page.keyboard.down('ArrowUp');
+  try {
+    await until(page, s => s.curtain.state === 'climbing' && s.pixel.velocityY < 0);
+    await page.clock.runFor(300);
+    expect((await state(page)).curtain.damage).toBe(1);
+  } finally { await page.keyboard.up('ArrowUp'); }
+  await until(page, s => s.curtain.damage === 2);
+  expect((await state(page)).chaos.score).toBe(8);
+  await holdUntil(page, ['Space', 'ArrowLeft'], s => s.curtain.state === 'detached' && s.pixel.gravity);
+  await page.clock.runFor(300);
+  expect((await state(page)).curtain.damage).toBe(2);
+  expect((await state(page)).chaos.score).toBe(8);
+});
+
+test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren', async ({ page }) => {
+  await start(page);
+  await curtain(page);
+  await until(page, s => s.curtain.state === 'sliding');
+  await holdUntil(page, ['ArrowDown'], s => s.pixel.grounded && s.curtain.state === 'detached');
+  expect((await state(page)).pixel.bottom).toBeCloseTo(468, 0);
+  const grounded = await state(page);
+  await page.clock.runFor(1200);
+  expect((await state(page)).curtain.events).toBe(grounded.curtain.events);
+  expect((await state(page)).curtain.state).toBe('detached');
+  await holdUntil(page, ['ArrowUp'], s => s.curtain.state === 'climbing' && s.pixel.y < 420);
+  await reset(page);
+  expect((await state(page)).curtain).toEqual({ state: 'detached', damage: 0, events: 0, lastDamage: null });
+  expect((await state(page)).chaos.score).toBe(0);
 });
 
 test('Produktionsbuild enthält keine Test-Schnittstelle', async ({ page }) => {
