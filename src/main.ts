@@ -2,10 +2,12 @@ import Phaser from 'phaser';
 import './style.css';
 import { ChaosScore, VASES, angerFor } from './chaos';
 import { Vase } from './vase';
+import { COUCH_SCRATCH, CouchScratching, type CouchDamageEvent } from './couch-scratching';
 
 const WIDTH = 960;
 const HEIGHT = 540;
 const FLOOR_Y = 468;
+const MAX_CHAOS_SCORE = VASES.reduce((sum, vase) => sum + vase.points, 0) + COUCH_SCRATCH.maxDamage * COUCH_SCRATCH.damageValue;
 const CURTAIN = new Phaser.Geom.Rectangle(744, 112, 112, 356);
 
 class LivingRoom extends Phaser.Scene {
@@ -24,12 +26,19 @@ class LivingRoom extends Phaser.Scene {
   private fragments: Phaser.GameObjects.Rectangle[] = [];
   private scoreText!: Phaser.GameObjects.Text;
   private angerBar!: Phaser.GameObjects.Graphics;
+  private readonly couchScratch = new CouchScratching();
+  private scratchMarks!: Phaser.GameObjects.Graphics;
+  private scratchingPaws!: Phaser.GameObjects.Graphics;
+  private couchEvents = 0;
+  private lastCouchDamage: CouchDamageEvent | null = null;
 
   constructor() { super('LivingRoom'); }
 
   create() {
     this.drawRoom();
     this.makeCatTexture();
+    this.scratchMarks = this.add.graphics();
+    this.scratchingPaws = this.add.graphics();
     this.makeVaseTexture();
     this.platforms = this.physics.add.staticGroup();
     // Keep rendered furniture and its collision surfaces in the same coordinates.
@@ -78,10 +87,13 @@ class LivingRoom extends Phaser.Scene {
             camera: { x: camera.scrollX, y: camera.scrollY, width: camera.width, height: camera.height, zoom: camera.zoom },
             chaos: { score: this.chaos.score, damagedObjects: this.chaos.count, anger: angerFor(this.chaos.score).id },
             vases: this.vases.map(vase => vase.snapshot()),
+            couch: { ...this.couchScratch.snapshot(), events: this.couchEvents, lastDamage: this.lastCouchDamage },
             pixel: {
               x: this.pixel.x, y: this.pixel.y, bottom: body.bottom,
               velocityX: body.velocity.x, velocityY: body.velocity.y,
               grounded: body.blocked.down, climbing: this.climbing, gravity: body.allowGravity,
+              animation: this.pixel.anims.isPlaying ? this.pixel.anims.currentAnim?.key ?? null : null,
+              texture: this.pixel.texture.key,
             },
           };
         });
@@ -166,7 +178,7 @@ class LivingRoom extends Phaser.Scene {
     const anger = angerFor(this.chaos.score);
     this.scoreText.setText(`CHAOS: ${this.chaos.score}  ·  SARAS ÄRGER (VORSCHAU): ${anger.label}`);
     this.angerBar.clear().fillStyle(0x705547, 0.25).fillRect(26, 70, 160, 6);
-    this.angerBar.fillStyle(anger.color).fillRect(26, 70, 160 * Math.min(this.chaos.score / 100, 1), 6);
+    this.angerBar.fillStyle(anger.color).fillRect(26, 70, 160 * Math.min(this.chaos.score / MAX_CHAOS_SCORE, 1), 6);
   }
 
   private breakVase(vase: Vase) {
@@ -194,6 +206,13 @@ class LivingRoom extends Phaser.Scene {
     }
     this.fragments = [];
     this.chaos.reset();
+    this.couchScratch.reset();
+    this.couchEvents = 0;
+    this.lastCouchDamage = null;
+    this.scratchMarks.clear();
+    this.scratchingPaws.clear();
+    this.pixel.anims.stop();
+    this.pixel.setTexture('pixel');
     this.status.setText('PIXEL · HOME ALONE');
     this.updateScore();
   }
@@ -202,14 +221,57 @@ class LivingRoom extends Phaser.Scene {
     if (this.textures.exists('pixel')) return;
     const g = this.make.graphics({ x: 0, y: 0 });
     const rect = (x: number, y: number, w: number, h: number, color: number) => { g.fillStyle(color); g.fillRect(x, y, w, h); };
-    rect(1, 14, 7, 5, 0x66574c); rect(1, 8, 4, 10, 0x66574c);
-    rect(6, 13, 22, 15, 0x9b8a70); rect(21, 7, 13, 17, 0x9b8a70);
-    rect(21, 2, 4, 9, 0x66574c); rect(30, 2, 4, 9, 0x66574c);
-    rect(10, 14, 3, 9, 0x66574c); rect(17, 14, 3, 8, 0x66574c);
-    rect(8, 27, 5, 5, 0x66574c); rect(23, 27, 5, 5, 0x66574c);
-    rect(28, 13, 4, 3, 0xd9cf84); rect(31, 13, 1, 3, 0x302e2d);
-    rect(28, 19, 7, 4, 0xe3cba4);
-    g.generateTexture('pixel', 36, 32); g.destroy();
+    for (const [index, key] of ['pixel', 'pixel-scratch-0', 'pixel-scratch-1'].entries()) {
+      g.clear();
+      rect(1, 14, 7, 5, 0x66574c); rect(1, 8, 4, 10, 0x66574c);
+      rect(6, 13, 22, 15, 0x9b8a70); rect(21, 7, 13, 17, 0x9b8a70);
+      rect(21, 2, 4, 9, 0x66574c); rect(30, 2, 4, 9, 0x66574c);
+      rect(10, 14, 3, 9, 0x66574c); rect(17, 14, 3, 8, 0x66574c);
+      rect(8, 27, 5, 5, 0x66574c); rect(23, 27, 5, 5, 0x66574c);
+      rect(28, 13, 4, 3, 0xd9cf84); rect(31, 13, 1, 3, 0x302e2d);
+      rect(28, 19, 7, 4, 0xe3cba4);
+      if (index > 0) {
+        rect(26, index === 1 ? 12 : 19, 9, 4, 0xe3cba4);
+        rect(29, 17, 4, 10, 0x66574c);
+      }
+      g.generateTexture(key, 36, 32);
+    }
+    g.destroy();
+    if (!this.anims.exists('scratch')) this.anims.create({ key: 'scratch', frames: [{ key: 'pixel-scratch-0' }, { key: 'pixel-scratch-1' }], frameRate: 8, repeat: -1 });
+  }
+
+  private updateCouch(delta: number) {
+    const body = this.pixel.body as Phaser.Physics.Arcade.Body;
+    const hasInput = this.cursors.left.isDown || this.cursors.right.isDown || this.cursors.up.isDown || this.cursors.down.isDown || this.jump.isDown;
+    const nearCouch = this.pixel.x >= COUCH_SCRATCH.minX && this.pixel.x <= COUCH_SCRATCH.maxX;
+    const onCouchSurface = Math.abs(body.bottom - FLOOR_Y) < 2 || (this.pixel.x >= 180 && this.pixel.x <= 434 && Math.abs(body.bottom - 370) < 2);
+    const eligible = nearCouch && onCouchSurface && body.blocked.down && !this.climbing && !hasInput && Math.abs(body.velocity.x) < 1 && Math.abs(body.velocity.y) < 1;
+    const event = this.couchScratch.update(delta, eligible);
+    if (event) {
+      this.couchEvents++;
+      this.lastCouchDamage = event;
+      if (this.chaos.award(`couch-scratch-${event.stage}`, event.value, event.objectId)) this.updateScore();
+      this.events.emit('object-damaged', event);
+      const x = Phaser.Math.Clamp(this.pixel.x + (this.pixel.x > 307 ? -12 : 12) + (event.stage % 3) * 3, 184, 426);
+      const y = body.bottom > 400 ? 408 : 331;
+      this.scratchMarks.lineStyle(2, 0xe3cba4);
+      for (let i = 0; i < 3; i++) this.scratchMarks.lineBetween(x + i * 4, y, x + i * 4 - 4, y + 15 + event.stage);
+    }
+    this.scratchingPaws.clear();
+    if (this.couchScratch.snapshot().state === 'scratching') {
+      this.pixel.setFlipX(this.pixel.x > 307);
+      this.pixel.play('scratch', true);
+      const direction = this.pixel.flipX ? -1 : 1;
+      const lift = this.pixel.texture.key === 'pixel-scratch-0' ? 0 : 6;
+      this.scratchingPaws.lineStyle(3, 0xe3cba4);
+      for (let i = 0; i < 2; i++) {
+        this.scratchingPaws.lineBetween(this.pixel.x + direction * 9, this.pixel.y - 4 + i * 4,
+          this.pixel.x + direction * 20, this.pixel.y - (body.bottom > 400 ? 35 : 20) + lift + i * 4);
+      }
+    } else if (this.pixel.anims.isPlaying) {
+      this.pixel.anims.stop();
+      this.pixel.setTexture('pixel');
+    }
   }
 
   update(time: number, delta: number) {
@@ -249,7 +311,8 @@ class LivingRoom extends Phaser.Scene {
     }
     if (horizontal !== 0) this.pixel.setFlipX(horizontal < 0);
     this.climbHint.setAlpha(overlapsCurtain ? 1 : 0.65);
-    this.status.setText(this.climbing ? 'PIXEL · CURTAIN CLIMBING' : 'PIXEL · HOME ALONE');
+    this.updateCouch(delta);
+    this.status.setText(this.couchScratch.snapshot().state === 'scratching' ? 'PIXEL · SOFA KRATZEN' : this.climbing ? 'PIXEL · CURTAIN CLIMBING' : 'PIXEL · HOME ALONE');
   }
 }
 

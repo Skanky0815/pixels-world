@@ -44,3 +44,21 @@ test('Vasenwerte erlauben alle drei Ärgerstufen', () => {
   assert.equal(angerFor(score.score).id, 'angry');
   assert.equal(new Set(VASES.map(v => v.id)).size, VASES.length);
 });
+
+
+test('Mehrere Schadensstufen zählen Punkte einzeln, das Objekt aber nur einmal', () => {
+  const score = new ChaosScore();
+  for (let stage = 1; stage <= 6; stage++) {
+    assert.equal(score.award(`couch-${stage}`, 3, 'couch'), true);
+    assert.equal(score.award(`couch-${stage}`, 3, 'couch'), false);
+  }
+  assert.equal(score.score, 18);
+  assert.equal(score.count, 1);
+  score.award('vase', 25);
+  assert.equal(score.score, 43);
+  assert.equal(score.count, 2);
+  score.reset();
+  assert.equal(score.count, 0);
+  assert.equal(score.award('couch-1', 3, 'couch'), true);
+  assert.equal(score.score, 3);
+});
