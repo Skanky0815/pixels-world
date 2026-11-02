@@ -1,21 +1,21 @@
-# Issue-Abgleich und Gameplay-Reihenfolge
+# Phase 1: Issue-Abgleich und Reihenfolge
 
-Abgleich vom 2. November 2026 gegen den gemergten Stand nach PR #15. Die GitHub-Issues bleiben die verbindliche Quelle für Status und Review.
+Geprüft gegen [Phase 1 – First Chaos (v0.1)](https://github.com/Skanky0815/pixels-world/milestone/1). GitHub bleibt die verbindliche Quelle für Status und Review.
 
-| Issue | Gemergter Stand vor dieser Änderung | Nächster Schritt |
-| --- | --- | --- |
-| [#1](https://github.com/Skanky0815/pixels-world/issues/1) Raum | Fertig, mit PR #12 gemergt | Abgeschlossen |
-| [#2](https://github.com/Skanky0815/pixels-world/issues/2) Figur/Animation | Steuerbarer Platzhalter und Blickrichtung; keine Animationen | Nach Gameplay-Kern |
-| [#3](https://github.com/Skanky0815/pixels-world/issues/3) Eingaben | Pfeile, Sprung, Klettern und Absprung vorhanden und seit PR #15 getestet; Ducken war optional | Beim Abgleich als erledigt geschlossen |
-| [#4](https://github.com/Skanky0815/pixels-world/issues/4) Physik | Grundbewegung vorhanden; Sprungschwung, automatisches Greifen und durchgehende Kletterkollisionen fehlten | Im aktuellen Gameplay-PR ergänzt |
-| [#5](https://github.com/Skanky0815/pixels-world/issues/5) Vase | Fehlte; Bücher waren Dekoration | Im aktuellen Gameplay-PR ergänzt |
-| [#6](https://github.com/Skanky0815/pixels-world/issues/6) Heimkehr | Raumstart/Pixel-Reset, aber kein Rundenzustand oder Timer | Nach Physik und Scoring |
-| [#7](https://github.com/Skanky0815/pixels-world/issues/7) Punkte | Fehlte | Im aktuellen Gameplay-PR ergänzt, einschließlich Ärgergrundlage |
-| [#8](https://github.com/Skanky0815/pixels-world/issues/8) Saras Reaktion | Fehlte | Nach #6; HUD-Vorschau allein erfüllt dieses Issue nicht |
-| [#9](https://github.com/Skanky0815/pixels-world/issues/9) Versöhnung | Fehlte | Nach Heimkehr und Reaktion |
-| [#10](https://github.com/Skanky0815/pixels-world/issues/10) Ergebnis/Neustart | Nur Pixel-Reset; kein Rundenergebnis | Vollständiger Ablauf folgt; Objekt-/Punktereset jetzt in #5/#7 |
-| [#11](https://github.com/Skanky0815/pixels-world/issues/11) Weitere Objektarten | Fehlten | Nach erster Zerstörungs-/Punkteinteraktion |
-| [#13](https://github.com/Skanky0815/pixels-world/issues/13) E2E | PR #15 gemergt, CI grün | Mit Gameplay erweitern |
-| [#14](https://github.com/Skanky0815/pixels-world/issues/14) Versionierung | Konfiguration gemergt, Versionsregeln lokal geprüft | Erster Versions-PR/Release-Durchlauf noch ausstehend |
+| Issue | Gemergter Stand / aktueller Schritt |
+| --- | --- |
+| [#1 – Raum](https://github.com/Skanky0815/pixels-world/issues/1) | Abgeschlossen mit PR #12 |
+| [#2 – Figur und Animationen](https://github.com/Skanky0815/pixels-world/issues/2) | Offen: Stand-, Lauf-, Sprung- und Kletteranimationen fehlen; #17 ergänzt nur eine Platzhalter-Kratzanimation |
+| [#3 – Eingaben](https://github.com/Skanky0815/pixels-world/issues/3) | Abgeschlossen; Ducken war optional und ist weiterhin nicht implementiert |
+| [#4 – Physik](https://github.com/Skanky0815/pixels-world/issues/4) | Abgeschlossen mit PR #16: Schwung, automatisches Greifen und aktive Kletterkollisionen |
+| [#5 – Vase](https://github.com/Skanky0815/pixels-world/issues/5) | Abgeschlossen mit PR #16: Anschubsen, Fall und Bodenbruch |
+| [#13 – E2E](https://github.com/Skanky0815/pixels-world/issues/13) | Abgeschlossen mit PR #15; bei Gameplay-Änderungen erweitert |
+| [#17 – Sofa kratzen](https://github.com/Skanky0815/pixels-world/issues/17) | In diesem PR: verzögertes automatisches Kratzen, Animation, progressive Spuren, begrenzte Schadensereignisse und Reset |
+| [#18 – Vorhang rutschen/reißen](https://github.com/Skanky0815/pixels-world/issues/18) | Offen; wird das bisherige Hängenbleiben bewusst ersetzen |
+| [#19 – Pflanze anknabbern/umwerfen](https://github.com/Skanky0815/pixels-world/issues/19) | Offen; die Pflanze ist bislang Dekoration |
 
-Ricos Priorität: erst Physik → zerstörbare Objekte → Chaospunkte/Ärgergrundlage → spielbarer Rundenablauf. Stil und Animationen folgen danach. Der aktuelle Gameplay-PR setzt #4, #5 und #7 um; #6 und #8 werden dadurch nicht vorzeitig geschlossen.
+Reihenfolge nach Ricos Vorgabe: **#17 → #18 → #19 → #2**. Platzhalter reichen für die Interaktionen. Keine weiteren Phase-2-Funktionen im Sofa-Issue.
+
+#7 (Vasenscoring und Ärger-Vorschau) ist bereits mit PR #16 umgesetzt, gehört jedoch zu Phase 2. #6 (Timer/Heimkehr), #8 (Saras Reaktion), #9 (Versöhnung), #10 (Rundenergebnis) und #11 (weitere Chaosobjekte) gehören ebenfalls zu Phase 2 und bleiben offen. Sofa-Schadensereignisse werden vorerst nicht in den Punktestand übernommen.
+
+Die Release-Konfiguration aus #14 ist gemergt; der erste tatsächliche Versions-PR und Release-Durchlauf stehen noch aus.

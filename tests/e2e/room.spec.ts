@@ -282,6 +282,70 @@ test('Alle drei Vasen sind erreichbar und summieren Schaden über die Ärgerstuf
   expect((await state(page)).chaos).toEqual({ score: 100, damagedObjects: 3, anger: 'angry' });
 });
 
+async function besideCouch(page: Page) {
+  await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 185);
+  await until(page, s => s.pixel.velocityX === 0 && s.couch.state === 'waiting');
+}
+
+test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegungsabbruch', async ({ page }, testInfo) => {
+  await start(page);
+  await besideCouch(page);
+  await page.clock.runFor(1500);
+  expect((await state(page)).couch.damage).toBe(0);
+  await until(page, s => s.couch.state === 'scratching' && s.couch.damage === 1);
+  const first = await state(page);
+  expect(first.pixel.animation).toBe('scratch');
+  expect(first.couch.events).toBe(1);
+  expect(first.couch.lastDamage).toEqual({ objectId: 'couch', kind: 'scratch', stage: 1, value: 3 });
+  await until(page, s => s.pixel.texture !== first.pixel.texture);
+  expect((await state(page)).couch.damage).toBe(1);
+  await until(page, s => s.couch.damage === 2);
+  const screenshot = testInfo.outputPath('couch-scratching.png');
+  await page.screenshot({ path: screenshot, fullPage: true });
+  await testInfo.attach('Automatisches Sofakratzen', { path: screenshot, contentType: 'image/png' });
+  await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 490);
+  expect((await state(page)).couch.state).toBe('idle');
+  expect((await state(page)).pixel.animation).toBeNull();
+  const stopped = (await state(page)).couch.damage;
+  await page.clock.runFor(1500);
+  expect((await state(page)).couch.damage).toBe(stopped);
+  expect((await state(page)).chaos.score).toBe(0);
+});
+
+test('Sofa: Springen unterbricht, erneutes Warten und Reset entfernen den Schaden', async ({ page }) => {
+  await start(page);
+  await besideCouch(page);
+  await until(page, s => s.couch.damage === 1);
+  await holdUntil(page, ['Space'], s => !s.pixel.grounded);
+  expect((await state(page)).couch.state).toBe('idle');
+  expect((await state(page)).pixel.animation).toBeNull();
+  await until(page, s => s.pixel.grounded && s.couch.state === 'waiting');
+  await page.clock.runFor(1500);
+  expect((await state(page)).couch.damage).toBe(1);
+  await until(page, s => s.couch.damage === 2);
+  await reset(page);
+  expect((await state(page)).couch).toEqual({ state: 'idle', damage: 0, events: 0, lastDamage: null });
+  expect((await state(page)).pixel.animation).toBeNull();
+  await besideCouch(page);
+  await page.clock.runFor(1500);
+  expect((await state(page)).couch.damage).toBe(0);
+  await until(page, s => s.couch.damage === 1);
+});
+
+test('Sofa: gedeckelter Schaden, keine Punkteflut und kein Kratzen außerhalb der Nähe', async ({ page }) => {
+  await start(page);
+  await page.clock.runFor(4000);
+  expect((await state(page)).couch.damage).toBe(0);
+  await besideCouch(page);
+  await page.clock.runFor(9000);
+  const damaged = await state(page);
+  expect(damaged.couch.damage).toBe(6);
+  expect(damaged.couch.events).toBe(6);
+  expect(damaged.chaos.score).toBe(0);
+  await page.clock.runFor(2000);
+  expect((await state(page)).couch.events).toBe(6);
+});
+
 test('Produktionsbuild enthält keine Test-Schnittstelle', async ({ page }) => {
   await page.goto('http://127.0.0.1:4175/');
   await expect.poll(async () => {
