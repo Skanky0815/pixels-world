@@ -1,0 +1,104 @@
+# Gameplay-Architektur und gemeinsame Begriffe
+
+Stand und Begründung: [Review #22](../reviews/2026-11-02-architecture.md), geprüft nach #36. **Ist und Ziel sind getrennt beschrieben.** Die Zielstruktur ist ein Umsetzungsvorschlag für die dort verlinkten Folgeissues, keine bereits vorhandene Klassenstruktur.
+
+## Ist
+
+`src/main.ts` startet Phaser und enthält zugleich `LivingRoom`. Die Szene liest Tasten, steuert den Physikkörper und das sichtbare Pixel-Sprite, zeichnet den Raum und HUD, verwaltet Vasen, Sofa-/Vorhang-/Pflanzenfeedback und Reset. `Vase` ist schon ein konkretes Phaser-Spielobjekt. Drei reine Interaktionsmodelle und der Punktezähler sind separate Module. `pixel-animations.ts` enthält Animationsdaten und eine reine Auswahlfunktion. Der ausschließlich lesbare Testbeobachter ist nur im E2E-Build vorhanden.
+
+## Vorgeschlagene Zuständigkeiten
+
+| Baustein | Besitzt / tut | Grenze |
+| --- | --- | --- |
+| `main.ts` | Phaser-Bootstrap und Konfiguration | Keine Spielregeln oder Objektdarstellung |
+| `LivingRoomScene` | Raum und Objekte erzeugen, Kollisionspaare verdrahten, Update-/Reset-/Shutdown-Reihenfolge | Keine Tastenabfragen, Katzenbewegungsdetails oder HUD-Zeichenbefehle |
+| `InputController` | Hardwarebelegung, einmalige Flankenabfrage, Blur/Cleanup; liefert `InputState` | Keine Physics-, Score- oder UI-Entscheidungen |
+| `Pixel` | Physikkörper, Bewegungs-/Kletterzustand, aktive Aktion, Blickrichtung, sichtbares Sprite und Animationsanker | Keine Tastencodes, Möbelzeichnung oder Punktevergabe |
+| `Couch`, `Curtain`, `Plant`, `Vase` | Eigene Geometrie, Darstellung, Komponenten/Modelle und Lebenszyklus | Keine direkte Tastaturabfrage oder Änderung des Pixel-Sprites |
+| Bestehende reine Modelle | Wartezeiten, Phasen, Schaden, Ledger und Animationsauswahl | Keine Abhängigkeit von Phaser, DOM oder Hardware |
+| `GameHud` | Texte, Farben, Balken und Hinweise aus `HudState` | Keine Punktevergabe, Physics-Zugriffe oder Eingabeabfragen |
+
+Phaser-Klassen gehören an die Engine-Grenze. Für den derzeit einen Raum genügt eine HUD-View; eine eigene UI-Scene kann bei mehreren Kameras oder übergreifenden Menüs sinnvoll werden. Ein `InputController` ist ein Adapter, keine zweite Game-Loop. Die Szene behält die koordinierende Aufgabe, Regeln bleiben bei den zuständigen Objekten/Modellen.
+
+```mermaid
+flowchart LR
+  Keyboard[Tastatur] --> Input[InputController]
+  Input -->|InputState| Scene[LivingRoomScene]
+  Scene -->|Eingabe und gewählte Aktion| Pixel[Pixel]
+  Pixel -->|ActorSnapshot| Scene
+  Scene -->|InteractionContext| Objects[Couch / Curtain / Plant / Vase]
+  Objects -->|Angebote und ChaosEvent| Scene
+  Scene -->|ein Score-Pfad| Score[ChaosScore]
+  Score -->|ScoreSnapshot| Scene
+  Scene -->|HudState| HUD[GameHud]
+```
+
+Die Pfeile zeigen den vorgeschlagenen Datenfluss, keine neue globale Event-Bus-Infrastruktur. Die Szene kann die Ergebnisse synchron weiterreichen. Ein kleiner Interaktionskoordinator wird erst mit der in #38 zu prüfenden Zielauswahl benötigt, nicht als allgemeine Kettenreaktionsengine.
+
+## Daten an den Grenzen
+
+- **`InputState`**: lesbare Achsen, `jumpPressed`, `resetPressed` und Eingabeaktivität. Flanken werden einmal pro Frame ermittelt. Pixel verarbeitet Bewegung; der Szenenkoordinator verarbeitet einen Neustart. Hardwareadapter können später ausgetauscht werden.
+- **`ActorSnapshot` / `InteractionContext`**: lesbare Körpergrenzen, Geschwindigkeit, Boden-/Kletterzustand und Eingabeaktivität. Keine Engine-Objekte in den reinen Regeln.
+- **`InteractionOffer` / aktive Aktion**: konkrete Ziel-ID und Handlungsart; höchstens eine automatische Bodenaktion pro Pixel. Bei überlappenden Zielen muss die Auswahl stabil und getestet sein. Bewegung, Absprung oder Zielwechsel brechen die laufende Wartephase ab.
+- **`ChaosEvent`**: unveränderliche Tatsache über neu verursachten Schaden mit `eventId`, `objectId`, `kind`, `stage`, ganzzahligem `value`. Der einzige Score-Pfad ruft das bestehende Ledger auf. Vasenbruch verwendet künftig denselben Vertrag.
+- **`HudState`**: lesbare Punkte-/Ärger-Vorschau, Aktionsstatus und Hinweissichtbarkeit. Die Ansicht übersetzt Status in Texte/Grafik; Spielregeln hängen nicht von UI-Formulierungen ab.
+
+Stabile Objekt-ID statt Typname: beispielsweise `living-room/sofa-01` und `living-room/sofa-02`. Eine Ereignis-ID kann aus Objekt-ID, Schadensart und Stufe entstehen. Der vorhandene Durchlauf-Reset leert das Ledger; für die jetzigen Anforderungen braucht es dafür weder Zufalls-UUIDs noch eine Datenbank. Bei persistenten Runden/Raumwechseln ist der Gültigkeitsbereich ausdrücklich festzulegen.
+
+## Ubiquitous Language
+
+| Begriff | Bedeutung und konkreter Vertrag | Heutiger Bezug |
+| --- | --- | --- |
+| `Interactable` | Ein Objekt bietet anhand des Kontexts eine Handlung an. Kein Synonym für Schaden. | Sofa, Pflanze, Vase, Vorhang |
+| `Interaction` | Die Handlung samt Warte-/Abbruchzustand; vom Objekt zu unterscheiden. | Kratzen, Knabbern, Schubsen, Klettern |
+| `Destructible` | Besitzt abfragbaren Schadenszustand und meldet neue Schadensstufen über den gemeinsamen Vertrag. | Alle vier aktuellen Interaktionsobjekte |
+| `Climbable` | Liefert eine tatsächliche Greif-/Kletterfläche mit Bewegungsparametern. | Vorhang; das aktuelle Sofa ist lediglich eine Sprungplattform |
+| `GoalTarget` | Kann ein konkret definiertes Levelziel erfüllen. Vertrag erst mit dem Zielsystem festlegen. | Geplant in #30, noch nicht implementiert |
+| `PanicTrigger` | Kann nach konkreten Regeln eine Panikreaktion auslösen. Vertrag erst mit diesem Gameplay festlegen. | Geplant in #33/#35, noch nicht implementiert |
+| `ChaosEvent` | Bereits verursachter Schaden, kein Spielobjekttyp und keine beliebige Spieleraktion. | Kratzer, Riss, Pflanzenbiss/-kippen, künftig auch Vasenbruch |
+
+Fähigkeiten sind kombinierbar. Ein späterer Gegenstand kann Ziel, Kletterfläche und beschädigbar sein, ohne drei voneinander ausschließenden Klassen anzugehören. Kleine TypeScript-Interfaces/Komponenten erhalten erst bei einem tatsächlich benutzten Verhalten einen Platz im Code. Eine gemeinsame abstrakte Phaser-Basisklasse ist dafür nicht erforderlich. Die bestehenden reinen Modelle bleiben pro Handlung spezialisiert.
+
+Friedliches Fressen, Schlafen oder Kuscheln kann eine `Interaction` sein, ohne `ChaosEvent` oder Punkte auszulösen. Das heutige Knabbern am Katzengras ist dagegen bereits als Pflanzenschaden definiert. `ChaosObject` eignet sich deshalb nicht als universeller Name für alle interaktiven Gegenstände.
+
+## Lebenszyklus und Reihenfolge
+
+Vorgeschlagene Folge pro Frame: Eingabe lesen → Pixel-Bewegung und aktive Aktion bestimmen → Objektmodelle mit tatsächlichem Kontext/Bewegung aktualisieren → eindeutige Ereignisse verarbeiten → Pixel-Darstellung und HUD synchronisieren. Die bestehende Unterscheidung zwischen Renderzeit und tatsächlicher Vorhangbewegung muss beim Extrahieren erhalten bleiben.
+
+`create/init` initialisiert den Durchlauf ausdrücklich; R ruft denselben fachlichen Reset auf. Jeder Besitzer setzt sein Modell, seine visuellen Spuren und Zähler zurück. `shutdown/destroy` meldet Listener, Collider und sonstige Ressourcen ab. Feldinitialisierer allein gelten nicht als Restart-Strategie. Der Testbeobachter erhält weiterhin nur eingefrorene Snapshots ohne Mutatoren.
+
+## Vorgeschlagene Ablage und Content-Grenze
+
+```text
+src/
+  main.ts                         # gemeinsamer Bootstrap
+  game/
+    scenes/LivingRoomScene.ts     # Komposition und Lebenszyklus
+    input/InputController.ts      # Hardware -> InputState
+    actors/Pixel.ts               # Physik, Bewegung, sichtbare Figur
+    objects/                      # konkrete Couch, Curtain, Plant, Vase
+    interactions/                 # kleine Verträge und reine Handlungsmodelle
+    domain/                       # ChaosScore und fachliche Ereignisse
+    ui/GameHud.ts                 # Anzeige von HudState
+    config/                       # Spiel-/Animationskonfiguration
+  content/
+    rooms/                        # typisierte Raumdefinitionen
+    objects/                      # typisierte Objektvarianten
+  dev/                            # Animationsvergleich und Arbeitswerkzeuge
+```
+
+Es bleibt ein npm-/Vite-Projekt mit gemeinsamem Root-Lockfile. `src/game/` bezeichnet die Codeablage; daraus entsteht kein neuer URL-Präfix. Der Dev-Vergleich behält seine URL und Build-Ausgrenzung. Der spätere Pages-Basispfad bleibt Aufgabe #32.
+
+Die Struktur wird schrittweise eingeführt. Entscheidend sind Zuständigkeiten und lesbare Grenzen, nicht leere Ordner. #37 extrahiert Szene/Pixel/Controls und trennt Dev-Werkzeuge; #38 ergänzt Objektadapter und Fähigkeiten; #39 isoliert das HUD. Typisierte Konfiguration wird diesen Klassen übergeben.
+
+### Erst typisierte Definitionen, dann bei Bedarf JSON
+
+[#42](https://github.com/Skanky0815/pixels-world/issues/42) baut das vorhandene Wohnzimmer aus TypeScript-Definitionen wie `RoomDefinition` und einer diskriminierten `ObjectDefinition` auf. Größe, Spawn, Plattformen, Objektinstanzen/IDs, Asset-Schlüssel, Werte und Wartezeiten sind Content. Darstellung, Kollisionen, Aktionsabläufe und Ereignisverarbeitung bleiben implementiertes Verhalten. Eine zweite handgebaute Variante belegt die Daten-/Code-Grenze; das normale Startlevel bleibt unverändert.
+
+Damit können neue Räume und Objektvarianten durch Datenpflege entstehen. Eine neue Mechanik benötigt weiterhin eine Implementierung. Geometrie, Referenzen und zulässige Parameter erhalten eine gemeinsame Datenquelle und passende Prüfungen.
+
+[#43](https://github.com/Skanky0815/pixels-world/issues/43) ergänzt später JSON auf demselben erprobten Vertrag. Eingelesenes JSON benötigt eine Laufzeit-/Importvalidierung; TypeScript-Typen allein prüfen es nicht. Fehler müssen Datei und Datenpfad nennen, bevor Objekte erzeugt werden. Eine versionierte gemeinsame Schemaquelle oder Konsistenztests verhindern doppelte, auseinanderlaufende Definitionen. Keine ausführbaren Skripte, frei instanziierbaren Klassennamen oder allgemeine JSON-Regelsprache.
+
+Die Abhängigkeit ist gerichtet: #37/#38 → #42 → optional #43. #39 kann nach der Szenen-/Input-Trennung unabhängig folgen. Der spätere Generator #29 verwendet denselben Raumvertrag; JSON ist dafür keine Voraussetzung. #32 kann den aktuellen Prototyp unabhängig von diesen Content-Arbeiten veröffentlichen.
+
+Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Alle genannten Extraktionen und Content-Schritte sind geplant, noch nicht umgesetzt.
