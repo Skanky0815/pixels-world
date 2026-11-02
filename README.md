@@ -1,4 +1,4 @@
-# Pixel's World 🐈
+![Pixel's World — Pixel knocking a vase off a shelf in a cozy autumn living room](assets/banner.png)
 
 **One room. One cat. Absolutely no respect for gravity or expensive vases.**
 
