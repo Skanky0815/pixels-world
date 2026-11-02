@@ -90,7 +90,7 @@ Der spielbare Kern umfasst jetzt Bewegung, Zerstörung und Punkte. Saras tatsäc
 
 ## Projektstatus
 
-**Spielbare Chaos-Sandbox mit Platzhaltern.** Der Raum verwendet geometrische Platzhalter, einen festen Boden, Sofa- und Regalplattformen sowie einen markierten kletterbaren Vorhang. Die Kamera zeigt den ganzen Raum mit 960×540 logischen Pixeln und skaliert ihn passend zum Browser. Zur Laufzeit sind weder Backend noch Konten oder externe Grafikdownloads nötig. Drei Vasen lassen sich durch Kontakt anschubsen und zerbrechen beim Bodenaufprall. Pixel verwendet jetzt den bestätigten 32×32-Master mit Idle-, Lauf-, Sprung-/Lande- und Kletteranimationen. Saras Heimkehr und der Rundenablauf folgen später. Der [Issue-Abgleich](docs/gameplay-status.md) unterscheidet bereits gemergte Grundlagen und den aktuellen Gameplay-PR.
+**Spielbare Chaos-Sandbox mit Platzhaltern.** Der Raum verwendet geometrische Platzhalter, einen festen Boden, Sofa- und Regalplattformen sowie einen markierten kletterbaren Vorhang. Die Kamera zeigt den ganzen Raum mit 960×540 logischen Pixeln und skaliert ihn passend zum Browser. Zur Laufzeit sind weder Backend noch Konten oder externe Grafikdownloads nötig. Drei Vasen lassen sich durch Kontakt anschubsen und zerbrechen beim Bodenaufprall. Pixel verwendet jetzt den bestätigten 32×32-Master mit Idle-, Lauf-, Sprung-/Lande- und Kletteranimationen. Saras Heimkehr und der Rundenablauf folgen später. Der [Issue-Abgleich](docs/gameplay-status.md) zeigt abgeschlossene Grundlagen und offene Meilensteinaufgaben.
 
 ## Lokal starten
 
@@ -143,6 +143,8 @@ npm run qa         # Lint, Unit-Tests, Typprüfung und Produktionsbuild
 GitHub Actions führt diese Prüfungen für jeden Pull Request und jeden Push nach `main` aus; ein manueller Start ist ebenfalls möglich. CI installiert mit `npm ci` aus dem Lockfile auf Node.js 22. Der manuelle Spieltest ergänzt die statischen Prüfungen. Der separate CI-Job **Playwright (Chromium)** prüft Start und Rendering, Tastaturbewegung, Boden/Raumgrenze, Sofa-/Regalsprünge, Vorhangklettern mit Absprung, Reset und einen kleinen Viewport. Zusätzliche Gameplay-Tests prüfen Sprungschwung, automatisches Greifen, Kletterkollisionen, fallende Vasen, einmalige Punktevergabe, Ärgerstufen und vollständigen Reset. Außerdem prüft er, dass der Produktionsbuild keine Test-Schnittstelle enthält.
 
 ## Beiträge
+
+Das [Architekturreview #22](docs/reviews/2026-11-02-architecture.md) dokumentiert den geprüften Stand und konkrete Folgeaufgaben. Das [Gameplay-Zielbild](docs/architecture/gameplay.md) beschreibt die vorgeschlagene Trennung von Szene, Pixel, Controls, interaktiven Objekten und HUD; die Migration ist noch nicht umgesetzt.
 
 Sprache, Commits und Review-Ablauf sind in [CONTRIBUTING.md](CONTRIBUTING.md) beschrieben. Die Arbeitsregeln für Agenten stehen in [AGENTS.md](AGENTS.md).
 
