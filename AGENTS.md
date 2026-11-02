@@ -8,7 +8,7 @@ Keep this file in English. Human-facing project documentation, new issue titles/
 
 ## Changes and validation
 
-Develop on a dedicated branch. Run checks appropriate to the change: `npm run qa` for code/tooling, and the README gameplay smoke check for movement/physics. Do not claim automated E2E coverage until it exists; track that work in #13. For documentation-only edits, check language, facts and links without inventing a need for gameplay tests.
+Develop on a dedicated branch. Run checks appropriate to the change: `npm run qa` for code/tooling, and the README gameplay smoke check for movement/physics. Run `npm run test:e2e` for gameplay, rendering, or test changes. The Chromium smoke suite uses real keyboard input and an e2e-only immutable observer; never add state setters or expose Phaser objects for tests. Keep the production-build isolation check. For documentation-only edits, check language, facts and links without inventing a need for gameplay tests.
 
 Prefer maintained tooling over equivalent custom infrastructure. Explain material choices, alternatives and limitations in the PR; record significant long-term architectural decisions in docs/adr/ when needed. Do not import Rust/backend-specific rules from The Sara Protocol into this frontend project.
 

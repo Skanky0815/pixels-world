@@ -132,7 +132,7 @@ npm run typecheck  # Strenge TypeScript-Prüfung
 npm run qa         # Lint, Typprüfung und Produktionsbuild
 ```
 
-GitHub Actions führt diese Prüfungen für jeden Pull Request und jeden Push nach `main` aus; ein manueller Start ist ebenfalls möglich. CI installiert mit `npm ci` aus dem Lockfile auf Node.js 22. Der manuelle Spieltest ergänzt die statischen Prüfungen. Automatisierte Playwright-Tests sind in [Issue #13](https://github.com/Skanky0815/pixels-world/issues/13) geplant.
+GitHub Actions führt diese Prüfungen für jeden Pull Request und jeden Push nach `main` aus; ein manueller Start ist ebenfalls möglich. CI installiert mit `npm ci` aus dem Lockfile auf Node.js 22. Der manuelle Spieltest ergänzt die statischen Prüfungen. Der separate CI-Job **Playwright (Chromium)** prüft Start und Rendering, Tastaturbewegung, Boden/Raumgrenze, Sofa-/Regalsprünge, Vorhangklettern mit Absprung, Reset und einen kleinen Viewport. Außerdem prüft er, dass der Produktionsbuild keine Test-Schnittstelle enthält.
 
 ## Beiträge
 
@@ -141,3 +141,24 @@ Sprache, Commits und Review-Ablauf sind in [CONTRIBUTING.md](CONTRIBUTING.md) be
 ## Versionierung
 
 Startversion ist `0.1.0`. Release Please bereitet aus Conventional Commits einen Versions-PR samt Changelog vor. Nach Review, Merge und erneuter QA wird ein GitHub Release mit Tag `vX.Y.Z` bewusst veröffentlicht. Der Ablauf steht unter [Versionierung und Releases](CONTRIBUTING.md#versionierung-und-releases). Ein Eintrag in `package.json` allein bedeutet noch keinen veröffentlichten Release.
+
+
+## End-to-End-Tests
+
+```sh
+npm ci
+npx playwright install chromium
+npm run test:e2e
+```
+
+Playwright baut und startet selbst zwei lokale Vorschauen auf den Ports **4174** (E2E-Build) und **4175** (Produktionsbuild). Die Ports müssen frei sein; ein vorhandener Server wird nicht übernommen. Der normale Entwicklungsserver auf 5173 bleibt davon unabhängig. Die Suite verwendet echte Tastatureingaben; sie setzt keine Spielfigurenpositionen.
+
+```sh
+npm run test:e2e -- --repeat-each=3  # Stabilitätsprüfung ohne automatische Retries
+npm run test:e2e:debug              # Sichtbarer Browser und Playwright Inspector
+npm run test:e2e:report             # Letzten HTML-Bericht öffnen
+```
+
+Auf Linux bei Bedarf einmal `npx playwright install --with-deps chromium` ausführen. CI führt jeden Test zweimal ohne automatische Retries aus, installiert Chromium samt Systemabhängigkeiten und speichert den HTML-Bericht sowie Screenshots/Traces fehlgeschlagener Tests für 14 Tage als `playwright-results`. Ein Trace lässt sich mit `npx playwright show-trace <pfad-zur-trace.zip>` öffnen. Tests laufen isoliert mit einem Worker, geben Tasten im Cleanup frei und warten mit begrenzten Zustandsabfragen statt fester Pausen auf die Physik.
+
+Nur `vite build --mode e2e` enthält die lesbare, unveränderliche Beobachtungsschnittstelle `window.__pixelTest`. Sie liefert Bereitschaft, Szene, Frame, Kamera und Pixels Bewegungszustand als eingefrorene Kopien, ohne Mutatoren oder Phaser-Objekte. `npm run build` entfernt den gesamten Beobachter durch Vites Modusauswertung; ein eigener Test prüft den ausgelieferten Produktionscode darauf. Der manuelle Spieltest bleibt für das Spielgefühl sinnvoll; Cross-Browser- und pixelgenaue Screenshot-Tests sind noch nicht enthalten.
