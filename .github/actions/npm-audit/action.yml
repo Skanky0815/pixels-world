@@ -1,0 +1,37 @@
+name: npm dependency audit
+description: Runtime-Abhängigkeiten verpflichtend und vollständigen Baum informativ prüfen
+runs:
+  using: composite
+  steps:
+    - name: Runtime-Audit (high/critical blockieren)
+      id: runtime
+      shell: bash
+      run: npm audit --omit=dev --audit-level=high > "$RUNNER_TEMP/npm-audit-runtime.txt" 2>&1
+    - name: Vollständiger Audit (informativ)
+      id: full
+      if: ${{ always() }}
+      continue-on-error: true
+      shell: bash
+      run: npm audit --audit-level=high > "$RUNNER_TEMP/npm-audit-full.txt" 2>&1
+    - name: Audit-Ergebnisse anzeigen
+      if: ${{ always() }}
+      shell: bash
+      env:
+        RUNTIME_RESULT: ${{ steps.runtime.outcome }}
+        FULL_RESULT: ${{ steps.full.outcome }}
+      run: |
+        for report in runtime full; do
+          echo "### npm audit: $report" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "$RUNNER_TEMP/npm-audit-$report.txt" ]; then
+            cat "$RUNNER_TEMP/npm-audit-$report.txt"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            cat "$RUNNER_TEMP/npm-audit-$report.txt" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "**Report fehlt:** $report" >> "$GITHUB_STEP_SUMMARY"
+          fi
+        done
+        echo "Runtime-Gate: $RUNTIME_RESULT · Vollständiger Report: $FULL_RESULT (informativ)" >> "$GITHUB_STEP_SUMMARY"
+        if [ "$FULL_RESULT" != success ]; then
+          echo '::warning::Vollständigen npm-Audit prüfen: Findings ab high oder Audit-/Registry-Fehler.'
+        fi

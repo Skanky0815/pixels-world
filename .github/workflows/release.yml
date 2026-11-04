@@ -35,6 +35,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run qa
+      - name: Abhängigkeiten prüfen
+        uses: ./.github/actions/npm-audit
       - name: Veröffentlichung auf geprüften Versions-Merge begrenzen
         if: inputs.mode == 'publish'
         env:

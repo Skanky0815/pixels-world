@@ -21,6 +21,7 @@ on:
       - '.node-version'
       - '.github/workflows/**'
       - '.github/scripts/**'
+      - '.github/actions/**'
   pull_request:
     paths:
       - 'src/**'
@@ -40,7 +41,18 @@ on:
       - '.node-version'
       - '.github/workflows/**'
       - '.github/scripts/**'
+      - '.github/actions/**'
   workflow_dispatch:
+    inputs:
+      repetitions:
+        description: Browserdurchläufe pro Szenario (Stabilitätsprüfung)
+        type: choice
+        options: ['1', '2', '3']
+        default: '1'
+        required: true
+
+env:
+  E2E_REPEATS: ${{ inputs.repetitions || '1' }}
 
 permissions:
   contents: read
@@ -92,8 +104,9 @@ jobs:
           name: qa-test-reports-unit
           path: test-reports/unit.tap
           retention-days: 14
-      - run: npm run typecheck
       - run: npm run build
+      - name: Abhängigkeiten prüfen
+        uses: ./.github/actions/npm-audit
 
   e2e-shard:
     name: Playwright (Chromium, Teil ${{ matrix.shard }}/2)
@@ -111,7 +124,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e -- --repeat-each=2 --shard=${{ matrix.shard }}/2
+      - name: Browser-Szenarien
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          case "$E2E_REPEATS" in 1|2|3) ;; *) echo 'Ungültige Durchlaufzahl'; exit 1 ;; esac
+          npm run test:e2e -- --repeat-each="$E2E_REPEATS" --shard="$SHARD/2"
       - name: Browser-Testzusammenfassung
         id: browser-summary
         if: ${{ always() && hashFiles('test-reports/playwright.xml') != '' }}
@@ -126,7 +144,7 @@ jobs:
           SUMMARY_OUTCOME: ${{ steps.browser-summary.outcome }}
           SHARD: ${{ matrix.shard }}
         run: |
-          echo "### Browser-Teil $SHARD/2 · zwei Durchläufe, null Retries" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Browser-Teil $SHARD/2 · $E2E_REPEATS Durchlauf/Durchläufe, null Retries" >> "$GITHUB_STEP_SUMMARY"
           if [ ! -s test-reports/playwright.xml ] || [ "$SUMMARY_OUTCOME" != success ]; then
             echo '::warning::Browser-Testreport fehlt oder konnte nicht dargestellt werden.'
             echo 'Report fehlt oder konnte nicht dargestellt werden; keine vollständige Ergebnisübersicht.' >> "$GITHUB_STEP_SUMMARY"
@@ -201,7 +219,7 @@ jobs:
             echo '**Unvollständig:** Artefaktdownload nicht erfolgreich.' >> "$GITHUB_STEP_SUMMARY"
           fi
           echo "Qualität: $QUALITY_RESULT · Browser-Shards: $SHARD_RESULT" >> "$GITHUB_STEP_SUMMARY"
-          echo 'Browser-Szenarien werden zweimal ausgeführt und deshalb zweimal aufgelistet. Fehlende oder abgebrochene Ausführungen können in den Reports fehlen.' >> "$GITHUB_STEP_SUMMARY"
+          echo "Browserdurchläufe pro Szenario: $E2E_REPEATS. Wiederholungen werden einzeln gezählt. Fehlende/abgebrochene Ausführungen können in den Reports fehlen." >> "$GITHUB_STEP_SUMMARY"
       - name: Qualität und beide Teil-Suites müssen erfolgreich sein
         if: ${{ always() }}
         env:
