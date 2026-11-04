@@ -4,3 +4,4 @@ dist/
 dist-e2e/
 playwright-report/
 test-results/
+test-reports/

@@ -14,6 +14,7 @@
     "test:e2e": "playwright test",
     "test:e2e:debug": "playwright test --project=chromium --debug",
     "test:e2e:report": "playwright show-report",
+    "test:unit:ci": "node --experimental-strip-types --test --test-reporter=spec --test-reporter=tap --test-reporter-destination=stdout --test-reporter-destination=test-reports/unit.tap tests/unit/*.test.ts",
     "test:unit": "node --experimental-strip-types --test tests/unit/*.test.ts"
   },
   "dependencies": {

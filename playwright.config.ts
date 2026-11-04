@@ -9,7 +9,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 2,
   timeout: 60_000,
   expect: { timeout: 5_000 },
-  reporter: [['list'], ['html', { open: 'never' }]],
+  reporter: [['list'], ['html', { open: 'never' }], ['junit', { outputFile: 'test-reports/playwright.xml', includeProjectInTestName: true }]],
   use: {
     baseURL: 'http://127.0.0.1:4174',
     trace: 'retain-on-failure',
