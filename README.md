@@ -14,7 +14,7 @@ Die QA-Plakette zeigt den letzten Push auf `main`; die Release-Plakette zeigt ve
 
 ## Im Browser spielen
 
-Geplanter öffentlicher Spiellink: [Pixel’s World auf GitHub Pages](https://skanky0815.github.io/pixels-world/). Die erste Veröffentlichung steht noch aus. Veröffentlichung und Einrichtung: [Pages-Anleitung](docs/deployment.md).
+Jetzt spielen: [Pixel’s World auf GitHub Pages](https://skanky0815.github.io/pixels-world/). Veröffentlichung und Einrichtung: [Pages-Anleitung](docs/deployment.md).
 
 ## Die Idee
 
