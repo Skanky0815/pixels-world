@@ -16,7 +16,7 @@ Die pfadgefilterten Checks dürfen nicht als für **jeden** PR erforderliche Sta
 
 GitHub verwendet bei PRs einen Drei-Punkt-Vergleich, bei bestehenden Push-Branches einen Zwei-Punkt-Vergleich. Die native Pfaderkennung hat dokumentierte Grenzen: Sie wertet höchstens die ersten 300 geänderten Dateien aus; bei mehr als 1.000 Commits oder einem Diff-Timeout läuft der Workflow unabhängig vom Filter. Große Änderungen bei Bedarf ausdrücklich manuell prüfen.
 
-Für das künftige Pages-Deployment #32 gilt weiterhin: Nur nach erfolgreicher Game-QA des **exakten zu veröffentlichenden Commits** veröffentlichen, gegebenenfalls über einen ungefilterten Aufruf. Das Deployment ist hier noch nicht implementiert.
+Das [manuelle Pages-Deployment](deployment.md) prüft den **exakten zu veröffentlichenden Commit** ungefiltert mit vollständiger QA, Runtime-Audit und allen Browser-Szenarien. Die dabei getesteten Produktionsdateien unter `/pixels-world/` werden unverändert veröffentlicht.
 
 Quelle: [GitHub-Dokumentation zu Pfadfiltern, Vergleichen und ausgelassenen Checks](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore).
 

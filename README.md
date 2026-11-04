@@ -12,6 +12,10 @@ Die QA-Plakette zeigt den letzten Push auf `main`; die Release-Plakette zeigt ve
 
 *Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich großes Chaos.*
 
+## Im Browser spielen
+
+Geplanter öffentlicher Spiellink: [Pixel’s World auf GitHub Pages](https://skanky0815.github.io/pixels-world/). Die erste Veröffentlichung steht noch aus. Veröffentlichung und Einrichtung: [Pages-Anleitung](docs/deployment.md).
+
 ## Die Idee
 
 Spiele **Pixel**, einen neugierigen, frechen Kater, der allein in Saras Wohnung ist. Erkunde das Zimmer, springe auf Möbel, klettere an Vorhängen und wirf Dinge um. Im Mittelpunkt stehen Bewegung, spielerische Physik und eine Umgebung, die auf Pixel reagiert. **Geplant für Phase 2:** Jedes Level gibt Pixel genau ein Hauptziel, das aus ihren Bedürfnissen entsteht – etwa Futter finden, spielen oder einen gemütlichen Schlafplatz erreichen. Wie viel Unsinn sie auf dem Weg anstellt, bleibt dir überlassen.

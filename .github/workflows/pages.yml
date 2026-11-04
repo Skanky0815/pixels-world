@@ -1,0 +1,68 @@
+name: Spiel auf GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run qa
+      - name: Abhängigkeiten prüfen
+        uses: ./.github/actions/npm-audit
+      - run: npx playwright install --with-deps chromium
+      - name: Alle Browser-Szenarien und Pages-Produktionsbuild prüfen
+        run: npm run test:e2e
+      - name: Fehlerartefakte
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pages-test-results
+          path: |
+            playwright-report/
+            test-results/
+            test-reports/
+          retention-days: 14
+      # Playwright builds and tests dist with /pixels-world/. Publish those exact files.
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Geprüften Commit vor Veröffentlichung mit main abgleichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current_main=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          test "$current_main" = "$GITHUB_SHA"
+      - uses: actions/configure-pages@v5
+      - uses: actions/deploy-pages@v4
+        id: deployment
