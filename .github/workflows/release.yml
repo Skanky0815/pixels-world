@@ -21,6 +21,10 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+      sha: ${{ steps.release.outputs.sha }}
     permissions:
       contents: write
       issues: write
@@ -49,6 +53,7 @@ jobs:
           candidates=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" | jq --arg sha "$GITHUB_SHA" '[.[] | select(.merged_at != null and .base.ref == "main" and .merge_commit_sha == $sha and any(.labels[]; .name == "autorelease: pending"))] | length')
           test "$candidates" = 1
       - uses: googleapis/release-please-action@v4
+        id: release
         with:
           token: ${{ github.token }}
           target-branch: main
@@ -56,3 +61,34 @@ jobs:
           manifest-file: .release-please-manifest.json
           skip-github-release: ${{ inputs.mode == 'prepare' }}
           skip-github-pull-request: ${{ inputs.mode == 'publish' }}
+      - name: Erstelltes Release und Tag gegen geprüften Commit verifizieren
+        if: inputs.mode == 'publish' && steps.release.outputs.release_created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+        run: bash .github/scripts/verify-release.sh
+      - name: Release-Ergebnis
+        env:
+          MODE: ${{ inputs.mode }}
+          CREATED: ${{ steps.release.outputs.release_created }}
+          TAG: ${{ steps.release.outputs.tag_name }}
+          SHA: ${{ steps.release.outputs.sha }}
+        run: |
+          echo "Release-Modus: $MODE · Release erstellt: ${CREATED:-false}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Tag: $TAG · Commit: $SHA" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$CREATED" != true ]; then
+            echo 'Kein neues Release: kein automatischer Pages-Rollout.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  pages:
+    needs: release
+    if: inputs.mode == 'publish' && needs.release.outputs.release_created == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
+    with:
+      release_tag: ${{ needs.release.outputs.tag }}
+      release_sha: ${{ needs.release.outputs.sha }}

@@ -2,6 +2,14 @@ name: Spiel auf GitHub Pages
 
 on:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      release_tag:
+        required: true
+        type: string
+      release_sha:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -15,10 +23,20 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.release_sha || github.sha }}
           persist-credentials: false
+      - name: Release-Identität bestätigen
+        if: inputs.release_tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        run: bash .github/scripts/verify-release.sh
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -57,12 +75,32 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+          persist-credentials: false
       - name: Geprüften Commit vor Veröffentlichung mit main abgleichen
+        if: inputs.release_tag == ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           current_main=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
           test "$current_main" = "$GITHUB_SHA"
+      - name: Release-Tag vor Deployment erneut bestätigen
+        if: inputs.release_tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        run: bash .github/scripts/verify-release.sh
       - uses: actions/configure-pages@v5
       - uses: actions/deploy-pages@v4
         id: deployment
+      - name: Veröffentlichter Spielstand
+        env:
+          TAG: ${{ inputs.release_tag }}
+          SHA: ${{ inputs.release_sha || github.sha }}
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          echo "Version/Tag: ${TAG:-manueller main-Stand} · Commit: $SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "Spieladresse: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
