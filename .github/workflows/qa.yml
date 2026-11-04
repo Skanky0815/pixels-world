@@ -62,7 +62,36 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - run: npm run test:unit
+      - name: Unit-Tests mit TAP-Report
+        run: |
+          mkdir -p test-reports
+          npm run test:unit:ci
+      - name: Unit-Testzusammenfassung
+        id: unit-summary
+        if: ${{ always() && hashFiles('test-reports/unit.tap') != '' }}
+        continue-on-error: true
+        uses: test-summary/action@37b508cfee6d4d080eedd00b5bb240a6a784a6a5 # v2
+        with:
+          paths: test-reports/unit.tap
+          show: all
+      - name: Hinweise zum Unit-Report
+        if: ${{ always() }}
+        env:
+          SUMMARY_OUTCOME: ${{ steps.unit-summary.outcome }}
+        run: |
+          echo '### Unit-Tests' >> "$GITHUB_STEP_SUMMARY"
+          if [ ! -s test-reports/unit.tap ] || [ "$SUMMARY_OUTCOME" != success ]; then
+            echo '::warning::Unit-Testreport fehlt oder konnte nicht dargestellt werden.'
+            echo 'Report fehlt oder konnte nicht dargestellt werden; keine vollständige Ergebnisübersicht.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Unit-Report für Gesamtübersicht
+        continue-on-error: true
+        if: ${{ always() && hashFiles('test-reports/unit.tap') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-test-reports-unit
+          path: test-reports/unit.tap
+          retention-days: 14
       - run: npm run typecheck
       - run: npm run build
 
@@ -83,6 +112,33 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e -- --repeat-each=2 --shard=${{ matrix.shard }}/2
+      - name: Browser-Testzusammenfassung
+        id: browser-summary
+        if: ${{ always() && hashFiles('test-reports/playwright.xml') != '' }}
+        continue-on-error: true
+        uses: test-summary/action@37b508cfee6d4d080eedd00b5bb240a6a784a6a5 # v2
+        with:
+          paths: test-reports/playwright.xml
+          show: all
+      - name: Hinweise zum Browser-Report
+        if: ${{ always() }}
+        env:
+          SUMMARY_OUTCOME: ${{ steps.browser-summary.outcome }}
+          SHARD: ${{ matrix.shard }}
+        run: |
+          echo "### Browser-Teil $SHARD/2 · zwei Durchläufe, null Retries" >> "$GITHUB_STEP_SUMMARY"
+          if [ ! -s test-reports/playwright.xml ] || [ "$SUMMARY_OUTCOME" != success ]; then
+            echo '::warning::Browser-Testreport fehlt oder konnte nicht dargestellt werden.'
+            echo 'Report fehlt oder konnte nicht dargestellt werden; keine vollständige Ergebnisübersicht.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Browser-Report für Gesamtübersicht
+        continue-on-error: true
+        if: ${{ always() && hashFiles('test-reports/playwright.xml') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-test-reports-browser-${{ matrix.shard }}
+          path: test-reports/playwright.xml
+          retention-days: 14
       - name: Playwright-Bericht und Fehlerartefakte
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -98,9 +154,56 @@ jobs:
     if: ${{ always() }}
     needs: [quality, e2e-shard]
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     steps:
+      - name: Testreports einsammeln
+        id: reports
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: qa-test-reports-*
+          path: qa-reports
+      - name: Alle Testszenarien
+        id: summary
+        if: ${{ always() && hashFiles('qa-reports/**/*.xml', 'qa-reports/**/*.tap') != '' }}
+        continue-on-error: true
+        uses: test-summary/action@37b508cfee6d4d080eedd00b5bb240a6a784a6a5 # v2
+        with:
+          paths: |
+            qa-reports/**/*.xml
+            qa-reports/**/*.tap
+          show: all
+      - name: Gesamtzahlen und Vollständigkeit
+        if: ${{ always() }}
+        env:
+          PASSED: ${{ steps.summary.outputs.passed }}
+          FAILED: ${{ steps.summary.outputs.failed }}
+          SKIPPED: ${{ steps.summary.outputs.skipped }}
+          SUMMARY_OUTCOME: ${{ steps.summary.outcome }}
+          DOWNLOAD_OUTCOME: ${{ steps.reports.outcome }}
+          QUALITY_RESULT: ${{ needs.quality.result }}
+          SHARD_RESULT: ${{ needs.e2e-shard.result }}
+        run: |
+          echo '### Gesamtübersicht · tatsächliche Testausführungen' >> "$GITHUB_STEP_SUMMARY"
+          if [ "$SUMMARY_OUTCOME" = success ]; then
+            echo "Passed: $PASSED · Failed: $FAILED · Skipped: $SKIPPED" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '::warning::Gesamtübersicht konnte nicht erzeugt werden.'
+            echo 'Keine auswertbare Gesamtübersicht vorhanden.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          for report in qa-test-reports-unit/unit.tap qa-test-reports-browser-1/playwright.xml qa-test-reports-browser-2/playwright.xml; do
+            if [ ! -s "qa-reports/$report" ]; then
+              echo "::warning::Erwarteter Report fehlt: $report"
+              echo "**Unvollständig:** Report fehlt: $report" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          if [ "$DOWNLOAD_OUTCOME" != success ]; then
+            echo '**Unvollständig:** Artefaktdownload nicht erfolgreich.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "Qualität: $QUALITY_RESULT · Browser-Shards: $SHARD_RESULT" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Browser-Szenarien werden zweimal ausgeführt und deshalb zweimal aufgelistet. Fehlende oder abgebrochene Ausführungen können in den Reports fehlen.' >> "$GITHUB_STEP_SUMMARY"
       - name: Qualität und beide Teil-Suites müssen erfolgreich sein
+        if: ${{ always() }}
         env:
           QUALITY_RESULT: ${{ needs.quality.result }}
           SHARD_RESULT: ${{ needs.e2e-shard.result }}
