@@ -4,7 +4,18 @@ Stand und Begründung: [Review #22](../reviews/2026-11-02-architecture.md), gepr
 
 ## Ist
 
-`src/main.ts` startet Phaser und enthält zugleich `LivingRoom`. Die Szene liest Tasten, steuert den Physikkörper und das sichtbare Pixel-Sprite, zeichnet den Raum, verwaltet Vasen, Sofa-/Vorhang-/Pflanzenfeedback und Reset. `Vase` ist schon ein konkretes Phaser-Spielobjekt. Drei reine Interaktionsmodelle und der Punktezähler sind separate Module. `pixel-animations.ts` enthält Animationsdaten und eine reine Auswahlfunktion. `src/game/ui/GameHud.ts` besitzt jetzt Texte, Ärgerbalken und Kletterhinweis. Die Szene übergibt nach den Spielupdates einen lesbaren `HudState`; Score und Aktionsauswahl bleiben im Gameplay. Die Anzeige ist in einem Container ohne Kamerascroll gebündelt; Szenen-Shutdown zerstört ihn samt Kindern. Der ausschließlich lesbare Testbeobachter ist nur im E2E-Build vorhanden und beobachtet auch die dargestellten HUD-Werte.
+`src/main.ts` enthält ausschließlich Bootstrap und Phaser-Konfiguration. `src/game/scenes/LivingRoomScene.ts` baut Raum/Kollisionen auf und koordiniert Input, Pixel, Interaktionen und HUD. `src/game/input/InputController.ts` besitzt Tastaturbindungen und Focus-/Cleanup-Verhalten. Ein eingefrorener `InputState` wird pro Game-Frame genau einmal gelesen; die gecachte Flanke bleibt für alle Verbraucher identisch. `src/game/actors/Pixel.ts` besitzt Bewegung/Klettern, Physikkörper, Blickrichtung, aktive Aktion und Visual-/Animationsanker. Die Szene verwendet das Collider-Objekt ausschließlich zum Verdrahten der Phaser-Kollisionspaare und liest für Interaktionen losgelöste Kontaktdaten. Animationsdaten und reine Auswahlfunktion liegen daneben in `pixel-animations.ts`.
+
+`src/game/ui/GameHud.ts` zeigt weiterhin ausschließlich `HudState` an. Hardwareeingaben und UI werden nicht aus den Interaktionsmodellen gelesen. `Vase` und die reinen Sofa-/Vorhang-/Pflanzenmodelle sowie Raumgrafik und Schadensfeedback bleiben bis #38 an ihren bestehenden fachlichen Grenzen. `src/dev/` enthält den ausschließlich im Dev-Betrieb erreichbaren Animationsvergleich; sein URL bleibt gleich. Spielmodule importieren keine Dev-Werkzeuge. Es bleibt ein npm-/Vite-Projekt.
+
+## Frame-Reihenfolge und Lebenszyklus
+
+Ein Input-Snapshot → Reset-Flanke behandeln → Vasenfall aktualisieren → Pixel bewegen/Klettern bestimmen → Vorhang/Sofa/Pflanze mit demselben Input aktualisieren → Pixel-Aktion/Animation und HUD synchronisieren. Vorhangschaden wird weiterhin aus tatsächlicher Physikbewegung statt bloßer Renderzeit berechnet.
+
+**R startet jetzt dieselbe Phaser-Szene tatsächlich neu.** `create()` initialisiert Score, Interaktionsmodelle, Ereigniszähler, Reisestrecken, Feedback und Objektlisten ausdrücklich neu. Ein neuer Pixel setzt auch Greifsperre, Landepose, Blickrichtung und Bewegungszustand zurück. Shutdown entfernt die eigenen Tasten/Captures und den Game-BLUR-Listener und zerstört Pixel/HUD. Die Szene besitzt Grafik, Collider und Tweens; deren Scene-Shutdown räumt die Engine-Ressourcen auf. Gehaltenes R erzeugt keinen wiederholten Neustart. Der asynchron installierte, nur lesbare E2E-Beobachter prüft die Szenengeneration, damit eine alte Importfortsetzung nicht in einen neuen Durchlauf schreibt.
+
+Browserprüfungen beobachten echte Neustarts über R, unveränderte 52×52-Kollision, Eingabeflanken und DOM-Blur/Focus ohne Engine-Mutatoren. Generationsnummer und Listeneranzahl sind ausschließlich skalare Beobachtungswerte; der Produktionsbuild enthält den Testbeobachter nicht.
+
 
 ## Vorgeschlagene Zuständigkeiten
 
@@ -89,7 +100,7 @@ src/
 
 Es bleibt ein npm-/Vite-Projekt mit gemeinsamem Root-Lockfile. `src/game/` bezeichnet die Codeablage; daraus entsteht kein neuer URL-Präfix. Der Dev-Vergleich behält seine URL und Build-Ausgrenzung. Der spätere Pages-Basispfad bleibt Aufgabe #32.
 
-Die Struktur wird schrittweise eingeführt. Entscheidend sind Zuständigkeiten und lesbare Grenzen, nicht leere Ordner. #37 extrahiert Szene/Pixel/Controls und trennt Dev-Werkzeuge; #38 ergänzt Objektadapter und Fähigkeiten; #39 isoliert das HUD. Typisierte Konfiguration wird diesen Klassen übergeben.
+Die Struktur wird schrittweise eingeführt. #37 extrahiert in diesem Stand Szene/Pixel/Controls und trennt Dev-Werkzeuge; #39 hat das HUD isoliert. #38 ergänzt anschließend Objektadapter und Fähigkeiten. Typisierte Konfiguration wird diesen Klassen übergeben.
 
 ### Erst typisierte Definitionen, dann bei Bedarf JSON
 
@@ -101,4 +112,4 @@ Damit können neue Räume und Objektvarianten durch Datenpflege entstehen. Eine 
 
 Die Abhängigkeit ist gerichtet: #37/#38 → #42 → optional #43. #39 wurde als unabhängiger erster Extraktionsschritt vor #37 umgesetzt. Der spätere Generator #29 verwendet denselben Raumvertrag; JSON ist dafür keine Voraussetzung. #32 kann den aktuellen Prototyp unabhängig von diesen Content-Arbeiten veröffentlichen.
 
-Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Die HUD-Extraktion #39 ist in diesem Stand umgesetzt; die übrigen Extraktionen und Content-Schritte bleiben geplant.
+Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Die Extraktionen #37 und #39 sind in diesem Stand umgesetzt; Objektadapter #38 und Content-Schritte bleiben geplant.

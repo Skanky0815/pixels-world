@@ -78,7 +78,8 @@ async function framesPass(page: Page, count = 15) {
 }
 
 async function reset(page: Page) {
-  await holdUntil(page, ['r'], s => Math.abs(s.pixel.x - 110) < 2 && !s.pixel.climbing);
+  const generation = (await state(page)).generation;
+  await holdUntil(page, ['r'], s => s.generation > generation && Math.abs(s.pixel.x - 110) < 2 && !s.pixel.climbing);
   await until(page, s => s.pixel.grounded && Math.abs(s.pixel.x - 110) < 2 && Math.abs(s.pixel.bottom - 468) < 2);
   const { pixel } = await state(page);
   expect(pixel.climbing).toBe(false);
@@ -300,6 +301,54 @@ async function besideCouch(page: Page) {
   await until(page, s => s.pixel.velocityX === 0 && s.couch.state === 'waiting');
 }
 
+test('Eingaben: gehaltenes Springen/Reset erzeugt nur eine Flanke; Neustart räumt Listener auf', async ({ page }) => {
+  await start(page);
+  const initial = await state(page);
+  await page.keyboard.down('Space');
+  await until(page, s => !s.pixel.grounded);
+  await until(page, s => s.pixel.grounded);
+  await page.clock.runFor(500);
+  expect((await state(page)).pixel.grounded).toBe(true);
+  await page.keyboard.up('Space');
+  await besideCouch(page);
+  await until(page, s => s.couch.damage > 0);
+  await page.keyboard.down('r');
+  await until(page, s => s.generation > initial.generation);
+  await page.clock.runFor(250);
+  const restarted = await state(page);
+  expect(restarted.generation).toBe(initial.generation + 1);
+  expect(restarted.blurListeners).toBe(initial.blurListeners);
+  expect(restarted.chaos.score).toBe(0);
+  expect(restarted.couch.damage).toBe(0);
+  expect(restarted.curtain.damage).toBe(0);
+  expect(restarted.plant.damage).toBe(0);
+  expect(restarted.vases.every(vase => vase.state === 'resting')).toBe(true);
+  expect(restarted.hud.elements).toBe(4);
+  await page.keyboard.up('r');
+  for (let round = 0; round < 2; round++) {
+    await reset(page);
+    expect((await state(page)).blurListeners).toBe(initial.blurListeners);
+  }
+});
+
+test('Focus-Verlust löst gehaltene Eingaben; erneutes Drücken funktioniert nach Rückkehr', async ({ page }) => {
+  await start(page);
+  await page.keyboard.down('ArrowRight');
+  await until(page, s => s.pixel.x >= 150);
+  // Use the normal DOM focus path, never an engine setter/test mutation hook.
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event('blur'));
+    window.dispatchEvent(new Event('focus'));
+  });
+  await page.clock.runFor(160);
+  const stopped = (await state(page)).pixel.x;
+  await page.clock.runFor(250);
+  expect((await state(page)).pixel.x).toBeCloseTo(stopped, 0);
+  expect((await state(page)).pixel.velocityX).toBe(0);
+  await page.keyboard.up('ArrowRight');
+  await holdUntil(page, ['ArrowRight'], s => s.pixel.x > stopped + 25);
+});
+
 test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverändert aufgebaut', async ({ page }) => {
   await start(page);
   const idle = (await state(page)).hud;
@@ -453,7 +502,7 @@ test('Produktionsbuild enthält weder Test-Schnittstelle noch Animationsvergleic
     expect(source).not.toContain('Vergleichsansicht unvollständig');
   }
   for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175']) {
-    for (const path of ['/animation-compare.html', '/src/animation-compare.ts', '/src/animation-compare.css']) {
+    for (const path of ['/animation-compare.html', '/src/dev/animation-compare.ts', '/src/dev/animation-compare.css', '/src/animation-compare.ts', '/src/animation-compare.css']) {
       const response = await page.request.get(base + path);
       expect(response.status(), `${base}${path} ist kein Build-Artefakt`).toBe(404);
     }

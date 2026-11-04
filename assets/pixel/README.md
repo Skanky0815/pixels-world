@@ -18,7 +18,7 @@ Mit dem eingebauten Bildwerkzeug anhand des bestätigten Masters erstellt; Origi
 
 `node tools/prepare-pixel-sheet.mjs` extrahiert 25 zusammenhängende Figuren und packt sie reproduzierbar per Nearest Neighbor. Schwache Alpha-Artefakte werden bei der Figurensuche ignoriert; übernommene Motivpixel behalten ihre Alpha-Werte. Pro Bewegungsgruppe gilt eine gemeinsame Skalierung. Bodenposen enden auf Zeile 30. Das Skript zeichnet keine Posen; Frame 0 wird aus dem Master übernommen.
 
-Abspielreihenfolge und Geschwindigkeit: `src/pixel-animations.ts`. Gameplay bestimmt die Animation; Frames steuern weder Kollisionen noch Schaden. Die Quelldaten bleiben 32×32. Die Grunddarstellung im Spiel ist ohne Glättung 2× groß (64×64); die horizontal zentrierte Kollisionsfläche skaliert von 26×26 Quellpixeln auf 52×52 Spielpixel. Der Produktionsbuild lädt nur das gepackte Sheet.
+Abspielreihenfolge und Geschwindigkeit: `src/game/actors/pixel-animations.ts`. Gameplay bestimmt die Animation; Frames steuern weder Kollisionen noch Schaden. Die Quelldaten bleiben 32×32. Die Grunddarstellung im Spiel ist ohne Glättung 2× groß (64×64); die horizontal zentrierte Kollisionsfläche skaliert von 26×26 Quellpixeln auf 52×52 Spielpixel. Der Produktionsbuild lädt nur das gepackte Sheet.
 
 
 Die Laufposen werden aus `pixel-walk-source.png` übernommen: kompakter Körper, größerer Kopf und aufgerichteter Schwanz halten die Figur auch beim Gehen annähernd so hoch wie den Idle. Dadurch muss ein langgestreckter Lauf nicht mehr in dieselbe quadratische Zelle hineingeschrumpft werden. Alle fünf Laufbilder sind mindestens 27 Quellpixel hoch (Idle: 30). Unit-Tests sichern diese Untergrenze ab. Die übrigen Posen und der bestätigte Master bleiben erhalten.

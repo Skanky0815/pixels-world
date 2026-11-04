@@ -1,6 +1,8 @@
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
   readonly ready: boolean;
+  readonly generation: number;
+  readonly blurListeners: number;
   readonly scene: string;
   readonly frame: number;
   readonly room: { readonly width: number; readonly height: number };
