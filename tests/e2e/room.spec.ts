@@ -383,7 +383,7 @@ test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegung
   expect(first.couch.events).toBe(1);
   expect(first.chaos.score).toBe(3);
   expect(first.chaos.damagedObjects).toBe(1);
-  expect(first.couch.lastDamage).toEqual({ objectId: 'couch', kind: 'scratch', stage: 1, value: 3 });
+  expect(first.couch.lastDamage).toEqual({ id: '["couch","scratch",1]', objectId: 'couch', kind: 'scratch', stage: 1, value: 3 });
   await until(page, s => s.pixel.animationFrame !== first.pixel.animationFrame);
   expect((await state(page)).couch.damage).toBe(1);
   await until(page, s => s.couch.damage === 2);
@@ -449,7 +449,7 @@ test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung sto
   expect(slipping.curtain.damage).toBe(0);
   await until(page, s => s.curtain.damage === 1);
   expect((await state(page)).chaos).toEqual({ score: 4, damagedObjects: 1, anger: 'calm' });
-  expect((await state(page)).curtain.lastDamage).toEqual({ objectId: 'curtain', kind: 'tear', stage: 1, value: 4 });
+  expect((await state(page)).curtain.lastDamage).toEqual({ id: '["curtain","tear",1]', objectId: 'curtain', kind: 'tear', stage: 1, value: 4 });
   const screenshot = testInfo.outputPath('curtain-tearing.png');
   await page.screenshot({ path: screenshot, fullPage: true });
   await testInfo.attach('Rutschender Pixel und Vorhangriss', { path: screenshot, contentType: 'image/png' });
@@ -524,7 +524,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   expect(first.pixel.animation).toBe('nibble');
   expect(first.pixel).toMatchObject({ displayWidth: 80, displayHeight: 80, bodyWidth: 52, bodyHeight: 52 });
   expect(first.hud.statusText).toBe('PIXEL · KATZENGRAS KNABBERN');
-  expect(first.plant.lastDamage).toEqual({ objectId: 'plant', kind: 'nibble', stage: 1, value: 2 });
+  expect(first.plant.lastDamage).toEqual({ id: '["plant","nibble",1]', objectId: 'plant', kind: 'nibble', stage: 1, value: 2 });
   expect(first.chaos).toEqual({ score: 2, damagedObjects: 1, anger: 'calm' });
   await until(page, s => s.pixel.animationFrame !== first.pixel.animationFrame);
   await until(page, s => s.plant.state === 'wobbling' && Math.abs(s.plant.angle) > 4);
@@ -550,7 +550,7 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
   expect((await state(page)).chaos.score).toBe(2);
   await until(page, s => s.plant.state === 'tipped');
   const tipped = await state(page);
-  expect(tipped.plant).toMatchObject({ damage: 2, events: 2, angle: -80, lastDamage: { objectId: 'plant', kind: 'tip', stage: 2, value: 10 } });
+  expect(tipped.plant).toMatchObject({ damage: 2, events: 2, angle: -80, lastDamage: { id: '["plant","tip",2]', objectId: 'plant', kind: 'tip', stage: 2, value: 10 } });
   expect(tipped.chaos).toEqual({ score: 12, damagedObjects: 1, anger: 'calm' });
   expect(tipped.pixel.animation).toBe('idle');
   const screenshot = testInfo.outputPath('plant-tipped.png');

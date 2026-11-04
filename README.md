@@ -144,7 +144,7 @@ GitHub Actions startet die vollständige Game-QA bei Pull Requests und Pushes na
 
 ## Beiträge
 
-Das [Architekturreview #22](docs/reviews/2026-11-02-architecture.md) dokumentiert den geprüften Stand und konkrete Folgeaufgaben. Das [Gameplay-Zielbild](docs/architecture/gameplay.md) beschreibt die vorgeschlagene Trennung von Szene, Pixel, Controls, interaktiven Objekten und HUD; Szene, Pixel, Controls und HUD sind unter `src/game/` getrennt; Objektadapter und Content folgen separat.
+Das [Architekturreview #22](docs/reviews/2026-11-02-architecture.md) dokumentiert den geprüften Stand und konkrete Folgeaufgaben. Das [Gameplay-Zielbild](docs/architecture/gameplay.md) beschreibt die vorgeschlagene Trennung von Szene, Pixel, Controls, interaktiven Objekten und HUD; Szene, Pixel, Controls und HUD sind unter `src/game/` getrennt; instanzfähige Objektadapter sind unter `src/game/objects/` ergänzt, Content folgt separat.
 
 Sprache, Commits und Review-Ablauf sind in [CONTRIBUTING.md](CONTRIBUTING.md) beschrieben. Die Arbeitsregeln für Agenten stehen in [AGENTS.md](AGENTS.md).
 
@@ -187,7 +187,7 @@ Nur `vite build --mode e2e` enthält die lesbare, unveränderliche Beobachtungss
 | Blaue Vase auf dem mittleren Regal | 35 |
 | Erbstück auf dem oberen Regal | 40 |
 
-Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt** ab 25 und **wütend** ab 60. Die Leiste reicht bis zu den insgesamt möglichen 162 Punkten: 100 für Vasen, 18 für Sofakratzer, 32 für Vorhangrisse und 12 für die Pflanze. Werte und Schwellen stehen in [src/chaos.ts](src/chaos.ts). Berührung, Anschubsen und ein Zwischenstopp auf einem anderen Regal zählen noch nicht als Schaden. Vasen zählen erst beim tatsächlichen Bodenbruch und höchstens einmal pro Durchlauf. Sofa-, Vorhang- und Pflanzenschäden zählen je neuer Schadensstufe einmal; dasselbe Möbel zählt dabei als ein beschädigtes Objekt.
+Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt** ab 25 und **wütend** ab 60. Die Leiste reicht bis zu den insgesamt möglichen 162 Punkten: 100 für Vasen, 18 für Sofakratzer, 32 für Vorhangrisse und 12 für die Pflanze. Werte und Schwellen stehen in [src/game/domain/chaos.ts](src/game/domain/chaos.ts). Berührung, Anschubsen und ein Zwischenstopp auf einem anderen Regal zählen noch nicht als Schaden. Vasen zählen erst beim tatsächlichen Bodenbruch und höchstens einmal pro Durchlauf. Sofa-, Vorhang- und Pflanzenschäden zählen je neuer Schadensstufe einmal; dasselbe Möbel zählt dabei als ein beschädigtes Objekt.
 
 Die Vasen verwenden dieselbe Arcade-Physik wie Pixel. Nach einem seitlichen Anschubser gleiten sie über die Kante, fallen mit Schwerkraft und zeigen beim Bodenaufprall einfache Splitter. Die sichtbare Drehung ist Platzhalterfeedback; es gibt noch keine vollständige Starrkörper-/Stoffsimulation. Mehrere Vasen dienen dem Test der Punktebereiche; Bücher bleiben Dekoration; die Pflanze hat ihre eigene kleine Interaktion. Weitere Objektarten gehören zu #11.
 
@@ -198,7 +198,7 @@ Der HUD-Ausblick ist noch keine heimgekehrte oder tatsächlich reagierende Sara.
 
 Bleibt Pixel etwa **zwei Sekunden** am Sofa stehen, beginnt sie ohne Aktionstaste zu kratzen. Das funktioniert am Boden vor dem Sofa und auf seiner Sitzfläche. Drei 32×32-Frames und bewegte Pfoten zeigen das Kratzen; alle **750 ms** kommt eine sichtbare Spur hinzu. Pro Durchlauf sind höchstens **sechs Schadensstufen** möglich.
 
-Bewegen oder Springen beendet die Aktion sofort. Vorhandene Kratzer bleiben, beim erneuten Stillstehen läuft die volle Wartezeit von vorn. **R** entfernt die Kratzer und setzt Interaktion und Ereigniszähler zurück. Reichweite, Wartezeit, Intervall, Schadensgrenze und Ereigniswert stehen in [src/couch-scratching.ts](src/couch-scratching.ts).
+Bewegen oder Springen beendet die Aktion sofort. Vorhandene Kratzer bleiben, beim erneuten Stillstehen läuft die volle Wartezeit von vorn. **R** entfernt die Kratzer und setzt Interaktion und Ereigniszähler zurück. Wartezeit, Intervall, Schadensgrenze und Ereigniswert stehen in [src/game/interactions/couch-scratching.ts](src/game/interactions/couch-scratching.ts).
 
 Jede neue Spur emittiert über die Phaser-Szene ein unveränderliches `object-damaged`-Ereignis mit `objectId: couch`, `kind: scratch`, Schadensstufe und `value: 3`. Das vorhandene Scoring zählt jede neue Kratzstufe einmal: **3 Punkte je Stufe, höchstens 18 pro Durchlauf**. Wiederholtes Ausgeben derselben Stufe kann keine zusätzlichen Punkte erzeugen. Das Sofa zählt als ein beschädigtes Objekt; die Vasen behalten ihre bisherigen Werte. R setzt sowohl Kratzschaden als auch Punkte zurück.
 
@@ -213,7 +213,7 @@ Am Vorhang hält **↑** Pixel beim Hochklettern. Ohne Aufwärts-Eingabe rutscht
 
 Nur beim tatsächlichen Hinabrutschen entsteht alle **600 ms** ein sichtbarer Riss. Jeder neue Riss gibt **4 Chaospunkte**, höchstens achtmal bzw. 32 Punkte pro Durchlauf. Weiterklettern oder Ablösen unterbricht das laufende Schadensintervall; bestehende Risse bleiben erhalten. **R** entfernt Risse und setzt Vorhangzustand, Ereignisse und Punkte zurück.
 
-Geschwindigkeiten, Schadensintervall, Schadensgrenze und Ereigniswert stehen in [src/curtain-sliding.ts](src/curtain-sliding.ts). Risse emittieren eingefrorene `object-damaged`-Ereignisse mit `objectId: curtain`, `kind: tear`, Stufe und Wert. Es gibt keine Ereignisflut pro Frame oder nach einem langen Frame. Das ist ein spielbarer Stoffschaden mit Platzhalterlinien, keine Stoffsimulation.
+Geschwindigkeiten, Schadensintervall, Schadensgrenze und Ereigniswert stehen in [src/game/interactions/curtain-sliding.ts](src/game/interactions/curtain-sliding.ts). Risse emittieren eingefrorene `object-damaged`-Ereignisse mit `objectId: curtain`, `kind: tear`, Stufe und Wert. Es gibt keine Ereignisflut pro Frame oder nach einem langen Frame. Das ist ein spielbarer Stoffschaden mit Platzhalterlinien, keine Stoffsimulation.
 
 Zum Prüfen hinaufklettern und loslassen: Pixel rutscht sichtbar, nach dem Intervall entstehen Risse und Punkte. ↑ stoppt den Rissfortschritt, Leertaste löst den Griff. Am Boden endet das Rutschen; ↑ greift erneut, R stellt den unbeschädigten Vorhang wieder her. Automatisierte Tests prüfen Zustandswechsel, Bewegung, Punkte, Unterbrechungen, Bodenbegrenzung und Neustart.
 
@@ -224,7 +224,7 @@ Links am Boden steht ein Platzhalter für Katzengras. Geh von der Startposition 
 
 Bewegung, Richtungseingaben oder Springen unterbrechen die Folge sofort; vor dem Kippen richtet sich der Topf wieder auf. Ein vorhandener Biss bleibt sichtbar. Bei erneuter Annäherung läuft die volle Wartezeit von vorn. Am Startpunkt, außerhalb der Reichweite und in der Luft beginnt keine Interaktion. Der erste Biss gibt einmal **2 Chaospunkte**, das Kippen weitere **10**. Auch nach erneutem Annähern gibt es denselben Schaden nicht doppelt; die Pflanze zählt als ein beschädigtes Objekt.
 
-**R** stellt Topf und Halme aufrecht wieder her, entfernt Erde, Ereignisse und Punkte und beendet die Knabberanimation. Wartezeit, Knabberdauer, Warnzeit, Reichweite und Punkte stehen in [src/plant-nibbling.ts](src/plant-nibbling.ts). Eingefrorene `object-damaged`-Ereignisse enthalten `objectId: plant`, `kind: nibble` bzw. `tip`, Stufe und Wert. Langframes können nicht mehrere Phasen auf einmal überspringen. Das Kippen ist eine feste Platzhalterdarstellung, keine zusätzliche Starrkörperphysik.
+**R** stellt Topf und Halme aufrecht wieder her, entfernt Erde, Ereignisse und Punkte und beendet die Knabberanimation. Wartezeit, Knabberdauer, Warnzeit und Punkte stehen in [src/game/interactions/plant-nibbling.ts](src/game/interactions/plant-nibbling.ts). Eingefrorene `object-damaged`-Ereignisse enthalten `objectId: plant`, `kind: nibble` bzw. `tip`, Stufe und Wert. Langframes können nicht mehrere Phasen auf einmal überspringen. Das Kippen ist eine feste Platzhalterdarstellung, keine zusätzliche Starrkörperphysik.
 
 Zum Prüfen erst bis zum Wackeln warten und weglaufen: Der Topf bleibt stehen. Dann erneut warten, bis er kippt: insgesamt 12 Punkte, keine weitere Punktevergabe. R stellt alles wieder her. Unit- und Browser-Tests prüfen Phasengrenzen, Unterbrechungen, Animation, Warnung, einmalige Punkte und Reset.
 
@@ -240,3 +240,11 @@ Die Animation folgt der vorhandenen Physik. Neue Bewegung unterbricht die Landep
 ### Animationen direkt vergleichen
 
 Bei laufendem Entwicklungsserver öffnet [Animationsvergleich](http://127.0.0.1:5173/animation-compare.html) eine separate Arbeitsansicht. Jede Pose steht neben dem bestätigten Idle-Master auf derselben Pfotenlinie. Pause, Einzelschritt und Größenregler helfen beim Beurteilen; die Regler ändern ausschließlich die Vorschau. Andere Posen lassen sich je Karte auswählen. Die Ansicht verwendet dasselbe Sheet und dieselben Größen wie das Spiel, ist ausdrücklich nur im Dev-Betrieb erlaubt. `vite.config.ts` baut ausschließlich die Spielseite; E2E- und Produktionsvorschau liefern für die Vergleichsseite und ihre Quelldateien 404 statt einer SPA-Weiterleitung. Eine zusätzliche Laufzeitprüfung verhindert den Start außerhalb von `import.meta.env.DEV`.
+
+## Instanzfähige Interaktionsobjekte
+
+`Couch`, `Curtain`, `Plant` und `Vase` unter `src/game/objects/` besitzen Geometrie, Darstellung, Zustandsmodell und Reset/Destroy. Platzierung und Reichweiten werden als typisierte Konfiguration im Szenenaufbau übergeben; die reine Raum-/Content-Definition folgt in #42. Sitzfläche bzw. Vorhangfläche werden auch für Collider/Nähe bzw. Klettern verwendet. Das Sofa ist eine Sprungplattform, kein Vorhang-Kletterobjekt.
+
+Alle Schäden einschließlich Vasenbruch liefern eingefrorene `ChaosEvent`-Werte mit `id`, `objectId`, `kind`, `stage` und `value`. Die ID codiert Objektinstanz, Schadensart und Stufe kollisionsfrei als JSON-Tupel. Genau ein Pfad in der Szene verarbeitet das Ereignis mit `ChaosScore.awardEvent` und emittiert bei neuer Wertung `object-damaged`. Gleiche Objektarten können getrennt zählen; dieselbe Ereignis-ID zählt bis zum Reset nur einmal.
+
+Für automatische Bodenaktionen wählt die Szene pro Frame das erste geeignete Objekt in stabiler Reihenfolge. Bei überlappenden Reichweiten wird höchstens eine Aktion fortgeschrieben; alle anderen erhalten ein inaktives Update und unterbrechen ihre Wartezeit. Objekte lesen nur Input-/Pixel-Snapshots und melden Aktion/Blickziel zurück; sie steuern weder Tastatur noch Pixel-Animation direkt.

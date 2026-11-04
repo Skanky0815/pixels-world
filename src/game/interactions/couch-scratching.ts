@@ -1,10 +1,10 @@
+import { assertObjectId, chaosEvent, type ChaosEvent } from '../domain/chaos-event.ts';
+
 export const COUCH_SCRATCH = {
   delayMs: 2000,
   damageIntervalMs: 750,
   maxDamage: 6,
   damageValue: 3,
-  minX: 160,
-  maxX: 454,
 } as const;
 
 export interface ScratchConfig {
@@ -14,12 +14,7 @@ export interface ScratchConfig {
   readonly damageValue: number;
 }
 
-export interface CouchDamageEvent {
-  readonly objectId: 'couch';
-  readonly kind: 'scratch';
-  readonly stage: number;
-  readonly value: number;
-}
+export type CouchDamageEvent = ChaosEvent<'scratch'>;
 
 /** A bounded interaction, independent of rendering and future score calculation. */
 export class CouchScratching {
@@ -27,9 +22,12 @@ export class CouchScratching {
   private waited = 0;
   private sinceDamage = 0;
   private damage = 0;
+  private readonly objectId: string;
   private readonly config: ScratchConfig;
 
-  constructor(config: ScratchConfig = COUCH_SCRATCH) {
+  constructor(config: ScratchConfig = COUCH_SCRATCH, objectId = 'couch') {
+    assertObjectId(objectId);
+    this.objectId = objectId;
     if (!Number.isFinite(config.delayMs) || config.delayMs < 0 ||
       !Number.isFinite(config.damageIntervalMs) || config.damageIntervalMs <= 0 ||
       !Number.isSafeInteger(config.maxDamage) || config.maxDamage <= 0 ||
@@ -63,7 +61,7 @@ export class CouchScratching {
   private nextDamage(): CouchDamageEvent | undefined {
     if (this.damage >= this.config.maxDamage) return;
     this.damage++;
-    return Object.freeze({ objectId: 'couch', kind: 'scratch', stage: this.damage, value: this.config.damageValue });
+    return chaosEvent(this.objectId, 'scratch', this.damage, this.config.damageValue);
   }
 
   snapshot() { return { state: this.phase, damage: this.damage }; }

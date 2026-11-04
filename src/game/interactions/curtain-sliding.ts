@@ -1,3 +1,5 @@
+import { assertObjectId, chaosEvent, type ChaosEvent } from '../domain/chaos-event.ts';
+
 export const CURTAIN_SLIDE = {
   climbSpeed: 125,
   slideSpeed: 35,
@@ -8,13 +10,8 @@ export const CURTAIN_SLIDE = {
 } as const;
 
 export type CurtainState = 'detached' | 'climbing' | 'sliding';
-export interface CurtainDamageEvent {
-  readonly objectId: 'curtain';
-  readonly kind: 'tear';
-  readonly stage: number;
-  readonly value: number;
-}
-interface TearConfig {
+export type CurtainDamageEvent = ChaosEvent<'tear'>;
+export interface TearConfig {
   readonly damageIntervalMs: number;
   readonly maxDamage: number;
   readonly damageValue: number;
@@ -25,9 +22,12 @@ export class CurtainSliding {
   private phase: CurtainState = 'detached';
   private elapsed = 0;
   private damage = 0;
+  private readonly objectId: string;
   private readonly config: TearConfig;
 
-  constructor(config: TearConfig = CURTAIN_SLIDE) {
+  constructor(config: TearConfig = CURTAIN_SLIDE, objectId = 'curtain') {
+    assertObjectId(objectId);
+    this.objectId = objectId;
     if (!Number.isFinite(config.damageIntervalMs) || config.damageIntervalMs <= 0 ||
       !Number.isSafeInteger(config.maxDamage) || config.maxDamage <= 0 ||
       !Number.isSafeInteger(config.damageValue) || config.damageValue < 0) throw new Error('Invalid curtain configuration');
@@ -48,7 +48,7 @@ export class CurtainSliding {
     this.elapsed %= this.config.damageIntervalMs;
     if (this.damage >= this.config.maxDamage) return;
     this.damage++;
-    return Object.freeze({ objectId: 'curtain', kind: 'tear', stage: this.damage, value: this.config.damageValue });
+    return chaosEvent(this.objectId, 'tear', this.damage, this.config.damageValue);
   }
 
   snapshot() { return { state: this.phase, damage: this.damage }; }

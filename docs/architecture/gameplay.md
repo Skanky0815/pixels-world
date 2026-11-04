@@ -6,13 +6,20 @@ Stand und Begründung: [Review #22](../reviews/2026-11-02-architecture.md), gepr
 
 `src/main.ts` enthält ausschließlich Bootstrap und Phaser-Konfiguration. `src/game/scenes/LivingRoomScene.ts` baut Raum/Kollisionen auf und koordiniert Input, Pixel, Interaktionen und HUD. `src/game/input/InputController.ts` besitzt Tastaturbindungen und Focus-/Cleanup-Verhalten. Ein eingefrorener `InputState` wird pro Game-Frame genau einmal gelesen; die gecachte Flanke bleibt für alle Verbraucher identisch. `src/game/actors/Pixel.ts` besitzt Bewegung/Klettern, Physikkörper, Blickrichtung, aktive Aktion und Visual-/Animationsanker. Die Szene verwendet das Collider-Objekt ausschließlich zum Verdrahten der Phaser-Kollisionspaare und liest für Interaktionen losgelöste Kontaktdaten. Animationsdaten und reine Auswahlfunktion liegen daneben in `pixel-animations.ts`.
 
-`src/game/ui/GameHud.ts` zeigt weiterhin ausschließlich `HudState` an. Hardwareeingaben und UI werden nicht aus den Interaktionsmodellen gelesen. `Vase` und die reinen Sofa-/Vorhang-/Pflanzenmodelle sowie Raumgrafik und Schadensfeedback bleiben bis #38 an ihren bestehenden fachlichen Grenzen. `src/dev/` enthält den ausschließlich im Dev-Betrieb erreichbaren Animationsvergleich; sein URL bleibt gleich. Spielmodule importieren keine Dev-Werkzeuge. Es bleibt ein npm-/Vite-Projekt.
+`src/game/ui/GameHud.ts` zeigt weiterhin ausschließlich `HudState` an. `Couch`, `Curtain`, `Plant` und `Vase` unter `src/game/objects/` besitzen jeweils ihre Geometrie, Grafik und ihr reines Zustandsmodell. Interaktionsmodelle liegen unter `src/game/interactions/`, Scoring und unveränderliche Ereignisse unter `src/game/domain/`. Die Szene übergibt Objektinstanz-ID, Platzierung, Flächen/Reichweiten und Regeln als typisierte Konfiguration; ein vollständiger Content-Katalog folgt in #42. Sitzfläche bzw. Vorhangfläche dienen gleichzeitig Darstellung und Collider/Nähe bzw. Klettern. Regalflächen unter `config/room.ts` werden ebenfalls nur einmal definiert. Doppelte IDs im Szenenaufbau werden zurückgewiesen.
+
+Die funktionalen Verträge werden über Komposition verwendet: `Interactable` bietet Eignungsprüfung und Update für automatische Bodenaktionen; `Climbable` bietet Kletterfläche und Update für tatsächliche Bewegung; `Destructible` bietet Schadenssnapshot und maximales Score-Potenzial. `ObjectLifecycle` verbindet Reset/Destroy. Das Sofa ist nur Sprungplattform und Schadensobjekt, kein Vorhang-Kletterobjekt. Keine Marker-Typen für noch nicht implementierte Ziele/Panik und keine verpflichtende Phaser-Vererbungshierarchie.
+
+Ein `ChaosEvent` trägt die als JSON-Tupel codierte ID aus Objektinstanz, Schadensart und Stufe. Alle Schadensarten einschließlich Vasenbruch gelangen über `processDamage` in genau einen `ChaosScore.awardEvent`-Aufruf; erst neue Wertung emittiert `object-damaged`. Die fachlichen Modelle vergeben keine Punkte. `DamageHistory` ist eine kleine reine Komponente für die Objekt-Snapshots, kein zweiter Score-Verbraucher.
+
+Pro Frame erhält das erste geeignete Bodenobjekt der stabilen Szenenreihenfolge ein aktives Update, alle anderen ein inaktives. Dadurch laufen überlappende Wartezeiten/Aktionen nicht parallel; Bewegung, Absprung und Zielwechsel unterbrechen sie. Objekte lesen eingefrorene Pixel-/Input-Daten und melden Aktion/Blickziel zurück, ohne Tastatur oder Pixel-Animation zu steuern. Der Animationsvergleich unter `src/dev/` bleibt ausschließlich im Dev-Betrieb unter seinem bisherigen URL erreichbar. Es bleibt ein npm-/Vite-Projekt.
+
 
 ## Frame-Reihenfolge und Lebenszyklus
 
 Ein Input-Snapshot → Reset-Flanke behandeln → Vasenfall aktualisieren → Pixel bewegen/Klettern bestimmen → Vorhang/Sofa/Pflanze mit demselben Input aktualisieren → Pixel-Aktion/Animation und HUD synchronisieren. Vorhangschaden wird weiterhin aus tatsächlicher Physikbewegung statt bloßer Renderzeit berechnet.
 
-**R startet jetzt dieselbe Phaser-Szene tatsächlich neu.** `create()` initialisiert Score, Interaktionsmodelle, Ereigniszähler, Reisestrecken, Feedback und Objektlisten ausdrücklich neu. Ein neuer Pixel setzt auch Greifsperre, Landepose, Blickrichtung und Bewegungszustand zurück. Shutdown entfernt die eigenen Tasten/Captures und den Game-BLUR-Listener und zerstört Pixel/HUD. Die Szene besitzt Grafik, Collider und Tweens; deren Scene-Shutdown räumt die Engine-Ressourcen auf. Gehaltenes R erzeugt keinen wiederholten Neustart. Der asynchron installierte, nur lesbare E2E-Beobachter prüft die Szenengeneration, damit eine alte Importfortsetzung nicht in einen neuen Durchlauf schreibt.
+**R startet jetzt dieselbe Phaser-Szene tatsächlich neu.** `create()` initialisiert Score und Objektlisten neu; neue Adapter besitzen eigene Modelle, Ereignishistorien und Bewegungsreferenzen und durchlaufen den gemeinsamen Reset. Ein neuer Pixel setzt auch Greifsperre, Landepose, Blickrichtung und Bewegungszustand zurück. Shutdown zerstört alle Objektadapter, entfernt eigene Tasten/Captures und den Game-BLUR-Listener und zerstört Pixel/HUD. Die Szene besitzt Grafik, Collider und Tweens; deren Scene-Shutdown räumt die Engine-Ressourcen auf. Gehaltenes R erzeugt keinen wiederholten Neustart. Der asynchron installierte, nur lesbare E2E-Beobachter prüft die Szenengeneration, damit eine alte Importfortsetzung nicht in einen neuen Durchlauf schreibt.
 
 Browserprüfungen beobachten echte Neustarts über R, unveränderte 52×52-Kollision, Eingabeflanken und DOM-Blur/Focus ohne Engine-Mutatoren. Generationsnummer und Listeneranzahl sind ausschließlich skalare Beobachtungswerte; der Produktionsbuild enthält den Testbeobachter nicht.
 
@@ -44,14 +51,14 @@ flowchart LR
   Scene -->|HudState| HUD[GameHud]
 ```
 
-Die Pfeile zeigen den vorgeschlagenen Datenfluss, keine neue globale Event-Bus-Infrastruktur. Die Szene kann die Ergebnisse synchron weiterreichen. Ein kleiner Interaktionskoordinator wird erst mit der in #38 zu prüfenden Zielauswahl benötigt, nicht als allgemeine Kettenreaktionsengine.
+Die Pfeile zeigen den vorgeschlagenen Datenfluss, keine neue globale Event-Bus-Infrastruktur. Die Szene kann die Ergebnisse synchron weiterreichen. Die kleine Funktion `updateGroundInteractions` übernimmt inzwischen die eindeutige Zielauswahl für Bodenaktionen; Kletterkontakt und physischer Vasenkontakt verwenden ihre konkreten Fähigkeiten.
 
 ## Daten an den Grenzen
 
 - **`InputState`**: lesbare Achsen, `jumpPressed`, `resetPressed` und Eingabeaktivität. Flanken werden einmal pro Frame ermittelt. Pixel verarbeitet Bewegung; der Szenenkoordinator verarbeitet einen Neustart. Hardwareadapter können später ausgetauscht werden.
 - **`ActorSnapshot` / `InteractionContext`**: lesbare Körpergrenzen, Geschwindigkeit, Boden-/Kletterzustand und Eingabeaktivität. Keine Engine-Objekte in den reinen Regeln.
 - **`InteractionOffer` / aktive Aktion**: konkrete Ziel-ID und Handlungsart; höchstens eine automatische Bodenaktion pro Pixel. Bei überlappenden Zielen muss die Auswahl stabil und getestet sein. Bewegung, Absprung oder Zielwechsel brechen die laufende Wartephase ab.
-- **`ChaosEvent`**: unveränderliche Tatsache über neu verursachten Schaden mit `eventId`, `objectId`, `kind`, `stage`, ganzzahligem `value`. Der einzige Score-Pfad ruft das bestehende Ledger auf. Vasenbruch verwendet künftig denselben Vertrag.
+- **`ChaosEvent`**: unveränderliche Tatsache über neu verursachten Schaden mit `id`, `objectId`, `kind`, `stage`, ganzzahligem `value`. Der einzige Score-Pfad ruft das bestehende Ledger auf. Vasenbruch verwendet denselben Vertrag.
 - **`HudState`**: lesbare Punkte-/Ärger-Vorschau, Aktionsstatus und Hinweissichtbarkeit. Die Ansicht übersetzt Status in Texte/Grafik; Spielregeln hängen nicht von UI-Formulierungen ab.
 
 Stabile Objekt-ID statt Typname: beispielsweise `living-room/sofa-01` und `living-room/sofa-02`. Eine Ereignis-ID kann aus Objekt-ID, Schadensart und Stufe entstehen. Der vorhandene Durchlauf-Reset leert das Ledger; für die jetzigen Anforderungen braucht es dafür weder Zufalls-UUIDs noch eine Datenbank. Bei persistenten Runden/Raumwechseln ist der Gültigkeitsbereich ausdrücklich festzulegen.
@@ -60,13 +67,13 @@ Stabile Objekt-ID statt Typname: beispielsweise `living-room/sofa-01` und `livin
 
 | Begriff | Bedeutung und konkreter Vertrag | Heutiger Bezug |
 | --- | --- | --- |
-| `Interactable` | Ein Objekt bietet anhand des Kontexts eine Handlung an. Kein Synonym für Schaden. | Sofa, Pflanze, Vase, Vorhang |
+| `Interactable` | Verwendeter TypeScript-Vertrag für automatische Bodenaktionen: Eignung und aktives/inaktives Update. Der sprachliche Oberbegriff interaktiver Objekte umfasst auch andere Kontaktarten. | Sofa, Pflanze; Vorhang nutzt `Climbable`, Vase physischen Kontakt |
 | `Interaction` | Die Handlung samt Warte-/Abbruchzustand; vom Objekt zu unterscheiden. | Kratzen, Knabbern, Schubsen, Klettern |
 | `Destructible` | Besitzt abfragbaren Schadenszustand und meldet neue Schadensstufen über den gemeinsamen Vertrag. | Alle vier aktuellen Interaktionsobjekte |
 | `Climbable` | Liefert eine tatsächliche Greif-/Kletterfläche mit Bewegungsparametern. | Vorhang; das aktuelle Sofa ist lediglich eine Sprungplattform |
 | `GoalTarget` | Kann ein konkret definiertes Levelziel erfüllen. Vertrag erst mit dem Zielsystem festlegen. | Geplant in #30, noch nicht implementiert |
 | `PanicTrigger` | Kann nach konkreten Regeln eine Panikreaktion auslösen. Vertrag erst mit diesem Gameplay festlegen. | Geplant in #33/#35, noch nicht implementiert |
-| `ChaosEvent` | Bereits verursachter Schaden, kein Spielobjekttyp und keine beliebige Spieleraktion. | Kratzer, Riss, Pflanzenbiss/-kippen, künftig auch Vasenbruch |
+| `ChaosEvent` | Bereits verursachter Schaden, kein Spielobjekttyp und keine beliebige Spieleraktion. | Kratzer, Riss, Pflanzenbiss/-kippen und Vasenbruch |
 
 Fähigkeiten sind kombinierbar. Ein späterer Gegenstand kann Ziel, Kletterfläche und beschädigbar sein, ohne drei voneinander ausschließenden Klassen anzugehören. Kleine TypeScript-Interfaces/Komponenten erhalten erst bei einem tatsächlich benutzten Verhalten einen Platz im Code. Eine gemeinsame abstrakte Phaser-Basisklasse ist dafür nicht erforderlich. Die bestehenden reinen Modelle bleiben pro Handlung spezialisiert.
 
@@ -100,7 +107,7 @@ src/
 
 Es bleibt ein npm-/Vite-Projekt mit gemeinsamem Root-Lockfile. `src/game/` bezeichnet die Codeablage; daraus entsteht kein neuer URL-Präfix. Der Dev-Vergleich behält seine URL und Build-Ausgrenzung. Der spätere Pages-Basispfad bleibt Aufgabe #32.
 
-Die Struktur wird schrittweise eingeführt. #37 extrahiert in diesem Stand Szene/Pixel/Controls und trennt Dev-Werkzeuge; #39 hat das HUD isoliert. #38 ergänzt anschließend Objektadapter und Fähigkeiten. Typisierte Konfiguration wird diesen Klassen übergeben.
+Die Struktur wird schrittweise eingeführt. #37 extrahiert in diesem Stand Szene/Pixel/Controls und trennt Dev-Werkzeuge; #39 hat das HUD isoliert. #38 ergänzt in diesem Stand die Objektadapter und Fähigkeiten. Typisierte Konfiguration wird diesen Klassen übergeben.
 
 ### Erst typisierte Definitionen, dann bei Bedarf JSON
 
@@ -112,4 +119,4 @@ Damit können neue Räume und Objektvarianten durch Datenpflege entstehen. Eine 
 
 Die Abhängigkeit ist gerichtet: #37/#38 → #42 → optional #43. #39 wurde als unabhängiger erster Extraktionsschritt vor #37 umgesetzt. Der spätere Generator #29 verwendet denselben Raumvertrag; JSON ist dafür keine Voraussetzung. #32 kann den aktuellen Prototyp unabhängig von diesen Content-Arbeiten veröffentlichen.
 
-Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Die Extraktionen #37 und #39 sind in diesem Stand umgesetzt; Objektadapter #38 und Content-Schritte bleiben geplant.
+Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Die Extraktionen #37/#38/#39 sind in diesem Stand umgesetzt; Content-Schritte bleiben geplant.

@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CURTAIN_SLIDE, CurtainSliding } from '../../src/curtain-sliding.ts';
+import { CURTAIN_SLIDE, CurtainSliding } from '../../src/game/interactions/curtain-sliding.ts';
 
 test('Risse nur beim tatsächlichen Rutschen und erst nach dem Intervall', () => {
   const curtain = new CurtainSliding();
   assert.equal(curtain.update(2000, 'climbing', false), undefined);
   assert.equal(curtain.update(2000, 'sliding', false), undefined);
   assert.equal(curtain.update(599, 'sliding', true), undefined);
-  assert.deepEqual(curtain.update(1, 'sliding', true), { objectId: 'curtain', kind: 'tear', stage: 1, value: 4 });
+  assert.deepEqual(curtain.update(1, 'sliding', true), { id: '["curtain","tear",1]', objectId: 'curtain', kind: 'tear', stage: 1, value: 4 });
 });
 
 test('Weiterklettern und Ablösen unterbrechen das laufende Rissintervall', () => {

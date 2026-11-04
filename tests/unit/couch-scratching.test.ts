@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CouchScratching, COUCH_SCRATCH } from '../../src/couch-scratching.ts';
-import { ChaosScore } from '../../src/chaos.ts';
+import { CouchScratching, COUCH_SCRATCH } from '../../src/game/interactions/couch-scratching.ts';
+import { ChaosScore } from '../../src/game/domain/chaos.ts';
 
 test('Ungültige Punktwerte werden schon beim Erzeugen des Sofamodells abgelehnt', () => {
   for (const damageValue of [-1, 0.5, NaN, Infinity, -Infinity, Number.MAX_SAFE_INTEGER + 1]) {
@@ -33,7 +33,7 @@ test('Kratzen beginnt erst nach zwei Sekunden und emittiert begrenzte Intervalle
   const couch = new CouchScratching();
   assert.equal(couch.update(1999, true), undefined);
   assert.equal(couch.snapshot().state, 'waiting');
-  assert.deepEqual(couch.update(1, true), { objectId: 'couch', kind: 'scratch', stage: 1, value: 3 });
+  assert.deepEqual(couch.update(1, true), { id: '["couch","scratch",1]', objectId: 'couch', kind: 'scratch', stage: 1, value: 3 });
   assert.equal(couch.update(749, true), undefined);
   assert.equal(couch.update(1, true)?.stage, 2);
 });
