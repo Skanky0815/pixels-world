@@ -1,11 +1,5 @@
 import type { ChaosEvent } from './chaos-event.ts';
 
-export const VASES = [
-  { id: 'small-vase', x: 620, shelfY: 304, points: 25, color: 0xc5875f },
-  { id: 'blue-vase', x: 710, shelfY: 224, points: 35, color: 0x638c97 },
-  { id: 'heirloom-vase', x: 906, shelfY: 154, points: 40, color: 0xc5ae70 },
-] as const;
-
 export const ANGER_LEVELS = [
   { min: 0, id: 'calm', label: 'Entspannt', color: 0x718463 },
   { min: 25, id: 'annoyed', label: 'Genervt', color: 0xc49464 },

@@ -30,7 +30,7 @@ export class Pixel {
     this.sprite = scene.physics.add.sprite(spawn.x, spawn.bottom - 16 * SCALE, 'pixel').setScale(SCALE);
     this.sprite.setBodySize(26, 26).setOffset(3, 6).setCollideWorldBounds(true);
     this.sprite.setMaxVelocity(260, 600).setVisible(false);
-    this.visual = scene.add.sprite(spawn.x, spawn.bottom - 32, 'pixel', 0).setScale(SCALE);
+    this.visual = scene.add.sprite(spawn.x, spawn.bottom - 32, 'pixel', 0).setScale(SCALE).setDepth(1);
   }
 
   /** Engine boundary: only used by the scene to wire collision pairs. */

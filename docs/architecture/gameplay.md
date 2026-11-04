@@ -1,12 +1,12 @@
 # Gameplay-Architektur und gemeinsame Begriffe
 
-Stand und Begründung: [Review #22](../reviews/2026-11-02-architecture.md), geprüft nach #36. **Ist und Ziel sind getrennt beschrieben.** Die Zielstruktur ist ein Umsetzungsvorschlag für die dort verlinkten Folgeissues, keine bereits vorhandene Klassenstruktur.
+Ausgangspunkt: [Review #22](../reviews/2026-11-02-architecture.md), geprüft nach #36. Der aktuelle Ist-Stand enthält die Extraktionen und typisierten Inhalte aus #37–#42; weitergehende JSON-/Generator-Schritte sind ausdrücklich als geplant beschrieben.
 
 ## Ist
 
 `src/main.ts` enthält ausschließlich Bootstrap und Phaser-Konfiguration. `src/game/scenes/LivingRoomScene.ts` baut Raum/Kollisionen auf und koordiniert Input, Pixel, Interaktionen und HUD. `src/game/input/InputController.ts` besitzt Tastaturbindungen und Focus-/Cleanup-Verhalten. Ein eingefrorener `InputState` wird pro Game-Frame genau einmal gelesen; die gecachte Flanke bleibt für alle Verbraucher identisch. `src/game/actors/Pixel.ts` besitzt Bewegung/Klettern, Physikkörper, Blickrichtung, aktive Aktion und Visual-/Animationsanker. Die Szene verwendet das Collider-Objekt ausschließlich zum Verdrahten der Phaser-Kollisionspaare und liest für Interaktionen losgelöste Kontaktdaten. Animationsdaten und reine Auswahlfunktion liegen daneben in `pixel-animations.ts`.
 
-`src/game/ui/GameHud.ts` zeigt weiterhin ausschließlich `HudState` an. `Couch`, `Curtain`, `Plant` und `Vase` unter `src/game/objects/` besitzen jeweils ihre Geometrie, Grafik und ihr reines Zustandsmodell. Interaktionsmodelle liegen unter `src/game/interactions/`, Scoring und unveränderliche Ereignisse unter `src/game/domain/`. Die Szene übergibt Objektinstanz-ID, Platzierung, Flächen/Reichweiten und Regeln als typisierte Konfiguration; ein vollständiger Content-Katalog folgt in #42. Sitzfläche bzw. Vorhangfläche dienen gleichzeitig Darstellung und Collider/Nähe bzw. Klettern. Regalflächen unter `config/room.ts` werden ebenfalls nur einmal definiert. Doppelte IDs im Szenenaufbau werden zurückgewiesen.
+`src/game/ui/GameHud.ts` zeigt weiterhin ausschließlich `HudState` an. `Couch`, `Curtain`, `Plant` und `Vase` unter `src/game/objects/` besitzen jeweils ihre Geometrie, Grafik und ihr reines Zustandsmodell. Interaktionsmodelle liegen unter `src/game/interactions/`, Scoring und unveränderliche Ereignisse unter `src/game/domain/`. Der Content unter `src/content/` beschreibt Objektinstanz-ID, Platzierung, Flächen/Reichweiten und Regeln. Der reine Resolver prüft die Definitionen vor dem Engine-Start und berechnet Auflagen; eine kleine Fabrik übergibt die Ergebnisse als Konfiguration an bekannte Objektklassen. Sitzfläche bzw. Vorhangfläche dienen gleichzeitig Darstellung und Collider/Nähe bzw. Klettern. Regalflächen stehen ebenfalls nur einmal in der Raumdefinition und werden für Darstellung und Collider verwendet. Doppelte IDs im Szenenaufbau werden zurückgewiesen.
 
 Die funktionalen Verträge werden über Komposition verwendet: `Interactable` bietet Eignungsprüfung und Update für automatische Bodenaktionen; `Climbable` bietet Kletterfläche und Update für tatsächliche Bewegung; `Destructible` bietet Schadenssnapshot und maximales Score-Potenzial. `ObjectLifecycle` verbindet Reset/Destroy. Das Sofa ist nur Sprungplattform und Schadensobjekt, kein Vorhang-Kletterobjekt. Keine Marker-Typen für noch nicht implementierte Ziele/Panik und keine verpflichtende Phaser-Vererbungshierarchie.
 
@@ -83,7 +83,7 @@ Friedliches Fressen, Schlafen oder Kuscheln kann eine `Interaction` sein, ohne `
 
 Vorgeschlagene Folge pro Frame: Eingabe lesen → Pixel-Bewegung und aktive Aktion bestimmen → Objektmodelle mit tatsächlichem Kontext/Bewegung aktualisieren → eindeutige Ereignisse verarbeiten → Pixel-Darstellung und HUD synchronisieren. Die bestehende Unterscheidung zwischen Renderzeit und tatsächlicher Vorhangbewegung muss beim Extrahieren erhalten bleiben.
 
-`create/init` initialisiert den Durchlauf ausdrücklich; R ruft denselben fachlichen Reset auf. Jeder Besitzer setzt sein Modell, seine visuellen Spuren und Zähler zurück. `shutdown/destroy` meldet Listener, Collider und sonstige Ressourcen ab. Feldinitialisierer allein gelten nicht als Restart-Strategie. Der Testbeobachter erhält weiterhin nur eingefrorene Snapshots ohne Mutatoren.
+`create/init` initialisiert den Durchlauf ausdrücklich; R führt einen echten Scene-Neustart mit derselben Initialisierung aus. Jeder Besitzer setzt sein Modell, seine visuellen Spuren und Zähler zurück. `shutdown/destroy` meldet Listener, Collider und sonstige Ressourcen ab. Feldinitialisierer allein gelten nicht als Restart-Strategie. Der Testbeobachter erhält weiterhin nur eingefrorene Snapshots ohne Mutatoren.
 
 ## Vorgeschlagene Ablage und Content-Grenze
 
@@ -98,7 +98,8 @@ src/
     interactions/                 # kleine Verträge und reine Handlungsmodelle
     domain/                       # ChaosScore und fachliche Ereignisse
     ui/GameHud.ts                 # Anzeige von HudState
-    config/                       # Spiel-/Animationskonfiguration
+    content/                      # Datenvertrag, Validierung und Aufbau
+    assets/                       # bekannte Schlüssel und Vite-URL-Auflösung
   content/
     rooms/                        # typisierte Raumdefinitionen
     objects/                      # typisierte Objektvarianten
@@ -119,4 +120,10 @@ Damit können neue Räume und Objektvarianten durch Datenpflege entstehen. Eine 
 
 Die Abhängigkeit ist gerichtet: #37/#38 → #42 → optional #43. #39 wurde als unabhängiger erster Extraktionsschritt vor #37 umgesetzt. Der spätere Generator #29 verwendet denselben Raumvertrag; JSON ist dafür keine Voraussetzung. #32 kann den aktuellen Prototyp unabhängig von diesen Content-Arbeiten veröffentlichen.
 
-Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Die Extraktionen #37/#38/#39 sind in diesem Stand umgesetzt; Content-Schritte bleiben geplant.
+Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](https://github.com/Skanky0815/pixels-world/issues/38), [#39](https://github.com/Skanky0815/pixels-world/issues/39); unabhängig davon die bestätigte Validierungslücke [#40](https://github.com/Skanky0815/pixels-world/issues/40). Die Extraktionen #37/#38/#39 sind in diesem Stand umgesetzt; die typisierten Content-Definitionen #42 sind in diesem Stand umgesetzt. JSON #43 und Generator #29 bleiben geplant.
+
+## Umgesetzter Content-Vertrag (#42)
+
+`RoomDefinition` und diskriminierte `ObjectDefinition` liegen unter `src/game/content/`. `src/content/rooms/` und `src/content/objects/` liefern ausschließlich Daten. Die Szene enthält keine festen Objektlisten oder Hintergrundkoordinaten mehr; sie verbindet die erzeugten Adapter und verarbeitet ihre Ergebnisse. Instanz-IDs, Varianten, Assets, Fähigkeiten, Geometrie, sichere Punktwerte und Flächenreferenzen werden vor `Phaser.Game` geprüft. Der Resolver ist unabhängig von Phaser ausführbar; Engine-Typen werden nur für die strukturellen Konstruktor-Konfigurationen importiert und zur Laufzeit entfernt.
+
+Eine zweite handgebaute Raumvariante verändert Platzierung und Werte ohne neue Spielklassen. Sie ist über einen Dev-/E2E-Vorschauparameter wählbar; die Produktion bleibt beim bisherigen Standardraum. Der spätere Generator liefert denselben Raumvertrag, kein paralleles Format. Details: [Content-Leitfaden](../../src/content/README.md).

@@ -20,10 +20,10 @@ export class GameHud {
   private ratio = NaN;
   private color = NaN;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, layout: { readonly climbHint: { readonly x: number; readonly y: number } }) {
     this.root = scene.add.container(0, 0).setScrollFactor(0).setDepth(10);
     const textStyle = { fontFamily: 'monospace', fontSize: '12px', color: '#584637' };
-    this.climbHint = scene.add.text(800, 90, '↑ KLETTERN\nLOSLASSEN: RUTSCHEN', {
+    this.climbHint = scene.add.text(layout.climbHint.x, layout.climbHint.y, '↑ KLETTERN\nLOSLASSEN: RUTSCHEN', {
       ...textStyle, color: '#fff1cf', backgroundColor: '#615047',
     }).setPadding(7, 5).setOrigin(0.5);
     this.status = scene.add.text(26, 25, STATUS.idle, textStyle);

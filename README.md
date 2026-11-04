@@ -144,7 +144,7 @@ GitHub Actions startet die vollständige Game-QA bei Pull Requests und Pushes na
 
 ## Beiträge
 
-Das [Architekturreview #22](docs/reviews/2026-11-02-architecture.md) dokumentiert den geprüften Stand und konkrete Folgeaufgaben. Das [Gameplay-Zielbild](docs/architecture/gameplay.md) beschreibt die vorgeschlagene Trennung von Szene, Pixel, Controls, interaktiven Objekten und HUD; Szene, Pixel, Controls und HUD sind unter `src/game/` getrennt; instanzfähige Objektadapter sind unter `src/game/objects/` ergänzt, Content folgt separat.
+Das [Architekturreview #22](docs/reviews/2026-11-02-architecture.md) dokumentiert den geprüften Stand und konkrete Folgeaufgaben. Das [Gameplay-Zielbild](docs/architecture/gameplay.md) beschreibt die vorgeschlagene Trennung von Szene, Pixel, Controls, interaktiven Objekten und HUD; Szene, Pixel, Controls und HUD sind unter `src/game/` getrennt; instanzfähige Objektadapter sind unter `src/game/objects/` ergänzt, Raum- und Objektvorlagen liegen unter `src/content/`.
 
 Sprache, Commits und Review-Ablauf sind in [CONTRIBUTING.md](CONTRIBUTING.md) beschrieben. Die Arbeitsregeln für Agenten stehen in [AGENTS.md](AGENTS.md).
 
@@ -243,8 +243,14 @@ Bei laufendem Entwicklungsserver öffnet [Animationsvergleich](http://127.0.0.1:
 
 ## Instanzfähige Interaktionsobjekte
 
-`Couch`, `Curtain`, `Plant` und `Vase` unter `src/game/objects/` besitzen Geometrie, Darstellung, Zustandsmodell und Reset/Destroy. Platzierung und Reichweiten werden als typisierte Konfiguration im Szenenaufbau übergeben; die reine Raum-/Content-Definition folgt in #42. Sitzfläche bzw. Vorhangfläche werden auch für Collider/Nähe bzw. Klettern verwendet. Das Sofa ist eine Sprungplattform, kein Vorhang-Kletterobjekt.
+`Couch`, `Curtain`, `Plant` und `Vase` unter `src/game/objects/` besitzen Geometrie, Darstellung, Zustandsmodell und Reset/Destroy. Platzierung, Reichweiten und Werte stammen aus typisierten Raum-/Objektvorlagen unter `src/content/` und werden vor dem Engine-Start validiert. Sitzfläche bzw. Vorhangfläche werden auch für Collider/Nähe bzw. Klettern verwendet. Das Sofa ist eine Sprungplattform, kein Vorhang-Kletterobjekt.
 
 Alle Schäden einschließlich Vasenbruch liefern eingefrorene `ChaosEvent`-Werte mit `id`, `objectId`, `kind`, `stage` und `value`. Die ID codiert Objektinstanz, Schadensart und Stufe kollisionsfrei als JSON-Tupel. Genau ein Pfad in der Szene verarbeitet das Ereignis mit `ChaosScore.awardEvent` und emittiert bei neuer Wertung `object-damaged`. Gleiche Objektarten können getrennt zählen; dieselbe Ereignis-ID zählt bis zum Reset nur einmal.
 
 Für automatische Bodenaktionen wählt die Szene pro Frame das erste geeignete Objekt in stabiler Reihenfolge. Bei überlappenden Reichweiten wird höchstens eine Aktion fortgeschrieben; alle anderen erhalten ein inaktives Update und unterbrechen ihre Wartezeit. Objekte lesen nur Input-/Pixel-Snapshots und melden Aktion/Blickziel zurück; sie steuern weder Tastatur noch Pixel-Animation direkt.
+
+## Handgebaute Räume und Build-Version
+
+Das Standardzimmer entsteht vollständig aus [living-room.ts](src/content/rooms/living-room.ts) und dem [Objektkatalog](src/content/objects/catalog.ts). Der [Content-Leitfaden](src/content/README.md) beschreibt Instanzen, Auflagen, Validierung und Assets. Im Entwicklungsbetrieb demonstriert [Cozy Remix](http://127.0.0.1:5173/?room=cozy-remix) verschobene Objekte, andere Werte und zwei Sofainstanzen derselben Vorlage. Die normale Startseite und der Produktionsbuild verwenden weiterhin das bisherige Standardzimmer.
+
+Der Seitenfooter zeigt Copyright-Zeichen, aktuelles Jahr, Projektname und die aus `package.json` übernommene Build-Version. Er liegt außerhalb der Spielfläche und lädt keine zusätzlichen Daten.
