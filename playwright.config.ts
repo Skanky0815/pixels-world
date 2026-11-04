@@ -25,8 +25,8 @@ export default defineConfig({
     },
     {
       // The E2E build above is the mandatory shared typecheck for this test run.
-      command: 'npm exec vite build && npm exec vite preview -- --host 127.0.0.1 --port 4175 --strictPort',
-      url: 'http://127.0.0.1:4175',
+      command: 'npm exec vite build -- --base=/pixels-world/ && npm exec vite preview -- --base=/pixels-world/ --host 127.0.0.1 --port 4175 --strictPort',
+      url: 'http://127.0.0.1:4175/pixels-world/',
       reuseExistingServer: false,
       timeout: 60_000,
     },
