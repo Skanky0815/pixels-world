@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { PLANT_NIBBLE, PlantNibbling } from '../../src/plant-nibbling.ts';
+import { PLANT_NIBBLE, PlantNibbling } from '../../src/game/interactions/plant-nibbling.ts';
 
 test('Nähe und Stillstand lösen erst nach voller Wartezeit Knabbern aus', () => {
   const plant = new PlantNibbling();
@@ -8,7 +8,7 @@ test('Nähe und Stillstand lösen erst nach voller Wartezeit Knabbern aus', () =
   assert.equal(plant.snapshot().state, 'idle');
   assert.equal(plant.update(1999, true), undefined);
   const event = plant.update(1, true);
-  assert.deepEqual(event, { objectId: 'plant', kind: 'nibble', stage: 1, value: 2 });
+  assert.deepEqual(event, { id: '["plant","nibble",1]', objectId: 'plant', kind: 'nibble', stage: 1, value: 2 });
   assert.equal(Object.isFrozen(event), true);
   assert.equal(plant.snapshot().state, 'nibbling');
 });
@@ -21,7 +21,7 @@ test('Topf kippt erst nach Knabberphase und vollständiger Wackelwarnung', () =>
   plant.update(1, true);
   assert.equal(plant.snapshot().state, 'wobbling');
   assert.equal(plant.update(1199, true), undefined);
-  assert.deepEqual(plant.update(1, true), { objectId: 'plant', kind: 'tip', stage: 2, value: 10 });
+  assert.deepEqual(plant.update(1, true), { id: '["plant","tip",2]', objectId: 'plant', kind: 'tip', stage: 2, value: 10 });
   assert.equal(plant.snapshot().state, 'tipped');
 });
 

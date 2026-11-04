@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { PIXEL_ANIMATIONS, pixelAnimation } from './pixel-animations';
-import { CURTAIN_SLIDE } from '../../curtain-sliding';
+import { CURTAIN_SLIDE } from '../interactions/curtain-sliding';
 import type { InputState } from '../input/input-state';
 
-type GroundAction = 'idle' | 'scratching' | 'nibbling' | 'wobbling';
+import type { Bounds, GroundAction } from '../interactions/contracts';
 type Activity = GroundAction | 'climbing' | 'sliding';
 const SCALE = 2;
 
@@ -55,10 +55,10 @@ export class Pixel {
 
   faceToward(x: number) { this.sprite.setFlipX(this.x > x); }
 
-  move(input: InputState, time: number, delta: number, curtain: Phaser.Geom.Rectangle) {
+  move(input: InputState, time: number, delta: number, area: Bounds | undefined) {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
     const { horizontal, vertical, jumpPressed } = input;
-    const overlapsCurtain = Phaser.Geom.Intersects.RectangleToRectangle(new Phaser.Geom.Rectangle(body.x, body.y, body.width, body.height), curtain);
+    const overlapsCurtain = area !== undefined && Phaser.Geom.Intersects.RectangleToRectangle(new Phaser.Geom.Rectangle(body.x, body.y, body.width, body.height), new Phaser.Geom.Rectangle(area.x, area.y, area.width, area.height));
     this.overlapsCurtain = overlapsCurtain;
     if (!overlapsCurtain) this.mustLeaveCurtain = false;
     const canGrab = !this.mustLeaveCurtain && time >= this.grabBlockedUntil && !jumpPressed;

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ChaosScore, angerFor, VASES } from '../../src/chaos.ts';
+import { ChaosScore, angerFor, VASES } from '../../src/game/domain/chaos.ts';
 
 test('Schaden zählt pro Objekt genau einmal, unterschiedliche Objekte summieren sich', () => {
   const score = new ChaosScore();

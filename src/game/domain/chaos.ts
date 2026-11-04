@@ -1,3 +1,5 @@
+import type { ChaosEvent } from './chaos-event.ts';
+
 export const VASES = [
   { id: 'small-vase', x: 620, shelfY: 304, points: 25, color: 0xc5875f },
   { id: 'blue-vase', x: 710, shelfY: 224, points: 35, color: 0x638c97 },
@@ -31,6 +33,8 @@ export class ChaosScore {
     this.total += points;
     return true;
   }
+
+  awardEvent(event: ChaosEvent) { return this.award(event.id, event.value, event.objectId); }
 
   reset() {
     this.total = 0;

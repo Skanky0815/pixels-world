@@ -1,12 +1,11 @@
+import { assertObjectId, chaosEvent, type ChaosEvent } from '../domain/chaos-event.ts';
+
 export const PLANT_NIBBLE = {
   delayMs: 2000,
   nibbleMs: 1000,
   warningMs: 1200,
   nibbleValue: 2,
   tipValue: 10,
-  x: 82,
-  minX: 44,
-  maxX: 104,
 } as const;
 
 export interface PlantConfig {
@@ -17,12 +16,7 @@ export interface PlantConfig {
   readonly tipValue: number;
 }
 
-export interface PlantDamageEvent {
-  readonly objectId: 'plant';
-  readonly kind: 'nibble' | 'tip';
-  readonly stage: 1 | 2;
-  readonly value: number;
-}
+export type PlantDamageEvent = ChaosEvent<'nibble' | 'tip', 1 | 2>;
 
 type PlantState = 'idle' | 'waiting' | 'nibbling' | 'wobbling' | 'tipped';
 
@@ -31,9 +25,12 @@ export class PlantNibbling {
   private phase: PlantState = 'idle';
   private elapsed = 0;
   private damage = 0;
+  private readonly objectId: string;
   private readonly config: PlantConfig;
 
-  constructor(config: PlantConfig = PLANT_NIBBLE) {
+  constructor(config: PlantConfig = PLANT_NIBBLE, objectId = 'plant') {
+    assertObjectId(objectId);
+    this.objectId = objectId;
     if (![config.delayMs, config.nibbleMs, config.warningMs].every(value => Number.isFinite(value) && value > 0) ||
       ![config.nibbleValue, config.tipValue].every(value => Number.isSafeInteger(value) && value >= 0)) throw new Error('Invalid plant configuration');
     this.config = { ...config };
@@ -53,7 +50,7 @@ export class PlantNibbling {
       this.elapsed = 0;
       if (this.damage === 0) {
         this.damage = 1;
-        return Object.freeze({ objectId: 'plant', kind: 'nibble', stage: 1, value: this.config.nibbleValue });
+        return chaosEvent(this.objectId, 'nibble', 1, this.config.nibbleValue);
       }
     } else if (this.phase === 'nibbling' && this.elapsed >= this.config.nibbleMs) {
       this.phase = 'wobbling';
@@ -62,7 +59,7 @@ export class PlantNibbling {
       this.phase = 'tipped';
       this.elapsed = 0;
       this.damage = 2;
-      return Object.freeze({ objectId: 'plant', kind: 'tip', stage: 2, value: this.config.tipValue });
+      return chaosEvent(this.objectId, 'tip', 2, this.config.tipValue);
     }
   }
 
