@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import fs from 'node:fs';
 import { PNG } from 'pngjs';
-import { pixelAnimation } from '../../src/pixel-animations.ts';
+import { pixelAnimation } from '../../src/game/actors/pixel-animations.ts';
 
 const still = { climbing: false, sliding: false, grounded: true, velocityX: 0, velocityY: 0, scratching: false, nibbling: false, landing: false };
 

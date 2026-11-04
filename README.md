@@ -106,7 +106,7 @@ Die von Vite ausgegebene lokale Adresse öffnen, üblicherweise http://127.0.0.1
 - **← / →:** bewegen.
 - **Leertaste:** springen; horizontaler Schwung bleibt beim Loslassen erhalten. Richtungstasten steuern in der Luft begrenzt nach. Vor der Sofakante abspringen, um über die feste Seite zu kommen.
 - **↑ / ↓ am markierten Vorhang:** greifen und klettern; Anspringen greift automatisch. Ohne ↑ rutscht Pixel langsam hinunter; ↓ beschleunigt den Abstieg. Seitlich die Fläche verlassen oder mit Leertaste abspringen – standardmäßig nach links, sonst in die gehaltene Richtung.
-- **R:** Durchlauf neu starten: Pixel, sämtliche Vasen, Sofakratzer, Vorhangrisse, Pflanze, Splitter und Punkte zurücksetzen.
+- **R:** Phaser-Szene vollständig neu starten: Pixel, sämtliche Vasen, Sofakratzer, Vorhangrisse, Pflanze, Splitter und Punkte zurücksetzen.
 
 Bücher, Sofalehne und Bild sind Dekoration. Der Katzengrastopf links ist interaktiv: kurz daneben stehen bleiben, um zu knabbern; Weglaufen oder Springen verhindert das spätere Umkippen. Die Sitzfläche und Regalbretter bilden die festen Möbelplattformen.
 
@@ -144,7 +144,7 @@ GitHub Actions startet die vollständige Game-QA bei Pull Requests und Pushes na
 
 ## Beiträge
 
-Das [Architekturreview #22](docs/reviews/2026-11-02-architecture.md) dokumentiert den geprüften Stand und konkrete Folgeaufgaben. Das [Gameplay-Zielbild](docs/architecture/gameplay.md) beschreibt die vorgeschlagene Trennung von Szene, Pixel, Controls, interaktiven Objekten und HUD; das HUD ist als erster Schritt unter `src/game/ui/` isoliert, die übrige Migration steht noch aus.
+Das [Architekturreview #22](docs/reviews/2026-11-02-architecture.md) dokumentiert den geprüften Stand und konkrete Folgeaufgaben. Das [Gameplay-Zielbild](docs/architecture/gameplay.md) beschreibt die vorgeschlagene Trennung von Szene, Pixel, Controls, interaktiven Objekten und HUD; Szene, Pixel, Controls und HUD sind unter `src/game/` getrennt; Objektadapter und Content folgen separat.
 
 Sprache, Commits und Review-Ablauf sind in [CONTRIBUTING.md](CONTRIBUTING.md) beschrieben. Die Arbeitsregeln für Agenten stehen in [AGENTS.md](AGENTS.md).
 
@@ -235,7 +235,7 @@ Der erste Idle-Frame ist exakt der von Rico bestätigte Pixel-Master v3. Das lok
 
 Die Animation folgt der vorhandenen Physik. Neue Bewegung unterbricht die Landepose; Springen und Klettern verdrängen Bodenaktionen. R setzt auf Idle zurück. Die Grunddarstellung des 32×32-Originals ist ohne Glättung **64×64**. Ein sichtbares Sprite folgt dem festen Physikkörper am Pfotenanker: kompakter Lauf und Idle verwenden Faktor 2, Klettern/Rutschen Faktor 2,5 (80×80); die ursprünglich kleiner angelegten Aktionsposen eine größere Zeichenfläche (94×94 für Sprung/Fall/Landung, 80×80 beim Knabbern und Kratzen). So schrumpft Pixel beim Zustandswechsel nicht in die alte, kleinere Körperwirkung zurück; gestreckte Posen dürfen eine größere Zeichenfläche belegen. Die ebenfalls skalierte Kollisionsfläche misst **52×52** Spielpixel und ist horizontal zentriert; Start und Reset richten die Pfoten am Boden aus. Animationsframes verändern weder Reichweiten, Bewegungsgeschwindigkeiten noch Schadensintervalle.
 
-[Sheet, Framebelegung und Aufbereitung](assets/pixel/README.md) dokumentieren Originalvorlage, Bildwerkzeug-Prompt und reproduzierbares Packen. Die Engine lädt nur das kleine 160×160-Sheet; Vorlage und Kontrollansicht werden nicht mitgeliefert. Einstellungen und Zustandsauswahl stehen in [src/pixel-animations.ts](src/pixel-animations.ts). Zum Prüfen kurz stehen bleiben, laufen und Richtung wechseln, senkrecht springen/landen und am Vorhang hochklettern. Bei der obersten Vase erst links neben ihr auf dem Regal landen und dann seitlich anschubsen; von ganz oben kann Pixel darübersteigen.
+[Sheet, Framebelegung und Aufbereitung](assets/pixel/README.md) dokumentieren Originalvorlage, Bildwerkzeug-Prompt und reproduzierbares Packen. Die Engine lädt nur das kleine 160×160-Sheet; Vorlage und Kontrollansicht werden nicht mitgeliefert. Einstellungen und Zustandsauswahl stehen in [src/game/actors/pixel-animations.ts](src/game/actors/pixel-animations.ts). Zum Prüfen kurz stehen bleiben, laufen und Richtung wechseln, senkrecht springen/landen und am Vorhang hochklettern. Bei der obersten Vase erst links neben ihr auf dem Regal landen und dann seitlich anschubsen; von ganz oben kann Pixel darübersteigen.
 
 ### Animationen direkt vergleichen
 

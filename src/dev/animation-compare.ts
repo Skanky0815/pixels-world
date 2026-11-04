@@ -1,5 +1,5 @@
-import sheetUrl from '../assets/pixel/pixel-sheet.png?url';
-import { PIXEL_ANIMATIONS } from './pixel-animations';
+import sheetUrl from '../../assets/pixel/pixel-sheet.png?url';
+import { PIXEL_ANIMATIONS } from '../game/actors/pixel-animations';
 import './animation-compare.css';
 
 if (!import.meta.env.DEV) throw new Error('Animationsvergleich ist nur im Dev-Betrieb verfügbar.');
