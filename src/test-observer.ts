@@ -12,6 +12,7 @@ export function installTestObserver(read: () => GameTestState) {
         camera: Object.freeze(state.camera),
         pixel: Object.freeze(state.pixel),
         chaos: Object.freeze(state.chaos),
+        hud: Object.freeze(state.hud),
         curtain: Object.freeze({ ...state.curtain, lastDamage: state.curtain.lastDamage ? Object.freeze(state.curtain.lastDamage) : null }),
         couch: Object.freeze({ ...state.couch, lastDamage: state.couch.lastDamage ? Object.freeze(state.couch.lastDamage) : null }),
         plant: Object.freeze({ ...state.plant, lastDamage: state.plant.lastDamage ? Object.freeze(state.plant.lastDamage) : null }),

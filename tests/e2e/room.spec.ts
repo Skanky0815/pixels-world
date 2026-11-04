@@ -69,6 +69,7 @@ async function curtain(page: Page) {
   // Walk under the furniture, using only real input to reach the curtain.
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 790);
   await holdUntil(page, ['ArrowUp'], s => s.pixel.climbing && s.pixel.y < 350);
+  expect((await state(page)).hud).toMatchObject({ statusText: 'PIXEL · CURTAIN CLIMBING', climbHintAlpha: 1 });
 }
 
 async function framesPass(page: Page, count = 15) {
@@ -288,6 +289,9 @@ test('Alle drei Vasen sind erreichbar und summieren Schaden über die Ärgerstuf
   await holdUntil(page, ['ArrowRight'], s => s.vases[2].state !== 'resting');
   await until(page, s => s.vases[2].state === 'broken');
   const complete = await state(page);
+  expect(complete.hud.scoreText).toBe(`CHAOS: ${complete.chaos.score}  ·  SARAS ÄRGER (VORSCHAU): Wütend`);
+  expect(complete.hud.angerColor).toBe(0xb65d4a);
+  expect(complete.hud.angerRatio).toBeCloseTo(complete.chaos.score / 162);
   expect(complete.chaos).toEqual({ score: 100 + complete.curtain.damage * 4, damagedObjects: 3 + Number(complete.curtain.damage > 0), anger: 'angry' });
 });
 
@@ -295,6 +299,28 @@ async function besideCouch(page: Page) {
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 185);
   await until(page, s => s.pixel.velocityX === 0 && s.couch.state === 'waiting');
 }
+
+test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverändert aufgebaut', async ({ page }) => {
+  await start(page);
+  const idle = (await state(page)).hud;
+  expect(idle).toEqual({
+    statusText: 'PIXEL · HOME ALONE',
+    scoreText: 'CHAOS: 0  ·  SARAS ÄRGER (VORSCHAU): Entspannt',
+    climbHintText: '↑ KLETTERN\nLOSLASSEN: RUTSCHEN',
+    climbHintAlpha: 0.65, angerRatio: 0, angerColor: 0x718463, elements: 4,
+  });
+  expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.hud))).toBe(true);
+  for (let round = 0; round < 3; round++) {
+    await besideCouch(page);
+    await until(page, s => s.couch.damage === 1);
+    const scratched = (await state(page)).hud;
+    expect(scratched.statusText).toBe('PIXEL · SOFA KRATZEN');
+    expect(scratched.scoreText).toBe('CHAOS: 3  ·  SARAS ÄRGER (VORSCHAU): Entspannt');
+    expect(scratched.angerRatio).toBeCloseTo(3 / 162);
+    await reset(page);
+    expect((await state(page)).hud).toEqual(idle);
+  }
+});
 
 test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegungsabbruch', async ({ page }, testInfo) => {
   await start(page);
@@ -448,10 +474,12 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   const first = await state(page);
   expect(first.pixel.animation).toBe('nibble');
   expect(first.pixel).toMatchObject({ displayWidth: 80, displayHeight: 80, bodyWidth: 52, bodyHeight: 52 });
+  expect(first.hud.statusText).toBe('PIXEL · KATZENGRAS KNABBERN');
   expect(first.plant.lastDamage).toEqual({ objectId: 'plant', kind: 'nibble', stage: 1, value: 2 });
   expect(first.chaos).toEqual({ score: 2, damagedObjects: 1, anger: 'calm' });
   await until(page, s => s.pixel.animationFrame !== first.pixel.animationFrame);
   await until(page, s => s.plant.state === 'wobbling' && Math.abs(s.plant.angle) > 4);
+  expect((await state(page)).hud.statusText).toBe('PIXEL · VORSICHT, DER TOPF WACKELT!');
   const screenshot = testInfo.outputPath('plant-warning.png');
   await page.screenshot({ path: screenshot, fullPage: true });
   await testInfo.attach('Knabbern mit sichtbarer Wackelwarnung', { path: screenshot, contentType: 'image/png' });

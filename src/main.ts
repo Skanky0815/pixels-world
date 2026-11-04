@@ -4,6 +4,7 @@ import pixelSheetUrl from '../assets/pixel/pixel-sheet.png?url';
 import { PIXEL_ANIMATIONS, pixelAnimation } from './pixel-animations';
 import { ChaosScore, VASES, angerFor } from './chaos';
 import { Vase } from './vase';
+import { GameHud } from './game/ui/GameHud';
 import { COUCH_SCRATCH, CouchScratching, type CouchDamageEvent } from './couch-scratching';
 import { CURTAIN_SLIDE, CurtainSliding, type CurtainDamageEvent } from './curtain-sliding';
 import { PLANT_NIBBLE, PlantNibbling, type PlantDamageEvent } from './plant-nibbling';
@@ -22,16 +23,13 @@ class LivingRoom extends Phaser.Scene {
   private jump!: Phaser.Input.Keyboard.Key;
   private reset!: Phaser.Input.Keyboard.Key;
   private climbing = false;
-  private climbHint!: Phaser.GameObjects.Text;
-  private status!: Phaser.GameObjects.Text;
+  private hud!: GameHud;
   private platforms!: Phaser.Physics.Arcade.StaticGroup;
   private grabBlockedUntil = 0;
   private mustLeaveCurtain = false;
   private readonly chaos = new ChaosScore();
   private vases: Vase[] = [];
   private fragments: Phaser.GameObjects.Rectangle[] = [];
-  private scoreText!: Phaser.GameObjects.Text;
-  private angerBar!: Phaser.GameObjects.Graphics;
   private readonly couchScratch = new CouchScratching();
   private scratchMarks!: Phaser.GameObjects.Graphics;
   private scratchingPaws!: Phaser.GameObjects.Graphics;
@@ -97,11 +95,9 @@ class LivingRoom extends Phaser.Scene {
     this.cursors = keyboard.createCursorKeys();
     this.jump = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.reset = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-    this.climbHint = this.add.text(800, 90, '↑ KLETTERN\nLOSLASSEN: RUTSCHEN', { fontFamily: 'monospace', fontSize: '12px', color: '#fff1cf', backgroundColor: '#615047' }).setPadding(7, 5).setOrigin(0.5);
-    this.status = this.add.text(26, 25, 'PIXEL · HOME ALONE', { fontFamily: 'monospace', fontSize: '12px', color: '#584637' });
-    this.scoreText = this.add.text(26, 48, '', { fontFamily: 'monospace', fontSize: '12px', color: '#584637' });
-    this.angerBar = this.add.graphics();
-    this.updateScore();
+    this.hud = new GameHud(this);
+    this.renderHud(false);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.hud.destroy());
     this.cameras.main.setBounds(0, 0, WIDTH, HEIGHT);
     if (import.meta.env.MODE === 'e2e') {
       void import('./test-observer').then(({ installTestObserver }) => {
@@ -114,6 +110,7 @@ class LivingRoom extends Phaser.Scene {
             room: { width: WIDTH, height: HEIGHT },
             camera: { x: camera.scrollX, y: camera.scrollY, width: camera.width, height: camera.height, zoom: camera.zoom },
             chaos: { score: this.chaos.score, damagedObjects: this.chaos.count, anger: angerFor(this.chaos.score).id },
+            hud: this.hud.snapshot(),
             vases: this.vases.map(vase => vase.snapshot()),
             couch: { ...this.couchScratch.snapshot(), events: this.couchEvents, lastDamage: this.lastCouchDamage },
             curtain: { ...this.curtainSlide.snapshot(), events: this.curtainEvents, lastDamage: this.lastCurtainDamage },
@@ -206,11 +203,17 @@ class LivingRoom extends Phaser.Scene {
     g.destroy();
   }
 
-  private updateScore() {
-    const anger = angerFor(this.chaos.score);
-    this.scoreText.setText(`CHAOS: ${this.chaos.score}  ·  SARAS ÄRGER (VORSCHAU): ${anger.label}`);
-    this.angerBar.clear().fillStyle(0x705547, 0.25).fillRect(26, 70, 160, 6);
-    this.angerBar.fillStyle(anger.color).fillRect(26, 70, 160 * Math.min(this.chaos.score / MAX_CHAOS_SCORE, 1), 6);
+  private renderHud(nearCurtain: boolean) {
+    const plant = this.plantNibble.snapshot().state;
+    this.hud.render({
+      score: this.chaos.score,
+      anger: angerFor(this.chaos.score),
+      angerRatio: this.chaos.score / MAX_CHAOS_SCORE,
+      activity: plant === 'wobbling' ? 'wobbling' : plant === 'nibbling' ? 'nibbling' :
+        this.couchScratch.snapshot().state === 'scratching' ? 'scratching' :
+        this.curtainSlide.snapshot().state === 'sliding' ? 'sliding' : this.climbing ? 'climbing' : 'idle',
+      nearCurtain,
+    });
   }
 
   private breakVase(vase: Vase) {
@@ -221,7 +224,6 @@ class LivingRoom extends Phaser.Scene {
       this.fragments.push(shard);
       this.tweens.add({ targets: shard, x: Phaser.Math.Clamp(vase.x + (i - 3) * 9, 4, WIDTH - 4), y: FLOOR_Y - 2 - i % 2, angle: i * 31, duration: 240 });
     }
-    this.updateScore();
   }
 
   private resetRoom() {
@@ -261,8 +263,7 @@ class LivingRoom extends Phaser.Scene {
     this.landingUntil = 0;
     this.pixel.play('idle');
     this.syncPixelVisual('idle');
-    this.status.setText('PIXEL · HOME ALONE');
-    this.updateScore();
+    this.renderHud(false);
   }
 
   private makeCatAnimations() {
@@ -308,7 +309,7 @@ class LivingRoom extends Phaser.Scene {
     if (event) {
       this.couchEvents++;
       this.lastCouchDamage = event;
-      if (this.chaos.award(`couch-scratch-${event.stage}`, event.value, event.objectId)) this.updateScore();
+      this.chaos.award(`couch-scratch-${event.stage}`, event.value, event.objectId);
       this.events.emit('object-damaged', event);
       const x = Phaser.Math.Clamp(this.pixel.x + (this.pixel.x > 307 ? -12 : 12) + (event.stage % 3) * 3, 184, 426);
       const y = body.bottom > 400 ? 408 : 331;
@@ -357,7 +358,7 @@ class LivingRoom extends Phaser.Scene {
     if (event) {
       this.plantEvents++;
       this.lastPlantDamage = event;
-      if (this.chaos.award(`plant-${event.kind}`, event.value, event.objectId)) this.updateScore();
+      this.chaos.award(`plant-${event.kind}`, event.value, event.objectId);
       this.events.emit('object-damaged', event);
       this.drawPlant();
       if (event.kind === 'tip') {
@@ -389,7 +390,7 @@ class LivingRoom extends Phaser.Scene {
     if (!event) return;
     this.curtainEvents++;
     this.lastCurtainDamage = event;
-    if (this.chaos.award(`curtain-tear-${event.stage}`, event.value, event.objectId)) this.updateScore();
+    this.chaos.award(`curtain-tear-${event.stage}`, event.value, event.objectId);
     this.events.emit('object-damaged', event);
     const side = this.pixel.x > CURTAIN.centerX ? -1 : 1;
     const x = Phaser.Math.Clamp(this.pixel.x + side * (22 * PIXEL_SCALE + (event.stage % 3) * 4), CURTAIN.left + 8, CURTAIN.right - 8);
@@ -437,13 +438,11 @@ class LivingRoom extends Phaser.Scene {
       if (jumpPressed && body.blocked.down) this.pixel.setVelocityY(-480);
     }
     if (horizontal !== 0) this.pixel.setFlipX(horizontal < 0);
-    this.climbHint.setAlpha(overlapsCurtain ? 1 : 0.65);
     this.updateCurtain(vertical < 0);
     this.updateCouch(delta);
     this.updatePlant(time, delta);
     this.updateAnimation(time);
-    const plantState = this.plantNibble.snapshot().state;
-    this.status.setText(plantState === 'wobbling' ? 'PIXEL · VORSICHT, DER TOPF WACKELT!' : plantState === 'nibbling' ? 'PIXEL · KATZENGRAS KNABBERN' : this.couchScratch.snapshot().state === 'scratching' ? 'PIXEL · SOFA KRATZEN' : this.curtainSlide.snapshot().state === 'sliding' ? 'PIXEL · VORHANG RUTSCHEN' : this.climbing ? 'PIXEL · CURTAIN CLIMBING' : 'PIXEL · HOME ALONE');
+    this.renderHud(overlapsCurtain);
   }
 }
 
