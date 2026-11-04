@@ -1,6 +1,10 @@
 import { test as base, expect, type Page } from '@playwright/test';
 import { PNG } from 'pngjs';
+import { readFileSync } from 'node:fs';
+const packageVersion = (JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as { version: string }).version;
 import type { GameTestState } from '../../src/test-state';
+
+type RoomTestState = GameTestState & { couch: NonNullable<GameTestState['couch']>; curtain: NonNullable<GameTestState['curtain']>; plant: NonNullable<GameTestState['plant']> };
 
 const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'r'];
 const test = base.extend<{ healthyBrowser: void }>({
@@ -23,16 +27,17 @@ const test = base.extend<{ healthyBrowser: void }>({
   }, { auto: true }],
 });
 
-async function state(page: Page): Promise<GameTestState> {
+async function state(page: Page): Promise<RoomTestState> {
   return page.evaluate(() => {
     const snapshot = window.__pixelTest;
-    if (!snapshot) throw new Error('Testzustand fehlt');
-    return snapshot;
+    if (!snapshot || !snapshot.couch || !snapshot.curtain || !snapshot.plant) throw new Error('Testzustand fehlt');
+    // The two authored fixtures contain these objects; the general observer allows rooms without them.
+    return { ...snapshot, couch: snapshot.couch, curtain: snapshot.curtain, plant: snapshot.plant };
   });
 }
 
-async function start(page: Page) {
-  await page.goto('/');
+async function start(page: Page, path = '/') {
+  await page.goto(path);
   await expect.poll(async () => {
     await page.clock.runFor(32);
     return page.evaluate(() => window.__pixelTest?.ready);
@@ -42,7 +47,7 @@ async function start(page: Page) {
   await page.locator('#game').focus();
 }
 
-async function until(page: Page, check: (s: GameTestState) => boolean) {
+async function until(page: Page, check: (s: RoomTestState) => boolean) {
   await expect.poll(async () => {
     // Real keyboard input, deterministic simulation steps: runner latency must not hold a key longer.
     await page.clock.runFor(32);
@@ -51,7 +56,7 @@ async function until(page: Page, check: (s: GameTestState) => boolean) {
   }, { intervals: [0], timeout: 15_000 }).toMatchObject({ matched: true });
 }
 
-async function holdUntil(page: Page, held: string[], check: (s: GameTestState) => boolean) {
+async function holdUntil(page: Page, held: string[], check: (s: RoomTestState) => boolean) {
   try {
     for (const key of held) await page.keyboard.down(key);
     await until(page, check);
@@ -94,7 +99,7 @@ test('Raum startet und zeichnet sichtbaren Inhalt', async ({ page }) => {
   const snapshot = await state(page);
   expect(snapshot.scene).toBe('LivingRoom');
   expect(snapshot.pixel).toMatchObject({ displayWidth: 64, displayHeight: 64, bodyWidth: 52, bodyHeight: 52 });
-  expect(snapshot.room).toEqual({ width: 960, height: 540 });
+  expect(snapshot.room).toEqual({ id: 'living-room', width: 960, height: 540 });
   // Sample the composited browser screenshot; WebGL's back buffer may already be cleared.
   const bounds = await page.locator('canvas').boundingBox();
   if (!bounds) throw new Error('Canvas nicht sichtbar');
@@ -347,6 +352,39 @@ test('Focus-Verlust löst gehaltene Eingaben; erneutes Drücken funktioniert nac
   expect((await state(page)).pixel.velocityX).toBe(0);
   await page.keyboard.up('ArrowRight');
   await holdUntil(page, ['ArrowRight'], s => s.pixel.x > stopped + 25);
+});
+
+test('Content-Variante verwendet geänderte Werte und zwei unabhängige Sofainstanzen', async ({ page }) => {
+  await start(page, '/?room=cozy-remix');
+  expect((await state(page)).room.id).toBe('cozy-remix');
+  const couches = (await state(page)).objects.filter(object => object.kind === 'couch');
+  expect(couches.map(object => [object.id, object.variant])).toEqual([['couch', 'worn-couch'], ['reading-couch', 'worn-couch']]);
+  await holdUntil(page, ['ArrowRight'], s => s.pixel.x >= 225);
+  await until(page, s => s.couch.damage === 1);
+  const scratched = await state(page);
+  expect(scratched.chaos.score).toBe(1);
+  expect(scratched.objects.find(object => object.id === 'reading-couch')?.damage).toBe(0);
+  await reset(page);
+  expect((await state(page)).room.id).toBe('cozy-remix');
+  expect((await state(page)).objects.every(object => object.damage === 0)).toBe(true);
+  expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.objects) && window.__pixelTest?.objects.every(Object.isFrozen))).toBe(true);
+});
+
+test('Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spielfläche', async ({ page }) => {
+  for (const base of ['http://127.0.0.1:4174/', 'http://127.0.0.1:4175/?room=cozy-remix']) {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto(base);
+    await expect(page.locator('h1 span')).toHaveText('01 / THE LIVING ROOM');
+    const year = await page.evaluate(() => new Date().getFullYear());
+    const footer = page.locator('#build-info');
+    await expect(footer).toHaveText(`© ${year} Pixel's World · v${packageVersion}`);
+    await expect(footer).toBeVisible();
+    const footerBox = await footer.boundingBox(), gameBox = await page.locator('#game').boundingBox();
+    expect(footerBox && gameBox && footerBox.y >= gameBox.y + gameBox.height).toBe(true);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(footer).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
 });
 
 test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverändert aufgebaut', async ({ page }) => {

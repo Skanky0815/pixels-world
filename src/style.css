@@ -15,3 +15,5 @@ footer p { margin: 0; } footer span { margin: 0 6px; color: #756456; }
 kbd { border: 1px solid #68594f; padding: 3px 5px; border-radius: 3px; color: #f3e3c9; }
 .hint { color: #a78d77; font-style: italic; }
 @media (max-width: 600px) { body { padding: 12px; } .badge { display: none; } footer { font-size: 9px; } }
+
+.build-info { flex-basis: 100%; text-align: center; font-size: 11px; color: #b6a195; overflow-wrap: anywhere; }

@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { ASSETS } from '../assets/definitions';
 import { assertObjectId, chaosEvent, DamageHistory } from '../domain/chaos-event';
 import type { Destructible, ObjectLifecycle } from '../interactions/contracts';
 
@@ -28,10 +29,10 @@ export class Vase implements Destructible, ObjectLifecycle {
       const g = scene.make.graphics({ x: 0, y: 0 });
       g.fillStyle(0xffffff).fillRect(5, 0, 8, 8).fillRect(2, 8, 14, 16).fillRect(4, 24, 10, 4);
       g.fillStyle(0xd3d3d3).fillRect(5, 0, 8, 3).fillRect(12, 9, 3, 14);
-      g.generateTexture('vase', 18, 28); g.destroy();
+      g.generateTexture('vase', ASSETS['vase-default'].width, ASSETS['vase-default'].height); g.destroy();
     }
-    this.collider = scene.physics.add.image(config.x, config.shelfY - 14, 'vase').setTint(config.color);
-    this.shards = scene.add.container(0, 0);
+    this.collider = scene.physics.add.image(config.x, config.shelfY - 14, 'vase').setTint(config.color).setDepth(2);
+    this.shards = scene.add.container(0, 0).setDepth(2);
     this.reset();
   }
 
