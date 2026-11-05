@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import type { HomecomingSnapshot, SaraAnimation } from '../domain/homecoming';
 import { SARA_ANIMATIONS } from '../../content/sara-reactions';
 import { SARA_CLIPS, SARA_SPRITE } from '../actors/sara-animations';
+import { homecomingPositions } from '../content/homecoming-layout';
 
 const REACTION_LABELS = { calm: 'Skeptischer Blick', annoyed: 'Genervtes Seufzen', angry: '…' };
 
@@ -44,11 +45,14 @@ export class SaraReturnView {
       .play(SARA_ANIMATIONS.idle);
   }
 
-  render(snapshot: HomecomingSnapshot) {
+  render(snapshot: HomecomingSnapshot, canContinue = false) {
+    const positions = homecomingPositions(this.layout.width);
+
     this.root.setVisible(snapshot.stage !== 'waiting');
     this.play(snapshot.animationKey);
-    this.actor.x = this.layout.width + 32 - snapshot.entryProgress * 146;
-    this.message.setText(messageFor(snapshot));
+    this.actor.x =
+      positions.saraStartX + snapshot.entryProgress * (positions.saraEndX - positions.saraStartX);
+    this.message.setText(messageFor(snapshot, canContinue));
   }
 
   private play(key: SaraAnimation) {
@@ -99,14 +103,20 @@ function registerAnimations(scene: Phaser.Scene) {
   }
 }
 
-function messageFor(snapshot: HomecomingSnapshot) {
+function messageFor(snapshot: HomecomingSnapshot, canContinue: boolean) {
   if (snapshot.stage === 'waiting') return '';
 
   if (snapshot.stage === 'entering') return 'SARA\nDie Tür geht auf …';
 
   if (snapshot.stage === 'complete') return 'VERSÖHNUNG\nFortsetzung folgt · R: Neue Runde';
 
-  if (snapshot.stage === 'dialogue') return `SARA\n${snapshot.selection?.dialogue ?? ''}`;
+  if (snapshot.stage === 'dialogue') return dialogueMessage(snapshot, canContinue);
 
   return `SARA\n${snapshot.selection ? REACTION_LABELS[snapshot.selection.anger] : ''}`;
+}
+
+function dialogueMessage(snapshot: HomecomingSnapshot, canContinue: boolean) {
+  const cue = canContinue ? 'LEERTASTE: Weiter' : 'Pixel kommt zu Sara …';
+
+  return `SARA\n${snapshot.selection?.dialogue ?? ''}\n${cue}`;
 }

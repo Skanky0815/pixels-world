@@ -38,10 +38,16 @@ export class InputController {
     return {
       horizontal: Number(k.right.isDown) - Number(k.left.isDown),
       vertical: Number(k.down.isDown) - Number(k.up.isDown),
-      jumpPressed: Phaser.Input.Keyboard.JustDown(k.jump),
+      ...this.readSpace(),
       resetPressed: Phaser.Input.Keyboard.JustDown(k.reset),
       active: [k.left, k.right, k.up, k.down, k.jump].some((key) => key.isDown),
     };
+  }
+
+  private readSpace() {
+    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.keys.jump);
+
+    return { jumpPressed, confirmPressed: jumpPressed && !this.keys.jump.originalEvent?.repeat };
   }
 
   release() {

@@ -68,6 +68,7 @@ export class Pixel {
   }
 
   /** Detached read-only contact data for interaction models. */
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige losgelöste Kontaktvertrag bleibt zusammen; er enthält keine Engine-Referenzen.
   get contact() {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
 
@@ -75,7 +76,17 @@ export class Pixel {
       x: body.x,
       y: body.y,
       bottom: body.bottom,
-      blocked: Object.freeze({ down: body.blocked.down }),
+      centerX: body.center.x,
+      left: body.left,
+      right: body.right,
+      width: body.width,
+      height: body.height,
+      grounded: body.blocked.down,
+      blocked: Object.freeze({
+        down: body.blocked.down,
+        left: body.blocked.left,
+        right: body.blocked.right,
+      }),
       velocity: Object.freeze({ x: body.velocity.x, y: body.velocity.y }),
     });
   }

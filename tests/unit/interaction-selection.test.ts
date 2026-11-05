@@ -11,7 +11,14 @@ import {
 const context: InteractionContext = {
   time: 0,
   delta: 2000,
-  input: { horizontal: 0, vertical: 0, jumpPressed: false, resetPressed: false, active: false },
+  input: {
+    horizontal: 0,
+    vertical: 0,
+    jumpPressed: false,
+    confirmPressed: false,
+    resetPressed: false,
+    active: false,
+  },
   pixel: {
     x: 0,
     y: 0,

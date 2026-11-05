@@ -37,12 +37,12 @@ Die komplette Spielfläche passt sich dem Browserfenster an.
 
 ## Steuerung
 
-| Taste     | Aktion                                               |
-| --------- | ---------------------------------------------------- |
-| ← / →     | Laufen und in der Luft steuern                       |
-| Leertaste | Springen; am Vorhang abspringen                      |
-| ↑ / ↓     | Vorhang greifen und hinauf-/hinabklettern            |
-| R         | Gesamtes Zimmer samt Schäden und Punkten neu starten |
+| Taste     | Aktion                                                    |
+| --------- | --------------------------------------------------------- |
+| ← / →     | Laufen und in der Luft steuern                            |
+| Leertaste | Springen; am Vorhang abspringen; Heimkehr-Text bestätigen |
+| ↑ / ↓     | Vorhang greifen und hinauf-/hinabklettern                 |
+| R         | Gesamtes Zimmer samt Schäden und Punkten neu starten      |
 
 Klicke zuerst ins Zimmer, damit es Tastatureingaben erhält.
 Beim Anspringen greift Pixel den Vorhang automatisch; ohne Klettereingabe rutscht er langsam ab.

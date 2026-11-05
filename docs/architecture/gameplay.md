@@ -23,7 +23,7 @@ reconciliation`. Verfrühte oder wiederholte Phasenwechsel werden zurückgewiese
 der finale Score und die Rundenuhr bleiben nach der Heimkehr unverändert.
 
 `HomecomingSequence` ist ein reines Modell für Eintritt, Reaktionsmoment, Dialog und
-einmaligen Abschluss. `selectReaction` verwendet ausschließlich die zentralen
+einmaligen Abschluss durch explizite Bestätigung. Der Dialog hat kein Zeitlimit. `selectReaction` verwendet ausschließlich die zentralen
 `angerFor`-Grenzen; Dialoge und semantische Animations-Keys stehen in
 `src/content/sara-reactions.ts`. Die Zufallsquelle ist injizierbar und wird nur beim
 ersten Start ausgewertet. Snapshots und Auswahl sind eingefroren.
@@ -173,3 +173,15 @@ Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](ht
 `RoomDefinition` und diskriminierte `ObjectDefinition` liegen unter `src/game/content/`. `src/content/rooms/` und `src/content/objects/` liefern ausschließlich Daten. Die Szene enthält keine festen Objektlisten oder Hintergrundkoordinaten mehr; sie verbindet die erzeugten Adapter und verarbeitet ihre Ergebnisse. Instanz-IDs, Varianten, Assets, Fähigkeiten, Geometrie, sichere Punktwerte und Flächenreferenzen werden vor `Phaser.Game` geprüft. Der Resolver ist unabhängig von Phaser ausführbar; Engine-Typen werden nur für die strukturellen Konstruktor-Konfigurationen importiert und zur Laufzeit entfernt.
 
 Eine zweite handgebaute Raumvariante verändert Platzierung und Werte ohne neue Spielklassen. Sie ist über einen Dev-/E2E-Vorschauparameter wählbar; die Produktion bleibt beim bisherigen Standardraum. Der spätere Generator liefert denselben Raumvertrag, kein paralleles Format. Details: [Content-Leitfaden](../../src/content/README.md).
+
+## Automatische Heimkehr
+
+`PixelReturnController` erzeugt reine Bewegungseingaben aus losgelösten Kontaktdaten.
+Er führt Pixel über die Kante einer tragenden Plattform zum Boden und zum gemeinsamen
+Sitzanker aus `homecoming-layout.ts`; er verändert keine Physikkörper direkt.
+Die Szene deaktiviert nach Rundenende die übrigen dynamischen Körper und lässt nur
+Pixels normale Arcade-Bewegung weiterlaufen. Interaktionen und Punkte bleiben gesperrt.
+Nach dem Hinsetzen pausiert die Physikwelt. Pixels Animation bleibt bis zur
+Browserpause aktiv. Die Bewegungszeit läuft unabhängig vom wartenden Dialog weiter.
+`confirmPressed` nutzt eine neue Leertastenflanke ohne native Tastenwiederholung und
+bestätigt erst nach dem Hinsetzen. Fokusverlust und R behandeln auch diese Phase.

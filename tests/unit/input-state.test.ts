@@ -10,6 +10,7 @@ test('Ein Frame liest Eingaben und verbrauchende Flanken nur einmal', () => {
     horizontal: 1,
     vertical: 0,
     jumpPressed: ++reads === 1,
+    confirmPressed: false,
     resetPressed: false,
     active: true,
   });
@@ -27,7 +28,14 @@ test('Ein Frame liest Eingaben und verbrauchende Flanken nur einmal', () => {
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Focus-/Lebenszyklus-Cleanup verwirft den alten Snapshot auch im selben Frame', () => {
   const frames = new InputFrames();
-  const held = { horizontal: 1, vertical: -1, jumpPressed: true, resetPressed: true, active: true };
+  const held = {
+    horizontal: 1,
+    vertical: -1,
+    jumpPressed: true,
+    confirmPressed: false,
+    resetPressed: true,
+    active: true,
+  };
 
   frames.read(25, () => held);
   frames.clear();
@@ -35,6 +43,7 @@ test('Focus-/Lebenszyklus-Cleanup verwirft den alten Snapshot auch im selben Fra
     horizontal: 0,
     vertical: 0,
     jumpPressed: false,
+    confirmPressed: false,
     resetPressed: false,
     active: false,
   }));

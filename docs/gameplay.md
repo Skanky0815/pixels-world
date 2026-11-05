@@ -16,18 +16,21 @@ nachgeholt. Uhr und Physik verwenden denselben bereinigten Zeitschritt.
 
 Am Ende des letzten zulässigen Frames werden Physik-/Schadensereignisse und
 Interaktionen noch verarbeitet. Anschließend wechselt die Runde genau einmal von
-`chaos` nach `returning` und sichert den finalen Chaosstand. Physik, Steuerung,
-weitere Schäden und Pixels Animation bleiben stehen. Sara tritt durch eine vorläufig
+`chaos` nach `returning` und sichert den finalen Chaosstand. Spielersteuerung, weitere Schäden und die übrigen dynamischen Objekte bleiben
+stehen. Pixel läuft mit seiner normalen Physik automatisch zu Sara, steigt dabei
+von Möbeln herunter und setzt sich links neben sie. Sara tritt durch eine vorläufig
 dargestellte Tür ein und schaut sich das Zimmer an. Die Reaktion nutzt einmalig den
 eingefrorenen Score: **0–24** skeptisch/gelassen, **25–59** genervt und **ab 60**
 fassungslos/verärgert. Es gelten dieselben zentralen Ärgergrenzen wie im HUD.
 
 Der Eintritt dauert 1,2 Sekunden, der Reaktionsmoment 0,9 Sekunden. Danach erscheint
-für 3,6 Sekunden ein zufällig gewählter trockener Kommentar; pro Stufe gibt es drei
-Varianten. Auch dieser Ablauf pausiert bei Fokusverlust oder verstecktem Tab. Danach
+ein zufällig gewählter trockener Kommentar; pro Stufe gibt es drei Varianten. Er
+bleibt ohne Zeitlimit sichtbar. Sobald Pixel sitzt, bestätigt ein neuer Druck auf
+die Leertaste den Text; gehaltene Tasten überspringen ihn nicht. Auch dieser Ablauf
+pausiert bei Fokusverlust oder verstecktem Tab. Nach der Bestätigung
 wechselt die Runde einmalig in `reconciliation`: **„Versöhnung · Fortsetzung folgt“**
 ist der erkennbare Platzhalter, noch keine spielbare Versöhnung. Weitere Punkte und
-Bewegung bleiben während und nach der Sequenz gesperrt.
+manuelle Bewegung bleiben während und nach der Sequenz gesperrt.
 
 Sara erscheint als animierte Chibi-Figur mit Brille, lockerem Pferdeschwanz und
 dunklem Hoodie. Eintritt und Idle laufen als Schleifen; die drei Reaktionen werden

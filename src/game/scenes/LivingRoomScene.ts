@@ -27,12 +27,16 @@ import { GameHud } from '../ui/GameHud';
 import { HomecomingSequence } from '../domain/homecoming';
 import { SaraReturnView } from '../ui/SaraReturnView';
 import { roundConfigForPage } from '../input/round-profile';
+import { homecomingPositions } from '../content/homecoming-layout';
+import { PixelReturnController } from '../domain/pixel-return';
 
 export class LivingRoomScene extends Phaser.Scene {
   private pixel!: Pixel;
   private round!: RoundController;
   private homecoming!: HomecomingSequence;
   private sara!: SaraReturnView;
+  private returning!: PixelReturnController;
+  private returnTime = 0;
   private activity!: PlayActivity;
   private controls!: InputController;
   private generation = 0;
@@ -86,6 +90,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.chaos.reset();
     this.round = new RoundController(roundConfigForPage());
     this.homecoming = new HomecomingSequence();
+    this.returnTime = 0;
   }
 
   private configureCamera() {
@@ -130,6 +135,7 @@ export class LivingRoomScene extends Phaser.Scene {
             },
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
+            pixelReturn: this.returning.snapshot(),
             sara: this.sara.snapshot(),
             active: this.activity.active,
             chaos: {
@@ -176,6 +182,25 @@ export class LivingRoomScene extends Phaser.Scene {
     this.physics.add.collider(this.pixel.collider, this.platforms);
 
     for (const vase of this.vases) this.connectVase(vase, floor);
+    this.initializeReturn();
+  }
+
+  private initializeReturn() {
+    const { width, floor } = this.room.definition;
+    const positions = homecomingPositions(width);
+
+    this.returning = new PixelReturnController(
+      { width, floorY: floor.y, targetX: positions.pixelSeatX },
+      this.returnPlatforms(),
+    );
+  }
+
+  private returnPlatforms() {
+    return this.platforms.getChildren().map((platform) => {
+      const bounds = (platform as Phaser.GameObjects.Rectangle).getBounds();
+
+      return { left: bounds.left, right: bounds.right, top: bounds.top };
+    });
   }
 
   private connectVase(vase: Vase, floor: Phaser.GameObjects.Rectangle) {
@@ -269,19 +294,19 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (!active) this.controls.release();
     this.setWorldActive(active);
-    this.pixel.setPaused(!active);
+    this.pixel.setPaused(!this.activity.active);
     this.sara.setPaused(!this.activity.active);
     this.renderHud(this.pixel.nearCurtain);
   }
 
   private setWorldActive(active: boolean) {
-    if (active) {
-      this.physics.world.resume();
-      this.tweens.resumeAll();
-    } else {
-      this.physics.world.pause();
-      this.tweens.pauseAll();
-    }
+    const returning = this.activity.active && this.returning.snapshot().stage === 'walking';
+
+    if (active || returning) this.physics.world.resume();
+    else this.physics.world.pause();
+
+    if (active) this.tweens.resumeAll();
+    else this.tweens.pauseAll();
   }
 
   private updateRound(input: InputState, delta: number) {
@@ -290,7 +315,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (elapsed <= 0) return;
 
     if (this.canPlay()) this.playFrame(input, elapsed);
-    else this.advanceHomecoming(elapsed);
+    else this.advanceHomecoming(input, elapsed);
   }
 
   private playFrame(input: InputState, elapsed: number) {
@@ -308,18 +333,55 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (score === null) return;
     this.homecoming.start(score);
+    this.beginPixelReturn();
     this.sara.render(this.homecoming.snapshot());
     this.syncActivity();
   }
 
-  private advanceHomecoming(elapsed: number) {
+  private beginPixelReturn() {
+    const pixelBody = this.pixel.collider.body;
+
+    for (const body of this.physics.world.bodies.entries)
+      if (body !== pixelBody) body.enable = false;
+    this.returnTime = this.round.snapshot().elapsedMs;
+    this.returning.start();
+  }
+
+  private advanceHomecoming(input: InputState, elapsed: number) {
     this.homecoming.advance(elapsed);
+    this.returnTime += elapsed;
+    this.returnPixel(elapsed);
+
+    if (input.confirmPressed && this.returning.snapshot().stage === 'seated')
+      this.homecoming.confirm();
+    this.syncHomecoming();
+  }
+
+  private returnPixel(elapsed: number) {
+    const walking = this.returning.snapshot().stage === 'walking';
+    const input = this.returning.input(this.pixel.contact);
+
+    this.pixel.move(input, this.returnTime, elapsed, undefined);
+
+    if (walking) this.physics.world.update(this.returnTime, elapsed);
+
+    if (this.returning.snapshot().stage === 'seated') this.faceSara();
+    this.pixel.present(this.returnTime, 'idle', false);
+
+    if (walking && this.returning.snapshot().stage === 'seated') this.syncActivity();
+  }
+
+  private faceSara() {
+    this.pixel.faceToward(homecomingPositions(this.room.definition.width).saraEndX);
+  }
+
+  private syncHomecoming() {
     const snapshot = this.homecoming.snapshot();
 
     if (snapshot.stage !== 'entering' && snapshot.stage !== 'waiting') this.round.startReaction();
 
     if (snapshot.stage === 'complete') this.round.startReconciliation();
-    this.sara.render(snapshot);
+    this.sara.render(snapshot, this.returning.snapshot().stage === 'seated');
     this.renderHud(this.pixel.nearCurtain);
   }
 
