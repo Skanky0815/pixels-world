@@ -36,7 +36,7 @@ export class RoundResultView {
 
     if (!result) return;
     this.summary.setText(summaryText(result));
-    this.quote.setText(`Sara: „${result.dialogue}“`);
+    this.quote.setText(`Sara: „${result.closingLine}“`);
   }
 
   snapshot() {
@@ -46,6 +46,7 @@ export class RoundResultView {
       ...this.result,
       visible: this.root.visible,
       summaryText: this.summary.text,
+      quoteText: this.quote.text,
       hint: this.hint.text,
     });
   }

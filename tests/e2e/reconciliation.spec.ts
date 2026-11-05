@@ -192,6 +192,7 @@ async function expectResult(page: Page, outcome: 'success' | 'failed') {
   expect(current.result?.summaryText).toContain(`Chaospunkte: ${current.chaos.score}`);
   expect(current.result?.summaryText).toContain(outcome === 'success' ? 'Gelungen' : 'Gescheitert');
   expect(current.result?.hint).toBe('R: Neue Runde');
+  expect(current.result?.quoteText).toBe(`Sara: „${current.result?.closingLine}“`);
   expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.result))).toBe(true);
   await page.clock.runFor(3000);
   expect((await state(page)).result).toEqual(current.result);

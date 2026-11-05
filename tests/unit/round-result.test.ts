@@ -1,3 +1,4 @@
+import { ROUND_ENDINGS } from '../../src/content/round-endings.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { roundResult } from '../../src/game/domain/round-result.ts';
@@ -82,3 +83,47 @@ test('Gescheiterte Versöhnung behält verdiente Herzen; Reset entfernt das Erge
   game.round.reset();
   assert.equal(game.result(), null);
 });
+
+// eslint-disable-next-line max-lines-per-function -- Alle Chaosgrenzen und beide Ausgänge werden mit tatsächlich abgeschlossenen Domain-Modellen geprüft.
+test('Abschlusssprüche unterscheiden Ärgerstufe und Versöhnungsausgang an allen Grenzen', () => {
+  const lines = new Set<string>();
+
+  for (const [score, level] of [
+    [0, 'calm'],
+    [24, 'calm'],
+    [25, 'annoyed'],
+    [59, 'annoyed'],
+    [60, 'angry'],
+    [100, 'angry'],
+  ] as const) {
+    for (const outcome of ['success', 'failed'] as const) {
+      const game = setup(score);
+
+      finish(game, outcome);
+      const result = game.result();
+
+      assert.equal(result?.closingLine, ROUND_ENDINGS[level][outcome]);
+      assert.equal(result?.outcome, outcome);
+      assert.equal(result?.dialogue, game.home.snapshot().selection?.dialogue);
+      assert.ok(result);
+      lines.add(result.closingLine);
+    }
+  }
+
+  assert.equal(lines.size, 6);
+});
+
+function finish(game: ReturnType<typeof setup>, outcome: 'success' | 'failed') {
+  if (outcome === 'success') {
+    for (let i = 0; i < game.charm.snapshot().required; i++) winHeart(game.charm);
+    game.charm.advance(CHARM_TIMING.finaleMs);
+  } else failTwice(game.charm);
+}
+
+function failTwice(charm: Reconciliation) {
+  for (let i = 0; i < 2; i++) {
+    charm.confirm();
+    charm.advance(CHARM_TIMING.cueMs);
+    charm.input(['right']);
+  }
+}

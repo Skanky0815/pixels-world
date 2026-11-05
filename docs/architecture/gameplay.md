@@ -216,3 +216,9 @@ ursprüngliche Reaktion bleiben unabhängig vom späteren Versöhnungsausgang.
 Eingabelogik; das Versöhnungspanel verschwindet im terminalen Zustand. Der
 bestehende R-Neustart baut sämtliche Modelle und Ansichten neu auf und entfernt
 so auch die Zusammenfassung. Keine Speicherung oder zusätzliche Punktewertung.
+
+Die Abschlusssprüche stehen in `src/content/round-endings.ts`: drei bestehende
+Ärgerstufen mal zwei Versöhnungsausgänge. Die Auswahl verwendet `angerFor`,
+keinen weiteren Zufall und keine neue Schwellenlogik. Der ursprüngliche
+Heimkehr-Kommentar bleibt im Ergebnisdatensatz erhalten; sichtbar spricht Sara
+einen eigenen abschließenden Satz.

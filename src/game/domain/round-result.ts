@@ -1,3 +1,4 @@
+import { ROUND_ENDINGS } from '../../content/round-endings.ts';
 import { angerFor } from './chaos.ts';
 import type { RoundSnapshot } from './round-controller.ts';
 import type { HomecomingSnapshot } from './homecoming.ts';
@@ -16,11 +17,15 @@ export function roundResult(
 
   if (charm.stage !== 'complete' && charm.stage !== 'failed') return null;
 
+  const anger = angerFor(home.selection.score);
+  const outcome = charm.stage === 'complete' ? 'success' : 'failed';
+
   return Object.freeze({
     score: round.finalChaosScore,
-    reaction: angerFor(home.selection.score).label,
+    reaction: anger.label,
+    closingLine: ROUND_ENDINGS[anger.id][outcome],
     dialogue: home.selection.dialogue,
-    outcome: charm.stage === 'complete' ? ('success' as const) : ('failed' as const),
+    outcome,
     hearts: charm.successes,
     required: charm.required,
   });

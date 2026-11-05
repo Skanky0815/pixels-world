@@ -57,6 +57,6 @@ und den vollständigen Reset. Die Domain prüft zusätzlich das Zurücksetzen de
 Versuchslimits nach jedem gewonnenen Herz.
 
 Die Erfolg-/Misserfolgsszenarien prüfen zusätzlich die tatsächlichen Texte der
-Ergebnisansicht, den finalen Score und Originalkommentar, zeitlich stabilen Abschluss
+Ergebnisansicht, den finalen Score, erhaltenen Originalkommentar und sichtbaren Abschlussspruch, zeitlich stabilen Abschluss
 und vollständigen R-Neustart. Der erfolgreiche Durchlauf erzeugt vorher echten
 Sofaschaden, damit Punkte und Objektreset nicht nur mit leerem Zustand geprüft werden.
