@@ -200,8 +200,25 @@ wird im Input-Adapter ausgefiltert. Physik, Schäden und Score bleiben eingefror
 `ReconciliationView` zeigt nächsten Pfeil, zwei Leisten und textuelle
 Zuneigungs-Platzhalter. Sie hat keine Timer und verändert die Figuren nicht.
 Fokusverlust pausiert über `PlayActivity`; Neustart baut Modell und Ansicht neu auf.
-Die einfache Abschlussansicht ersetzt noch keinen Ergebnisbildschirm aus #10.
+Der terminale Ausgang wird anschließend in der Ergebnisansicht zusammengefasst.
 
 Das Versuchsbudget aus dem Content gilt pro zu verdienendem Herz, nicht pro Taste.
 Der zweite Fehler am selben Herz führt zu `failed`; dieser Endzustand nimmt weder
 weitere Eingaben noch Bestätigungen an. Erfolg setzt Budget und Timinghilfe zurück.
+
+## Rundenergebnis
+
+`roundResult` leitet unveränderliche Ergebnisdaten aus den Snapshots von Runde,
+Heimkehr und Versöhnung ab. Vor `complete` oder `failed` gibt es kein Ergebnis,
+auch während des Streichelmoments noch nicht. Finale Chaospunkte und Saras
+ursprüngliche Reaktion bleiben unabhängig vom späteren Versöhnungsausgang.
+`RoundResultView` zeigt die gemeinsame Zusammenfassung ohne eigene Timer oder
+Eingabelogik; das Versöhnungspanel verschwindet im terminalen Zustand. Der
+bestehende R-Neustart baut sämtliche Modelle und Ansichten neu auf und entfernt
+so auch die Zusammenfassung. Keine Speicherung oder zusätzliche Punktewertung.
+
+Die Abschlusssprüche stehen in `src/content/round-endings.ts`: drei bestehende
+Ärgerstufen mal zwei Versöhnungsausgänge. Die Auswahl verwendet `angerFor`,
+keinen weiteren Zufall und keine neue Schwellenlogik. Der ursprüngliche
+Heimkehr-Kommentar bleibt im Ergebnisdatensatz erhalten; sichtbar spricht Sara
+einen eigenen abschließenden Satz.

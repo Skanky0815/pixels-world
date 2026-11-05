@@ -55,3 +55,8 @@ unveränderlichen Observer gelesen; keine Zustandssetzer oder Phaser-Zugriffe.
 Ein weiterer Ablauf prüft zwei Timeouts am selben Herz, den terminalen Misserfolg
 und den vollständigen Reset. Die Domain prüft zusätzlich das Zurücksetzen des
 Versuchslimits nach jedem gewonnenen Herz.
+
+Die Erfolg-/Misserfolgsszenarien prüfen zusätzlich die tatsächlichen Texte der
+Ergebnisansicht, den finalen Score, erhaltenen Originalkommentar und sichtbaren Abschlussspruch, zeitlich stabilen Abschluss
+und vollständigen R-Neustart. Der erfolgreiche Durchlauf erzeugt vorher echten
+Sofaschaden, damit Punkte und Objektreset nicht nur mit leerem Zustand geprüft werden.

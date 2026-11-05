@@ -1,3 +1,5 @@
+import { roundResult } from '../domain/round-result';
+import { RoundResultView } from '../ui/RoundResultView';
 import { Reconciliation } from '../domain/reconciliation';
 import { ReconciliationView } from '../ui/ReconciliationView';
 import Phaser from 'phaser';
@@ -36,6 +38,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private pixel!: Pixel;
   private round!: RoundController;
   private charm!: Reconciliation;
+  private resultView!: RoundResultView;
   private charmView!: ReconciliationView;
   private homecoming!: HomecomingSequence;
   private sara!: SaraReturnView;
@@ -141,6 +144,7 @@ export class LivingRoomScene extends Phaser.Scene {
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
             reconciliation: this.charm.snapshot(),
+            result: this.resultView.snapshot(),
             pixelReturn: this.returning.snapshot(),
             sara: this.sara.snapshot(),
             active: this.activity.active,
@@ -230,6 +234,7 @@ export class LivingRoomScene extends Phaser.Scene {
     for (const object of this.objects) object.reset();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Szeneneigene Ansichten und ihre gemeinsame Lebensdauer werden zusammen initialisiert.
   private initializeViews() {
     const room = this.room.definition;
 
@@ -238,6 +243,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.hud = new GameHud(this, room.hud);
     this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
+    this.resultView = new RoundResultView(this, room.width);
     this.syncActivity();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
   }
@@ -250,6 +256,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.hud.destroy();
     this.sara.destroy();
     this.charmView.destroy();
+    this.resultView.destroy();
   }
 
   private addPlatform(x: number, y: number, width: number, height: number) {
@@ -392,6 +399,19 @@ export class LivingRoomScene extends Phaser.Scene {
     if (input.confirmPressed) this.charm.confirm();
     this.charm.input(input.arrows);
     this.charmView.render(this.charm.snapshot());
+    this.renderResult();
+  }
+
+  private renderResult() {
+    const result = roundResult(
+      this.round.snapshot(),
+      this.homecoming.snapshot(),
+      this.charm.snapshot(),
+    );
+
+    this.resultView.render(result);
+
+    if (result) this.hud.showResult(result.outcome);
   }
 
   private faceSara() {

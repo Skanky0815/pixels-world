@@ -58,7 +58,7 @@ export class ReconciliationView {
   }
 
   render(snapshot: ReconciliationSnapshot) {
-    this.root.setVisible(snapshot.stage !== 'waiting');
+    this.root.setVisible(!['waiting', 'complete', 'failed'].includes(snapshot.stage));
     this.renderText(charmText(snapshot));
     this.hearts.width = 200 * snapshot.progress;
     this.renderKey(snapshot);
