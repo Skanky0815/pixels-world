@@ -1,4 +1,4 @@
-import { test, expect, start, state, until, reset } from './support';
+import { test, expect, start, state, until, reset, besideCouch } from './support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
 import type { Page } from '@playwright/test';
 
@@ -7,9 +7,15 @@ const tag = full ? '@slow' : '@fast';
 const keys = { left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', down: 'ArrowDown' };
 
 // eslint-disable-next-line max-lines-per-function -- Der gemeinsame Einstieg durchläuft Heimkehr und explizite Bestätigung mit realen Eingaben.
-async function enterCharm(page: Page) {
+async function enterCharm(page: Page, damage = false) {
   await seedRoundRandom(page);
   await start(page, full ? '/' : '/?round-profile=fast');
+
+  if (damage) {
+    await besideCouch(page);
+    await until(page, (s) => s.couch.damage === 1);
+  }
+
   await useIdleFrames(page);
   await advanceRoundTo(page, (await state(page)).round.returnAtMs);
   await until(
@@ -54,7 +60,7 @@ test(
   { tag },
   // eslint-disable-next-line max-lines-per-function -- Die komplette zweite Spielphase wird ausschließlich mit echten Tasten bis zum Abschluss und Reset gespielt.
   async ({ page }) => {
-    await enterCharm(page);
+    await enterCharm(page, true);
     const frozen = await state(page);
 
     await until(page, (s) => s.reconciliation.stage === 'input', 100);
@@ -86,6 +92,7 @@ test(
     expect(complete.objects).toEqual(frozen.objects);
     expect(complete.pixel.x).toBeCloseTo(frozen.pixel.x, 1);
     expect(complete.reconciliation.progress).toBe(1);
+    await expectResult(page, 'success');
     expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.reconciliation))).toBe(
       true,
     );
@@ -94,6 +101,7 @@ test(
       .attach('versoehnt', { body: await page.screenshot(), contentType: 'image/png' });
     await reset(page);
     expect((await state(page)).reconciliation.stage).toBe('waiting');
+    await expectFreshRound(page);
   },
 );
 
@@ -161,9 +169,45 @@ test('Charme scheitert nach zwei Versuchen am selben Herz', { tag }, async ({ pa
   expect((await state(page)).reconciliation).toEqual(failed.reconciliation);
   expect(failed.chaos).toEqual(frozen.chaos);
   expect(failed.objects).toEqual(frozen.objects);
+  await expectResult(page, 'failed');
   await test
     .info()
     .attach('versoehnung-gescheitert', { body: await page.screenshot(), contentType: 'image/png' });
   await reset(page);
   expect((await state(page)).reconciliation).toMatchObject({ stage: 'waiting', attemptsLeft: 2 });
+  await expectFreshRound(page);
 });
+
+// eslint-disable-next-line max-lines-per-function -- Sichtbare Ergebniswerte, Unveränderlichkeit und stabiler Abschluss werden zusammen geprüft.
+async function expectResult(page: Page, outcome: 'success' | 'failed') {
+  const current = await state(page);
+
+  expect(current.result).toMatchObject({
+    visible: true,
+    score: current.round.finalChaosScore,
+    outcome,
+    dialogue: current.homecoming.selection?.dialogue,
+    hearts: current.reconciliation.successes,
+  });
+  expect(current.result?.summaryText).toContain(`Chaospunkte: ${current.chaos.score}`);
+  expect(current.result?.summaryText).toContain(outcome === 'success' ? 'Gelungen' : 'Gescheitert');
+  expect(current.result?.hint).toBe('R: Neue Runde');
+  expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.result))).toBe(true);
+  await page.clock.runFor(3000);
+  expect((await state(page)).result).toEqual(current.result);
+}
+
+// eslint-disable-next-line max-lines-per-function -- Ergebnis, Uhr, Schaden, Figur und Heimkehr müssen beim bestehenden Tastaturneustart gemeinsam zurückgesetzt werden.
+async function expectFreshRound(page: Page) {
+  const fresh = await state(page);
+
+  expect(fresh.result).toBeNull();
+  expect(fresh.round.phase).toBe('chaos');
+  expect(fresh.round.finalChaosScore).toBeNull();
+  expect(fresh.round.elapsedMs).toBeLessThan(500);
+  expect(fresh.chaos.score).toBe(0);
+  expect(fresh.objects.every((object) => object.damage === 0 && object.events === 0)).toBe(true);
+  expect(fresh.pixel.x).toBeCloseTo(110, 0);
+  expect(fresh.homecoming.stage).toBe('waiting');
+  expect(fresh.pixelReturn.stage).toBe('waiting');
+}

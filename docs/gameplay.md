@@ -156,7 +156,10 @@ Nach dem Scheitern bleibt ein eindeutiger Abschluss mit R zum Neustart stehen.
 Texte und Herzchen zeigen Schnurren und Anschmiegen als grafische Platzhalter.
 Sara kommentiert abhängig von der ursprünglichen Chaosstufe. Bei voller Leiste
 folgt ein kurzer Streichel-Platzhalter und dann „Versöhnt“ mit Neustart über R.
-Eine ausführliche Ergebnisansicht bleibt #10; echte Zuneigungsanimationen und
-Audio sind in diesem Schritt nicht enthalten. Bei flüssigen Eingaben sind ungefähr
+Danach zeigt das Rundenergebnis Chaospunkte, Saras ursprüngliche Reaktion und
+ihren Kommentar, den Versöhnungsausgang und die erreichten Herzen. Es bleibt
+ohne Zeitlimit stehen; R setzt Uhr, Schäden, Punkte, Figuren, Dialoge,
+Versöhnungsfortschritt und Ergebnis gemeinsam zurück. Echte Zuneigungsanimationen
+und Audio sind in diesem Schritt nicht enthalten. Bei flüssigen Eingaben sind ungefähr
 10–20 Sekunden aktive Reaktionszeit vorgesehen; Lesepausen sind frei; das Spielgefühl muss noch mit Rico abgestimmt werden.
 Fokus-/Visibility-Pause stoppt alle Fristen; R verwirft auch Folge und Fortschritt.

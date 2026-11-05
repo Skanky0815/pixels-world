@@ -65,6 +65,13 @@ export class GameHud {
     this.renderAnger(state);
   }
 
+  showResult(outcome: 'success' | 'failed') {
+    this.roundText.setText('Runde beendet · R: Neue Runde');
+    this.status.setText(
+      outcome === 'success' ? 'PIXEL · VERSÖHNT' : 'PIXEL · VERSÖHNUNG GESCHEITERT',
+    );
+  }
+
   private renderRound(state: HudState) {
     this.status.setText(
       state.round.phase === 'chaos' ? STATUS[state.activity] : 'PIXEL · SARA IST DA',

@@ -32,6 +32,8 @@ Grobe Zeithinweise ersetzen einen genauen Countdown; bei Fokusverlust pausiert d
 Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
 das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen
 Pfeiltastenfolge, Sara durch Schnurren und Anschmiegen zu versöhnen.
+Die Ergebnisansicht fasst Chaospunkte, Saras ursprüngliche Reaktion und den
+Versöhnungsausgang zusammen. Mit R beginnt die nächste Runde.
 
 Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.
