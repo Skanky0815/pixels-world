@@ -12,6 +12,7 @@ import {
 
 test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
   await start(page);
   await framesPass(page, 30);
@@ -49,6 +50,7 @@ test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', a
 
 test('Alle drei Vasen sind erreichbar und summieren Schaden über die Ärgerstufen', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page);
   await firstVase(page);

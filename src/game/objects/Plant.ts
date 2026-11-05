@@ -49,38 +49,53 @@ export class Plant implements Interactable, Destructible {
     );
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Modellschritt, Schaden, Pose und Aktionsrückgabe bleiben als ein koordinierender Frame-Schritt sichtbar.
   update(context: InteractionContext, active: boolean): InteractionResult {
-    const c = this.config;
     const event = this.model.update(context.delta, active && this.eligible(context));
 
-    if (event) {
-      this.history.record(event);
-      this.draw();
-
-      if (event.kind === 'tip') {
-        this.graphic.setAngle(-80).setPosition(c.x + 10, c.floorY - 17);
-        this.soil.fillStyle(0x59443d);
-
-        for (let i = 0; i < 12; i++)
-          this.soil.fillRect(c.x - 46 + ((i * 13) % 74), c.floorY - 2 - (i % 3), 4 + (i % 3), 3);
-      }
-    }
-
+    if (event) this.applyDamage(event);
     const { state, progress } = this.model.snapshot();
     const nibbling = state === 'nibbling' || state === 'wobbling';
 
-    if (state !== 'tipped')
-      this.graphic.setAngle(
-        state === 'wobbling'
-          ? Math.sin(progress * Math.PI * 8) * (5 + progress * 12)
-          : nibbling
-            ? Math.sin(context.time / 80) * 2
-            : 0,
-      );
+    this.animate(state, progress, nibbling, context.time);
 
-    return { action: nibbling ? state : 'idle', faceX: nibbling ? c.x : undefined, event };
+    return {
+      action: nibbling ? state : 'idle',
+      faceX: nibbling ? this.config.x : undefined,
+      event,
+    };
   }
 
+  private applyDamage(event: NonNullable<InteractionResult['event']>) {
+    this.history.record(event);
+    this.draw();
+
+    if (event.kind === 'tip') this.tip();
+  }
+
+  private tip() {
+    const c = this.config;
+
+    this.graphic.setAngle(-80).setPosition(c.x + 10, c.floorY - 17);
+    this.soil.fillStyle(0x59443d);
+
+    for (let i = 0; i < 12; i++)
+      this.soil.fillRect(c.x - 46 + ((i * 13) % 74), c.floorY - 2 - (i % 3), 4 + (i % 3), 3);
+  }
+
+  private animate(state: string, progress: number, nibbling: boolean, time: number) {
+    if (state === 'tipped') return;
+    const angle =
+      state === 'wobbling'
+        ? Math.sin(progress * Math.PI * 8) * (5 + progress * 12)
+        : nibbling
+          ? Math.sin(time / 80) * 2
+          : 0;
+
+    this.graphic.setAngle(angle);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Halme, Topf und Bissspur sind eine geordnete deklarative Zeichenfolge.
   private draw() {
     const g = this.graphic.clear();
     const bitten = this.model.snapshot().damage > 0;

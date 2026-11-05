@@ -4,60 +4,47 @@ import { Couch } from '../objects/Couch';
 import { Curtain } from '../objects/Curtain';
 import { Plant } from '../objects/Plant';
 import { Vase } from '../objects/Vase';
-import type { Destructible, Interactable, ObjectLifecycle } from '../interactions/contracts';
 
 export function buildObjects(scene: Phaser.Scene, room: ResolvedRoom) {
-  const couches: Couch[] = [],
-    curtains: Curtain[] = [],
-    plants: Plant[] = [],
-    vases: Vase[] = [];
-  const ground: Interactable[] = [];
-  const entries: {
-    readonly definition: ResolvedObject;
-    readonly object: Destructible & ObjectLifecycle;
-  }[] = [];
+  const entries = room.objects.map((definition) => ({
+    definition,
+    object: createObject(scene, definition),
+  }));
+  const objects = entries.map((entry) => entry.object);
 
-  for (const definition of room.objects) {
-    let object: Destructible & ObjectLifecycle;
+  return groupObjects(objects, entries);
+}
 
-    switch (definition.kind) {
-      case 'couch': {
-        const couch = new Couch(scene, definition.config);
-
-        couches.push(couch);
-        ground.push(couch);
-        object = couch;
-        break;
-      }
-
-      case 'curtain': {
-        const curtain = new Curtain(scene, definition.config);
-
-        curtains.push(curtain);
-        object = curtain;
-        break;
-      }
-
-      case 'plant': {
-        const plant = new Plant(scene, definition.config);
-
-        plants.push(plant);
-        ground.push(plant);
-        object = plant;
-        break;
-      }
-
-      case 'vase': {
-        const vase = new Vase(scene, definition.config);
-
-        vases.push(vase);
-        object = vase;
-        break;
-      }
-    }
-
-    entries.push({ definition, object });
+// eslint-disable-next-line max-lines-per-function -- Der vollständige diskriminierte Switch zeigt die vier erlaubten Objektadapter ohne versteckte Fallthroughs.
+function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
+  switch (definition.kind) {
+    case 'couch':
+      return new Couch(scene, definition.config);
+    case 'curtain':
+      return new Curtain(scene, definition.config);
+    case 'plant':
+      return new Plant(scene, definition.config);
+    case 'vase':
+      return new Vase(scene, definition.config);
   }
+}
 
-  return { couches, curtains, plants, vases, ground, entries };
+// eslint-disable-next-line max-lines-per-function -- Der typisierte Rückgabevertrag und seine stabil geordneten Objektgruppen bleiben zusammen.
+function groupObjects(
+  objects: (Couch | Curtain | Plant | Vase)[],
+  entries: {
+    readonly definition: ResolvedObject;
+    readonly object: Couch | Curtain | Plant | Vase;
+  }[],
+) {
+  return {
+    couches: objects.filter((object) => object instanceof Couch),
+    curtains: objects.filter((object) => object instanceof Curtain),
+    plants: objects.filter((object) => object instanceof Plant),
+    vases: objects.filter((object) => object instanceof Vase),
+    ground: objects.filter(
+      (object): object is Couch | Plant => object instanceof Couch || object instanceof Plant,
+    ),
+    entries,
+  };
 }

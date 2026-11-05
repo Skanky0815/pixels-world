@@ -11,6 +11,7 @@ import {
   reset,
 } from './support';
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Pfeiltasten bewegen Pixel; Boden und Raumgrenze halten ihn auf', async ({ page }) => {
   await start(page);
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x > 150);
@@ -35,6 +36,7 @@ test('Tastatursprünge landen auf Sofa und erstem Regal', async ({ page }) => {
 
 test('Vorhang: hoch, langsam rutschen, herunter und abspringen mit Schwerkraft', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page);
   await curtain(page);
@@ -62,6 +64,7 @@ test('Vorhang: hoch, langsam rutschen, herunter und abspringen mit Schwerkraft',
   expect((await state(page)).pixel.x).toBeLessThan(slidingStart.pixel.x - 50);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Sprung behält Schwung ohne Richtungstaste und erlaubt Luftsteuerung', async ({ page }) => {
   await start(page);
   // Test air momentum in the open floor area, away from the couch side.
@@ -88,6 +91,7 @@ test('Vorhang wird beim Anspringen ohne Hoch/Runter automatisch gegriffen', asyn
   expect((await state(page)).pixel.gravity).toBe(false);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Klettern kollidiert mit Regalunterseite und Boden', async ({ page }) => {
   await start(page);
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 680);
@@ -120,6 +124,7 @@ test('Klettern kollidiert mit Regalunterseite und Boden', async ({ page }) => {
 
 test('Pixel: bestätigter Idle, Blinzeln und seitlicher Laufzyklus in beiden Richtungen', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
   await start(page);
   await until(page, (s) => s.pixel.animation === 'idle' && s.pixel.animationFrame === 0);
@@ -155,6 +160,7 @@ test('Pixel: bestätigter Idle, Blinzeln und seitlicher Laufzyklus in beiden Ric
 
 test('Pixel: Sprung, Scheitelpunkt, Fall, Landung und Klettern in Rückansicht', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
   await start(page);
   await holdUntil(page, ['Space'], (s) => s.pixel.animation === 'jump' && !s.pixel.grounded);

@@ -53,6 +53,7 @@ export interface Climbable extends ObjectLifecycle {
 }
 
 /** Stable priority: overlapping targets never advance two automatic ground actions. */
+// eslint-disable-next-line max-lines-per-function -- Die stabile erste Zielwahl und das inaktive Update aller anderen Objekte müssen als ein Durchlauf lesbar bleiben.
 export function updateGroundInteractions(
   objects: readonly Interactable[],
   context: InteractionContext,
@@ -69,6 +70,7 @@ export function updateGroundInteractions(
   return result;
 }
 
+// eslint-disable-next-line max-lines-per-function -- Eine einzelne Rechtecküberschneidung schreibt alle vier Grenzen explizit aus.
 export function overlaps(pixel: InteractionContext['pixel'], area: Bounds) {
   return (
     pixel.bodyWidth > 0 &&

@@ -6,6 +6,7 @@ import { CouchScratching, COUCH_SCRATCH } from '../../src/game/interactions/couc
 import { CurtainSliding, CURTAIN_SLIDE } from '../../src/game/interactions/curtain-sliding.ts';
 import { PlantNibbling, PLANT_NIBBLE } from '../../src/game/interactions/plant-nibbling.ts';
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Zwei Sofainstanzen zählen erste Kratzer getrennt; Wiederholung desselben Ereignisses nicht', () => {
   const score = new ChaosScore();
   const a = new CouchScratching(COUCH_SCRATCH, 'couch-a');
@@ -31,6 +32,7 @@ test('Zwei Sofainstanzen zählen erste Kratzer getrennt; Wiederholung desselben 
   assert.equal(score.awardEvent(again), true);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Alle Schadensarten einschließlich Vasenbruch teilen den Score-Pfad', () => {
   const curtain = new CurtainSliding(CURTAIN_SLIDE, 'curtain-b');
   const plant = new PlantNibbling(PLANT_NIBBLE, 'plant-b');
@@ -54,6 +56,7 @@ test('Alle Schadensarten einschließlich Vasenbruch teilen den Score-Pfad', () =
   assert.equal(score.count, 3);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Ereigniskennung unterscheidet Art/Stufe und bleibt mit Trennzeichen in Objekt-IDs eindeutig', () => {
   const ids = [
     chaosEvent('a:tear:1', 'scratch', 1, 3),

@@ -25,6 +25,7 @@ export class Curtain implements Climbable, Destructible {
   private previousY: number | null = null;
   private previousSpeed = 0;
 
+  // eslint-disable-next-line max-lines-per-function -- Vorhangfläche, Falten und Umrandung werden aus derselben deklarativen Geometrie erzeugt.
   constructor(scene: Phaser.Scene, config: CurtainConfig) {
     this.id = config.id;
     this.model = new CurtainSliding(config.rules, this.id);
@@ -46,40 +47,52 @@ export class Curtain implements Climbable, Destructible {
     this.marks = scene.add.graphics();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Die kurze Folge aus Bewegungsmessung, Modellschritt, Historie und Rissdarstellung bleibt atomar.
   updateClimb(context: InteractionContext, attached: boolean) {
     const p = context.pixel;
     const state = !attached ? 'detached' : context.input.vertical < 0 ? 'climbing' : 'sliding';
+    const movementMs = this.measureDescent(context, state);
+    const event = this.model.update(movementMs, state, movementMs > 0 && !p.grounded);
+
+    if (event) {
+      this.history.record(event);
+      this.drawDamage(context, event.stage);
+    }
+
+    return event;
+  }
+
+  private measureDescent(context: InteractionContext, state: string) {
+    const p = context.pixel;
     const distance = this.previousY === null ? 0 : p.top - this.previousY;
     const movementMs =
       distance > 0 && this.previousSpeed > 0 ? (distance / this.previousSpeed) * 1000 : 0;
 
     this.previousY = p.top;
     this.previousSpeed = state === 'sliding' ? p.velocityY : 0;
-    const event = this.model.update(movementMs, state, movementMs > 0 && !p.grounded);
 
-    if (event) {
-      this.history.record(event);
-      const a = this.climbArea,
-        side = p.x > a.x + a.width / 2 ? -1 : 1;
-      const x = Math.max(
-        a.x + 8,
-        Math.min(p.x + side * (44 + (event.stage % 3) * 4), a.x + a.width - 8),
-      );
-      const y = Math.max(a.y + 4, Math.min(p.y - 14, a.y + a.height - 38));
+    return movementMs;
+  }
 
-      this.marks.lineStyle(3, 0x59443d).beginPath();
-      this.marks
-        .moveTo(x, y)
-        .lineTo(x - 3, y + 8)
-        .lineTo(x + 2, y + 18)
-        .lineTo(x - 2, y + 30)
-        .strokePath();
-      this.marks.lineStyle(1, 0xeac791);
+  // eslint-disable-next-line max-lines-per-function -- Koordinatenbegrenzung und der zusammenhängende Risspfad gehören zu einer Zeichenroutine.
+  private drawDamage(context: InteractionContext, stage: number) {
+    const p = context.pixel;
 
-      for (let i = 0; i < 4; i++) this.marks.lineBetween(x - 5, y + i * 7, x + 5, y + i * 7 + 2);
-    }
+    const a = this.climbArea,
+      side = p.x > a.x + a.width / 2 ? -1 : 1;
+    const x = Math.max(a.x + 8, Math.min(p.x + side * (44 + (stage % 3) * 4), a.x + a.width - 8));
+    const y = Math.max(a.y + 4, Math.min(p.y - 14, a.y + a.height - 38));
 
-    return event;
+    this.marks.lineStyle(3, 0x59443d).beginPath();
+    this.marks
+      .moveTo(x, y)
+      .lineTo(x - 3, y + 8)
+      .lineTo(x + 2, y + 18)
+      .lineTo(x - 2, y + 30)
+      .strokePath();
+    this.marks.lineStyle(1, 0xeac791);
+
+    for (let i = 0; i < 4; i++) this.marks.lineBetween(x - 5, y + i * 7, x + 5, y + i * 7 + 2);
   }
 
   damageSnapshot() {

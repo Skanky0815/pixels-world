@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { CURTAIN_SLIDE, CurtainSliding } from '../../src/game/interactions/curtain-sliding.ts';
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Risse nur beim tatsächlichen Rutschen und erst nach dem Intervall', () => {
   const curtain = new CurtainSliding();
 
@@ -17,6 +18,7 @@ test('Risse nur beim tatsächlichen Rutschen und erst nach dem Intervall', () =>
   });
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Weiterklettern und Ablösen unterbrechen das laufende Rissintervall', () => {
   const curtain = new CurtainSliding();
 

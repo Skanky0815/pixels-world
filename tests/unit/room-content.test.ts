@@ -10,6 +10,7 @@ import type { ObjectCatalog, RoomDefinition } from '../../src/game/content/defin
 const bad = (room: unknown, catalog: unknown = OBJECTS) =>
   resolveRoom(room as RoomDefinition, catalog as ObjectCatalog);
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Prototyps', () => {
   const before = JSON.stringify(LIVING_ROOM);
   const room = resolveRoom(LIVING_ROOM, OBJECTS);
@@ -36,6 +37,7 @@ test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Pr
   assert.equal(JSON.stringify(LIVING_ROOM), before, 'Resolver darf Quelldaten nicht ändern');
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Zweite handgebaute Variante ändert Platzierungen/Werte und verwendet dieselbe Vorlage zweimal', () => {
   const room = resolveRoom(COZY_REMIX, OBJECTS);
   const couches = room.objects.filter((object) => object.kind === 'couch');
@@ -57,6 +59,7 @@ test('Zweite handgebaute Variante ändert Platzierungen/Werte und verwendet dies
   assert.equal(resolveRoom(LIVING_ROOM, OBJECTS).objects[0]?.variant, 'cozy-couch');
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Auflagehöhen folgen referenzierten Flächen einschließlich eines Sofas', () => {
   const room = resolveRoom(
     {
@@ -87,6 +90,7 @@ test('Doppelte Instanz-/Flächen-IDs werden vor dem Szenenaufbau zurückgewiesen
   );
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Unbekannte Varianten, Asset-Schlüssel und unpassende Fähigkeiten nennen den Datenpfad', () => {
   assert.throws(
     () => bad({ ...LIVING_ROOM, objects: [{ ...LIVING_ROOM.objects[0], variant: 'toString' }] }),
@@ -119,6 +123,7 @@ test('Unbekannte Varianten, Asset-Schlüssel und unpassende Fähigkeiten nennen 
   assert.throws(() => bad({ ...LIVING_ROOM, pixelAsset: 'missing' }), /pixelAsset/);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Fehlende und zyklische Flächenreferenzen scheitern mit verständlichem Pfad', () => {
   assert.throws(
     () => bad({ ...LIVING_ROOM, spawn: { x: 110, surfaceId: 'missing' } }),
@@ -143,6 +148,7 @@ test('Fehlende und zyklische Flächenreferenzen scheitern mit verständlichem Pf
   );
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Ungültige Geometrie, Auflagen und Spawns erreichen keinen Objektkonstruktor', () => {
   assert.throws(
     () => bad({ ...LIVING_ROOM, floor: { ...LIVING_ROOM.floor, y: Infinity } }),
@@ -182,6 +188,7 @@ test('Ungültige Geometrie, Auflagen und Spawns erreichen keinen Objektkonstrukt
   );
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Werte/Zeiten/Farben und fehlende Strukturen werden semantisch geprüft', () => {
   for (const damageValue of [-1, 0.5, NaN, Number.MAX_SAFE_INTEGER + 1]) {
     assert.throws(
@@ -242,6 +249,7 @@ test('Sichere Einzelwerte dürfen gemeinsam keine unsichere Gesamtpunktzahl erge
   );
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Leere Räume sind gültig; Variantenwahl ist im Produktionsmodus deaktiviert', () => {
   assert.equal(
     resolveRoom({ ...LIVING_ROOM, objects: [], platforms: [], decorations: [] }, OBJECTS).objects

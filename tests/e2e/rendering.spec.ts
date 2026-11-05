@@ -1,6 +1,7 @@
 import { test, expect, state, start, until } from './support';
 import { PNG } from 'pngjs';
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Raum startet und zeichnet sichtbaren Inhalt', async ({ page }) => {
   await start(page);
   await until(page, (s) => s.pixel.animation === 'idle');
@@ -46,6 +47,7 @@ test('Raum startet und zeichnet sichtbaren Inhalt', async ({ page }) => {
   ).toBe(true);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Kleiner Viewport zeigt den ganzen Raum ohne Seitenüberlauf', async ({ page }) => {
   await page.setViewportSize({ width: 480, height: 720 });
   await start(page);

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { ASSETS } from '../assets/definitions';
 import { spriteUrl } from '../assets/urls';
+import type { InputState } from '../input/input-state';
 import type { ResolvedRoom } from '../content/definitions';
 import { buildObjects } from '../content/build-objects';
 import { drawRoom } from '../content/draw-room';
@@ -55,61 +56,31 @@ export class LivingRoomScene extends Phaser.Scene {
 
   create() {
     const generation = ++this.generation;
-    const room = this.room.definition;
 
     this.chaos.reset();
-    drawRoom(this, room);
-    this.platforms = this.physics.add.staticGroup();
-    const floor = this.addPlatform(0, room.floor.y, room.width, room.height - room.floor.y);
+    const floor = this.buildRoom();
 
-    for (const platform of room.platforms) {
-      const b = platform.bounds;
+    this.buildActors(floor);
+    this.initializeInteractions();
+    this.initializeViews();
+    this.configureCamera();
 
-      this.addPlatform(b.x, b.y, b.width, b.height);
-    }
+    this.installObservation(generation);
+  }
 
-    this.built = buildObjects(this, this.room);
-    this.couches = this.built.couches;
-    this.curtains = this.built.curtains;
-    this.plants = this.built.plants;
-    this.vases = this.built.vases;
+  private configureCamera() {
+    const { width, height } = this.room.definition;
 
-    for (const couch of this.couches) this.platforms.add(couch.platform);
-    this.pixel = new Pixel(this, this.room.spawn);
-    this.physics.add.collider(this.pixel.collider, this.platforms);
+    this.cameras.main.setBounds(0, 0, width, height);
+  }
 
-    for (const vase of this.vases) {
-      this.physics.add.collider(vase.collider, this.platforms, (_object, surface) => {
-        if (surface === floor) this.processDamage(vase.breakOnFloor());
-      });
-      this.physics.add.collider(this.pixel.collider, vase.collider, () => {
-        const body = vase.collider.body as Phaser.Physics.Arcade.Body;
-
-        if (body.touching.left || body.touching.right)
-          vase.push(this.pixel.x < vase.collider.x ? 1 : -1);
-      });
-    }
-
-    this.groundObjects = this.built.ground;
-    this.climbables = this.curtains;
-    this.destructibles = this.built.entries.map((entry) => entry.object);
-    this.objects = this.built.entries.map((entry) => entry.object);
-
-    for (const object of this.objects) object.reset();
-    this.controls = new InputController(this);
-    this.hud = new GameHud(this, room.hud);
-    this.renderHud(false);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      for (const object of this.objects) object.destroy();
-      this.controls.destroy();
-      this.pixel.destroy();
-      this.hud.destroy();
-    });
-    this.cameras.main.setBounds(0, 0, room.width, room.height);
-
+  // eslint-disable-next-line max-lines-per-function -- Import und vollständiger nur lesbarer Snapshot bleiben unter derselben E2E-Buildbedingung; Produktionsisolation geht vor künstlichem Aufteilen.
+  private installObservation(generation: number) {
     if (import.meta.env.MODE === 'e2e') {
+      // eslint-disable-next-line max-lines-per-function -- Import und vollständiger nur lesbarer Snapshot bleiben unter derselben E2E-Buildbedingung; Produktionsisolation geht vor künstlichem Aufteilen.
       void import('../../test-observer').then(({ installTestObserver }) => {
         if (!this.scene.isActive() || this.generation !== generation) return;
+        // eslint-disable-next-line max-lines-per-function -- Import und vollständiger nur lesbarer Snapshot bleiben unter derselben E2E-Buildbedingung; Produktionsisolation geht vor künstlichem Aufteilen.
         const removeObserver = installTestObserver(() => {
           const camera = this.cameras.main;
 
@@ -119,7 +90,11 @@ export class LivingRoomScene extends Phaser.Scene {
             frame: this.game.loop.frame,
             generation,
             blurListeners: this.game.events.listenerCount(Phaser.Core.Events.BLUR),
-            room: { id: room.id, width: room.width, height: room.height },
+            room: {
+              id: this.room.definition.id,
+              width: this.room.definition.width,
+              height: this.room.definition.height,
+            },
             objects: this.built.entries.map((entry) => ({
               id: entry.object.id,
               kind: entry.definition.kind,
@@ -150,6 +125,70 @@ export class LivingRoomScene extends Phaser.Scene {
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, removeObserver);
       });
     }
+  }
+
+  private buildRoom() {
+    const room = this.room.definition;
+
+    drawRoom(this, room);
+    this.platforms = this.physics.add.staticGroup();
+    const floor = this.addPlatform(0, room.floor.y, room.width, room.height - room.floor.y);
+
+    for (const { bounds: b } of room.platforms) this.addPlatform(b.x, b.y, b.width, b.height);
+
+    return floor;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Adapterregistrierung und Collider-Verdrahtung bleiben in ihrer notwendigen Aufbaufolge zusammen.
+  private buildActors(floor: Phaser.GameObjects.Rectangle) {
+    this.built = buildObjects(this, this.room);
+    this.couches = this.built.couches;
+    this.curtains = this.built.curtains;
+    this.plants = this.built.plants;
+    this.vases = this.built.vases;
+
+    for (const couch of this.couches) this.platforms.add(couch.platform);
+    this.pixel = new Pixel(this, this.room.spawn);
+    this.physics.add.collider(this.pixel.collider, this.platforms);
+
+    for (const vase of this.vases) this.connectVase(vase, floor);
+  }
+
+  private connectVase(vase: Vase, floor: Phaser.GameObjects.Rectangle) {
+    this.physics.add.collider(vase.collider, this.platforms, (_object, surface) => {
+      if (surface === floor) this.processDamage(vase.breakOnFloor());
+    });
+    this.physics.add.collider(this.pixel.collider, vase.collider, () => {
+      const body = vase.collider.body as Phaser.Physics.Arcade.Body;
+
+      if (body.touching.left || body.touching.right)
+        vase.push(this.pixel.x < vase.collider.x ? 1 : -1);
+    });
+  }
+
+  private initializeInteractions() {
+    this.groundObjects = this.built.ground;
+    this.climbables = this.curtains;
+    this.destructibles = this.built.entries.map((entry) => entry.object);
+    this.objects = this.built.entries.map((entry) => entry.object);
+
+    for (const object of this.objects) object.reset();
+  }
+
+  private initializeViews() {
+    const room = this.room.definition;
+
+    this.controls = new InputController(this);
+    this.hud = new GameHud(this, room.hud);
+    this.renderHud(false);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
+  }
+
+  private shutdown() {
+    for (const object of this.objects) object.destroy();
+    this.controls.destroy();
+    this.pixel.destroy();
+    this.hud.destroy();
   }
 
   private addPlatform(x: number, y: number, width: number, height: number) {
@@ -187,6 +226,11 @@ export class LivingRoomScene extends Phaser.Scene {
       return;
     }
 
+    this.updateGameplay(input, time, delta);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Die fachlich festgelegte Frame-Reihenfolge verwendet denselben Input und Snapshot; Bodenaktionen sind separat.
+  private updateGameplay(input: InputState, time: number, delta: number) {
     for (const vase of this.vases) vase.updateFall();
     const before = this.pixel.snapshot();
     const surface = this.climbables.find((object) => overlaps(before, object.climbArea));
@@ -201,12 +245,16 @@ export class LivingRoomScene extends Phaser.Scene {
 
     for (const object of this.climbables)
       this.processDamage(object.updateClimb(context, object === surface && context.pixel.climbing));
+    this.updateGround(context, surface);
+  }
+
+  private updateGround(context: InteractionContext, surface: Curtain | undefined) {
     const interaction = updateGroundInteractions(this.groundObjects, context);
 
     this.processDamage(interaction.event);
 
     if (interaction.faceX !== undefined) this.pixel.faceToward(interaction.faceX);
-    this.pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
+    this.pixel.present(context.time, interaction.action, surface?.snapshot().state === 'sliding');
     this.renderHud(this.pixel.nearCurtain);
   }
 }

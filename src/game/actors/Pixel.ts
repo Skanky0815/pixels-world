@@ -20,17 +20,9 @@ export class Pixel {
   private overlapsCurtain = false;
   private action: Activity = 'idle';
 
+  // eslint-disable-next-line max-lines-per-function -- Physikkörper und sichtbares Sprite werden gemeinsam am identischen Spawnanker aufgebaut.
   constructor(scene: Phaser.Scene, spawn: { readonly x: number; readonly bottom: number }) {
-    for (const [key, config] of Object.entries(PIXEL_ANIMATIONS)) {
-      if (!scene.anims.exists(key))
-        scene.anims.create({
-          key,
-          frames: config.frames.map((frame) => ({ key: 'pixel', frame })),
-          frameRate: config.frameRate,
-          repeat: config.repeat,
-        });
-    }
-
+    registerAnimations(scene);
     this.sprite = scene.physics.add
       .sprite(spawn.x, spawn.bottom - 16 * SCALE, 'pixel')
       .setScale(SCALE);
@@ -94,70 +86,84 @@ export class Pixel {
 
   move(input: InputState, time: number, delta: number, area: Bounds | undefined) {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
-    const { horizontal, vertical, jumpPressed } = input;
-    const overlapsCurtain =
-      area !== undefined &&
-      Phaser.Geom.Intersects.RectangleToRectangle(
-        new Phaser.Geom.Rectangle(body.x, body.y, body.width, body.height),
-        new Phaser.Geom.Rectangle(area.x, area.y, area.width, area.height),
-      );
 
-    this.overlapsCurtain = overlapsCurtain;
-
-    if (!overlapsCurtain) this.mustLeaveCurtain = false;
-    const canGrab = !this.mustLeaveCurtain && time >= this.grabBlockedUntil && !jumpPressed;
-    const jumpingIntoCurtain =
-      !body.blocked.down && horizontal !== 0 && Math.abs(body.velocity.y) > 1;
-
-    if (
-      !this.climbing &&
-      canGrab &&
-      overlapsCurtain &&
-      (vertical < 0 || (vertical > 0 && !body.blocked.down) || jumpingIntoCurtain)
-    )
-      this.climbing = true;
-
-    if (this.climbing && (!overlapsCurtain || (vertical >= 0 && body.blocked.down))) {
-      this.climbing = false;
-      this.grabBlockedUntil = overlapsCurtain ? time : time + 250;
-    }
-
+    this.updateClimbing(input, time, area, body);
     body.setAllowGravity(!this.climbing);
 
-    if (this.climbing) {
-      const speedY =
-        vertical < 0
-          ? -CURTAIN_SLIDE.climbSpeed
-          : vertical > 0
-            ? CURTAIN_SLIDE.descendSpeed
-            : CURTAIN_SLIDE.slideSpeed;
+    if (this.climbing) this.moveOnCurtain(input, time, body);
+    else this.moveFreely(input, delta, body);
 
-      this.sprite.setVelocity(horizontal * 110, speedY);
-
-      if (jumpPressed) {
-        this.climbing = false;
-        this.grabBlockedUntil = time + 250;
-        this.mustLeaveCurtain = true;
-        body.setAllowGravity(true);
-        this.sprite.setVelocity((horizontal || -1) * 240, -340);
-      }
-    } else {
-      if (body.blocked.down) this.sprite.setVelocityX(horizontal * 230);
-      else if (horizontal !== 0)
-        this.sprite.setVelocityX(
-          Phaser.Math.Clamp(
-            body.velocity.x + (horizontal * 700 * Math.min(delta, 50)) / 1000,
-            -240,
-            240,
-          ),
-        );
-
-      if (jumpPressed && body.blocked.down) this.sprite.setVelocityY(-480);
-    }
-
-    if (horizontal !== 0) this.sprite.setFlipX(horizontal < 0);
+    if (input.horizontal !== 0) this.sprite.setFlipX(input.horizontal < 0);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Die typisierte Signatur und die kurze Folge aus Kontakt, Greifsperre und Ablösen bleiben zusammen.
+  private updateClimbing(
+    input: InputState,
+    time: number,
+    area: Bounds | undefined,
+    body: Phaser.Physics.Arcade.Body,
+  ) {
+    this.overlapsCurtain = touchesCurtain(body, area);
+
+    if (!this.overlapsCurtain) this.mustLeaveCurtain = false;
+
+    if (!this.climbing && this.canGrab(input, time, body)) this.climbing = true;
+
+    this.detachFromCurtain(input, time, body);
+  }
+
+  private detachFromCurtain(input: InputState, time: number, body: Phaser.Physics.Arcade.Body) {
+    if (this.climbing && (!this.overlapsCurtain || (input.vertical >= 0 && body.blocked.down))) {
+      this.climbing = false;
+      this.grabBlockedUntil = this.overlapsCurtain ? time : time + 250;
+    }
+  }
+
+  private canGrab(input: InputState, time: number, body: Phaser.Physics.Arcade.Body) {
+    const available = !this.mustLeaveCurtain && time >= this.grabBlockedUntil && !input.jumpPressed;
+    const approaching =
+      input.vertical < 0 ||
+      (input.vertical > 0 && !body.blocked.down) ||
+      jumpingIntoCurtain(input, body);
+
+    return available && this.overlapsCurtain && approaching;
+  }
+
+  private moveOnCurtain(input: InputState, time: number, body: Phaser.Physics.Arcade.Body) {
+    const speedY =
+      input.vertical < 0
+        ? -CURTAIN_SLIDE.climbSpeed
+        : input.vertical > 0
+          ? CURTAIN_SLIDE.descendSpeed
+          : CURTAIN_SLIDE.slideSpeed;
+
+    this.sprite.setVelocity(input.horizontal * 110, speedY);
+
+    if (input.jumpPressed) this.jumpFromCurtain(input, time, body);
+  }
+
+  private jumpFromCurtain(input: InputState, time: number, body: Phaser.Physics.Arcade.Body) {
+    this.climbing = false;
+    this.grabBlockedUntil = time + 250;
+    this.mustLeaveCurtain = true;
+    body.setAllowGravity(true);
+    this.sprite.setVelocity((input.horizontal || -1) * 240, -340);
+  }
+
+  private moveFreely(input: InputState, delta: number, body: Phaser.Physics.Arcade.Body) {
+    if (body.blocked.down) this.sprite.setVelocityX(input.horizontal * 230);
+    else if (input.horizontal !== 0) this.steerInAir(input.horizontal, delta, body);
+
+    if (input.jumpPressed && body.blocked.down) this.sprite.setVelocityY(-480);
+  }
+
+  private steerInAir(horizontal: number, delta: number, body: Phaser.Physics.Arcade.Body) {
+    const speed = body.velocity.x + (horizontal * 700 * Math.min(delta, 50)) / 1000;
+
+    this.sprite.setVelocityX(Phaser.Math.Clamp(speed, -240, 240));
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Die Auswahl der sichtbaren Aktion und die geordnete Synchronisierung der Darstellung bilden einen Frame-Schritt.
   present(time: number, groundAction: GroundAction, sliding: boolean) {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
 
@@ -169,13 +175,31 @@ export class Pixel {
             ? 'sliding'
             : 'climbing'
           : 'idle';
+    this.trackLanding(time, body);
+    const animation = this.playAnimation(time, groundAction, sliding, body);
 
-    if (this.hasGroundContact && this.wasAirborne && body.blocked.down && body.velocity.y >= 0)
-      this.landingUntil = time + 140;
+    this.positionVisual(body, animation);
+  }
+
+  private trackLanding(time: number, body: Phaser.Physics.Arcade.Body) {
+    if (this.isLanding(body)) this.landingUntil = time + 140;
     // Spawning on the floor is not a landing; only animate a later real flight.
     this.hasGroundContact ||= body.blocked.down;
     this.wasAirborne =
       this.hasGroundContact && !this.climbing && (!body.blocked.down || body.velocity.y < -1);
+  }
+
+  private isLanding(body: Phaser.Physics.Arcade.Body) {
+    return this.hasGroundContact && this.wasAirborne && body.blocked.down && body.velocity.y >= 0;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige deklarative Animationszustand bleibt unmittelbar neben dem play-Aufruf.
+  private playAnimation(
+    time: number,
+    groundAction: GroundAction,
+    sliding: boolean,
+    body: Phaser.Physics.Arcade.Body,
+  ) {
     const animation = pixelAnimation({
       climbing: this.climbing,
       sliding,
@@ -190,6 +214,15 @@ export class Pixel {
     this.sprite.play(animation, true);
 
     if (this.climbing) this.sprite.setFlipX(false);
+
+    return animation;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Eine zusammenhängende Transformationskette richtet das sichtbare Sprite am Physikkörper aus.
+  private positionVisual(
+    body: Phaser.Physics.Arcade.Body,
+    animation: keyof typeof PIXEL_ANIMATIONS,
+  ) {
     const scale = PIXEL_ANIMATIONS[animation].scale;
 
     this.visual
@@ -199,6 +232,7 @@ export class Pixel {
       .setPosition(body.center.x, body.bottom - 16 * scale);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der flache Beobachtungsvertrag bleibt vollständig an einer Stelle sichtbar.
   snapshot() {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
 
@@ -228,4 +262,31 @@ export class Pixel {
     this.sprite.destroy();
     this.visual.destroy();
   }
+}
+
+// eslint-disable-next-line max-lines-per-function -- Eine Schleife registriert die deklarativen Frame-, Geschwindigkeits- und Wiederholungswerte gemeinsam.
+function registerAnimations(scene: Phaser.Scene) {
+  for (const [key, config] of Object.entries(PIXEL_ANIMATIONS)) {
+    if (!scene.anims.exists(key))
+      scene.anims.create({
+        key,
+        frames: config.frames.map((frame) => ({ key: 'pixel', frame })),
+        frameRate: config.frameRate,
+        repeat: config.repeat,
+      });
+  }
+}
+
+function touchesCurtain(body: Phaser.Physics.Arcade.Body, area: Bounds | undefined) {
+  return (
+    area !== undefined &&
+    Phaser.Geom.Intersects.RectangleToRectangle(
+      new Phaser.Geom.Rectangle(body.x, body.y, body.width, body.height),
+      new Phaser.Geom.Rectangle(area.x, area.y, area.width, area.height),
+    )
+  );
+}
+
+function jumpingIntoCurtain(input: InputState, body: Phaser.Physics.Arcade.Body) {
+  return !body.blocked.down && input.horizontal !== 0 && Math.abs(body.velocity.y) > 1;
 }

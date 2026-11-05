@@ -8,6 +8,7 @@ const packageVersion = (
 
 test('Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spielfläche', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   for (const base of [
     'http://127.0.0.1:4174/',

@@ -12,6 +12,7 @@ const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'r'];
 
 const test = base.extend<{ healthyBrowser: void }>({
   healthyBrowser: [
+    // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
     async ({ page }, use) => {
       const clockStart = new Date('2026-01-01T00:00:00Z');
 
@@ -50,6 +51,7 @@ async function state(page: Page): Promise<RoomTestState> {
   });
 }
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 async function start(page: Page, path = '/') {
   await page.goto(path);
   await expect
@@ -67,6 +69,7 @@ async function start(page: Page, path = '/') {
   await page.locator('#game').focus();
 }
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 async function until(page: Page, check: (s: RoomTestState) => boolean) {
   await expect
     .poll(
@@ -112,6 +115,7 @@ async function framesPass(page: Page, count = 15) {
   await until(page, (s) => s.frame >= frame + count);
 }
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 async function reset(page: Page) {
   const generation = (await state(page)).generation;
 

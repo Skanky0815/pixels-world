@@ -11,6 +11,7 @@ export class InputController {
 
   private readonly frames = new InputFrames();
 
+  // eslint-disable-next-line max-lines-per-function -- Die sechs deklarativen Tastenbindungen bleiben gemeinsam neben der zugehörigen Blur-Anmeldung.
   constructor(private readonly scene: Phaser.Scene) {
     const keyboard = scene.input.keyboard;
 
@@ -28,17 +29,19 @@ export class InputController {
   }
 
   read(frame: number) {
-    return this.frames.read(frame, () => {
-      const k = this.keys;
+    return this.frames.read(frame, () => this.readKeys());
+  }
 
-      return {
-        horizontal: Number(k.right.isDown) - Number(k.left.isDown),
-        vertical: Number(k.down.isDown) - Number(k.up.isDown),
-        jumpPressed: Phaser.Input.Keyboard.JustDown(k.jump),
-        resetPressed: Phaser.Input.Keyboard.JustDown(k.reset),
-        active: [k.left, k.right, k.up, k.down, k.jump].some((key) => key.isDown),
-      };
-    });
+  private readKeys() {
+    const k = this.keys;
+
+    return {
+      horizontal: Number(k.right.isDown) - Number(k.left.isDown),
+      vertical: Number(k.down.isDown) - Number(k.up.isDown),
+      jumpPressed: Phaser.Input.Keyboard.JustDown(k.jump),
+      resetPressed: Phaser.Input.Keyboard.JustDown(k.reset),
+      active: [k.left, k.right, k.up, k.down, k.jump].some((key) => key.isDown),
+    };
   }
 
   private release() {

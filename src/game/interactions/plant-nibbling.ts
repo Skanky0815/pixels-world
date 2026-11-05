@@ -28,6 +28,7 @@ export class PlantNibbling {
   private readonly objectId: string;
   private readonly config: PlantConfig;
 
+  // eslint-disable-next-line max-lines-per-function -- Zeit- und Punktparameter werden als zwei zusammengehörige Validierungsgruppen vor dem Kopieren geprüft.
   constructor(config: PlantConfig = PLANT_NIBBLE, objectId = 'plant') {
     assertObjectId(objectId);
     this.objectId = objectId;
@@ -47,37 +48,49 @@ export class PlantNibbling {
   update(deltaMs: number, eligible: boolean): PlantDamageEvent | undefined {
     if (this.phase === 'tipped') return;
 
-    if (!eligible) {
-      this.phase = 'idle';
-      this.elapsed = 0;
-
-      return;
-    }
+    if (!eligible) return this.stopNibbling();
 
     if (this.phase === 'idle') this.phase = 'waiting';
     this.elapsed += Number.isFinite(deltaMs) ? Math.max(0, deltaMs) : 0;
 
-    if (this.phase === 'waiting' && this.elapsed >= this.config.delayMs) {
-      this.phase = 'nibbling';
-      this.elapsed = 0;
-
-      if (this.damage === 0) {
-        this.damage = 1;
-
-        return chaosEvent(this.objectId, 'nibble', 1, this.config.nibbleValue);
-      }
-    } else if (this.phase === 'nibbling' && this.elapsed >= this.config.nibbleMs) {
-      this.phase = 'wobbling';
-      this.elapsed = 0;
-    } else if (this.phase === 'wobbling' && this.elapsed >= this.config.warningMs) {
-      this.phase = 'tipped';
-      this.elapsed = 0;
-      this.damage = 2;
-
-      return chaosEvent(this.objectId, 'tip', 2, this.config.tipValue);
-    }
+    return this.advancePhase();
   }
 
+  private stopNibbling(): undefined {
+    this.phase = 'idle';
+    this.elapsed = 0;
+  }
+
+  private advancePhase(): PlantDamageEvent | undefined {
+    if (this.phase === 'waiting' && this.elapsed >= this.config.delayMs)
+      return this.startNibbling();
+
+    if (this.phase === 'nibbling' && this.elapsed >= this.config.nibbleMs) {
+      this.phase = 'wobbling';
+      this.elapsed = 0;
+    } else if (this.phase === 'wobbling' && this.elapsed >= this.config.warningMs)
+      return this.tip();
+  }
+
+  private startNibbling(): PlantDamageEvent | undefined {
+    this.phase = 'nibbling';
+    this.elapsed = 0;
+
+    if (this.damage !== 0) return;
+    this.damage = 1;
+
+    return chaosEvent(this.objectId, 'nibble', 1, this.config.nibbleValue);
+  }
+
+  private tip(): PlantDamageEvent {
+    this.phase = 'tipped';
+    this.elapsed = 0;
+    this.damage = 2;
+
+    return chaosEvent(this.objectId, 'tip', 2, this.config.tipValue);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Phasenabhängige Dauer und der flache Fortschrittssnapshot bleiben gemeinsam nachvollziehbar.
   snapshot() {
     const duration =
       this.phase === 'waiting'

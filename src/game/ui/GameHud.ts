@@ -20,6 +20,7 @@ export class GameHud {
   private ratio = NaN;
   private color = NaN;
 
+  // eslint-disable-next-line max-lines-per-function -- Die deklarative HUD-Hierarchie mit Positionen und Textstilen bleibt gemeinsam sichtbar.
   constructor(
     scene: Phaser.Scene,
     layout: { readonly climbHint: { readonly x: number; readonly y: number } },
@@ -47,6 +48,10 @@ export class GameHud {
       `CHAOS: ${state.score}  ·  SARAS ÄRGER (VORSCHAU): ${state.anger.label}`,
     );
     this.climbHint.setAlpha(state.nearCurtain ? 1 : 0.65);
+    this.renderAnger(state);
+  }
+
+  private renderAnger(state: HudState) {
     const ratio = Math.max(0, Math.min(state.angerRatio, 1));
 
     if (ratio !== this.ratio || state.anger.color !== this.color) {
@@ -58,6 +63,7 @@ export class GameHud {
   }
 
   /** Detached scalar observation, also used by the read-only E2E observer. */
+  // eslint-disable-next-line max-lines-per-function -- Der flache nur lesbare HUD-Vertrag bleibt vollständig ausgeschrieben.
   snapshot() {
     return {
       statusText: this.status.text,

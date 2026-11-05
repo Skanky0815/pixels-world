@@ -25,6 +25,7 @@ export class CurtainSliding {
   private readonly objectId: string;
   private readonly config: TearConfig;
 
+  // eslint-disable-next-line max-lines-per-function, complexity -- Die zusammenhängende Validierung des Vorhang-Konfigurationsvertrags bleibt an einer Stelle.
   constructor(config: TearConfig = CURTAIN_SLIDE, objectId = 'curtain') {
     assertObjectId(objectId);
     this.objectId = objectId;
@@ -41,6 +42,7 @@ export class CurtainSliding {
     this.config = { ...config };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Die typisierte Signatur und die kurze Folge aus Zustandswechsel, Zeitreset und Schadensschritt bleiben gemeinsam sichtbar.
   update(
     deltaMs: number,
     state: CurtainState,
@@ -49,13 +51,14 @@ export class CurtainSliding {
     if (this.phase !== state) this.elapsed = 0;
     this.phase = state;
 
-    if (state !== 'sliding') {
-      this.elapsed = 0;
+    if (state !== 'sliding') this.elapsed = 0;
 
-      return;
-    }
+    if (state !== 'sliding' || !descending) return;
 
-    if (!descending) return;
+    return this.advanceDamage(deltaMs);
+  }
+
+  private advanceDamage(deltaMs: number): CurtainDamageEvent | undefined {
     this.elapsed += Number.isFinite(deltaMs) ? Math.max(0, deltaMs) : 0;
 
     if (this.elapsed < this.config.damageIntervalMs) return;
