@@ -1,48 +1,78 @@
 import { test, expect, state, start, until, holdUntil, curtain, reset } from './support';
 
-test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung stoppen Schaden', async ({ page }, testInfo) => {
+test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung stoppen Schaden', async ({
+  page,
+}, testInfo) => {
   await start(page);
   await curtain(page);
-  await holdUntil(page, ['ArrowUp'], s => s.pixel.y < 230);
-  await until(page, s => s.curtain.state === 'sliding');
+  await holdUntil(page, ['ArrowUp'], (s) => s.pixel.y < 230);
+  await until(page, (s) => s.curtain.state === 'sliding');
   const beginning = await state(page);
+
   await page.clock.runFor(300);
   const slipping = await state(page);
+
   expect(slipping.pixel.y).toBeGreaterThan(beginning.pixel.y + 6);
   expect(slipping.pixel.y).toBeLessThan(beginning.pixel.y + 20);
   expect(slipping.curtain.damage).toBe(0);
-  await until(page, s => s.curtain.damage === 1);
+  await until(page, (s) => s.curtain.damage === 1);
   expect((await state(page)).chaos).toEqual({ score: 4, damagedObjects: 1, anger: 'calm' });
-  expect((await state(page)).curtain.lastDamage).toEqual({ id: '["curtain","tear",1]', objectId: 'curtain', kind: 'tear', stage: 1, value: 4 });
+  expect((await state(page)).curtain.lastDamage).toEqual({
+    id: '["curtain","tear",1]',
+    objectId: 'curtain',
+    kind: 'tear',
+    stage: 1,
+    value: 4,
+  });
   const screenshot = testInfo.outputPath('curtain-tearing.png');
+
   await page.screenshot({ path: screenshot, fullPage: true });
-  await testInfo.attach('Rutschender Pixel und Vorhangriss', { path: screenshot, contentType: 'image/png' });
+  await testInfo.attach('Rutschender Pixel und Vorhangriss', {
+    path: screenshot,
+    contentType: 'image/png',
+  });
   await page.keyboard.down('ArrowUp');
+
   try {
-    await until(page, s => s.curtain.state === 'climbing' && s.pixel.velocityY < 0);
+    await until(page, (s) => s.curtain.state === 'climbing' && s.pixel.velocityY < 0);
     await page.clock.runFor(300);
     expect((await state(page)).curtain.damage).toBe(1);
-  } finally { await page.keyboard.up('ArrowUp'); }
-  await until(page, s => s.curtain.damage === 2);
+  } finally {
+    await page.keyboard.up('ArrowUp');
+  }
+
+  await until(page, (s) => s.curtain.damage === 2);
   expect((await state(page)).chaos.score).toBe(8);
-  await holdUntil(page, ['Space', 'ArrowLeft'], s => s.curtain.state === 'detached' && s.pixel.gravity);
+  await holdUntil(
+    page,
+    ['Space', 'ArrowLeft'],
+    (s) => s.curtain.state === 'detached' && s.pixel.gravity,
+  );
   await page.clock.runFor(300);
   expect((await state(page)).curtain.damage).toBe(2);
   expect((await state(page)).chaos.score).toBe(8);
 });
 
-test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren', async ({ page }) => {
+test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren', async ({
+  page,
+}) => {
   await start(page);
   await curtain(page);
-  await until(page, s => s.curtain.state === 'sliding');
-  await holdUntil(page, ['ArrowDown'], s => s.pixel.grounded && s.curtain.state === 'detached');
+  await until(page, (s) => s.curtain.state === 'sliding');
+  await holdUntil(page, ['ArrowDown'], (s) => s.pixel.grounded && s.curtain.state === 'detached');
   expect((await state(page)).pixel.bottom).toBeCloseTo(468, 0);
   const grounded = await state(page);
+
   await page.clock.runFor(1200);
   expect((await state(page)).curtain.events).toBe(grounded.curtain.events);
   expect((await state(page)).curtain.state).toBe('detached');
-  await holdUntil(page, ['ArrowUp'], s => s.curtain.state === 'climbing' && s.pixel.y < 420);
+  await holdUntil(page, ['ArrowUp'], (s) => s.curtain.state === 'climbing' && s.pixel.y < 420);
   await reset(page);
-  expect((await state(page)).curtain).toEqual({ state: 'detached', damage: 0, events: 0, lastDamage: null });
+  expect((await state(page)).curtain).toEqual({
+    state: 'detached',
+    damage: 0,
+    events: 0,
+    lastDamage: null,
+  });
   expect((await state(page)).chaos.score).toBe(0);
 });

@@ -6,6 +6,7 @@ export function installTestObserver(read: () => GameTestState) {
     configurable: true,
     get() {
       const state = read();
+
       return Object.freeze({
         ...state,
         room: Object.freeze(state.room),
@@ -13,13 +14,38 @@ export function installTestObserver(read: () => GameTestState) {
         pixel: Object.freeze(state.pixel),
         chaos: Object.freeze(state.chaos),
         hud: Object.freeze(state.hud),
-        curtain: state.curtain ? Object.freeze({ ...state.curtain, lastDamage: state.curtain.lastDamage ? Object.freeze(state.curtain.lastDamage) : null }) : null,
-        couch: state.couch ? Object.freeze({ ...state.couch, lastDamage: state.couch.lastDamage ? Object.freeze(state.couch.lastDamage) : null }) : null,
-        plant: state.plant ? Object.freeze({ ...state.plant, lastDamage: state.plant.lastDamage ? Object.freeze(state.plant.lastDamage) : null }) : null,
-        objects: Object.freeze(state.objects.map(object => Object.freeze({ ...object, lastDamage: object.lastDamage ? Object.freeze(object.lastDamage) : null }))),
-        vases: Object.freeze(state.vases.map(vase => Object.freeze(vase))),
+        curtain: state.curtain
+          ? Object.freeze({
+              ...state.curtain,
+              lastDamage: state.curtain.lastDamage ? Object.freeze(state.curtain.lastDamage) : null,
+            })
+          : null,
+        couch: state.couch
+          ? Object.freeze({
+              ...state.couch,
+              lastDamage: state.couch.lastDamage ? Object.freeze(state.couch.lastDamage) : null,
+            })
+          : null,
+        plant: state.plant
+          ? Object.freeze({
+              ...state.plant,
+              lastDamage: state.plant.lastDamage ? Object.freeze(state.plant.lastDamage) : null,
+            })
+          : null,
+        objects: Object.freeze(
+          state.objects.map((object) =>
+            Object.freeze({
+              ...object,
+              lastDamage: object.lastDamage ? Object.freeze(object.lastDamage) : null,
+            }),
+          ),
+        ),
+        vases: Object.freeze(state.vases.map((vase) => Object.freeze(vase))),
       });
     },
   });
-  return () => { Reflect.deleteProperty(window, '__pixelTest'); };
+
+  return () => {
+    Reflect.deleteProperty(window, '__pixelTest');
+  };
 }

@@ -12,10 +12,24 @@ export function assertObjectId(id: string) {
 }
 
 /** Tuple encoding cannot collide when IDs themselves contain separators. */
-export function chaosEvent<K extends DamageKind, S extends number>(objectId: string, kind: K, stage: S, value: number): ChaosEvent<K, S> {
+export function chaosEvent<K extends DamageKind, S extends number>(
+  objectId: string,
+  kind: K,
+  stage: S,
+  value: number,
+): ChaosEvent<K, S> {
   assertObjectId(objectId);
-  if (!Number.isSafeInteger(stage) || stage < 1 || !Number.isSafeInteger(value) || value < 0) throw new Error('Invalid damage event');
-  return Object.freeze({ id: JSON.stringify([objectId, kind, stage]), objectId, kind, stage, value });
+
+  if (!Number.isSafeInteger(stage) || stage < 1 || !Number.isSafeInteger(value) || value < 0)
+    throw new Error('Invalid damage event');
+
+  return Object.freeze({
+    id: JSON.stringify([objectId, kind, stage]),
+    objectId,
+    kind,
+    stage,
+    value,
+  });
 }
 
 /** Composed by object adapters; independent of Phaser and score calculation. */
@@ -23,7 +37,21 @@ export class DamageHistory {
   private events = 0;
   private lastDamage: ChaosEvent | null = null;
 
-  record(event: ChaosEvent) { this.events++; this.lastDamage = event; }
-  snapshot() { return { damage: this.lastDamage?.stage ?? 0, events: this.events, lastDamage: this.lastDamage }; }
-  reset() { this.events = 0; this.lastDamage = null; }
+  record(event: ChaosEvent) {
+    this.events++;
+    this.lastDamage = event;
+  }
+
+  snapshot() {
+    return {
+      damage: this.lastDamage?.stage ?? 0,
+      events: this.events,
+      lastDamage: this.lastDamage,
+    };
+  }
+
+  reset() {
+    this.events = 0;
+    this.lastDamage = null;
+  }
 }

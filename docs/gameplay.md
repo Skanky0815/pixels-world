@@ -4,24 +4,24 @@ Hier stehen die tatsächlich spielbaren Mechaniken und ihre Parameter. Neue Wün
 
 ## Steuerung und Bewegungsrichtung
 
-| Eingabe | Aktion |
-| --- | --- |
-| ← / → | Bewegen |
-| ↑ / ↓ | An einer Kletterfläche auf- und absteigen |
-| ↓ am Boden | Ducken, später optional |
-| Leertaste | Springen |
-| Leertaste + ← / → | Richtung beim Sprung steuern |
-| Leertaste beim Klettern | Von der Fläche abspringen |
+| Eingabe                 | Aktion                                    |
+| ----------------------- | ----------------------------------------- |
+| ← / →                   | Bewegen                                   |
+| ↑ / ↓                   | An einer Kletterfläche auf- und absteigen |
+| ↓ am Boden              | Ducken, später optional                   |
+| Leertaste               | Springen                                  |
+| Leertaste + ← / →       | Richtung beim Sprung steuern              |
+| Leertaste beim Klettern | Von der Fläche abspringen                 |
 
 Klettern ist langsamer als Springen. Beim Anspringen greift Pixel den Vorhang automatisch; ↑ oder ↓ greift auch bewusst. Nach dem Absprung muss Pixel die Kletterfläche verlassen, bevor er sie erneut automatisch greifen kann. Plattformkollisionen bleiben beim Klettern aktiv. Sprünge behalten ihren horizontalen Schwung, Richtungstasten erlauben begrenzte Luftsteuerung.
 
 ## Chaospunkte und Ärger-Vorschau
 
-| Objekt | Punkte beim Bodenbruch |
-| --- | ---: |
-| Kleine Vase auf dem ersten Regal | 25 |
-| Blaue Vase auf dem mittleren Regal | 35 |
-| Erbstück auf dem oberen Regal | 40 |
+| Objekt                             | Punkte beim Bodenbruch |
+| ---------------------------------- | ---------------------: |
+| Kleine Vase auf dem ersten Regal   |                     25 |
+| Blaue Vase auf dem mittleren Regal |                     35 |
+| Erbstück auf dem oberen Regal      |                     40 |
 
 Die HUD-Vorschau für Saras Ärger ist **entspannt** unter 25 Punkten, **genervt** ab 25 und **wütend** ab 60. Die Leiste reicht bis zu den insgesamt möglichen 162 Punkten: 100 für Vasen, 18 für Sofakratzer, 32 für Vorhangrisse und 12 für die Pflanze. Werte und Schwellen stehen in [src/game/domain/chaos.ts](../src/game/domain/chaos.ts). Berührung, Anschubsen und ein Zwischenstopp auf einem anderen Regal zählen noch nicht als Schaden. Vasen zählen erst beim tatsächlichen Bodenbruch und höchstens einmal pro Durchlauf. Sofa-, Vorhang- und Pflanzenschäden zählen je neuer Schadensstufe einmal; dasselbe Möbel zählt dabei als ein beschädigtes Objekt.
 

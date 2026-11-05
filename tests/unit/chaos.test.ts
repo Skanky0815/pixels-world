@@ -4,10 +4,13 @@ import { ChaosScore, angerFor } from '../../src/game/domain/chaos.ts';
 import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
 import { OBJECTS } from '../../src/content/objects/catalog.ts';
 import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-const VASES = resolveRoom(LIVING_ROOM, OBJECTS).objects.filter(object => object.kind === 'vase').map(object => ({ id: object.id, points: object.config.points }));
+const VASES = resolveRoom(LIVING_ROOM, OBJECTS)
+  .objects.filter((object) => object.kind === 'vase')
+  .map((object) => ({ id: object.id, points: object.config.points }));
 
 test('Schaden zählt pro Objekt genau einmal, unterschiedliche Objekte summieren sich', () => {
   const score = new ChaosScore();
+
   assert.equal(score.award('vase-a', 25), true);
   assert.equal(score.award('vase-a', 25), false);
   assert.equal(score.award('vase-a', 99), false);
@@ -18,6 +21,7 @@ test('Schaden zählt pro Objekt genau einmal, unterschiedliche Objekte summieren
 
 test('Neustart setzt Punkte und Ereignishistorie zurück', () => {
   const score = new ChaosScore();
+
   score.award('vase', 25);
   score.reset();
   assert.equal(score.score, 0);
@@ -27,13 +31,21 @@ test('Neustart setzt Punkte und Ereignishistorie zurück', () => {
 });
 
 test('Ärgerstufen wechseln an den konfigurierten Grenzen', () => {
-  for (const [points, level] of [[0, 'calm'], [24, 'calm'], [25, 'annoyed'], [59, 'annoyed'], [60, 'angry'], [100, 'angry']] as const) {
+  for (const [points, level] of [
+    [0, 'calm'],
+    [24, 'calm'],
+    [25, 'annoyed'],
+    [59, 'annoyed'],
+    [60, 'angry'],
+    [100, 'angry'],
+  ] as const) {
     assert.equal(angerFor(points).id, level);
   }
 });
 
 test('Ungültige Objektwerte ändern den Punktestand nicht', () => {
   const score = new ChaosScore();
+
   for (const points of [-1, 0.5, NaN, Infinity]) assert.throws(() => score.award('bad', points));
   assert.equal(score.score, 0);
   assert.equal(score.count, 0);
@@ -41,21 +53,23 @@ test('Ungültige Objektwerte ändern den Punktestand nicht', () => {
 
 test('Vasenwerte erlauben alle drei Ärgerstufen', () => {
   const score = new ChaosScore();
+
   assert.equal(angerFor(score.score).id, 'calm');
   score.award(VASES[0].id, VASES[0].points);
   assert.equal(angerFor(score.score).id, 'annoyed');
   score.award(VASES[1].id, VASES[1].points);
   assert.equal(angerFor(score.score).id, 'angry');
-  assert.equal(new Set(VASES.map(v => v.id)).size, VASES.length);
+  assert.equal(new Set(VASES.map((v) => v.id)).size, VASES.length);
 });
-
 
 test('Mehrere Schadensstufen zählen Punkte einzeln, das Objekt aber nur einmal', () => {
   const score = new ChaosScore();
+
   for (let stage = 1; stage <= 6; stage++) {
     assert.equal(score.award(`couch-${stage}`, 3, 'couch'), true);
     assert.equal(score.award(`couch-${stage}`, 3, 'couch'), false);
   }
+
   assert.equal(score.score, 18);
   assert.equal(score.count, 1);
   score.award('vase', 25);

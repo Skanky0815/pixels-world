@@ -5,8 +5,15 @@ import { InputFrames } from '../../src/game/input/input-state.ts';
 test('Ein Frame liest Eingaben und verbrauchende Flanken nur einmal', () => {
   const frames = new InputFrames();
   let reads = 0;
-  const sample = () => ({ horizontal: 1, vertical: 0, jumpPressed: ++reads === 1, resetPressed: false, active: true });
+  const sample = () => ({
+    horizontal: 1,
+    vertical: 0,
+    jumpPressed: ++reads === 1,
+    resetPressed: false,
+    active: true,
+  });
   const first = frames.read(10, sample);
+
   assert.equal(first.jumpPressed, true);
   assert.strictEqual(frames.read(10, sample), first);
   assert.equal(reads, 1);
@@ -19,9 +26,17 @@ test('Ein Frame liest Eingaben und verbrauchende Flanken nur einmal', () => {
 test('Focus-/Lebenszyklus-Cleanup verwirft den alten Snapshot auch im selben Frame', () => {
   const frames = new InputFrames();
   const held = { horizontal: 1, vertical: -1, jumpPressed: true, resetPressed: true, active: true };
+
   frames.read(25, () => held);
   frames.clear();
-  const released = frames.read(25, () => ({ horizontal: 0, vertical: 0, jumpPressed: false, resetPressed: false, active: false }));
+  const released = frames.read(25, () => ({
+    horizontal: 0,
+    vertical: 0,
+    jumpPressed: false,
+    resetPressed: false,
+    active: false,
+  }));
+
   assert.equal(released.active, false);
   assert.equal(released.jumpPressed, false);
   assert.equal(released.resetPressed, false);
