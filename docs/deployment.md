@@ -1,6 +1,6 @@
 # Veröffentlichung auf GitHub Pages
 
-Zieladresse: [Pixel’s World](https://skanky0815.github.io/pixels-world/). Der Prototyp ist seit dem erfolgreichen [Deployment vom 2026-11-04](https://github.com/Skanky0815/pixels-world/actions/runs/41918859915) öffentlich spielbar. Der Live-Spieltest bestätigte Assets, Bewegung, Sprung und Sofa-Schaden mit sichtbaren Chaospunkten, ohne Browserfehler oder Testobserver. Dieser manuelle main-Stand ist noch kein veröffentlichter Versionsrelease.
+Zieladresse: [Pixel’s World](https://skanky0815.github.io/pixels-world/). Der Prototyp ist seit dem erfolgreichen [Deployment vom 2026-11-04](https://github.com/Skanky0815/pixels-world/actions/runs/41918859915) öffentlich spielbar. Der Live-Spieltest bestätigte Assets, Bewegung, Sprung und Sofa-Schaden mit sichtbaren Chaospunkten, ohne Browserfehler oder Testobserver. Der erste Versionsrelease [v0.1.1](https://github.com/Skanky0815/pixels-world/releases/tag/v0.1.1) wurde am 5. November 2026 erfolgreich automatisch ausgerollt; Abnahme siehe unten.
 
 ## Einmalige Einrichtung
 
@@ -35,12 +35,13 @@ Release Please liefert den Root-Tag und Commit. Vor dem Rollout prüft `.github/
 
 Die gemeinsame Pages-Concurrency serialisiert manuelle und Release-Rollouts ohne laufende Veröffentlichungen abzubrechen. Release-Rechte bleiben im Releasejob; nur der Pages-Deploymentjob nutzt Pages-/OIDC-Schreibrechte, der Buildjob ausdrücklich nur Leserechte. Das aufrufende Pages-Jobdelegat erlaubt diese Rechte für den Unterworkflow. Die Summary nennt Tag, Commit und Spieladresse. Schlägt das Deployment nach erfolgreicher Release-Erstellung fehl, bleibt das Release bestehen: Ein erneutes `publish` erzeugt kein zweites Release und startet deshalb keinen automatischen Rollout. Fehler untersuchen und die fehlgeschlagenen Jobs desselben Laufs erneut starten; kein neues main-Artefakt unterschieben.
 
-### Validierung vor dem ersten Versionsrelease
+### Validierung und erste Release-Abnahme
 
 - Actionlint und Bash-Syntaxprüfung erfolgreich.
 - Release-Prüfskript mit simulierten GitHub-Antworten ausgeführt: Lightweight- und annotierter Tag akzeptiert; Draft, fehlende Veröffentlichung, falscher Tag-Commit, API-Fehler, abweichender Workflow-SHA und ungültiger Tag abgewiesen (8 Fälle).
 - Workflow-Gates geprüft: erfolgreicher Publish mit `release_created=true` startet Pages; `prepare`, No-op/false/leere Outputs oder fehlgeschlagener Releasejob starten nicht. Jobabhängigkeiten bleiben ohne `always()` fehlersicher.
 - Projekt-QA erneut ausgeführt. Gameplay-/Buildkonfiguration unverändert; der vollständige Pages-Lauf samt Browser-Suite ist bereits auf main erfolgreich.
-- **Noch offen:** echter Versionsrelease mit automatischem Rollout nach Merge und aktivierter PR-Erstellung. Keine künstlichen öffentlichen Releases für den Test angelegt. #69 bleibt bis zum Integrationstest offen.
+- **Integrationstest am 5. November 2026 bestanden:** [Spielrelease-Lauf 41945123257](https://github.com/Skanky0815/pixels-world/actions/runs/41945123257) führte `publish`, Pages-Build mit allen Browser-Szenarien und Deployment erfolgreich aus. Das veröffentlichte [Release v0.1.1](https://github.com/Skanky0815/pixels-world/releases/tag/v0.1.1), sein Lightweight-Tag und der geprüfte Versions-Merge zeigen auf `95c113d4e8f4dc23269e1a218ada09616bf3c51f`. Die öffentliche Seite zeigte bei der Browserabnahme `© 2026 Pixel’s World · v0.1.1` und den geladenen Spielraum.
+- Der erfolgreiche [prepare-Lauf 41921798940](https://github.com/Skanky0815/pixels-world/actions/runs/41921798940) veröffentlichte nicht; der frühere abgewiesene Publish-Lauf ohne gültigen Versions-Merge startete ebenfalls kein Deployment. Die bereits dokumentierten lokalen Negativfälle ergänzen diese realen Workflow-Pfade.
 
 Quellen: [Release-Please-Outputs und GITHUB_TOKEN](https://github.com/googleapis/release-please-action#outputs), [wiederverwendbare Workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows).
