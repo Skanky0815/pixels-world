@@ -184,3 +184,25 @@ kbd {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.feedback-link {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: 12px;
+}
+.feedback-link a {
+  color: #e4c182;
+  text-underline-offset: 3px;
+}
+.feedback-link a:focus-visible {
+  outline: 2px solid #edc37c;
+  outline-offset: 4px;
+}
+.feedback-link small {
+  font-size: 11px;
+  color: #c1afa0;
+}

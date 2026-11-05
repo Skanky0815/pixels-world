@@ -1,6 +1,16 @@
 import { DIRECTIONS } from '../../content/reconciliation';
 import Phaser from 'phaser';
-import { InputFrames } from './input-state';
+import { InputFrames, type InputState } from './input-state';
+
+const BLOCKED_INPUT: InputState = Object.freeze({
+  arrows: Object.freeze([]),
+  horizontal: 0,
+  vertical: 0,
+  jumpPressed: false,
+  confirmPressed: false,
+  resetPressed: false,
+  active: false,
+});
 
 /** Owns keyboard bindings and their lifecycle; consumers only receive InputState. */
 export class InputController {
@@ -30,6 +40,12 @@ export class InputController {
   }
 
   read(frame: number) {
+    if (document.activeElement?.closest('a, button, input, textarea, select')) {
+      this.release();
+
+      return BLOCKED_INPUT;
+    }
+
     return this.frames.read(frame, () => this.readKeys());
   }
 
