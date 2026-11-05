@@ -21,10 +21,14 @@ import { Vase } from '../objects/Vase';
 import { Couch } from '../objects/Couch';
 import { Curtain } from '../objects/Curtain';
 import { Plant } from '../objects/Plant';
+import { RoundController } from '../domain/round-controller';
+import { PlayActivity } from '../input/play-activity';
 import { GameHud } from '../ui/GameHud';
 
 export class LivingRoomScene extends Phaser.Scene {
   private pixel!: Pixel;
+  private round!: RoundController;
+  private activity!: PlayActivity;
   private controls!: InputController;
   private generation = 0;
   private hud!: GameHud;
@@ -57,7 +61,7 @@ export class LivingRoomScene extends Phaser.Scene {
   create() {
     const generation = ++this.generation;
 
-    this.chaos.reset();
+    this.initializeRound();
     const floor = this.buildRoom();
 
     this.buildActors(floor);
@@ -66,6 +70,12 @@ export class LivingRoomScene extends Phaser.Scene {
     this.configureCamera();
 
     this.installObservation(generation);
+  }
+
+  private initializeRound() {
+    this.physics.disableUpdate();
+    this.chaos.reset();
+    this.round = new RoundController();
   }
 
   private configureCamera() {
@@ -108,6 +118,8 @@ export class LivingRoomScene extends Phaser.Scene {
               height: camera.height,
               zoom: camera.zoom,
             },
+            round: this.round.snapshot(),
+            active: this.activity.active,
             chaos: {
               score: this.chaos.score,
               damagedObjects: this.chaos.count,
@@ -179,13 +191,15 @@ export class LivingRoomScene extends Phaser.Scene {
     const room = this.room.definition;
 
     this.controls = new InputController(this);
+    this.activity = new PlayActivity(() => this.syncActivity());
     this.hud = new GameHud(this, room.hud);
-    this.renderHud(false);
+    this.syncActivity();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
   }
 
   private shutdown() {
     for (const object of this.objects) object.destroy();
+    this.activity.destroy();
     this.controls.destroy();
     this.pixel.destroy();
     this.hud.destroy();
@@ -200,10 +214,12 @@ export class LivingRoomScene extends Phaser.Scene {
     return surface;
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der flache HUD-Vertrag zeigt Score, Runde und Aktion gemeinsam; sämtliche Regeln bleiben außerhalb der Ansicht.
   private renderHud(nearCurtain: boolean) {
     const maximumScore = this.destructibles.reduce((sum, object) => sum + object.maximumScore, 0);
 
     this.hud.render({
+      round: { ...this.round.snapshot(), paused: !this.activity.active },
       score: this.chaos.score,
       anger: angerFor(this.chaos.score),
       angerRatio: maximumScore > 0 ? this.chaos.score / maximumScore : 0,
@@ -213,10 +229,11 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private processDamage(event: ChaosEvent | undefined) {
-    if (event && this.chaos.awardEvent(event)) this.events.emit('object-damaged', event);
+    if (this.canPlay() && event && this.chaos.awardEvent(event))
+      this.events.emit('object-damaged', event);
   }
 
-  update(time: number, delta: number) {
+  update(_time: number, delta: number) {
     if (!this.pixel) return;
     const input = this.controls.read(this.game.loop.frame);
 
@@ -226,7 +243,47 @@ export class LivingRoomScene extends Phaser.Scene {
       return;
     }
 
-    this.updateGameplay(input, time, delta);
+    this.updateRound(input, delta);
+  }
+
+  private canPlay() {
+    return this.activity.active && this.round.snapshot().phase === 'chaos';
+  }
+
+  private syncActivity() {
+    const active = this.canPlay();
+
+    if (!active) this.controls.release();
+    this.setWorldActive(active);
+    this.pixel.setPaused(!active);
+    this.renderHud(this.pixel.nearCurtain);
+  }
+
+  private setWorldActive(active: boolean) {
+    if (active) {
+      this.physics.world.resume();
+      this.tweens.resumeAll();
+    } else {
+      this.physics.world.pause();
+      this.tweens.pauseAll();
+    }
+  }
+
+  private updateRound(input: InputState, delta: number) {
+    if (!this.canPlay()) return;
+    const elapsed = this.activity.delta(delta);
+
+    if (elapsed > 0) this.playFrame(input, elapsed);
+  }
+
+  private playFrame(input: InputState, elapsed: number) {
+    const time = this.round.snapshot().elapsedMs;
+
+    this.physics.world.update(time, elapsed);
+    this.updateGameplay(input, time, elapsed);
+
+    if (this.round.advance(elapsed, this.chaos.score)) this.syncActivity();
+    else this.renderHud(this.pixel.nearCurtain);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die fachlich festgelegte Frame-Reihenfolge verwendet denselben Input und Snapshot; Bodenaktionen sind separat.
@@ -255,6 +312,5 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (interaction.faceX !== undefined) this.pixel.faceToward(interaction.faceX);
     this.pixel.present(context.time, interaction.action, surface?.snapshot().state === 'sliding');
-    this.renderHud(this.pixel.nearCurtain);
   }
 }

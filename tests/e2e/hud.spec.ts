@@ -8,13 +8,14 @@ test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverände
   const idle = (await state(page)).hud;
 
   expect(idle).toEqual({
+    roundText: 'Noch etwas Zeit',
     statusText: 'PIXEL · HOME ALONE',
     scoreText: 'CHAOS: 0  ·  SARAS ÄRGER (VORSCHAU): Entspannt',
     climbHintText: '↑ KLETTERN\nLOSLASSEN: RUTSCHEN',
     climbHintAlpha: 0.65,
     angerRatio: 0,
     angerColor: 0x718463,
-    elements: 4,
+    elements: 5,
   });
   expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.hud))).toBe(true);
 

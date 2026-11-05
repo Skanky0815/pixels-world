@@ -1,6 +1,13 @@
 import type Phaser from 'phaser';
 import type { HudState } from './hud-state';
 
+const ROUND_STATUS = {
+  time: 'Noch etwas Zeit',
+  soon: 'Sara könnte bald kommen',
+  imminent: 'Jeden Moment …',
+  home: 'Sara ist zu Hause! · R: Neue Runde',
+} as const;
+
 const STATUS: Record<HudState['activity'], string> = {
   idle: 'PIXEL · HOME ALONE',
   climbing: 'PIXEL · CURTAIN CLIMBING',
@@ -16,6 +23,7 @@ export class GameHud {
   private readonly status: Phaser.GameObjects.Text;
   private readonly scoreText: Phaser.GameObjects.Text;
   private readonly climbHint: Phaser.GameObjects.Text;
+  private readonly roundText: Phaser.GameObjects.Text;
   private readonly angerBar: Phaser.GameObjects.Graphics;
   private ratio = NaN;
   private color = NaN;
@@ -38,17 +46,27 @@ export class GameHud {
       .setOrigin(0.5);
     this.status = scene.add.text(26, 25, STATUS.idle, textStyle);
     this.scoreText = scene.add.text(26, 48, '', textStyle);
+    this.roundText = scene.add.text(26, 88, '', textStyle);
     this.angerBar = scene.add.graphics();
-    this.root.add([this.climbHint, this.status, this.scoreText, this.angerBar]);
+    this.root.add([this.climbHint, this.status, this.scoreText, this.angerBar, this.roundText]);
   }
 
   render(state: HudState) {
-    this.status.setText(STATUS[state.activity]);
+    this.renderRound(state);
     this.scoreText.setText(
       `CHAOS: ${state.score}  ·  SARAS ÄRGER (VORSCHAU): ${state.anger.label}`,
     );
     this.climbHint.setAlpha(state.nearCurtain ? 1 : 0.65);
     this.renderAnger(state);
+  }
+
+  private renderRound(state: HudState) {
+    this.status.setText(
+      state.round.phase === 'chaos' ? STATUS[state.activity] : 'PIXEL · SARA IST DA',
+    );
+    this.roundText.setText(
+      state.round.paused ? 'Pause · Runde angehalten' : ROUND_STATUS[state.round.hint],
+    );
   }
 
   private renderAnger(state: HudState) {
@@ -66,6 +84,7 @@ export class GameHud {
   // eslint-disable-next-line max-lines-per-function -- Der flache nur lesbare HUD-Vertrag bleibt vollständig ausgeschrieben.
   snapshot() {
     return {
+      roundText: this.roundText.text,
       statusText: this.status.text,
       scoreText: this.scoreText.text,
       climbHintText: this.climbHint.text,

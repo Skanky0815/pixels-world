@@ -2,6 +2,29 @@
 
 Hier stehen die tatsächlich spielbaren Mechaniken und ihre Parameter. Neue Wünsche und Phasenplanung werden ausschließlich in [Issues](https://github.com/Skanky0815/pixels-world/issues) und [Milestones](https://github.com/Skanky0815/pixels-world/milestones) gepflegt.
 
+## Runde bis zur Heimkehr
+
+Pro neuem Durchlauf wird einmal eine Rückkehrzeit zwischen **60 und 105 Sekunden**
+aktiver Spielzeit gewählt. Das HUD zeigt nur „Noch etwas Zeit“, „Sara könnte bald
+kommen“ und „Jeden Moment …“. Die Hinweise wechseln bei 40 bzw. 15 Prozent
+verbleibender Rundendauer; sie zeigen keine konkrete Sekunde an.
+
+Fokusverlust oder ein versteckter Tab pausieren Zeit, Physik, Interaktionen und
+Darstellung. Gehaltene Tasten werden freigegeben. Nach Rückkehr wird das erste Delta
+verworfen; weitere Frame-Deltas sind auf 100 ms begrenzt. Es wird keine Hintergrundzeit
+nachgeholt. Uhr und Physik verwenden denselben bereinigten Zeitschritt.
+
+Am Ende des letzten zulässigen Frames werden Physik-/Schadensereignisse und
+Interaktionen noch verarbeitet. Anschließend wechselt die Runde genau einmal von
+`chaos` nach `returning` und sichert den finalen Chaosstand. Physik, Steuerung,
+weitere Schäden und Animationen bleiben stehen. Der Platzhalter **„Sara ist zu
+Hause! · R: Neue Runde“** markiert die Übergabe an die spätere Reaktion. Es gibt hier
+noch kein Sara-Sprite, keine Reaktionsauswertung und keine Versöhnungsphase.
+
+**R** startet auch nach der Heimkehr eine vollständig neue Runde einschließlich
+neuer Zufallsauswahl, Zeit, Punkten, Schäden, Eingaben und HUD. Derselbe zufällig
+gezogene Zeitpunkt darf dabei erneut vorkommen.
+
 ## Steuerung und Bewegungsrichtung
 
 | Eingabe                 | Aktion                                    |

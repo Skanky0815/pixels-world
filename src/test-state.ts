@@ -1,5 +1,9 @@
+import type { RoundSnapshot } from './game/domain/round-controller';
+
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
+  readonly round: RoundSnapshot;
+  readonly active: boolean;
   readonly ready: boolean;
   readonly generation: number;
   readonly blurListeners: number;
@@ -19,6 +23,7 @@ export interface GameTestState {
     readonly anger: string;
   };
   readonly hud: {
+    readonly roundText: string;
     readonly statusText: string;
     readonly scoreText: string;
     readonly climbHintText: string;

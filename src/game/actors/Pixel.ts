@@ -258,6 +258,11 @@ export class Pixel {
     };
   }
 
+  setPaused(paused: boolean) {
+    if (paused) this.sprite.anims.pause();
+    else this.sprite.anims.resume();
+  }
+
   destroy() {
     this.sprite.destroy();
     this.visual.destroy();
