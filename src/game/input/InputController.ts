@@ -1,3 +1,4 @@
+import { DIRECTIONS } from '../../content/reconciliation';
 import Phaser from 'phaser';
 import { InputFrames } from './input-state';
 
@@ -32,6 +33,7 @@ export class InputController {
     return this.frames.read(frame, () => this.readKeys());
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Ein deklarativer Snapshot konsumiert jede Tastenflanke genau einmal pro Frame.
   private readKeys() {
     const k = this.keys;
 
@@ -39,6 +41,7 @@ export class InputController {
       horizontal: Number(k.right.isDown) - Number(k.left.isDown),
       vertical: Number(k.down.isDown) - Number(k.up.isDown),
       ...this.readSpace(),
+      arrows: Object.freeze(DIRECTIONS.filter((direction) => freshDown(k[direction]))),
       resetPressed: Phaser.Input.Keyboard.JustDown(k.reset),
       active: [k.left, k.right, k.up, k.down, k.jump].some((key) => key.isDown),
     };
@@ -66,4 +69,8 @@ export class InputController {
 
     this.frames.clear();
   }
+}
+
+function freshDown(key: Phaser.Input.Keyboard.Key) {
+  return Phaser.Input.Keyboard.JustDown(key) && !key.originalEvent?.repeat;
 }

@@ -1,22 +1,22 @@
 # Browser-Szenarien
 
-Die Specs sind fachlich aufgeteilt: `movement`, `lifecycle`, `rendering`, `couch`, `curtain`, `plant`, `vases`, `content`, `hud`, `footer`, `round`, `pixel-return` und `build-isolation`. `support.ts` enthält die gemeinsame Browsergesundheits-/Clock-Fixture und Eingabehelfer. Jede Spec bleibt unabhängig; alle verwenden echte Tastatureingaben und ausschließlich lesbare Snapshots.
+Die Specs sind fachlich aufgeteilt: `movement`, `lifecycle`, `rendering`, `couch`, `curtain`, `plant`, `vases`, `content`, `hud`, `footer`, `round`, `pixel-return`, `reconciliation` und `build-isolation`. `support.ts` enthält die gemeinsame Browsergesundheits-/Clock-Fixture und Eingabehelfer. Jede Spec bleibt unabhängig; alle verwenden echte Tastatureingaben und ausschließlich lesbare Snapshots.
 
-Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. Playwright verteilt die Szenarien weiterhin automatisch auf zwei CI-Shards; die Dateien erzeugen keine zusätzlichen Jobs. Die Suite umfasst 34 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
+Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. Playwright verteilt die Szenarien weiterhin automatisch auf zwei CI-Shards; die Dateien erzeugen keine zusätzlichen Jobs. Die Suite umfasst 36 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
 Headless-Chromium meldet Hintergrundseiten weiterhin als sichtbar. Der Visibility-Test
 simuliert deshalb ausschließlich `document.hidden` und das Browserereignis, ohne
 Spielzustand zu setzen; echte Tabwechsel gehören zusätzlich zum manuellen Spieltest.
 
 Der Rundentest verwendet vor dem Laden eine reproduzierbare Browser-Zufallsquelle
 (Seed 91). Im normalen PR-/lokalen Lauf ist er mit `@fast` markiert und wählt eine
-8–10-Sekunden-Testkonfiguration. Die vier Heimkehr-Szenarien rufen dafür im kurzen
+8–10-Sekunden-Testkonfiguration. Die sechs Heimkehr-/Versöhnungsszenarien rufen dafür im kurzen
 E2E-Build `?round-profile=fast` auf. Die übrigen Szenarien behalten die normalen
 Rundengrenzen. Die Testkonfiguration entsteht beim Build; im Produktionsbuild werden
 Einstieg und Query-Auswertung entfernt. Es gibt keine schreibbare Browser-Schnittstelle.
 
-`npm run test:e2e:full` startet alle 34 Szenarien mit echten Produktionszeiten; der
+`npm run test:e2e:full` startet alle 36 Szenarien mit echten Produktionszeiten; der
 identische Rundentest ist dann `@slow` markiert und dauert im Spiel 60–105 Sekunden.
-`npm run test:e2e:slow` wählt diese vier vollständigen Heimkehr-Tests. Beide Befehle setzen vor
+`npm run test:e2e:slow` wählt diese sechs vollständigen Heimkehr-/Versöhnungstests. Beide Befehle setzen vor
 Test und Vite-Build `E2E_FULL_ROUND=1`. Die Skripte verwenden die Shell-Schreibweise
 von macOS/Linux; auf anderen Systemen die Umgebungsvariable entsprechend setzen.
 Es existiert nur ein Satz Ablauf-Assertions für beide Profile. Die Reaktionszeiten und die manuelle
@@ -36,7 +36,7 @@ Pixel läuft zu Sara und setzt sich hin; Objektzustände und Punkte bleiben unve
 Der Kommentar wartet ohne Zeitlimit auf einen frischen Leertastendruck. Die
 zusätzlichen Rückkehrtests starten auf Regal und Vorhang und prüfen einen Neustart
 während des Laufens im zweiten Raum. Ansichten von
-Dialog und Versöhnungsplatzhalter liegen als Bildanhänge im Browserreport.
+Dialog und Versöhnungsspiel liegen als Bildanhänge im Browserreport.
 
 Das ist ein Lebenszyklustest bei 10 Hz, kein Ersatz für die übrigen Eingabe-, Physik- und
 Renderprüfungen mit normalem Frame-Takt. Die Zufallsgrenzen 60/105 Sekunden und genaue
@@ -45,3 +45,8 @@ Zeitgrenzen bleiben zusätzlich durch die Domain-Unit-Tests abgedeckt. Das norma
 würde ausstehende Timer nur einmal auslösen und ist deshalb für aktive Spielzeit mit
 Delta-Begrenzung ungeeignet; verwendet wird weiterhin
 [`clock.runFor`](https://playwright.dev/docs/clock#tick-through-time-manually-firing-all-the-timers-consistently).
+
+`reconciliation.spec.ts` spielt mit echten Pfeiltasten bis zum Abschluss und prüft
+Fehleingabe, Timeout, adaptive Hilfe, Herzen, gehaltene Tasten, Fokus-/Visibility-Pause
+und R während einer Folge. Die nächsten Pfeile werden ausschließlich aus dem
+unveränderlichen Observer gelesen; keine Zustandssetzer oder Phaser-Zugriffe.

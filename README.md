@@ -30,7 +30,8 @@ Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospun
 Nach 60–105 Sekunden aktiver Spielzeit kommt Sara zurück und beendet die Chaosphase.
 Grobe Zeithinweise ersetzen einen genauen Countdown; bei Fokusverlust pausiert das Spiel.
 Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
-das Zimmer. Danach folgt ein sichtbarer Platzhalter für die spätere Versöhnungsphase.
+das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen
+Pfeiltastenfolge, Sara durch Schnurren und Anschmiegen zu versöhnen.
 
 Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.
@@ -43,6 +44,10 @@ Die komplette Spielfläche passt sich dem Browserfenster an.
 | Leertaste | Springen; am Vorhang abspringen; Heimkehr-Text bestätigen |
 | ↑ / ↓     | Vorhang greifen und hinauf-/hinabklettern                 |
 | R         | Gesamtes Zimmer samt Schäden und Punkten neu starten      |
+
+Während der Versöhnung: die jeweils angezeigte Pfeiltaste rechtzeitig neu drücken.
+Eine erfolgreiche Folge füllt die Herzleiste; bei Fehlern kannst du es erneut versuchen.
+R startet auch während dieser Phase neu.
 
 Klicke zuerst ins Zimmer, damit es Tastatureingaben erhält.
 Beim Anspringen greift Pixel den Vorhang automatisch; ohne Klettereingabe rutscht er langsam ab.

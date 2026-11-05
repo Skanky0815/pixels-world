@@ -11,6 +11,7 @@ test('Ein Frame liest Eingaben und verbrauchende Flanken nur einmal', () => {
     vertical: 0,
     jumpPressed: ++reads === 1,
     confirmPressed: false,
+    arrows: [],
     resetPressed: false,
     active: true,
   });
@@ -33,6 +34,7 @@ test('Focus-/Lebenszyklus-Cleanup verwirft den alten Snapshot auch im selben Fra
     vertical: -1,
     jumpPressed: true,
     confirmPressed: false,
+    arrows: [],
     resetPressed: true,
     active: true,
   };
@@ -44,6 +46,7 @@ test('Focus-/Lebenszyklus-Cleanup verwirft den alten Snapshot auch im selben Fra
     vertical: 0,
     jumpPressed: false,
     confirmPressed: false,
+    arrows: [],
     resetPressed: false,
     active: false,
   }));

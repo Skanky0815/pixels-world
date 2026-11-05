@@ -1,9 +1,11 @@
+import type { ReconciliationSnapshot } from './game/domain/reconciliation';
 import type { RoundSnapshot } from './game/domain/round-controller';
 import type { HomecomingSnapshot, SaraAnimation } from './game/domain/homecoming';
 import type { PixelReturnSnapshot } from './game/domain/pixel-return';
 
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
+  readonly reconciliation: ReconciliationSnapshot;
   readonly round: RoundSnapshot;
   readonly homecoming: HomecomingSnapshot;
   readonly pixelReturn: PixelReturnSnapshot;

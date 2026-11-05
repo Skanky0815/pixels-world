@@ -108,7 +108,7 @@ function messageFor(snapshot: HomecomingSnapshot, canContinue: boolean) {
 
   if (snapshot.stage === 'entering') return 'SARA\nDie Tür geht auf …';
 
-  if (snapshot.stage === 'complete') return 'VERSÖHNUNG\nFortsetzung folgt · R: Neue Runde';
+  if (snapshot.stage === 'complete') return 'VERSÖHNUNG\nPixels Charme-Offensive beginnt …';
 
   if (snapshot.stage === 'dialogue') return dialogueMessage(snapshot, canContinue);
 

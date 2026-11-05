@@ -110,7 +110,7 @@ test(
     expect(complete.sara.animationKey).toBe('sara-idle');
     expect(complete.sara.dialogueText).toContain('VERSÖHNUNG');
     expect(complete.hud.scoreText).not.toContain('VORSCHAU');
-    await test.info().attach('reconciliation-placeholder', {
+    await test.info().attach('reconciliation-start', {
       body: await page.screenshot(),
       contentType: 'image/png',
     });

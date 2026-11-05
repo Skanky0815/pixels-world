@@ -1,0 +1,131 @@
+import { test, expect, start, state, until, reset } from './support';
+import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
+import type { Page } from '@playwright/test';
+
+const full = process.env.E2E_FULL_ROUND === '1';
+const tag = full ? '@slow' : '@fast';
+const keys = { left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', down: 'ArrowDown' };
+
+// eslint-disable-next-line max-lines-per-function -- Der gemeinsame Einstieg durchläuft Heimkehr und explizite Bestätigung mit realen Eingaben.
+async function enterCharm(page: Page) {
+  await seedRoundRandom(page);
+  await start(page, full ? '/' : '/?round-profile=fast');
+  await useIdleFrames(page);
+  await advanceRoundTo(page, (await state(page)).round.returnAtMs);
+  await until(
+    page,
+    (s) => s.pixelReturn.stage === 'seated' && s.homecoming.stage === 'dialogue',
+    500,
+  );
+  await page.keyboard.down('Space');
+  await until(page, (s) => s.reconciliation.stage === 'cue', 100);
+  await page.keyboard.up('Space');
+}
+
+async function pressArrow(page: Page, key: string) {
+  await page.keyboard.down(key);
+  await page.clock.runFor(100);
+  await page.keyboard.up(key);
+}
+
+async function correctArrow(page: Page) {
+  await until(page, (s) => s.reconciliation.stage === 'input', 100);
+  const expected = (await state(page)).reconciliation.expected;
+
+  expect(expected).not.toBeNull();
+
+  if (expected) await pressArrow(page, keys[expected]);
+}
+
+test(
+  'Charme: falsche Taste, Timeout, Herzen und vollständiger Abschluss',
+  { tag },
+  // eslint-disable-next-line max-lines-per-function -- Die komplette zweite Spielphase wird ausschließlich mit echten Tasten bis zum Abschluss und Reset gespielt.
+  async ({ page }) => {
+    await enterCharm(page);
+    const frozen = await state(page);
+
+    await until(page, (s) => s.reconciliation.stage === 'input', 100);
+    const expected = (await state(page)).reconciliation.expected;
+
+    await test
+      .info()
+      .attach('charme-eingabe', { body: await page.screenshot(), contentType: 'image/png' });
+    await pressArrow(page, expected === 'left' ? 'ArrowRight' : 'ArrowLeft');
+    expect((await state(page)).reconciliation.feedback).toBe('wrong');
+    await until(page, (s) => s.reconciliation.stage === 'input', 100);
+    await until(page, (s) => s.reconciliation.feedback === 'timeout', 100);
+    expect((await state(page)).reconciliation.failures).toBe(2);
+    expect((await state(page)).reconciliation.inputMs).toBeGreaterThan(1800);
+    const required = (await state(page)).reconciliation.required;
+
+    for (let sequence = 0; sequence < required; sequence++) {
+      for (let step = 0; step < frozen.reconciliation.length; step++) await correctArrow(page);
+      expect((await state(page)).reconciliation.successes).toBe(sequence + 1);
+    }
+
+    await until(page, (s) => s.reconciliation.stage === 'complete', 100);
+    const complete = await state(page);
+
+    expect(complete.chaos).toEqual(frozen.chaos);
+    expect(complete.objects).toEqual(frozen.objects);
+    expect(complete.pixel.x).toBeCloseTo(frozen.pixel.x, 1);
+    expect(complete.reconciliation.progress).toBe(1);
+    expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.reconciliation))).toBe(
+      true,
+    );
+    await test
+      .info()
+      .attach('versoehnt', { body: await page.screenshot(), contentType: 'image/png' });
+    await reset(page);
+    expect((await state(page)).reconciliation.stage).toBe('waiting');
+  },
+);
+
+test(
+  'Charme: gehaltene Tasten, Browserpause und R während einer Folge',
+  { tag },
+  // eslint-disable-next-line max-lines-per-function -- Flanken, Fokus und Visibility prüfen denselben aktiven Eingabetimer ohne Spielzustandsschreiber.
+  async ({ page }) => {
+    await enterCharm(page);
+    await until(page, (s) => s.reconciliation.stage === 'input', 100);
+    const expected = (await state(page)).reconciliation.expected;
+
+    if (!expected) throw new Error('Missing arrow');
+    await page.keyboard.down(keys[expected]);
+    await page.clock.runFor(100);
+    const first = (await state(page)).reconciliation;
+
+    expect(first.step).toBe(1);
+    await page.clock.runFor(500);
+    await page.keyboard.down(keys[expected]);
+    await page.clock.runFor(100);
+    expect((await state(page)).reconciliation.step).toBe(1);
+    await page.keyboard.up(keys[expected]);
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    const paused = (await state(page)).reconciliation;
+
+    await page.clock.runFor(5000);
+    expect((await state(page)).reconciliation).toEqual(paused);
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.clock.runFor(100);
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    const hidden = (await state(page)).reconciliation;
+
+    await page.clock.runFor(5000);
+    expect((await state(page)).reconciliation).toEqual(hidden);
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, value: false });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await reset(page);
+    expect((await state(page)).reconciliation).toMatchObject({
+      stage: 'waiting',
+      successes: 0,
+      failures: 0,
+    });
+  },
+);
