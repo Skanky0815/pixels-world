@@ -4,6 +4,8 @@ test('Grobe Zeithinweise führen zur einmaligen Heimkehr und einem eingefrorenen
   page,
   // eslint-disable-next-line max-lines-per-function -- Das vollständige Rundenszenario behält Vorbereitung, echte Eingaben und gemeinsame Zustandsprüfungen zusammen.
 }) => {
+  // A complete round simulates up to 105 seconds at real physics-frame granularity.
+  test.setTimeout(180_000);
   await start(page);
   await besideCouch(page);
   await until(page, (s) => s.couch.damage > 0);
