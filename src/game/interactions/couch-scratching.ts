@@ -25,6 +25,7 @@ export class CouchScratching {
   private readonly objectId: string;
   private readonly config: ScratchConfig;
 
+  // eslint-disable-next-line complexity, max-lines-per-function -- Zusammenhängende Validierung des Konfigurationsvertrags bleibt zur Übersicht an einer Stelle.
   constructor(config: ScratchConfig = COUCH_SCRATCH, objectId = 'couch') {
     assertObjectId(objectId);
     this.objectId = objectId;
@@ -44,27 +45,33 @@ export class CouchScratching {
   }
 
   update(deltaMs: number, eligible: boolean): CouchDamageEvent | undefined {
-    if (!eligible) {
-      this.phase = 'idle';
-      this.waited = 0;
-      this.sinceDamage = 0;
-
-      return;
-    }
+    if (!eligible) return this.stopScratching();
 
     const elapsed = Number.isFinite(deltaMs) ? Math.max(0, deltaMs) : 0;
 
-    if (this.phase !== 'scratching') {
-      this.phase = 'waiting';
-      this.waited += elapsed;
+    if (this.phase !== 'scratching') return this.waitForScratching(elapsed);
 
-      if (this.waited < this.config.delayMs) return;
-      this.phase = 'scratching';
-      this.sinceDamage = 0;
+    return this.continueScratching(elapsed);
+  }
 
-      return this.nextDamage();
-    }
+  private stopScratching(): undefined {
+    this.phase = 'idle';
+    this.waited = 0;
+    this.sinceDamage = 0;
+  }
 
+  private waitForScratching(elapsed: number): CouchDamageEvent | undefined {
+    this.phase = 'waiting';
+    this.waited += elapsed;
+
+    if (this.waited < this.config.delayMs) return;
+    this.phase = 'scratching';
+    this.sinceDamage = 0;
+
+    return this.nextDamage();
+  }
+
+  private continueScratching(elapsed: number): CouchDamageEvent | undefined {
     this.sinceDamage += elapsed;
 
     if (this.sinceDamage < this.config.damageIntervalMs) return;
