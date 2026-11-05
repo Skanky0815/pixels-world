@@ -131,13 +131,16 @@ Nach Saras Kommentar und dessen Bestätigung beginnt das Pfeiltasten-Reaktionssp
 Es erscheint nur die nächste Taste, niemals die gesamte zufällige Folge. Jede
 Taste muss innerhalb ihres Zeitfensters neu gedrückt werden; Gedrückthalten oder
 mehrere gleichzeitige Pfeile zählen nicht als weitere richtige Eingabe. Zwischen
-Tasten liegen 700 ms Vorbereitung. Eine vollständige Folge verdient ein Herz.
+Tasten liegen 700 ms Vorbereitung. Eine vollständige Folge verdient genau ein Herz.
+Die Anzeige zeigt gefüllte und leere Herzen sowie den Zähler, etwa `♥♥♡ · 2/3`.
+Die nötigen Herzen werden beim Start anhand des finalen Chaoswerts gewählt und
+bleiben für diesen Versöhnungsversuch fest.
 
 | Chaos | Tasten pro Folge | Benötigte Folgen | Zeit pro Taste |
 | ----- | ---------------- | ---------------- | -------------- |
-| 0–24  | 3                | 3                | 1,8 s          |
-| 25–59 | 4                | 3                | 1,5 s          |
-| ab 60 | 4                | 4                | 1,2 s          |
+| 0–24  | 3                | 1                | 1,8 s          |
+| 25–59 | 4                | 2                | 1,5 s          |
+| ab 60 | 4                | 3                | 1,2 s          |
 
 Das sind erste Playtestwerte aus `src/content/reconciliation.ts`, keine zweite
 Chaos-Schwellenlogik. Die Domain verwendet dieselbe `angerFor`-Auswahl wie Sara.
@@ -163,7 +166,7 @@ der Versöhnung; alle sechs Kombinationen haben einen passenden Kommentar. Es bl
 ohne Zeitlimit stehen; R setzt Uhr, Schäden, Punkte, Figuren, Dialoge,
 Versöhnungsfortschritt und Ergebnis gemeinsam zurück. Echte Zuneigungsanimationen
 und Audio sind in diesem Schritt nicht enthalten. Bei flüssigen Eingaben sind ungefähr
-10–20 Sekunden aktive Reaktionszeit vorgesehen; Lesepausen sind frei; das Spielgefühl muss noch mit Rico abgestimmt werden.
+je nach Ärgerstufe wenige Sekunden bis etwa 20 Sekunden aktive Reaktionszeit vorgesehen; Lesepausen sind frei; das Spielgefühl muss noch mit Rico abgestimmt werden.
 Fokus-/Visibility-Pause stoppt alle Fristen; R verwirft auch Folge und Fortschritt.
 
 ## Einstieg vor der ersten Runde

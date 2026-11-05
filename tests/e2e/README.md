@@ -66,3 +66,7 @@ Sofaschaden, damit Punkte und Objektreset nicht nur mit leerem Zustand geprüft 
 die übrigen Gameplay-Tests umgehen den Startbildschirm nicht.
 `start-screen.spec.ts` prüft Stillstand vor dem Start, Logo, gehaltene Taste,
 Fokus, anschließenden Sprung, direkten R-Neustart, Reload und schmale Darstellung.
+
+Die Herzanforderung 1/2/3 und Grenzen 24/25/59/60 sind in Domain-Tests
+explizit geprüft. Der Browserlauf mit niedrigem Chaos prüft zusätzlich die
+tatsächlich angezeigten Herzen (`♡ · 0/1` → `♥ · 1/1`) und den anschließenden Abschluss.

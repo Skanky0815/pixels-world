@@ -9,6 +9,7 @@ export interface GameTestState {
   readonly started: boolean;
   readonly intro: { readonly visible: boolean };
   readonly result: ResultViewSnapshot;
+  readonly charmDisplay: { readonly heartsText: string };
   readonly reconciliation: ReconciliationSnapshot;
   readonly round: RoundSnapshot;
   readonly homecoming: HomecomingSnapshot;

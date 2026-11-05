@@ -14,6 +14,7 @@ export function installTestObserver(read: () => GameTestState) {
         round: Object.freeze(state.round),
         intro: Object.freeze(state.intro),
         reconciliation: Object.freeze(state.reconciliation),
+        charmDisplay: Object.freeze(state.charmDisplay),
         result: state.result ? Object.freeze(state.result) : null,
         homecoming: Object.freeze(state.homecoming),
         pixelReturn: Object.freeze(state.pixelReturn),

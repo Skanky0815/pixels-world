@@ -235,3 +235,11 @@ bindet das vorhandene README-Banner über Vites Asset-URL ein. Die Szene
 steuert Sichtbarkeit und räumt die Ansicht beim Shutdown auf.
 Der bestehende Scene-Neustart erhält die Startfreigabe; sämtliche
 Rundenmodelle werden weiterhin neu aufgebaut. Keine Persistenz über Reload.
+
+## Herzanforderung
+
+Die Herzanforderung verwendet weiterhin `CHARM_PROFILES.sequences`: 1/2/3
+für die zentralen Ärgerstufen. Ein zweites Herzsystem oder neue Chaosgrenzen
+sind nicht nötig. Das Profil wird einmal beim Start gewählt, der Zähler bleibt
+in der vorhandenen Domain. Die Ansicht zeigt gefüllte/leere Herzen und den
+gesammelten/benötigten Zähler; das Budget bleibt zwei Versuche pro Herz.

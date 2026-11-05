@@ -149,6 +149,7 @@ export class LivingRoomScene extends Phaser.Scene {
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
             reconciliation: this.charm.snapshot(),
+            charmDisplay: this.charmView.snapshot(),
             result: this.resultView.snapshot(),
             pixelReturn: this.returning.snapshot(),
             sara: this.sara.snapshot(),

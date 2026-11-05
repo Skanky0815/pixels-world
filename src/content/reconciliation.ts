@@ -11,9 +11,9 @@ export interface CharmProfile {
 
 /** Initial playtest values; no total time limit and no progress loss on failure. */
 export const CHARM_PROFILES: Record<ReconciliationLevel, CharmProfile> = {
-  calm: { length: 3, sequences: 3, inputMs: 1800 },
-  annoyed: { length: 4, sequences: 3, inputMs: 1500 },
-  angry: { length: 4, sequences: 4, inputMs: 1200 },
+  calm: { length: 3, sequences: 1, inputMs: 1800 },
+  annoyed: { length: 4, sequences: 2, inputMs: 1500 },
+  angry: { length: 4, sequences: 3, inputMs: 1200 },
 };
 export const CHARM_TIMING = {
   cueMs: 700,

@@ -49,6 +49,7 @@ Die komplette Spielfläche passt sich dem Browserfenster an.
 
 Während der Versöhnung: die jeweils angezeigte Pfeiltaste rechtzeitig neu drücken.
 Anleitung und Saras Sprüche kannst du in Ruhe lesen und mit Leertaste bestätigen.
+Je nach Chaos benötigt Sara ein, zwei oder drei Herzen.
 Eine erfolgreiche Folge füllt die Herzleiste; pro Herz hast du zwei Versuche. Danach kann die Versöhnung auch scheitern.
 R startet auch während dieser Phase neu.
 
