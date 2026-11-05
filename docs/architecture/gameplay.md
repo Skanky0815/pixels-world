@@ -14,9 +14,32 @@ Ein `ChaosEvent` trägt die als JSON-Tupel codierte ID aus Objektinstanz, Schade
 
 Pro Frame erhält das erste geeignete Bodenobjekt der stabilen Szenenreihenfolge ein aktives Update, alle anderen ein inaktives. Dadurch laufen überlappende Wartezeiten/Aktionen nicht parallel; Bewegung, Absprung und Zielwechsel unterbrechen sie. Objekte lesen eingefrorene Pixel-/Input-Daten und melden Aktion/Blickziel zurück, ohne Tastatur oder Pixel-Animation zu steuern. Der Animationsvergleich unter `src/dev/` bleibt ausschließlich im Dev-Betrieb unter seinem bisherigen URL erreichbar. Es bleibt ein npm-/Vite-Projekt.
 
+## Rundenzustand und aktive Spielzeit
+
+`RoundController` besitzt ausschließlich Dauerwahl, aktive Laufzeit, grobe Zeitkategorie,
+Phase und finalen Score. Die Zufallsquelle ist für Unit-Tests injizierbar. Snapshots
+sind eingefroren. `reaction` ist als zukünftige Vertragsphase reserviert; bis #8 bleibt
+die Runde nach Ablauf in `returning`.
+
+`PlayActivity` kapselt Fensterfokus und Document-Visibility. Beim Wechsel pausiert die
+Szene Physik, Tweens und Pixels Animation und leert gehaltene Eingaben. Bei Shutdown
+werden alle Fenster-/Document-Listener entfernt. Das erste Delta nach Start/Resume
+wird verworfen; normale Schritte sind auf 100 ms begrenzt. Die Arcade-Physik wird
+über Phasers `disableUpdate()` vom automatischen UPDATE-Aufruf entkoppelt und genau
+einmal pro aktivem Frame aus der Szene mit demselben sicheren Delta wie die Uhr
+aktualisiert. Phasers normales `postUpdate` bleibt erhalten; es gibt keine zweite Loop.
+
+Frame-Reihenfolge: Input/Reset → Aktivitätsprüfung → Physik und Kollisionen →
+Bewegung/Interaktionen/Score → Rundenuhr → ggf. finaler Score und Freeze → HUD.
+Die Aktionen des letzten zulässigen Frames zählen noch. Nach `returning` blockiert
+auch der gemeinsame Score-Eingang weitere Ereignisse. Der Input-Snapshot wird
+weiter gelesen, damit R jederzeit eine neue Szene starten kann. Die sichtbaren
+Zeithinweise entstehen ausschließlich aus `HudState`; nur der E2E-Beobachter enthält
+exakte Diagnosezeiten, ohne Schreibzugriffe.
+
 ## Frame-Reihenfolge und Lebenszyklus
 
-Ein Input-Snapshot → Reset-Flanke behandeln → Vasenfall aktualisieren → Pixel bewegen/Klettern bestimmen → Vorhang/Sofa/Pflanze mit demselben Input aktualisieren → Pixel-Aktion/Animation und HUD synchronisieren. Vorhangschaden wird weiterhin aus tatsächlicher Physikbewegung statt bloßer Renderzeit berechnet.
+Ein Input-Snapshot → Reset-Flanke behandeln → Aktivität prüfen und sicheren Physikschritt ausführen → Vasenfall aktualisieren → Pixel bewegen/Klettern bestimmen → Vorhang/Sofa/Pflanze mit demselben Input aktualisieren → Pixel-Aktion/Animation synchronisieren → Rundenuhr/Heimkehr behandeln → HUD synchronisieren. Vorhangschaden wird weiterhin aus tatsächlicher Physikbewegung statt bloßer Renderzeit berechnet.
 
 **R startet jetzt dieselbe Phaser-Szene tatsächlich neu.** `create()` initialisiert Score und Objektlisten neu; neue Adapter besitzen eigene Modelle, Ereignishistorien und Bewegungsreferenzen und durchlaufen den gemeinsamen Reset. Ein neuer Pixel setzt auch Greifsperre, Landepose, Blickrichtung und Bewegungszustand zurück. Shutdown zerstört alle Objektadapter, entfernt eigene Tasten/Captures und den Game-BLUR-Listener und zerstört Pixel/HUD. Die Szene besitzt Grafik, Collider und Tweens; deren Scene-Shutdown räumt die Engine-Ressourcen auf. Gehaltenes R erzeugt keinen wiederholten Neustart. Der asynchron installierte, nur lesbare E2E-Beobachter prüft die Szenengeneration, damit eine alte Importfortsetzung nicht in einen neuen Durchlauf schreibt.
 

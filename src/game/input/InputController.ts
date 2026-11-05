@@ -44,7 +44,7 @@ export class InputController {
     };
   }
 
-  private release() {
+  release() {
     this.keyboard.resetKeys();
     this.frames.clear();
   }

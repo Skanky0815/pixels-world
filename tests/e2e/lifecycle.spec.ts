@@ -50,7 +50,7 @@ test('Eingaben: gehaltenes Springen/Reset erzeugt nur eine Flanke; Neustart räu
   expect(restarted.curtain.damage).toBe(0);
   expect(restarted.plant.damage).toBe(0);
   expect(restarted.vases.every((vase) => vase.state === 'resting')).toBe(true);
-  expect(restarted.hud.elements).toBe(4);
+  expect(restarted.hud.elements).toBe(5);
   await page.keyboard.up('r');
 
   for (let round = 0; round < 2; round++) {

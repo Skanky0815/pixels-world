@@ -27,7 +27,9 @@ Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimm
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
 
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
-Saras Ärger ist bisher eine Vorschau im HUD; eine vollständige Runde mit Heimkehr und Versöhnung ist noch nicht enthalten.
+Nach 60–105 Sekunden aktiver Spielzeit kommt Sara zurück und beendet die Chaosphase.
+Grobe Zeithinweise ersetzen einen genauen Countdown; bei Fokusverlust pausiert das Spiel.
+Saras Reaktion und die Versöhnung folgen später.
 
 Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik und Pixels bestätigtes Sprite-Sheet.
 Die komplette Spielfläche passt sich dem Browserfenster an.
