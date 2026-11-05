@@ -16,8 +16,8 @@ for (const place of ['Regal', 'Vorhang'] as const) {
 
       if (place === 'Regal') {
         await couch(page);
-        await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 430);
-        await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 550);
+        await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 410);
+        await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 555);
         await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 304) < 2);
       } else await curtain(page);
       expect((await state(page)).pixel.bottom).toBeLessThan(468);
