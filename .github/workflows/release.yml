@@ -17,7 +17,16 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  full-qa:
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/qa.yml
+    with:
+      full_round: true
+
   release:
+    needs: full-qa
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 10

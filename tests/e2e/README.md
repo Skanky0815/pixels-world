@@ -7,13 +7,28 @@ Headless-Chromium meldet Hintergrundseiten weiterhin als sichtbar. Der Visibilit
 simuliert deshalb ausschließlich `document.hidden` und das Browserereignis, ohne
 Spielzustand zu setzen; echte Tabwechsel gehören zusätzlich zum manuellen Spieltest.
 
-Der lange Rundentest verwendet vor dem Laden eine reproduzierbare Browser-Zufallsquelle
-(Seed 91). Nach der Vorbereitung mit echten Tasten simuliert er `requestAnimationFrame`
-über die Playwright-Uhr mit 100-ms-Frames. So durchläuft er weiterhin die komplette
-60–105-Sekunden-Runde samt Phaser, Physik, HUD, eingefrorenem Score und Neustart, rendert
-aber während der langen Wartephase weniger Bilder. Zeitmeilensteine werden anhand des
-unveränderlichen Observers geprüft; die Uhr ersetzt keine Spielzustände. Die gewählte
-Rundendauer und Framezahl stehen als `round-simulation` im Testreport.
+Der Rundentest verwendet vor dem Laden eine reproduzierbare Browser-Zufallsquelle
+(Seed 91). Im normalen PR-/lokalen Lauf ist er mit `@fast` markiert und wählt eine
+8–10-Sekunden-Testkonfiguration. Ausschließlich dieser Test ruft dafür im kurzen
+E2E-Build `?round-profile=fast` auf. Alle anderen Szenarien behalten die normalen
+Rundengrenzen. Die Testkonfiguration entsteht beim Build; im Produktionsbuild werden
+Einstieg und Query-Auswertung entfernt. Es gibt keine schreibbare Browser-Schnittstelle.
+
+`npm run test:e2e:full` startet alle 31 Szenarien mit echten Produktionszeiten; der
+identische Rundentest ist dann `@slow` markiert und dauert im Spiel 60–105 Sekunden.
+`npm run test:e2e:slow` wählt nur diesen vollständigen Test. Beide Befehle setzen vor
+Test und Vite-Build `E2E_FULL_ROUND=1`. Die Skripte verwenden die Shell-Schreibweise
+von macOS/Linux; auf anderen Systemen die Umgebungsvariable entsprechend setzen.
+Es existiert nur ein Satz Ablauf-Assertions für beide Profile. Die Reaktions- und
+Dialogzeiten bleiben in beiden Profilen unverändert.
+
+Nach der Vorbereitung mit echten Tasten simuliert der Rundentest `requestAnimationFrame`
+über die Playwright-Uhr mit 100-ms-Frames. Er durchläuft Phaser, Physik, HUD,
+eingefrorenen Score und Neustart, rendert aber während der Wartephase weniger Bilder.
+Zeitmeilensteine werden anhand des unveränderlichen Observers geprüft; die Uhr ersetzt
+keine Spielzustände. Profil, gewählte Rundendauer und Framezahl stehen als
+`round-simulation` im Testreport. Tags sind auch über Playwrights `--grep` auswählbar;
+`@slow` ist hier ein Tag und erhöht keinen Timeout.
 
 Dasselbe Szenario prüft anschließend Saras Eintritt, Reaktions-Key, Dialog, Pause
 während der Reaktion, einmaligen Übergang zur Versöhnung und vollständigen Neustart.

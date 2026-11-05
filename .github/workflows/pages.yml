@@ -23,6 +23,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      E2E_FULL_ROUND: '1'
     permissions:
       contents: read
     steps:
