@@ -144,7 +144,8 @@ Chaos-Schwellenlogik. Die Domain verwendet dieselbe `angerFor`-Auswahl wie Sara.
 Vor dem ersten Versuch und nach jeder Folge oder jedem Fehler gibt es eine
 Lesepause ohne Timer. Ein neuer Druck auf die Leertaste startet den nächsten Versuch.
 Während der Eingabe erscheint die aktive Taste auf einer großen eigenen Kachel;
-Saras Sprüche werden ausschließlich in den Lesepausen gezeigt. Bereits
+Saras Sprüche werden ausschließlich in den Lesepausen gezeigt und kursiv
+vom Spielhinweis abgesetzt. Leertaste bzw. R stehen unten rechts im Dialogfeld. Bereits
 verdiente Herzen bleiben. Je zwei Fehlschläge verlängern das Eingabefenster um
 300 ms bis maximal 3 s. Es gibt kein Gesamtzeitlimit und kein Game-over.
 

@@ -10,6 +10,9 @@ const REACTION_LABELS = { calm: 'Skeptischer Blick', annoyed: 'Genervtes Seufzen
 export class SaraReturnView {
   private readonly root: Phaser.GameObjects.Container;
   private readonly actor: Phaser.GameObjects.Sprite;
+  private caption = '';
+  private readonly quote: Phaser.GameObjects.Text;
+  private readonly hint: Phaser.GameObjects.Text;
   private readonly message: Phaser.GameObjects.Text;
   private key: SaraAnimation = SARA_ANIMATIONS.idle;
 
@@ -32,7 +35,13 @@ export class SaraReturnView {
       wordWrap: { width: width - 120 },
       lineSpacing: 6,
     });
-    this.root.add([door, knob, this.actor, panel, this.message]);
+    this.quote = scene.add.text(60, 172, '', {
+      ...this.textStyle(16),
+      fontStyle: 'italic',
+      wordWrap: { width: width - 120 },
+    });
+    this.hint = scene.add.text(width - 60, 232, '', this.textStyle(14)).setOrigin(1, 1);
+    this.root.add([door, knob, this.actor, panel, this.message, this.quote, this.hint]);
   }
 
   private buildActor() {
@@ -52,7 +61,17 @@ export class SaraReturnView {
     this.play(snapshot.animationKey);
     this.actor.x =
       positions.saraStartX + snapshot.entryProgress * (positions.saraEndX - positions.saraStartX);
-    this.message.setText(messageFor(snapshot, canContinue));
+    this.renderText(snapshot, canContinue);
+  }
+
+  private renderText(snapshot: HomecomingSnapshot, canContinue: boolean) {
+    this.caption = messageFor(snapshot, canContinue);
+    const dialogue = snapshot.stage === 'dialogue';
+    const lines = this.caption.split('\n');
+
+    this.message.setText(dialogue ? lines[0] : this.caption);
+    this.quote.setText(dialogue ? lines[1] : '');
+    this.hint.setText(dialogue ? lines[2] : '');
   }
 
   private play(key: SaraAnimation) {
@@ -81,7 +100,7 @@ export class SaraReturnView {
       frame: Number(this.actor.frame.name),
       displayHeight: this.actor.displayHeight,
       originY: this.actor.originY,
-      dialogueText: this.message.text,
+      dialogueText: this.caption,
     };
   }
 
