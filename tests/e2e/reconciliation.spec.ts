@@ -18,7 +18,18 @@ async function enterCharm(page: Page) {
     500,
   );
   await page.keyboard.down('Space');
-  await until(page, (s) => s.reconciliation.stage === 'cue', 100);
+  await until(page, (s) => s.reconciliation.stage === 'reading', 100);
+  await page.keyboard.up('Space');
+  const reading = (await state(page)).reconciliation;
+
+  await page.clock.runFor(5000);
+  expect((await state(page)).reconciliation).toEqual(reading);
+  await continueCharm(page);
+}
+
+async function continueCharm(page: Page) {
+  await page.keyboard.down('Space');
+  await page.clock.runFor(100);
   await page.keyboard.up('Space');
 }
 
@@ -29,6 +40,7 @@ async function pressArrow(page: Page, key: string) {
 }
 
 async function correctArrow(page: Page) {
+  if ((await state(page)).reconciliation.stage === 'feedback') await continueCharm(page);
   await until(page, (s) => s.reconciliation.stage === 'input', 100);
   const expected = (await state(page)).reconciliation.expected;
 
@@ -53,11 +65,18 @@ test(
       .attach('charme-eingabe', { body: await page.screenshot(), contentType: 'image/png' });
     await pressArrow(page, expected === 'left' ? 'ArrowRight' : 'ArrowLeft');
     expect((await state(page)).reconciliation.feedback).toBe('wrong');
+    const feedback = (await state(page)).reconciliation;
+
+    await page.clock.runFor(5000);
+    expect((await state(page)).reconciliation).toEqual(feedback);
+    await continueCharm(page);
     await until(page, (s) => s.reconciliation.stage === 'input', 100);
     await until(page, (s) => s.reconciliation.feedback === 'timeout', 100);
     expect((await state(page)).reconciliation.failures).toBe(2);
     expect((await state(page)).reconciliation.inputMs).toBeGreaterThan(1800);
     const required = (await state(page)).reconciliation.required;
+
+    await continueCharm(page);
 
     for (let sequence = 0; sequence < required; sequence++) {
       for (let step = 0; step < frozen.reconciliation.length; step++) await correctArrow(page);
@@ -97,7 +116,7 @@ test(
     const first = (await state(page)).reconciliation;
 
     expect(first.step).toBe(1);
-    await page.clock.runFor(500);
+    await page.clock.runFor(800);
     await page.keyboard.down(keys[expected]);
     await page.clock.runFor(100);
     expect((await state(page)).reconciliation.step).toBe(1);

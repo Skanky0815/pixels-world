@@ -16,8 +16,7 @@ export const CHARM_PROFILES: Record<ReconciliationLevel, CharmProfile> = {
   angry: { length: 4, sequences: 4, inputMs: 1200 },
 };
 export const CHARM_TIMING = {
-  cueMs: 400,
-  feedbackMs: 900,
+  cueMs: 700,
   finaleMs: 1800,
   helpEveryFailures: 2,
   helpStepMs: 300,

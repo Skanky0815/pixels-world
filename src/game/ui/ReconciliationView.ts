@@ -3,41 +3,45 @@ import { ARROW_LABELS, CHARM_LINES } from '../../content/reconciliation';
 import type { ReconciliationSnapshot } from '../domain/reconciliation';
 import { homecomingPositions } from '../content/homecoming-layout';
 
-/** Placeholder affection feedback, using the existing actors without changing their physics. */
+/** Reading and timed input are visually separate; only the current arrow needs attention. */
 export class ReconciliationView {
   private readonly root: Phaser.GameObjects.Container;
   private readonly message: Phaser.GameObjects.Text;
   private readonly affection: Phaser.GameObjects.Text;
+  private readonly key: Phaser.GameObjects.Text;
+  private readonly tile: Phaser.GameObjects.Rectangle;
   private readonly timer: Phaser.GameObjects.Rectangle;
+  private readonly timeTrack: Phaser.GameObjects.Rectangle;
   private readonly hearts: Phaser.GameObjects.Rectangle;
 
-  // eslint-disable-next-line max-lines-per-function -- Panel, zwei benannte Leisten und Zuneigungsanzeige bilden eine zusammenhängende deklarative Ansicht.
+  // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau trennt Lesetext, große Tastenkachel, zugehörige Zeit und Herzfortschritt räumlich.
   constructor(scene: Phaser.Scene, width: number, floorY: number) {
     this.root = scene.add.container(0, 0).setDepth(14).setVisible(false);
-    const panel = scene.add.rectangle(width / 2, 201, width - 80, 150, 0x403a35, 1);
+    const panel = scene.add.rectangle(width / 2, 235, width - 80, 218, 0x403a35, 1);
 
     panel.setStrokeStyle(2, 0xd4b488);
-    this.message = scene.add.text(60, 140, '', style(16));
-    const heartTrack = scene.add.rectangle(60, 251, 260, 10, 0x66554e).setOrigin(0, 0.5);
-    const timeTrack = scene.add.rectangle(width - 320, 251, 260, 10, 0x66554e).setOrigin(0, 0.5);
+    this.message = scene.add.text(60, 140, '', { ...style(16), wordWrap: { width: width - 120 } });
+    this.tile = scene.add.rectangle(width / 2, 242, 100, 100, 0x615047).setStrokeStyle(3, 0xe4c182);
+    this.key = scene.add.text(width / 2, 242, '', style(76)).setOrigin(0.5);
+    this.timeTrack = scene.add.rectangle(width / 2 - 70, 306, 140, 8, 0x66554e).setOrigin(0, 0.5);
+    this.timer = scene.add.rectangle(width / 2 - 70, 306, 1, 8, 0xe4c182).setOrigin(0, 0.5);
+    const heartTrack = scene.add.rectangle(60, 331, 200, 8, 0x66554e).setOrigin(0, 0.5);
+    const heartLabel = scene.add.text(60, 311, 'Herzen', style(12));
 
-    const heartLabel = scene.add.text(60, 228, 'Herzen', style(12));
-    const timeLabel = scene.add.text(width - 320, 228, 'Zeit für die nächste Taste', style(12));
-
-    this.hearts = scene.add.rectangle(60, 251, 1, 10, 0xd99b9c).setOrigin(0, 0.5);
-    this.timer = scene.add.rectangle(width - 320, 251, 1, 10, 0xe4c182).setOrigin(0, 0.5);
+    this.hearts = scene.add.rectangle(60, 331, 1, 8, 0xd99b9c).setOrigin(0, 0.5);
     this.affection = scene.add
-      .text(homecomingPositions(width).pixelSeatX, floorY - 155, '', style(18))
+      .text(homecomingPositions(width).pixelSeatX, floorY - 120, '', style(18))
       .setOrigin(0.5);
     this.root.add([
       panel,
       this.message,
-      heartLabel,
-      timeLabel,
-      heartTrack,
-      timeTrack,
-      this.hearts,
+      this.tile,
+      this.key,
+      this.timeTrack,
       this.timer,
+      heartTrack,
+      heartLabel,
+      this.hearts,
       this.affection,
     ]);
   }
@@ -45,10 +49,20 @@ export class ReconciliationView {
   render(snapshot: ReconciliationSnapshot) {
     this.root.setVisible(snapshot.stage !== 'waiting');
     this.message.setText(charmText(snapshot));
-    this.hearts.width = 260 * snapshot.progress;
-    this.timer.width =
-      snapshot.stage === 'input' ? (260 * snapshot.remainingMs) / snapshot.inputMs : 0;
+    this.hearts.width = 200 * snapshot.progress;
+    this.renderKey(snapshot);
     this.affection.setText(affectionText(snapshot));
+  }
+
+  private renderKey(s: ReconciliationSnapshot) {
+    const active = s.stage === 'input';
+    const preparing = s.stage === 'cue';
+
+    this.tile.setVisible(active || preparing);
+    this.key.setText(s.expected ? ARROW_LABELS[s.expected] : '…').setVisible(active || preparing);
+    this.timeTrack.setVisible(active);
+    this.timer.setVisible(active);
+    this.timer.width = active ? (140 * s.remainingMs) / s.inputMs : 0;
   }
 
   destroy() {
@@ -57,36 +71,34 @@ export class ReconciliationView {
 }
 
 function style(size: number) {
-  return { fontFamily: 'monospace', fontSize: `${size}px`, color: '#fff1cf', lineSpacing: 6 };
+  return { fontFamily: 'monospace', fontSize: `${size}px`, color: '#fff1cf', lineSpacing: 8 };
 }
 
 function charmText(s: ReconciliationSnapshot) {
   if (s.stage === 'complete')
     return 'VERSÖHNT\nSara: Na komm her, du kleiner Chaoskater.\nR: Neue Runde';
 
-  if (s.stage === 'finale')
-    return 'VERSÖHNUNG GELUNGEN\nSara streichelt Pixel. Alles wieder gut.\nHerzen: voll';
+  if (s.stage === 'finale') return 'VERSÖHNUNG GELUNGEN\nSara streichelt Pixel. Alles wieder gut.';
 
-  return `PIXELS CHARME-OFFENSIVE · Herzen ${s.successes}/${s.required}\n${instruction(s)}\n${saraLine(s)}`;
+  if (s.stage === 'input') return `PFEILTASTE DRÜCKEN\nTaste ${s.step + 1} von ${s.length}`;
+
+  if (s.stage === 'cue') return 'BEREIT …\nGleich erscheint die nächste Pfeiltaste.';
+
+  return readingText(s);
 }
 
-function instruction(s: ReconciliationSnapshot) {
-  if (s.stage === 'input' && s.expected)
-    return `JETZT: ${ARROW_LABELS[s.expected]} · Taste ${s.step + 1}/${s.length} · ${(s.remainingMs / 1000).toFixed(1)} s`;
+function readingText(s: ReconciliationSnapshot) {
+  if (s.stage === 'reading')
+    return 'PIXELS CHARME-OFFENSIVE\nDrücke die große Pfeiltaste, sobald sie erscheint.\nSara: Na, kannst du mich wieder um die Pfote wickeln?\n\nLEERTASTE: Ich bin bereit';
 
-  if (s.stage === 'cue')
-    return s.feedback === 'correct'
-      ? 'Richtig! · Nächste Taste gleich …'
-      : 'Bereit? · Gleich kommt die nächste Taste …';
-
-  return feedbackText(s.feedback);
+  return `${feedbackText(s.feedback)}\n${saraLine(s)}\n\nLEERTASTE: Weiter`;
 }
 
 function feedbackText(feedback: ReconciliationSnapshot['feedback']) {
   return {
-    wrong: 'Falsche Taste · Neuer Versuch gleich!',
-    timeout: 'Zeit vorbei · Neuer Versuch gleich!',
-    sequence: 'Folge geschafft! · Ein Herz mehr.',
+    wrong: 'Falsche Taste. Kein Herz verloren.',
+    timeout: 'Zeit vorbei. Kein Herz verloren.',
+    sequence: 'Folge geschafft! Ein Herz mehr.',
     none: '',
     correct: 'Richtig!',
   }[feedback];

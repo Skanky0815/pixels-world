@@ -46,6 +46,7 @@ Die komplette Spielfläche passt sich dem Browserfenster an.
 | R         | Gesamtes Zimmer samt Schäden und Punkten neu starten      |
 
 Während der Versöhnung: die jeweils angezeigte Pfeiltaste rechtzeitig neu drücken.
+Anleitung und Saras Sprüche kannst du in Ruhe lesen und mit Leertaste bestätigen.
 Eine erfolgreiche Folge füllt die Herzleiste; bei Fehlern kannst du es erneut versuchen.
 R startet auch während dieser Phase neu.
 

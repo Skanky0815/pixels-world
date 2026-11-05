@@ -388,6 +388,8 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private advanceCharm(input: InputState, elapsed: number) {
     this.charm.advance(elapsed);
+
+    if (input.confirmPressed) this.charm.confirm();
     this.charm.input(input.arrows);
     this.charmView.render(this.charm.snapshot());
   }

@@ -4,6 +4,7 @@ import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
 import { CHARM_PROFILES, CHARM_TIMING, DIRECTIONS } from '../../src/content/reconciliation.ts';
 
 function ready(game: Reconciliation) {
+  game.confirm();
   game.advance(CHARM_TIMING.cueMs);
 }
 
@@ -41,6 +42,9 @@ test('Injizierter Zufall erzeugt geordnete Folgen; keine Gesamtfolge im Snapshot
 
   game.start(0);
   assert.equal(game.snapshot().expected, null);
+  assert.equal(game.snapshot().stage, 'reading');
+  game.advance(99999);
+  assert.equal(game.snapshot().stage, 'reading');
   assert.equal('sequence' in game.snapshot(), false);
 
   for (const arrow of DIRECTIONS.slice(0, 3)) {
@@ -82,7 +86,9 @@ test('Fehler starten neue Versuche ohne Game-over und erleichtern das Timing', (
     assert.equal(game.snapshot().stage, 'input');
     game.input(['left', 'up']);
     assert.equal(game.snapshot().feedback, 'wrong');
-    game.advance(CHARM_TIMING.feedbackMs);
+    game.advance(99999);
+    assert.equal(game.snapshot().stage, 'feedback');
+    game.confirm();
   }
 
   assert.equal(game.snapshot().failures, 20);
@@ -106,11 +112,11 @@ test('Alle Profile sind abschließbar; Fehler verlieren keine Herzen, Abschluss 
       assert.equal(game.snapshot().successes, i + 1);
 
       if (game.snapshot().stage === 'finale') break;
-      game.advance(CHARM_TIMING.feedbackMs);
+      game.confirm();
       ready(game);
       game.input(['right']);
       assert.equal(game.snapshot().successes, i + 1);
-      game.advance(CHARM_TIMING.feedbackMs);
+      game.confirm();
     }
 
     assert.equal(game.snapshot().stage, 'finale');
@@ -127,6 +133,10 @@ test('Alle Profile sind abschließbar; Fehler verlieren keine Herzen, Abschluss 
 });
 
 test('Ungültiger RNG wird abgelehnt', () => {
-  for (const sample of [-1, 1.1, NaN])
-    assert.throws(() => new Reconciliation(() => sample).start(0));
+  for (const sample of [-1, 1.1, NaN]) {
+    const game = new Reconciliation(() => sample);
+
+    game.start(0);
+    assert.throws(() => game.confirm());
+  }
 });

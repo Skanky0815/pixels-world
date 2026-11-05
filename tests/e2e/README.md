@@ -48,5 +48,6 @@ Delta-Begrenzung ungeeignet; verwendet wird weiterhin
 
 `reconciliation.spec.ts` spielt mit echten Pfeiltasten bis zum Abschluss und prüft
 Fehleingabe, Timeout, adaptive Hilfe, Herzen, gehaltene Tasten, Fokus-/Visibility-Pause
-und R während einer Folge. Die nächsten Pfeile werden ausschließlich aus dem
+und R während einer Folge. Anleitung und Rückmeldungen bleiben ohne Timer stehen,
+bis eine frische Leertaste den nächsten Versuch startet. Die nächsten Pfeile werden ausschließlich aus dem
 unveränderlichen Observer gelesen; keine Zustandssetzer oder Phaser-Zugriffe.

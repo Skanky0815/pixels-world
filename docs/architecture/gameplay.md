@@ -187,12 +187,14 @@ bestätigt erst nach dem Hinsetzen. Fokusverlust und R behandeln auch diese Phas
 
 ## Charme-Minispiel
 
-`Reconciliation` verwaltet `waiting → cue → input → feedback/finale → complete`.
+`Reconciliation` verwaltet `waiting → reading → cue → input → feedback/finale → complete`.
 Der Start ist einmalig nach bestätigter Heimkehr, ohne erneute Annäherung.
 Sequenzen entstehen mit injizierbarem RNG; Snapshots enthalten nur die nächste
 aktive Taste. Profile, Rückmeldungen und Zeitwerte liegen im Content.
 Die Szene reicht ausschließlich aktive bereinigte Framezeit und frische
-Pfeiltastenflanken weiter. Ein Frame kann höchstens eine Eingabe akzeptieren;
+Pfeiltastenflanken weiter. `reading` und `feedback` besitzen keine laufende Frist;
+eine neue Leertastenflanke startet die nächste Folge. Während der Eingabe
+zeigt die Ansicht die große Pfeilkachel und keine Sara-Dialogzeile. Ein Frame kann höchstens eine Eingabe akzeptieren;
 mehrere gleichzeitige Pfeile scheitern als mehrdeutige Eingabe. Native Wiederholung
 wird im Input-Adapter ausgefiltert. Physik, Schäden und Score bleiben eingefroren.
 `ReconciliationView` zeigt nächsten Pfeil, zwei Leisten und textuelle

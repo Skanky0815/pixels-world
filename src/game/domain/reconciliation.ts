@@ -2,7 +2,7 @@ import { angerFor } from './chaos.ts';
 import { CHARM_PROFILES, CHARM_TIMING, DIRECTIONS } from '../../content/reconciliation.ts';
 import type { CharmProfile, Direction, ReconciliationLevel } from '../../content/reconciliation.ts';
 
-type Stage = 'waiting' | 'cue' | 'input' | 'feedback' | 'finale' | 'complete';
+type Stage = 'waiting' | 'reading' | 'cue' | 'input' | 'feedback' | 'finale' | 'complete';
 type Feedback = 'none' | 'correct' | 'sequence' | 'wrong' | 'timeout';
 export type ReconciliationSnapshot = ReturnType<Reconciliation['snapshot']>;
 
@@ -27,7 +27,7 @@ export class Reconciliation {
     if (this.stage !== 'waiting') return false;
     this.level = angerFor(score).id;
     this.profile = CHARM_PROFILES[this.level];
-    this.nextSequence();
+    this.stage = 'reading';
 
     return true;
   }
@@ -40,14 +40,20 @@ export class Reconciliation {
   }
 
   private timed() {
-    return this.stage !== 'waiting' && this.stage !== 'complete';
+    return ['cue', 'input', 'finale'].includes(this.stage);
   }
 
   private expire() {
     if (this.stage === 'input') this.fail('timeout');
     else if (this.stage === 'cue') this.expectInput();
     else if (this.stage === 'finale') this.stage = 'complete';
-    else this.afterFeedback();
+  }
+
+  confirm() {
+    if (this.stage !== 'reading' && this.stage !== 'feedback') return false;
+    this.nextSequence();
+
+    return true;
   }
 
   input(directions: readonly Direction[]) {
@@ -69,18 +75,14 @@ export class Reconciliation {
     this.successes++;
     this.feedback = 'sequence';
     this.stage = this.successes === this.profile.sequences ? 'finale' : 'feedback';
-    this.remainingMs = this.stage === 'finale' ? CHARM_TIMING.finaleMs : CHARM_TIMING.feedbackMs;
+    this.remainingMs = this.stage === 'finale' ? CHARM_TIMING.finaleMs : 0;
   }
 
   private fail(reason: 'wrong' | 'timeout') {
     this.failures++;
     this.feedback = reason;
     this.stage = 'feedback';
-    this.remainingMs = CHARM_TIMING.feedbackMs;
-  }
-
-  private afterFeedback() {
-    this.nextSequence();
+    this.remainingMs = 0;
   }
 
   private nextSequence() {

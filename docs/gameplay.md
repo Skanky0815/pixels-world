@@ -131,7 +131,7 @@ Nach Saras Kommentar und dessen Bestätigung beginnt das Pfeiltasten-Reaktionssp
 Es erscheint nur die nächste Taste, niemals die gesamte zufällige Folge. Jede
 Taste muss innerhalb ihres Zeitfensters neu gedrückt werden; Gedrückthalten oder
 mehrere gleichzeitige Pfeile zählen nicht als weitere richtige Eingabe. Zwischen
-Tasten liegen 400 ms Vorbereitung. Eine vollständige Folge verdient ein Herz.
+Tasten liegen 700 ms Vorbereitung. Eine vollständige Folge verdient ein Herz.
 
 | Chaos | Tasten pro Folge | Benötigte Folgen | Zeit pro Taste |
 | ----- | ---------------- | ---------------- | -------------- |
@@ -141,7 +141,10 @@ Tasten liegen 400 ms Vorbereitung. Eine vollständige Folge verdient ein Herz.
 
 Das sind erste Playtestwerte aus `src/content/reconciliation.ts`, keine zweite
 Chaos-Schwellenlogik. Die Domain verwendet dieselbe `angerFor`-Auswahl wie Sara.
-Fehler oder Zeitüberschreitungen starten nach 900 ms eine neue Folge. Bereits
+Vor dem ersten Versuch und nach jeder Folge oder jedem Fehler gibt es eine
+Lesepause ohne Timer. Ein neuer Druck auf die Leertaste startet den nächsten Versuch.
+Während der Eingabe erscheint die aktive Taste auf einer großen eigenen Kachel;
+Saras Sprüche werden ausschließlich in den Lesepausen gezeigt. Bereits
 verdiente Herzen bleiben. Je zwei Fehlschläge verlängern das Eingabefenster um
 300 ms bis maximal 3 s. Es gibt kein Gesamtzeitlimit und kein Game-over.
 
@@ -150,5 +153,5 @@ Sara kommentiert abhängig von der ursprünglichen Chaosstufe. Bei voller Leiste
 folgt ein kurzer Streichel-Platzhalter und dann „Versöhnt“ mit Neustart über R.
 Eine ausführliche Ergebnisansicht bleibt #10; echte Zuneigungsanimationen und
 Audio sind in diesem Schritt nicht enthalten. Bei flüssigen Eingaben sind ungefähr
-10–20 Sekunden vorgesehen; das Spielgefühl muss noch mit Rico abgestimmt werden.
+10–20 Sekunden aktive Reaktionszeit vorgesehen; Lesepausen sind frei; das Spielgefühl muss noch mit Rico abgestimmt werden.
 Fokus-/Visibility-Pause stoppt alle Fristen; R verwirft auch Folge und Fortschritt.
