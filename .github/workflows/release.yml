@@ -19,7 +19,7 @@ concurrency:
 jobs:
   release:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -30,10 +30,10 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -52,7 +52,7 @@ jobs:
           test "$current_main" = "$GITHUB_SHA"
           candidates=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" | jq --arg sha "$GITHUB_SHA" '[.[] | select(.merged_at != null and .base.ref == "main" and .merge_commit_sha == $sha and any(.labels[]; .name == "autorelease: pending"))] | length')
           test "$candidates" = 1
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
         with:
           token: ${{ github.token }}
