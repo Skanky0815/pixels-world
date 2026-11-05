@@ -6,3 +6,19 @@ Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run 
 Headless-Chromium meldet Hintergrundseiten weiterhin als sichtbar. Der Visibility-Test
 simuliert deshalb ausschließlich `document.hidden` und das Browserereignis, ohne
 Spielzustand zu setzen; echte Tabwechsel gehören zusätzlich zum manuellen Spieltest.
+
+Der lange Rundentest verwendet vor dem Laden eine reproduzierbare Browser-Zufallsquelle
+(Seed 91). Nach der Vorbereitung mit echten Tasten simuliert er `requestAnimationFrame`
+über die Playwright-Uhr mit 100-ms-Frames. So durchläuft er weiterhin die komplette
+60–105-Sekunden-Runde samt Phaser, Physik, HUD, eingefrorenem Score und Neustart, rendert
+aber während der langen Wartephase weniger Bilder. Zeitmeilensteine werden anhand des
+unveränderlichen Observers geprüft; die Uhr ersetzt keine Spielzustände. Die gewählte
+Rundendauer und Framezahl stehen als `round-simulation` im Testreport.
+
+Das ist ein Lebenszyklustest bei 10 Hz, kein Ersatz für die übrigen Eingabe-, Physik- und
+Renderprüfungen mit normalem Frame-Takt. Die Zufallsgrenzen 60/105 Sekunden und genaue
+Zeitgrenzen bleiben zusätzlich durch die Domain-Unit-Tests abgedeckt. Das normale
+60-Sekunden-Testlimit und null automatische Retries gelten auch hier. `fastForward`
+würde ausstehende Timer nur einmal auslösen und ist deshalb für aktive Spielzeit mit
+Delta-Begrenzung ungeeignet; verwendet wird weiterhin
+[`clock.runFor`](https://playwright.dev/docs/clock#tick-through-time-manually-firing-all-the-timers-consistently).

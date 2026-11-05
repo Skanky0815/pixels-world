@@ -1,11 +1,11 @@
 import { test, expect, state, start, until, reset, besideCouch } from './support';
+import { advanceRoundTo, seedRoundRandom, useIdleFrames } from './round-clock';
 
 test('Grobe Zeithinweise führen zur einmaligen Heimkehr und einem eingefrorenen Chaosstand', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Das vollständige Rundenszenario behält Vorbereitung, echte Eingaben und gemeinsame Zustandsprüfungen zusammen.
 }) => {
-  // A complete round simulates up to 105 seconds at real physics-frame granularity.
-  test.setTimeout(180_000);
+  await seedRoundRandom(page);
   await start(page);
   await besideCouch(page);
   await until(page, (s) => s.couch.damage > 0);
@@ -14,13 +14,21 @@ test('Grobe Zeithinweise führen zur einmaligen Heimkehr und einem eingefrorenen
   expect(initial.round.returnAtMs).toBeGreaterThanOrEqual(60_000);
   expect(initial.round.returnAtMs).toBeLessThanOrEqual(105_000);
   expect(initial.hud.roundText).toBe('Noch etwas Zeit');
-  await page.clock.runFor(initial.round.returnAtMs * 0.61 - initial.round.elapsedMs);
+  await useIdleFrames(page);
+  await advanceRoundTo(page, initial.round.returnAtMs * 0.61);
   expect((await state(page)).hud.roundText).toBe('Sara könnte bald kommen');
-  await page.clock.runFor(initial.round.returnAtMs * 0.25);
+  await advanceRoundTo(page, initial.round.returnAtMs * 0.86);
   expect((await state(page)).hud.roundText).toBe('Jeden Moment …');
-  await page.clock.runFor(initial.round.returnAtMs * 0.15);
+  await advanceRoundTo(page, initial.round.returnAtMs);
   const finished = await state(page);
 
+  test.info().annotations.push({
+    type: 'round-simulation',
+    description: JSON.stringify({
+      durationMs: initial.round.returnAtMs,
+      frames: finished.frame - initial.frame,
+    }),
+  });
   expect(finished.round.phase).toBe('returning');
   expect(finished.round.finalChaosScore).toBe(finished.chaos.score);
   expect(finished.chaos.score).toBeGreaterThan(0);
