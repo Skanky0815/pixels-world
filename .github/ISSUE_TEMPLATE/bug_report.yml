@@ -1,0 +1,42 @@
+name: "🐛 Bug-Report"
+description: Einen Fehler melden und bei der Reproduktion helfen.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Danke fürs Melden! Bitte beschreibe möglichst konkret, was passiert. Unbekannte Angaben sind okay; vertrauliche Daten gehören nicht in öffentliche Berichte.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Was ist passiert?
+      description: Beschreibe den Fehler und was du stattdessen erwartet hast.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Wie lässt sich der Fehler auslösen?
+      description: Welche Schritte und Tasten führen zum Problem? Falls unklar, beschreibe die Situation so gut wie möglich.
+      placeholder: "1. Spiel öffnen …\n2. …"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser und Betriebssystem
+      placeholder: "Zum Beispiel: Firefox 144 auf Windows 11; genaue Version falls bekannt"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Spielversion oder Spieladresse
+      description: Die Version steht unter dem Zimmer. Alternativ genügt die verwendete URL.
+      placeholder: https://skanky0815.github.io/pixels-world/
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots oder Fehlermeldungen (optional)
+      description: Bilder oder relevante Fehlermeldungen helfen; bitte Zugangsdaten und persönliche Informationen entfernen.

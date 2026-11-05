@@ -1,3 +1,49 @@
+# Qualitätsprüfungen
+
+```sh
+npm run lint       # ESLint mit TypeScript-Regeln; Warnungen führen zum Fehler
+npm run typecheck  # Strenge TypeScript-Prüfung
+npm run test:unit  # Punkte, Doppeltzählung, Reset und Ärgerschwellen
+npm run qa         # Lint, Unit-Tests, Typprüfung und Produktionsbuild
+```
+
+## Manueller Spieltest
+
+1. Lokal starten: Der gesamte Raum, Pixel, Sofa, Regale und der markierte Vorhang sind sichtbar.
+2. Links und rechts laufen: Boden und Raumgrenzen halten Pixel auf.
+3. Von der Startposition nach rechts aufs Sofa springen. Zur rechten Kante laufen und auf das erste Regal springen; danach das nächste Regal erreichen. Pixel landet auf den sichtbaren Flächen.
+4. Am Vorhang ↑ halten: Pixel klettert. Loslassen zum langsamen Abrutschen mit Stoffschaden, ↓ zum schnelleren Absteigen und Leertaste mit einer Richtung zum Abspringen. Nach dem Verlassen wirkt wieder Schwerkraft.
+5. Auf einer Plattform oder beim Klettern R drücken: Pixel kehrt zur Startposition zurück.
+6. Die erste Vase auf dem Regal von links anschubsen. Beim Kontakt bleiben die Punkte unverändert; erst der Bodenaufprall liefert 25 Punkte und sichtbare Splitter. Warten/erneutes Berühren zählt nicht nochmals.
+7. Am Vorhang zur zweiten Vase klettern und sie nach links vom Regal schieben. Nach deren Bruch liefern die beiden Vasen zusammen 60 Punkte; Vorhangrisse können zusätzliche Punkte beitragen. Beim seitlichen Regalwechsel wegen des Abrutschens etwas höher ansetzen.
+8. R drücken: alle Vasen stehen wieder, Splitter verschwinden und Punkte/Ärger-Vorschau sind zurückgesetzt.
+9. Browsergröße ändern: Der gesamte Raum bleibt im ursprünglichen Seitenverhältnis sichtbar.
+
+## End-to-End-Tests
+
+```sh
+npm ci
+npx playwright install chromium
+npm run test:e2e
+```
+
+Playwright baut und startet selbst zwei lokale Vorschauen auf den Ports **4174** (E2E-Build) und **4175** (Produktionsbuild). Die Ports müssen frei sein; ein vorhandener Server wird nicht übernommen. Der normale Entwicklungsserver auf 5173 bleibt davon unabhängig. Die Suite verwendet echte Tastatureingaben; sie setzt keine Spielfigurenpositionen.
+
+```sh
+npm run test:e2e -- --repeat-each=3  # Stabilitätsprüfung ohne automatische Retries
+npm run test:e2e -- --workers=1     # Serieller Lauf bei knappen Ressourcen
+npm run test:e2e:debug              # Sichtbarer Browser und Playwright Inspector
+npm run test:e2e:report             # Letzten HTML-Bericht öffnen
+```
+
+Auf Linux bei Bedarf einmal `npx playwright install --with-deps chromium` ausführen. CI führt jeden Test normalerweise einmal ohne automatische Retries aus; zusätzliche Durchläufe sind manuell wählbar, installiert Chromium samt Systemabhängigkeiten und speichert den HTML-Bericht sowie Screenshots/Traces fehlgeschlagener Tests für 14 Tage getrennt je Teil-Suite als `playwright-results-1` und `playwright-results-2`. Ein Trace lässt sich mit `npx playwright show-trace <pfad-zur-trace.zip>` öffnen.
+
+Lokal laufen Tests isoliert mit zwei Workern, auch innerhalb derselben Testdatei, und geben Tasten im Cleanup frei. CI verteilt die vollständige Suite mit Playwrights `--shard=1/2` und `--shard=2/2` auf zwei unabhängige Runner mit je einem Worker. `fullyParallel` erlaubt die Aufteilung einzelner Tests statt ganzer Dateien. Der Gesamtcheck **Playwright (Chromium)** wird nur grün, wenn beide Teil-Suites erfolgreich sind; ein Fehler bricht die andere Teil-Suite nicht vorzeitig ab. Jeder Test besitzt seinen eigenen Browser-Kontext und seine eigene pausierte Uhr; die statischen Vorschau-Server werden gemeinsam genutzt. Ein Worker je CI-Runner vermeidet Konkurrenz beim Software-Rendering; zwei lokale Worker nutzen die lokale Hardware. Bei knappen Ressourcen lässt sich mit `--workers=1` seriell ausführen; `--workers=N` überschreibt die Vorgabe auch in CI. Testabdeckung und null automatische Retries bleiben erhalten; zusätzliche Durchläufe lassen sich manuell wählen.
+
+Playwrights Browser-Uhr ist vor dem Laden installiert und pausiert; zwischen Zustandsabfragen werden Timer und Animationen in kleinen Simulationsschritten weitergeführt. So verlängert die Antwortzeit eines langsamen CI-Runners keine Tastatureingaben. Abbruchgrenzen und tolerante Ergebnisprüfungen ersetzen feste Echtzeitpausen und exakte Frame-Positionen.
+
+Nur `vite build --mode e2e` enthält die lesbare, unveränderliche Beobachtungsschnittstelle `window.__pixelTest`. Sie liefert Bereitschaft, Szene, Frame, Kamera und Pixels Bewegungszustand als eingefrorene Kopien, ohne Mutatoren oder Phaser-Objekte. `npm run build` entfernt den gesamten Beobachter durch Vites Modusauswertung; ein eigener Test prüft den ausgelieferten Produktionscode darauf. Der manuelle Spieltest bleibt für das Spielgefühl sinnvoll; Cross-Browser- und pixelgenaue Screenshot-Tests sind noch nicht enthalten.
+
 # Gezielte Game-QA
 
 Wie in The Sara Protocol begrenzen native `paths`-Filter unter `push` und `pull_request` den QA-Workflow auf relevante Änderungen. Es gibt keine eigene Änderungserkennung und keine zusätzliche Filter-Action.

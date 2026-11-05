@@ -1,0 +1,36 @@
+name: "💡 Feature-Wunsch"
+description: Eine Idee für Pixel’s World vorschlagen.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Danke für deine Idee! Beschreibe kurz, was du dir wünschst. Eine technische Lösung brauchst du nicht. Bitte bleib freundlich und konkret.
+  - type: textarea
+    id: idea
+    attributes:
+      label: Was wünschst du dir?
+      description: Beschreibe deine Idee und das gewünschte Verhalten.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Warum wäre das hilfreich oder unterhaltsam?
+      description: Welches Problem löst die Idee oder was macht sie am Spiel besser?
+    validations:
+      required: true
+  - type: textarea
+    id: gameplay
+    attributes:
+      label: Auswirkungen auf Spiel oder Bedienung (optional)
+      description: Wie könnte man die Idee im Spiel bemerken oder verwenden?
+  - type: textarea
+    id: examples
+    attributes:
+      label: Bilder, Skizzen oder Beispiele (optional)
+      description: Hier kannst du ergänzende Bilder einfügen.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Woran wäre die Idee gelungen? (optional)
+      description: Falls du möchtest, nenne konkrete Beispiele oder Akzeptanzkriterien.
