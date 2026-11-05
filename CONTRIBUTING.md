@@ -39,3 +39,8 @@ Wir nutzen [Release Please](https://github.com/googleapis/release-please-action)
 4. Auf genau diesem Versions-Merge **Spielrelease** mit `main` und Modus `publish` starten. Der Workflow führt erneut die vollständige QA aus und prüft, dass der geprüfte Commit weiterhin `main` ist und zu genau einem gemergten, noch ausstehenden Release-PR gehört. Erst danach erstellt Release Please Tag und GitHub Release. Nur wenn die Action ein neues Release meldet und Tag/Commit verifiziert sind, startet automatisch dieselbe Pages-Pipeline für diesen Commit.
 
 Ist `main` inzwischen weitergelaufen, schlägt die Veröffentlichung bewusst fehl. Dann erneut einen aktuellen Versions-PR vorbereiten und prüfen. Es gibt keinen automatischen Merge oder npm-Publish. Pages wird nach erfolgreichem `publish` automatisch ausgerollt; `prepare` und ergebnislose Publish-Läufe lösen keinen Rollout aus. Das GitHub Release enthält zunächst Quellcodearchive; ein spielbares Build-Archiv ist noch nicht Teil dieses Ablaufs. Unter Settings → Actions → General muss „Allow GitHub Actions to create and approve pull requests“ aktiviert sein, damit `prepare` den Versions-PR erstellen kann. Der Standard für Workflow-Berechtigungen kann auf Read bleiben; die benötigten Rechte stehen ausdrücklich im Workflow. Der erste vollständige Versionsrelease mit automatischem Rollout muss nach dem Merge auf GitHub geprüft werden; lokale Gate-Prüfungen ersetzen diesen Integrationstest nicht.
+
+## Lesbarer TypeScript-Code
+
+Die [Lesbarkeitsregeln](docs/code-style.md) beschreiben Formatierung, kurze Funktionen,
+Leerzeilen, Ausnahmen und die schrittweise Einführung in der CI.
