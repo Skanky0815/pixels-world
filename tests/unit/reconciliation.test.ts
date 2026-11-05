@@ -17,12 +17,12 @@ function answer(game: Reconciliation) {
 
 // eslint-disable-next-line max-lines-per-function -- Alle bestehenden Chaosgrenzen werden gegen die konfigurierten Profile und den einmaligen Start geprüft.
 test('Charme startet einmal und verwendet dieselben Chaosstufen wie Sara', () => {
-  for (const [score, level] of [
-    [0, 'calm'],
-    [24, 'calm'],
-    [25, 'annoyed'],
-    [59, 'annoyed'],
-    [60, 'angry'],
+  for (const [score, level, hearts] of [
+    [0, 'calm', 1],
+    [24, 'calm', 1],
+    [25, 'annoyed', 2],
+    [59, 'annoyed', 2],
+    [60, 'angry', 3],
   ] as const) {
     const game = new Reconciliation(() => 0);
 
@@ -31,7 +31,7 @@ test('Charme startet einmal und verwendet dieselben Chaosstufen wie Sara', () =>
     assert.equal(game.start(0), false);
     assert.equal(game.snapshot().level, level);
     assert.equal(game.snapshot().length, CHARM_PROFILES[level].length);
-    assert.equal(game.snapshot().required, CHARM_PROFILES[level].sequences);
+    assert.equal(game.snapshot().required, hearts);
   }
 });
 

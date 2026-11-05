@@ -63,6 +63,9 @@ test(
     await enterCharm(page, true);
     const frozen = await state(page);
 
+    expect(frozen.reconciliation.required).toBe(1);
+    expect(frozen.charmDisplay.heartsText).toBe('♡ · 0/1');
+
     await until(page, (s) => s.reconciliation.stage === 'input', 100);
     const expected = (await state(page)).reconciliation.expected;
 
@@ -83,6 +86,7 @@ test(
     for (let sequence = 0; sequence < required; sequence++) {
       for (let step = 0; step < frozen.reconciliation.length; step++) await correctArrow(page);
       expect((await state(page)).reconciliation.successes).toBe(sequence + 1);
+      expect((await state(page)).charmDisplay.heartsText).toBe('♥ · 1/1');
     }
 
     await until(page, (s) => s.reconciliation.stage === 'complete', 100);

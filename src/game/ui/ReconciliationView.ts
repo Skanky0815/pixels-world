@@ -14,6 +14,7 @@ export class ReconciliationView {
   private readonly tile: Phaser.GameObjects.Rectangle;
   private readonly timer: Phaser.GameObjects.Rectangle;
   private readonly timeTrack: Phaser.GameObjects.Rectangle;
+  private readonly heartLabel: Phaser.GameObjects.Text;
   private readonly hearts: Phaser.GameObjects.Rectangle;
 
   // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau trennt Lesetext, große Tastenkachel, zugehörige Zeit und Herzfortschritt räumlich.
@@ -35,7 +36,8 @@ export class ReconciliationView {
     this.timeTrack = scene.add.rectangle(width / 2 - 70, 306, 140, 8, 0x66554e).setOrigin(0, 0.5);
     this.timer = scene.add.rectangle(width / 2 - 70, 306, 1, 8, 0xe4c182).setOrigin(0, 0.5);
     const heartTrack = scene.add.rectangle(60, 331, 200, 8, 0x66554e).setOrigin(0, 0.5);
-    const heartLabel = scene.add.text(60, 311, 'Herzen', style(12));
+
+    this.heartLabel = scene.add.text(60, 311, '', style(12));
 
     this.hearts = scene.add.rectangle(60, 331, 1, 8, 0xd99b9c).setOrigin(0, 0.5);
     this.affection = scene.add
@@ -51,7 +53,7 @@ export class ReconciliationView {
       this.timeTrack,
       this.timer,
       heartTrack,
-      heartLabel,
+      this.heartLabel,
       this.hearts,
       this.affection,
     ]);
@@ -61,6 +63,7 @@ export class ReconciliationView {
     this.root.setVisible(!['waiting', 'complete', 'failed'].includes(snapshot.stage));
     this.renderText(charmText(snapshot));
     this.hearts.width = 200 * snapshot.progress;
+    this.heartLabel.setText(heartText(snapshot));
     this.renderKey(snapshot);
     this.affection.setText(affectionText(snapshot));
   }
@@ -85,6 +88,10 @@ export class ReconciliationView {
     this.timeTrack.setVisible(active);
     this.timer.setVisible(active);
     this.timer.width = active ? (140 * s.remainingMs) / s.inputMs : 0;
+  }
+
+  snapshot() {
+    return Object.freeze({ heartsText: this.heartLabel.text });
   }
 
   destroy() {
@@ -139,7 +146,8 @@ function saraLine(s: ReconciliationSnapshot) {
 }
 
 function affectionText(s: ReconciliationSnapshot) {
-  if (s.stage === 'finale' || s.stage === 'complete') return '♥ ♥ ♥\nStreicheln';
+  if (s.stage === 'finale' || s.stage === 'complete')
+    return `${'♥ '.repeat(s.required).trim()}\nStreicheln`;
 
   if (s.feedback === 'sequence') return '♥ · Anschmiegen';
 
@@ -152,4 +160,11 @@ function isHint(line: string) {
 
 function quotedLine(line: string | undefined) {
   return line ? `Sara: „${line.slice('Sara: '.length)}“` : '';
+}
+
+function heartText(s: ReconciliationSnapshot) {
+  const filled = '♥'.repeat(s.successes);
+  const empty = '♡'.repeat(s.required - s.successes);
+
+  return `${filled}${empty} · ${s.successes}/${s.required}`;
 }
