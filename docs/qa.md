@@ -1,11 +1,15 @@
 # Qualitätsprüfungen
 
 ```sh
+npm run format:check # Einheitliche Formatierung
 npm run lint       # ESLint mit TypeScript-Regeln; Warnungen führen zum Fehler
 npm run typecheck  # Strenge TypeScript-Prüfung
 npm run test:unit  # Punkte, Doppeltzählung, Reset und Ärgerschwellen
-npm run qa         # Lint, Unit-Tests, Typprüfung und Produktionsbuild
+npm run qa         # Formatierung, Lint, Unit-Tests, Typprüfung und Produktionsbuild
 ```
+
+Die [Lesbarkeitsregeln](code-style.md) einschließlich lokal begründeter Ausnahmen
+sind verbindlich; Formatierungsfehler sind auch in CI, Release und Pages blockierend.
 
 ## Manueller Spieltest
 

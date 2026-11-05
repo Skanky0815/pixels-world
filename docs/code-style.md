@@ -8,12 +8,12 @@ Semikolons und bis zu 100 Zeichen pro Zeile. Bestehende Bezeichner bleiben erhal
 ## Lokal arbeiten
 
 - `npm ci`: reproduzierbar installieren.
-- `npm run lint`: bestehende Fehler blockieren; neue Lesbarkeitsregeln warnen.
-- `npm run format:check`: Formatierungsbedarf im Repository anzeigen.
+- `npm run lint`: Fehler und Warnungen blockieren; Lesbarkeitsregeln sind verbindlich.
+- `npm run format:check`: Formatierung im gesamten Repository prüfen; Abweichungen blockieren.
 - `npm exec prettier -- --write <Dateipfad>`: nur bearbeitete Dateien formatieren.
-- `npm run format`: bewusst das gesamte Repository formatieren; erzeugt derzeit einen großen Diff.
+- `npm run format`: das gesamte Repository einheitlich formatieren.
 - `npm run typecheck`: Typen prüfen; auch in `npm run build` enthalten.
-- `npm run qa`: Lint, Unit-Tests, Typprüfung und Produktionsbuild.
+- `npm run qa`: Formatierung, Lint, Unit-Tests, Typprüfung und Produktionsbuild.
 
 Formatierung in einem eigenen Commit durchführen. Anschließende Umstrukturierungen
 müssen das Verhalten erhalten und in einen separaten Commit oder PR. Bei Gameplay-,
@@ -46,24 +46,41 @@ function validateDefinition(/* ... */) {
 }
 ```
 
-Keine pauschalen Dateiausschlüsse oder globalen Abschaltungen ergänzen. Bestehende
-Warnungen bleiben zunächst sichtbar, statt überall nachträgliche Ausnahmen einzutragen.
+Keine pauschalen Dateiausschlüsse, globalen Abschaltungen oder höheren Grenzwerte
+verwenden. Ausnahmen gelten nur für den unmittelbar folgenden Funktionsknoten.
+Unbenutzte Ausnahmen schlagen als Fehler fehl und müssen entfernt werden.
 
-## Einführung in der CI
+## Verbindliche Prüfungen nach der Bereinigung
 
-1. Bestehende Fehler bleiben blockierend. Die neuen Lesbarkeitsregeln laufen als
-   Warnungen; deshalb entfällt das bisherige `--max-warnings 0`. Kein bestehendes
-   Fehlerniveau wird herabgesetzt. Typprüfung, Unit-Tests und Build bleiben Pflicht.
-2. Die Formatierungsprüfung läuft im QA-Workflow separat und zunächst mit
-   `continue-on-error: true`. Ihr Fehlschlag zeigt den Bestand, blockiert aber keine
-   fachlich unabhängigen Änderungen. Lokal liefert der Check weiterhin Exitcode 1.
-3. Bestehende Dateien gezielt formatieren und danach in getrennten Änderungen
-   refaktorieren. Warnungen beim Anfassen prüfen und möglichst abbauen.
-4. Wenn der Formatierungsbestand bereinigt ist, `continue-on-error` entfernen und
-   `format:check` in `qa` aufnehmen. Nach Prüfung der verbliebenen Ausnahmen einzelne
-   Lesbarkeitsregeln auf `error` heben. Diese Verschärfung erfolgt ausdrücklich in
-   einem späteren Review; es gibt derzeit keine automatische Warnungs-Baseline.
+`format:check` und `lint` sind lokal und in der QA verpflichtend. `qa` enthält beide
+Prüfungen; Release und Pages verwenden denselben Befehl. In der separaten QA-Pipeline
+bleiben Formatierung, Lint, Unit-Report und Build einzelne Schritte, damit die
+Testzusammenfassungen erhalten bleiben. Der frühere nicht blockierende
+Formatierungsbericht entfällt. Komplexität, Verschachtelung, logische Leerzeilen und
+Funktionslänge sind als Fehler konfiguriert; `--max-warnings 0` fängt weitere Warnungen ab.
 
-Die Einführung erzwingt daher noch keinen Rückgang der Warnungszahl. Neue Warnungen
-müssen im Review bewertet werden. Release- und Deployment-Gates bleiben erhalten;
-der anfängliche Formatierungsbericht wird nur im QA-Workflow ergänzt.
+## Bewusste Längenausnahmen
+
+Die Zehnzeilenregel zählt auch mehrzeilige Signaturen, Objektliterale und ausgeschriebene
+Aufrufparameter. Sie ist daher ein strenger Hinweis auf Überprüfung, kein Maß für die
+Zahl fachlicher Schritte. Nach dem Aufteilen der Bewegungs-, Interaktions- und
+Auflösungslogik bleiben ausdrücklich lokale, kommentierte Längenausnahmen bestehen:
+
+- Zusammenhängende Testabläufe behalten Vorbereitung, Aktionen und Assertions in
+  einem Szenario; die Bildauswertung ist als eigene Routine ausgelagert.
+- Flache Snapshots und Konfigurationsverträge bleiben vollständig ausgeschrieben,
+  statt durch verstreute Teilobjekte oder verdichtete Einzeiler verdeckt zu werden.
+- Kleine Validierungsgruppen behalten ihre Fehlerreihenfolge; Referenzauflösung und
+  Zykluswache bleiben gemeinsam nachvollziehbar. Der Resolver besitzt nur Zustand
+  für einen Aufruf, keinen Cache über Runden hinweg.
+- Zeichenroutinen und Phaser-Initialisierung dürfen ihre zusammengehörigen Parameter
+  und die nötige Reihenfolge zeigen.
+- E2E-Import und Snapshot bleiben innerhalb derselben Buildbedingung. Die
+  Produktionsbuild-Isolation wird weiterhin im Browser geprüft.
+
+Die Bestandbereinigung ergänzt 117 lokal begründete Ausnahmen, davon 116 nur für die
+Länge und eine zusätzlich für die zusammenhängende Vorhangvalidierung (Komplexität
+neun). Die bereits begründete Couch-Konfigurationsvalidierung bleibt erhalten.
+Das ist keine Behauptung, alle Funktionen hätten nun höchstens zehn Zeilen.
+Neue Ausnahmen müssen im Review fachlich begründet werden; die dokumentierte Zahl
+beschreibt diesen Bereinigungsschritt und ist keine automatisch gepflegte Baseline.

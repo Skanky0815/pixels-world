@@ -76,8 +76,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - name: Formatierungsbestand (Einführungsphase)
-        continue-on-error: true
+      - name: Formatierung prüfen
         run: npm run format:check
       - name: Unit-Tests mit TAP-Report
         run: |
