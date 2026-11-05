@@ -222,3 +222,16 @@ Die Abschlusssprüche stehen in `src/content/round-endings.ts`: drei bestehende
 keinen weiteren Zufall und keine neue Schwellenlogik. Der ursprüngliche
 Heimkehr-Kommentar bleibt im Ergebnisdatensatz erhalten; sichtbar spricht Sara
 einen eigenen abschließenden Satz.
+
+## Startfreigabe und Einführung
+
+Die Szene hält die einmalige Startfreigabe getrennt vom Rundenmodell.
+Vor der ersten frischen Leertastenflanke wird kein Gameplay-Frame ausgeführt,
+die Arcade-Welt und Figurenanimation sind pausiert. Das Startsignal wird
+verbraucht; die Tastatur wird beim Übergang nicht zurückgesetzt, damit
+eine gehaltene Starttaste nicht als neuer Sprung erscheint.
+`StartScreen` besitzt ausschließlich die responsive HTML-Einführung und
+bindet das vorhandene README-Banner über Vites Asset-URL ein. Die Szene
+steuert Sichtbarkeit und räumt die Ansicht beim Shutdown auf.
+Der bestehende Scene-Neustart erhält die Startfreigabe; sämtliche
+Rundenmodelle werden weiterhin neu aufgebaut. Keine Persistenz über Reload.

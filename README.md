@@ -52,7 +52,10 @@ Anleitung und Saras Sprüche kannst du in Ruhe lesen und mit Leertaste bestätig
 Eine erfolgreiche Folge füllt die Herzleiste; pro Herz hast du zwei Versuche. Danach kann die Versöhnung auch scheitern.
 R startet auch während dieser Phase neu.
 
-Klicke zuerst ins Zimmer, damit es Tastatureingaben erhält.
+Beim Laden erscheint die Einführung mit dem vorhandenen Spielbanner.
+Klicke bei Bedarf ins Zimmer und drücke Leertaste, um die erste Runde zu starten.
+Vorher bleiben Timer, Bewegung und Chaosaktionen angehalten. R startet nach dem
+Spielbeginn direkt eine neue Runde; Neuladen zeigt die Einführung erneut.
 Beim Anspringen greift Pixel den Vorhang automatisch; ohne Klettereingabe rutscht er langsam ab.
 Am Sofa oder Katzengras kurz stehen bleiben: Pixel wird von selbst aktiv.
 Weglaufen oder Springen unterbricht die Bodenaktionen.

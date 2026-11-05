@@ -52,7 +52,7 @@ async function state(page: Page): Promise<RoomTestState> {
 }
 
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
-async function start(page: Page, path = '/') {
+async function loadIntro(page: Page, path = '/') {
   await page.goto(path);
   await expect
     .poll(
@@ -65,11 +65,18 @@ async function start(page: Page, path = '/') {
     )
     .toBe(true);
   await expect(page.locator('canvas')).toBeVisible();
-  await until(page, (s) => s.pixel.grounded);
   await page.locator('#game').focus();
 }
 
-// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
+async function start(page: Page, path = '/') {
+  await loadIntro(page, path);
+  await page.keyboard.down('Space');
+  await until(page, (s) => s.started);
+  await page.keyboard.up('Space');
+  await until(page, (s) => s.pixel.grounded);
+}
+
+// eslint-disable-next-line max-lines-per-function -- Gemeinsame Clock-Polling-Grenze liefert bei Fehlern den vollständigen unveränderlichen Snapshot.
 async function until(page: Page, check: (s: RoomTestState) => boolean, stepMs = 32) {
   await expect
     .poll(
@@ -159,6 +166,7 @@ export {
   expect,
   state,
   start,
+  loadIntro,
   until,
   holdUntil,
   couch,

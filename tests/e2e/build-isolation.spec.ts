@@ -26,6 +26,8 @@ test('Produktionsbuild enthält weder Test-Schnittstelle noch Animationsvergleic
   await spriteLoaded;
   await expect(page.locator('canvas')).toBeVisible();
   expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
+  await expect(page.locator('.start-screen')).toBeVisible();
+  await expect(page.getByAltText('Pixel’s World')).toBeVisible();
   // Also inspect delivered JS, so a delayed dynamic import cannot hide a leak.
   const scripts = await page
     .locator('script[src]')
