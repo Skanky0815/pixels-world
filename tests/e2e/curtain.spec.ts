@@ -2,6 +2,7 @@ import { test, expect, state, start, until, holdUntil, curtain, reset } from './
 
 test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung stoppen Schaden', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
   await start(page);
   await curtain(page);
@@ -55,6 +56,7 @@ test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung sto
 
 test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page);
   await curtain(page);

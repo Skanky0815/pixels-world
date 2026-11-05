@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { PLANT_NIBBLE, PlantNibbling } from '../../src/game/interactions/plant-nibbling.ts';
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Nähe und Stillstand lösen erst nach voller Wartezeit Knabbern aus', () => {
   const plant = new PlantNibbling();
 
@@ -21,6 +22,7 @@ test('Nähe und Stillstand lösen erst nach voller Wartezeit Knabbern aus', () =
   assert.equal(plant.snapshot().state, 'nibbling');
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Topf kippt erst nach Knabberphase und vollständiger Wackelwarnung', () => {
   const plant = new PlantNibbling();
 
@@ -40,6 +42,7 @@ test('Topf kippt erst nach Knabberphase und vollständiger Wackelwarnung', () =>
   assert.equal(plant.snapshot().state, 'tipped');
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Abbruch in jeder aktiven Phase setzt die Zeit zurück, vorhandener Biss zählt nicht erneut', () => {
   for (const advances of [[1900], [2000, 500], [2000, 1000, 1100]]) {
     const plant = new PlantNibbling();
@@ -81,6 +84,7 @@ test('Reset stellt Pflanze und beide einmaligen Schadensstufen wieder her', () =
   assert.equal(plant.update(2000, true)?.stage, 1);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Wartezeiten und Werte sind konfigurierbar; ungültige Zeit zählt nicht', () => {
   const plant = new PlantNibbling({
     delayMs: 20,

@@ -25,6 +25,7 @@ test('R beendet Klettern und setzt Bewegung zurück', async ({ page }) => {
 
 test('Eingaben: gehaltenes Springen/Reset erzeugt nur eine Flanke; Neustart räumt Listener auf', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page);
   const initial = await state(page);
@@ -60,6 +61,7 @@ test('Eingaben: gehaltenes Springen/Reset erzeugt nur eine Flanke; Neustart räu
 
 test('Focus-Verlust löst gehaltene Eingaben; erneutes Drücken funktioniert nach Rückkehr', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page);
   await page.keyboard.down('ArrowRight');

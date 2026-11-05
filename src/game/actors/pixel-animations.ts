@@ -27,9 +27,13 @@ export function pixelAnimation(state: AnimationState): keyof typeof PIXEL_ANIMAT
   if (state.climbing) return state.sliding ? 'slide' : 'climb';
 
   if (!state.grounded || state.velocityY < -1) {
-    return state.velocityY < -60 ? 'jump' : state.velocityY > 60 ? 'fall' : 'apex';
+    return airborneAnimation(state.velocityY);
   }
 
+  return groundedAnimation(state);
+}
+
+function groundedAnimation(state: AnimationState): keyof typeof PIXEL_ANIMATIONS {
   if (state.nibbling) return 'nibble';
 
   if (state.scratching) return 'scratch';
@@ -37,4 +41,8 @@ export function pixelAnimation(state: AnimationState): keyof typeof PIXEL_ANIMAT
   if (Math.abs(state.velocityX) > 1) return 'walk';
 
   return state.landing ? 'land' : 'idle';
+}
+
+function airborneAnimation(velocityY: number) {
+  return velocityY < -60 ? 'jump' : velocityY > 60 ? 'fall' : 'apex';
 }

@@ -30,6 +30,7 @@ test('Neustart setzt Punkte und Ereignishistorie zurück', () => {
   assert.equal(score.score, 25);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Ärgerstufen wechseln an den konfigurierten Grenzen', () => {
   for (const [points, level] of [
     [0, 'calm'],
@@ -62,6 +63,7 @@ test('Vasenwerte erlauben alle drei Ärgerstufen', () => {
   assert.equal(new Set(VASES.map((v) => v.id)).size, VASES.length);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Mehrere Schadensstufen zählen Punkte einzeln, das Objekt aber nur einmal', () => {
   const score = new ChaosScore();
 

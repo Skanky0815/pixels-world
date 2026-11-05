@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { InputFrames } from '../../src/game/input/input-state.ts';
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Ein Frame liest Eingaben und verbrauchende Flanken nur einmal', () => {
   const frames = new InputFrames();
   let reads = 0;
@@ -23,6 +24,7 @@ test('Ein Frame liest Eingaben und verbrauchende Flanken nur einmal', () => {
   assert.equal(reads, 2);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Focus-/Lebenszyklus-Cleanup verwirft den alten Snapshot auch im selben Frame', () => {
   const frames = new InputFrames();
   const held = { horizontal: 1, vertical: -1, jumpPressed: true, resetPressed: true, active: true };

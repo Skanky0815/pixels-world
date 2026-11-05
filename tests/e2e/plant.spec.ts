@@ -2,6 +2,7 @@ import { test, expect, state, start, until, holdUntil, reset, besidePlant } from
 
 test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert Kippen', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
   await start(page);
   await besidePlant(page);
@@ -47,6 +48,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
 
 test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wieder her', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
   await start(page);
   await besidePlant(page);
@@ -93,6 +95,7 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
 
 test('Katzengras: Springen bricht ab; erneutes Knabbern dupliziert keinen Schaden', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page);
   await besidePlant(page);

@@ -28,6 +28,7 @@ const context: InteractionContext = {
   },
 };
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Überlappende Ziele wählen genau eine Aktion; Wechsel/Bewegung starten die volle Wartezeit neu', () => {
   let firstEligible = true;
   const models = [new CouchScratching(undefined, 'a'), new CouchScratching(undefined, 'b')];

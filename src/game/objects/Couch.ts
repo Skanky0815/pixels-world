@@ -31,6 +31,7 @@ export class Couch implements Interactable, Destructible {
 
   private readonly config: CouchConfig;
 
+  // eslint-disable-next-line max-lines-per-function -- Die deklarative Sofageometrie und ihre dazu passende Plattform werden gemeinsam aufgebaut.
   constructor(scene: Phaser.Scene, config: CouchConfig) {
     this.config = { ...config, seat: { ...config.seat }, rules: { ...config.rules } };
     this.id = config.id;
@@ -58,6 +59,7 @@ export class Couch implements Interactable, Destructible {
     this.paws = scene.add.graphics();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Die zusammengehörige Boden-/Sitzflächen- und Reichweitenprüfung bleibt als ein räumliches Prädikat sichtbar.
   eligible(context: InteractionContext) {
     const p = context.pixel,
       s = this.config.seat;
@@ -73,53 +75,64 @@ export class Couch implements Interactable, Destructible {
     );
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Modellschritt, Schadensdarstellung und Aktionsrückgabe bilden einen Frame-Schritt; Zeichenroutinen sind ausgelagert.
   update(context: InteractionContext, active: boolean): InteractionResult {
-    const p = context.pixel,
-      s = this.config.seat;
+    const s = this.config.seat;
     const event = this.model.update(context.delta, active && this.eligible(context));
 
-    if (event) {
-      this.history.record(event);
-      const x = Math.max(
-        s.x + 4,
-        Math.min(
-          p.x + (p.x > s.x + s.width / 2 ? -12 : 12) + (event.stage % 3) * 3,
-          s.x + s.width - 8,
-        ),
-      );
-      const y = p.bottom > s.y + s.height + 2 ? s.y + s.height + 10 : s.y - 39;
-
-      this.marks.lineStyle(2, 0xe3cba4);
-
-      for (let i = 0; i < 3; i++)
-        this.marks.lineBetween(x + i * 4, y, x + i * 4 - 4, y + 15 + event.stage);
-    }
+    if (event) this.drawDamage(context, event);
 
     this.paws.clear();
     const scratching = this.model.snapshot().state === 'scratching';
 
-    if (scratching) {
-      const scale = PIXEL_ANIMATIONS.scratch.scale;
-      const direction = p.x > s.x + s.width / 2 ? -1 : 1;
-      const lift = p.animationFrame % 2 === 0 ? 0 : 6;
-      const pawY = p.bottom - 16 * scale;
-
-      this.paws.lineStyle(3, 0xe3cba4);
-
-      for (let i = 0; i < 2; i++)
-        this.paws.lineBetween(
-          p.x + direction * 9 * scale,
-          pawY - 4 + i * 4,
-          p.x + direction * 20 * scale,
-          pawY - (p.bottom > s.y + s.height + 2 ? 35 : 20) + lift + i * 4,
-        );
-    }
+    if (scratching) this.drawPaws(context);
 
     return {
       action: scratching ? 'scratching' : 'idle',
       faceX: scratching ? s.x + s.width / 2 : undefined,
       event,
     };
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Die begrenzten Koordinaten und drei zusammengehörigen Kratzlinien bleiben in einer Zeichenroutine.
+  private drawDamage(context: InteractionContext, event: NonNullable<InteractionResult['event']>) {
+    const p = context.pixel,
+      s = this.config.seat;
+
+    this.history.record(event);
+    const x = Math.max(
+      s.x + 4,
+      Math.min(
+        p.x + (p.x > s.x + s.width / 2 ? -12 : 12) + (event.stage % 3) * 3,
+        s.x + s.width - 8,
+      ),
+    );
+    const y = p.bottom > s.y + s.height + 2 ? s.y + s.height + 10 : s.y - 39;
+
+    this.marks.lineStyle(2, 0xe3cba4);
+
+    for (let i = 0; i < 3; i++)
+      this.marks.lineBetween(x + i * 4, y, x + i * 4 - 4, y + 15 + event.stage);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Die gemeinsamen Posenparameter und beiden Pfotenlinien bleiben zusammen lesbar.
+  private drawPaws(context: InteractionContext) {
+    const p = context.pixel,
+      s = this.config.seat;
+    const scale = PIXEL_ANIMATIONS.scratch.scale;
+    const direction = p.x > s.x + s.width / 2 ? -1 : 1;
+    const lift = p.animationFrame % 2 === 0 ? 0 : 6;
+    const pawY = p.bottom - 16 * scale;
+
+    this.paws.lineStyle(3, 0xe3cba4);
+
+    for (let i = 0; i < 2; i++)
+      this.paws.lineBetween(
+        p.x + direction * 9 * scale,
+        pawY - 4 + i * 4,
+        p.x + direction * 20 * scale,
+        pawY - (p.bottom > s.y + s.height + 2 ? 35 : 20) + lift + i * 4,
+      );
   }
 
   damageSnapshot() {

@@ -34,6 +34,7 @@ test('Neue Bewegung unterbricht Landepose; Bodeninteraktionen wechseln zurück z
   assert.equal(pixelAnimation(still), 'idle');
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Sprite-Sheet hat 25 belegte 32×32-Zellen und bewahrt den bestätigten Master exakt', () => {
   const sheet = PNG.sync.read(
     fs.readFileSync(new URL('../../assets/pixel/pixel-sheet.png', import.meta.url)),
@@ -52,22 +53,7 @@ test('Sprite-Sheet hat 25 belegte 32×32-Zellen und bewahrt den bestätigten Mas
     );
 
   for (let frame = 0; frame < 25; frame++) {
-    let visible = 0,
-      clear = 0,
-      minY = 32,
-      maxY = -1;
-
-    for (let y = 0; y < 32; y++)
-      for (let x = 0; x < 32; x++) {
-        const alpha =
-          sheet.data[((Math.floor(frame / 5) * 32 + y) * 160 + (frame % 5) * 32 + x) * 4 + 3];
-
-        if (alpha > 32) {
-          visible++;
-          minY = Math.min(minY, y);
-          maxY = Math.max(maxY, y);
-        } else clear++;
-      }
+    const { visible, clear, minY, maxY } = frameStatistics(sheet, frame);
 
     if (frame >= 5 && frame <= 9)
       assert.ok(maxY - minY + 1 >= 27, `Walk frame ${frame} must retain idle-scale height`);
@@ -75,3 +61,25 @@ test('Sprite-Sheet hat 25 belegte 32×32-Zellen und bewahrt den bestätigten Mas
     assert.ok(clear > 100, `Frame ${frame} must retain transparent padding`);
   }
 });
+
+// eslint-disable-next-line max-lines-per-function -- Die vollständige zweidimensionale Alphaauswertung bleibt als eine zusammengehörige Bildprüfung sichtbar.
+function frameStatistics(sheet: PNG, frame: number) {
+  let visible = 0,
+    clear = 0,
+    minY = 32,
+    maxY = -1;
+
+  for (let y = 0; y < 32; y++)
+    for (let x = 0; x < 32; x++) {
+      const alpha =
+        sheet.data[((Math.floor(frame / 5) * 32 + y) * 160 + (frame % 5) * 32 + x) * 4 + 3];
+
+      if (alpha > 32) {
+        visible++;
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      } else clear++;
+    }
+
+  return { visible, clear, minY, maxY };
+}

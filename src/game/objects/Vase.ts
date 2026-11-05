@@ -24,6 +24,7 @@ export class Vase implements Destructible, ObjectLifecycle {
   private readonly shards: Phaser.GameObjects.Container;
   private readonly config: VaseConfig;
 
+  // eslint-disable-next-line max-lines-per-function -- Texturerzeugung, Body und Splittercontainer werden gemeinsam aus einer Vasen-Konfiguration initialisiert.
   constructor(
     private readonly scene: Phaser.Scene,
     config: VaseConfig,
@@ -79,6 +80,13 @@ export class Vase implements Destructible, ObjectLifecycle {
 
     this.history.record(event);
 
+    this.scatterShards();
+
+    return event;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Jeder Splitter wird in einer Schleife mit seinem ausgeschriebenen Tween-Vertrag erzeugt.
+  private scatterShards() {
     for (let i = 0; i < 7; i++) {
       const shard = this.scene.add.rectangle(
         this.collider.x,
@@ -97,14 +105,13 @@ export class Vase implements Destructible, ObjectLifecycle {
         duration: 240,
       });
     }
-
-    return event;
   }
 
   damageSnapshot() {
     return this.history.snapshot();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der flache Vasen-Beobachtungsvertrag bleibt vollständig an einer Stelle sichtbar.
   snapshot() {
     const body = this.collider.body as Phaser.Physics.Arcade.Body;
 

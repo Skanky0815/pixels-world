@@ -12,6 +12,7 @@ export function assertObjectId(id: string) {
 }
 
 /** Tuple encoding cannot collide when IDs themselves contain separators. */
+// eslint-disable-next-line max-lines-per-function -- Validierung und eingefrorener Ereignisvertrag bleiben atomar; die ausgeschriebenen Felder dokumentieren die Grenze.
 export function chaosEvent<K extends DamageKind, S extends number>(
   objectId: string,
   kind: K,

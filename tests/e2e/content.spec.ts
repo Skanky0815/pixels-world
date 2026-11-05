@@ -2,6 +2,7 @@ import { test, expect, state, start, until, holdUntil, reset } from './support';
 
 test('Content-Variante verwendet geänderte Werte und zwei unabhängige Sofainstanzen', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page, '/?room=cozy-remix');
   expect((await state(page)).room.id).toBe('cozy-remix');

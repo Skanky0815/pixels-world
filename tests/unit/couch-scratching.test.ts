@@ -13,6 +13,7 @@ test('Ungültige Punktwerte werden schon beim Erzeugen des Sofamodells abgelehnt
   }
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Gültige Sofapunktwerte einschließlich null erreichen das Ledger unverändert', () => {
   for (const damageValue of [0, 7, Number.MAX_SAFE_INTEGER]) {
     const couch = new CouchScratching({ ...COUCH_SCRATCH, damageValue });
@@ -31,6 +32,7 @@ test('Gültige Sofapunktwerte einschließlich null erreichen das Ledger unverän
   }
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Kratzen beginnt erst nach zwei Sekunden und emittiert begrenzte Intervalle', () => {
   const couch = new CouchScratching();
 
@@ -47,6 +49,7 @@ test('Kratzen beginnt erst nach zwei Sekunden und emittiert begrenzte Intervalle
   assert.equal(couch.update(1, true)?.stage, 2);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Unterbrechung setzt Wartezeit zurück und erhält vorhandenen Schaden', () => {
   const couch = new CouchScratching();
 
@@ -81,6 +84,7 @@ test('Reset entfernt Schaden und startet eine neue vollständige Wartezeit', () 
   assert.equal(couch.update(1, true)?.stage, 1);
 });
 
+// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Verzögerung, Intervall und Schadenswert sind konfigurierbar', () => {
   const couch = new CouchScratching({
     delayMs: 30,

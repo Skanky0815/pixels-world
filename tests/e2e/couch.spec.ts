@@ -2,6 +2,7 @@ import { test, expect, state, start, until, holdUntil, reset, besideCouch } from
 
 test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegungsabbruch', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
   await start(page);
   await besideCouch(page);
@@ -49,6 +50,7 @@ test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegung
 
 test('Sofa: Springen unterbricht, erneutes Warten und Reset entfernen den Schaden', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page);
   await besideCouch(page);
@@ -77,6 +79,7 @@ test('Sofa: Springen unterbricht, erneutes Warten und Reset entfernen den Schade
 
 test('Sofa: gedeckelter Schaden, keine Punkteflut und kein Kratzen außerhalb der Nähe', async ({
   page,
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
   await start(page);
   await page.clock.runFor(4000);

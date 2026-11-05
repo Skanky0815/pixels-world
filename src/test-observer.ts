@@ -1,9 +1,11 @@
 import type { GameTestState } from './test-state';
 
 /** Imported only in Vite's e2e mode. Each read returns a detached frozen snapshot. */
+// eslint-disable-next-line max-lines-per-function -- Der unveränderliche Beobachter veröffentlicht einen vollständigen defensiv kopierten Vertrag ohne Mutatoren.
 export function installTestObserver(read: () => GameTestState) {
   Object.defineProperty(window, '__pixelTest', {
     configurable: true,
+    // eslint-disable-next-line max-lines-per-function -- Der vollständige tief eingefrorene Snapshot wird atomar aus genau einer aktuellen Beobachtung aufgebaut.
     get() {
       const state = read();
 

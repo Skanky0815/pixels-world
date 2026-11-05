@@ -3,6 +3,7 @@ import type { RoomDefinition } from './definitions';
 import { ASSETS } from '../assets/definitions';
 
 /** Rendering primitives only; all layout, palette and placement comes from content. */
+// eslint-disable-next-line max-lines-per-function -- Die deklarative Zeichenreihenfolge Wand, Boden, Dekoration und Regal bestimmt die Überlagerung und bleibt gemeinsam lesbar.
 export function drawRoom(scene: Phaser.Scene, room: RoomDefinition) {
   const g = scene.add.graphics();
   const rect = (x: number, y: number, w: number, h: number, color: number) =>
