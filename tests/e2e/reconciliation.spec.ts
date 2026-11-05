@@ -50,7 +50,7 @@ async function correctArrow(page: Page) {
 }
 
 test(
-  'Charme: falsche Taste, Timeout, Herzen und vollständiger Abschluss',
+  'Charme: letzter Versuch, Herzen und vollständiger Abschluss',
   { tag },
   // eslint-disable-next-line max-lines-per-function -- Die komplette zweite Spielphase wird ausschließlich mit echten Tasten bis zum Abschluss und Reset gespielt.
   async ({ page }) => {
@@ -70,13 +70,9 @@ test(
     await page.clock.runFor(5000);
     expect((await state(page)).reconciliation).toEqual(feedback);
     await continueCharm(page);
-    await until(page, (s) => s.reconciliation.stage === 'input', 100);
-    await until(page, (s) => s.reconciliation.feedback === 'timeout', 100);
-    expect((await state(page)).reconciliation.failures).toBe(2);
+    expect((await state(page)).reconciliation.attemptsLeft).toBe(1);
     expect((await state(page)).reconciliation.inputMs).toBeGreaterThan(1800);
     const required = (await state(page)).reconciliation.required;
-
-    await continueCharm(page);
 
     for (let sequence = 0; sequence < required; sequence++) {
       for (let step = 0; step < frozen.reconciliation.length; step++) await correctArrow(page);
@@ -148,3 +144,26 @@ test(
     });
   },
 );
+
+// eslint-disable-next-line max-lines-per-function -- Zwei gescheiterte Versuche prüfen terminales Ergebnis, unveränderte Welt und vollständigen Neustart.
+test('Charme scheitert nach zwei Versuchen am selben Herz', { tag }, async ({ page }) => {
+  await enterCharm(page);
+  const frozen = await state(page);
+
+  await until(page, (s) => s.reconciliation.feedback === 'timeout', 100);
+  expect((await state(page)).reconciliation.attemptsLeft).toBe(1);
+  await continueCharm(page);
+  await until(page, (s) => s.reconciliation.stage === 'failed', 100);
+  const failed = await state(page);
+
+  await continueCharm(page);
+  await page.clock.runFor(5000);
+  expect((await state(page)).reconciliation).toEqual(failed.reconciliation);
+  expect(failed.chaos).toEqual(frozen.chaos);
+  expect(failed.objects).toEqual(frozen.objects);
+  await test
+    .info()
+    .attach('versoehnung-gescheitert', { body: await page.screenshot(), contentType: 'image/png' });
+  await reset(page);
+  expect((await state(page)).reconciliation).toMatchObject({ stage: 'waiting', attemptsLeft: 2 });
+});

@@ -47,7 +47,7 @@ Die komplette Spielfläche passt sich dem Browserfenster an.
 
 Während der Versöhnung: die jeweils angezeigte Pfeiltaste rechtzeitig neu drücken.
 Anleitung und Saras Sprüche kannst du in Ruhe lesen und mit Leertaste bestätigen.
-Eine erfolgreiche Folge füllt die Herzleiste; bei Fehlern kannst du es erneut versuchen.
+Eine erfolgreiche Folge füllt die Herzleiste; pro Herz hast du zwei Versuche. Danach kann die Versöhnung auch scheitern.
 R startet auch während dieser Phase neu.
 
 Klicke zuerst ins Zimmer, damit es Tastatureingaben erhält.

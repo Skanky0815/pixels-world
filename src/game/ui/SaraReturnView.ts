@@ -38,6 +38,7 @@ export class SaraReturnView {
     this.quote = scene.add.text(60, 172, '', {
       ...this.textStyle(16),
       fontStyle: 'italic',
+      color: '#e4c182',
       wordWrap: { width: width - 120 },
     });
     this.hint = scene.add.text(width - 60, 232, '', this.textStyle(14)).setOrigin(1, 1);
@@ -70,7 +71,7 @@ export class SaraReturnView {
     const lines = this.caption.split('\n');
 
     this.message.setText(dialogue ? lines[0] : this.caption);
-    this.quote.setText(dialogue ? lines[1] : '');
+    this.quote.setText(dialogue ? `„${lines[1]}“` : '');
     this.hint.setText(dialogue ? lines[2] : '');
   }
 

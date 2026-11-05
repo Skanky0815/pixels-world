@@ -74,26 +74,29 @@ test('Zeitfenster prüfen die Grenze und ignorieren ungültige Zeitwerte', () =>
   assert.equal(game.snapshot().successes, 0);
 });
 
-// eslint-disable-next-line max-lines-per-function -- Wiederholte Fehler, leere Eingaben und Mehrfachtasten testen Retry und begrenzte adaptive Hilfe.
-test('Fehler starten neue Versuche ohne Game-over und erleichtern das Timing', () => {
+// eslint-disable-next-line max-lines-per-function -- Fehlerbudget pro Herz, letzter Versuch und terminaler Misserfolg werden gemeinsam geprüft.
+test('Zwei Fehler am selben Herz beenden die Versöhnung; letzter Versuch bekommt mehr Zeit', () => {
   const game = new Reconciliation(() => 0);
 
   game.start(60);
+  ready(game);
+  game.input([]);
+  assert.equal(game.snapshot().stage, 'input');
+  game.input(['left', 'up']);
+  assert.equal(game.snapshot().attemptsLeft, 1);
+  assert.equal(game.snapshot().inputMs, 1500);
+  game.advance(99999);
+  assert.equal(game.snapshot().stage, 'feedback');
+  ready(game);
+  game.advance(game.snapshot().inputMs);
+  const failed = game.snapshot();
 
-  for (let i = 0; i < 20; i++) {
-    ready(game);
-    game.input([]);
-    assert.equal(game.snapshot().stage, 'input');
-    game.input(['left', 'up']);
-    assert.equal(game.snapshot().feedback, 'wrong');
-    game.advance(99999);
-    assert.equal(game.snapshot().stage, 'feedback');
-    game.confirm();
-  }
-
-  assert.equal(game.snapshot().failures, 20);
-  assert.equal(game.snapshot().inputMs, CHARM_TIMING.maxInputMs);
-  assert.equal(game.snapshot().successes, 0);
+  assert.equal(failed.stage, 'failed');
+  assert.equal(failed.attemptsLeft, 0);
+  assert.equal(game.confirm(), false);
+  game.input(['left']);
+  game.advance(99999);
+  assert.deepEqual(game.snapshot(), failed);
 });
 
 // eslint-disable-next-line max-lines-per-function -- Jede Schwierigkeit wird bis zum Abschluss gespielt; Fehler behalten zuvor verdiente Herzen.
@@ -110,6 +113,7 @@ test('Alle Profile sind abschließbar; Fehler verlieren keine Herzen, Abschluss 
       }
 
       assert.equal(game.snapshot().successes, i + 1);
+      assert.equal(game.snapshot().attemptsLeft, 2);
 
       if (game.snapshot().stage === 'finale') break;
       game.confirm();

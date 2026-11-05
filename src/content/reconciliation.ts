@@ -18,7 +18,8 @@ export const CHARM_PROFILES: Record<ReconciliationLevel, CharmProfile> = {
 export const CHARM_TIMING = {
   cueMs: 700,
   finaleMs: 1800,
-  helpEveryFailures: 2,
+  attemptsPerHeart: 2,
+  helpEveryFailures: 1,
   helpStepMs: 300,
   maxInputMs: 3000,
 } as const;

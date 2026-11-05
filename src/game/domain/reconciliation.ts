@@ -2,7 +2,8 @@ import { angerFor } from './chaos.ts';
 import { CHARM_PROFILES, CHARM_TIMING, DIRECTIONS } from '../../content/reconciliation.ts';
 import type { CharmProfile, Direction, ReconciliationLevel } from '../../content/reconciliation.ts';
 
-type Stage = 'waiting' | 'reading' | 'cue' | 'input' | 'feedback' | 'finale' | 'complete';
+type Stage =
+  'waiting' | 'reading' | 'cue' | 'input' | 'feedback' | 'finale' | 'complete' | 'failed';
 type Feedback = 'none' | 'correct' | 'sequence' | 'wrong' | 'timeout';
 export type ReconciliationSnapshot = ReturnType<Reconciliation['snapshot']>;
 
@@ -15,6 +16,7 @@ export class Reconciliation {
   private index = 0;
   private successes = 0;
   private failures = 0;
+  private heartFailures = 0;
   private remainingMs = 0;
   private feedback: Feedback = 'none';
   private readonly random: () => number;
@@ -73,6 +75,7 @@ export class Reconciliation {
 
   private succeed() {
     this.successes++;
+    this.heartFailures = 0;
     this.feedback = 'sequence';
     this.stage = this.successes === this.profile.sequences ? 'finale' : 'feedback';
     this.remainingMs = this.stage === 'finale' ? CHARM_TIMING.finaleMs : 0;
@@ -80,8 +83,9 @@ export class Reconciliation {
 
   private fail(reason: 'wrong' | 'timeout') {
     this.failures++;
+    this.heartFailures++;
     this.feedback = reason;
-    this.stage = 'feedback';
+    this.stage = this.heartFailures >= CHARM_TIMING.attemptsPerHeart ? 'failed' : 'feedback';
     this.remainingMs = 0;
   }
 
@@ -113,7 +117,7 @@ export class Reconciliation {
 
   private inputWindow() {
     const help =
-      Math.floor(this.failures / CHARM_TIMING.helpEveryFailures) * CHARM_TIMING.helpStepMs;
+      Math.floor(this.heartFailures / CHARM_TIMING.helpEveryFailures) * CHARM_TIMING.helpStepMs;
 
     return Math.min(CHARM_TIMING.maxInputMs, this.profile.inputMs + help);
   }
@@ -130,6 +134,7 @@ export class Reconciliation {
       successes: this.successes,
       required: this.profile.sequences,
       failures: this.failures,
+      attemptsLeft: CHARM_TIMING.attemptsPerHeart - this.heartFailures,
       remainingMs: this.remainingMs,
       inputMs: this.inputWindow(),
       progress: this.successes / this.profile.sequences,

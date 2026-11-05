@@ -145,9 +145,13 @@ Vor dem ersten Versuch und nach jeder Folge oder jedem Fehler gibt es eine
 Lesepause ohne Timer. Ein neuer Druck auf die Leertaste startet den nächsten Versuch.
 Während der Eingabe erscheint die aktive Taste auf einer großen eigenen Kachel;
 Saras Sprüche werden ausschließlich in den Lesepausen gezeigt und kursiv
-vom Spielhinweis abgesetzt. Leertaste bzw. R stehen unten rechts im Dialogfeld. Bereits
-verdiente Herzen bleiben. Je zwei Fehlschläge verlängern das Eingabefenster um
-300 ms bis maximal 3 s. Es gibt kein Gesamtzeitlimit und kein Game-over.
+in warmem Gold und Anführungszeichen vom Spielhinweis abgesetzt. Leertaste bzw. R stehen unten rechts im Dialogfeld. Bereits
+verdiente Herzen bleiben. Pro Herz gibt es zwei Versuche für die gesamte Tastenfolge. Nach dem ersten Fehler
+wird das Eingabefenster um 300 ms verlängert; ein zweiter Fehler am selben Herz
+beendet die Versöhnung als gescheitert. Ein gewonnenes Herz setzt das Budget
+und die zusätzliche Hilfe zurück. Fehler und Timeouts zählen gleichermaßen.
+Es gibt kein Gesamtzeitlimit; Lesepausen verbrauchen keine Versuche.
+Nach dem Scheitern bleibt ein eindeutiger Abschluss mit R zum Neustart stehen.
 
 Texte und Herzchen zeigen Schnurren und Anschmiegen als grafische Platzhalter.
 Sara kommentiert abhängig von der ursprünglichen Chaosstufe. Bei voller Leiste

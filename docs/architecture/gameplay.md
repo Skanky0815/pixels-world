@@ -187,7 +187,7 @@ bestätigt erst nach dem Hinsetzen. Fokusverlust und R behandeln auch diese Phas
 
 ## Charme-Minispiel
 
-`Reconciliation` verwaltet `waiting → reading → cue → input → feedback/finale → complete`.
+`Reconciliation` verwaltet `waiting → reading → cue → input → feedback/finale → complete/failed`.
 Der Start ist einmalig nach bestätigter Heimkehr, ohne erneute Annäherung.
 Sequenzen entstehen mit injizierbarem RNG; Snapshots enthalten nur die nächste
 aktive Taste. Profile, Rückmeldungen und Zeitwerte liegen im Content.
@@ -201,3 +201,7 @@ wird im Input-Adapter ausgefiltert. Physik, Schäden und Score bleiben eingefror
 Zuneigungs-Platzhalter. Sie hat keine Timer und verändert die Figuren nicht.
 Fokusverlust pausiert über `PlayActivity`; Neustart baut Modell und Ansicht neu auf.
 Die einfache Abschlussansicht ersetzt noch keinen Ergebnisbildschirm aus #10.
+
+Das Versuchsbudget aus dem Content gilt pro zu verdienendem Herz, nicht pro Taste.
+Der zweite Fehler am selben Herz führt zu `failed`; dieser Endzustand nimmt weder
+weitere Eingaben noch Bestätigungen an. Erfolg setzt Budget und Timinghilfe zurück.
