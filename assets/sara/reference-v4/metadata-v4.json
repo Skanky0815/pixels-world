@@ -1,0 +1,26 @@
+{
+  "status": "unapproved-checkpoint",
+  "frame": {
+    "width": 64,
+    "height": 96
+  },
+  "scale": 2,
+  "bounds": {
+    "left": 14,
+    "top": 30,
+    "right": 49,
+    "bottom": 89
+  },
+  "visibleHeight": 120,
+  "soleRow": 89,
+  "origin": {
+    "x": 0.5,
+    "y": 0.9375
+  },
+  "colors": 709,
+  "alpha": [
+    0,
+    255
+  ],
+  "sourceSampling": "silhouette trimmed and uniformly normalized once to 60px height; center nearest neighbor; alpha >=128 opaque; original retained"
+}
