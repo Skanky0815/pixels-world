@@ -1,4 +1,7 @@
+import type { Direction } from '../../content/reconciliation.ts';
+
 export interface InputState {
+  readonly arrows: readonly Direction[];
   readonly horizontal: number;
   readonly vertical: number;
   readonly jumpPressed: boolean;

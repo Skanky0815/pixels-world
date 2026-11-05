@@ -1,3 +1,5 @@
+import { Reconciliation } from '../domain/reconciliation';
+import { ReconciliationView } from '../ui/ReconciliationView';
 import Phaser from 'phaser';
 import { ASSETS } from '../assets/definitions';
 import { spriteUrl } from '../assets/urls';
@@ -33,6 +35,8 @@ import { PixelReturnController } from '../domain/pixel-return';
 export class LivingRoomScene extends Phaser.Scene {
   private pixel!: Pixel;
   private round!: RoundController;
+  private charm!: Reconciliation;
+  private charmView!: ReconciliationView;
   private homecoming!: HomecomingSequence;
   private sara!: SaraReturnView;
   private returning!: PixelReturnController;
@@ -90,6 +94,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.chaos.reset();
     this.round = new RoundController(roundConfigForPage());
     this.homecoming = new HomecomingSequence();
+    this.charm = new Reconciliation();
     this.returnTime = 0;
   }
 
@@ -135,6 +140,7 @@ export class LivingRoomScene extends Phaser.Scene {
             },
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
+            reconciliation: this.charm.snapshot(),
             pixelReturn: this.returning.snapshot(),
             sara: this.sara.snapshot(),
             active: this.activity.active,
@@ -231,6 +237,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.activity = new PlayActivity(() => this.syncActivity());
     this.hud = new GameHud(this, room.hud);
     this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
+    this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.syncActivity();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
   }
@@ -242,6 +249,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.pixel.destroy();
     this.hud.destroy();
     this.sara.destroy();
+    this.charmView.destroy();
   }
 
   private addPlatform(x: number, y: number, width: number, height: number) {
@@ -347,7 +355,14 @@ export class LivingRoomScene extends Phaser.Scene {
     this.returning.start();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Geordneter Übergang von Annäherung und Bestätigung zum Minispiel verwendet genau einen Frame-Input.
   private advanceHomecoming(input: InputState, elapsed: number) {
+    if (this.homecoming.snapshot().stage === 'complete') {
+      this.advanceCharm(input, elapsed);
+
+      return;
+    }
+
     this.homecoming.advance(elapsed);
     this.returnTime += elapsed;
     this.returnPixel(elapsed);
@@ -371,16 +386,30 @@ export class LivingRoomScene extends Phaser.Scene {
     if (walking && this.returning.snapshot().stage === 'seated') this.syncActivity();
   }
 
+  private advanceCharm(input: InputState, elapsed: number) {
+    this.charm.advance(elapsed);
+
+    if (input.confirmPressed) this.charm.confirm();
+    this.charm.input(input.arrows);
+    this.charmView.render(this.charm.snapshot());
+  }
+
   private faceSara() {
     this.pixel.faceToward(homecomingPositions(this.room.definition.width).saraEndX);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Einmalige Phasenübergänge und ihre Ansichten werden atomar aus demselben Snapshot synchronisiert.
   private syncHomecoming() {
     const snapshot = this.homecoming.snapshot();
 
     if (snapshot.stage !== 'entering' && snapshot.stage !== 'waiting') this.round.startReaction();
 
-    if (snapshot.stage === 'complete') this.round.startReconciliation();
+    if (snapshot.stage === 'complete') {
+      this.round.startReconciliation();
+      this.charm.start(snapshot.selection?.score ?? 0);
+      this.charmView.render(this.charm.snapshot());
+    }
+
     this.sara.render(snapshot, this.returning.snapshot().stage === 'seated');
     this.renderHud(this.pixel.nearCurtain);
   }

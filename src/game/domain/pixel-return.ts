@@ -25,6 +25,7 @@ const STOPPED: InputState = Object.freeze({
   vertical: 0,
   jumpPressed: false,
   confirmPressed: false,
+  arrows: [],
   resetPressed: false,
   active: false,
 });

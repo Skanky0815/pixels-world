@@ -43,8 +43,7 @@ werden dadurch nach ihrem Abschluss nicht pro Frame neu gestartet. Browsersichtb
 pausiert den tatsächlichen Animationszustand unabhängig vom bereits eingefrorenen
 Gameplay. Das Sprite verwendet den gemeinsamen Sohlenanker, hat keinen Physikkörper
 und wird beim Scene-Shutdown mit der Ansicht entfernt. Derselbe Clipvertrag steuert
-auch die nur im Dev-Betrieb verfügbare Größenvergleichsseite. Die Versöhnung ist
-bis zum eigenen Ticket nur eine sichtbare Endphase, ohne zusätzliche Spielmechanik.
+auch die nur im Dev-Betrieb verfügbare Größenvergleichsseite. Die anschließende Versöhnung besitzt ein eigenes reines Domain-Modell.
 
 `PlayActivity` kapselt Fensterfokus und Document-Visibility. Beim Wechsel pausiert die
 Szene Physik, Tweens und Pixels Animation und leert gehaltene Eingaben. Bei Shutdown
@@ -185,3 +184,24 @@ Nach dem Hinsetzen pausiert die Physikwelt. Pixels Animation bleibt bis zur
 Browserpause aktiv. Die Bewegungszeit läuft unabhängig vom wartenden Dialog weiter.
 `confirmPressed` nutzt eine neue Leertastenflanke ohne native Tastenwiederholung und
 bestätigt erst nach dem Hinsetzen. Fokusverlust und R behandeln auch diese Phase.
+
+## Charme-Minispiel
+
+`Reconciliation` verwaltet `waiting → reading → cue → input → feedback/finale → complete/failed`.
+Der Start ist einmalig nach bestätigter Heimkehr, ohne erneute Annäherung.
+Sequenzen entstehen mit injizierbarem RNG; Snapshots enthalten nur die nächste
+aktive Taste. Profile, Rückmeldungen und Zeitwerte liegen im Content.
+Die Szene reicht ausschließlich aktive bereinigte Framezeit und frische
+Pfeiltastenflanken weiter. `reading` und `feedback` besitzen keine laufende Frist;
+eine neue Leertastenflanke startet die nächste Folge. Während der Eingabe
+zeigt die Ansicht die große Pfeilkachel und keine Sara-Dialogzeile. Ein Frame kann höchstens eine Eingabe akzeptieren;
+mehrere gleichzeitige Pfeile scheitern als mehrdeutige Eingabe. Native Wiederholung
+wird im Input-Adapter ausgefiltert. Physik, Schäden und Score bleiben eingefroren.
+`ReconciliationView` zeigt nächsten Pfeil, zwei Leisten und textuelle
+Zuneigungs-Platzhalter. Sie hat keine Timer und verändert die Figuren nicht.
+Fokusverlust pausiert über `PlayActivity`; Neustart baut Modell und Ansicht neu auf.
+Die einfache Abschlussansicht ersetzt noch keinen Ergebnisbildschirm aus #10.
+
+Das Versuchsbudget aus dem Content gilt pro zu verdienendem Herz, nicht pro Taste.
+Der zweite Fehler am selben Herz führt zu `failed`; dieser Endzustand nimmt weder
+weitere Eingaben noch Bestätigungen an. Erfolg setzt Budget und Timinghilfe zurück.

@@ -20,7 +20,7 @@ const STATUS: Record<HudState['activity'], string> = {
 const HOME_STATUS = {
   returning: 'Sara kommt herein … · R: Neue Runde',
   reaction: 'Sara schaut sich um … · R: Neue Runde',
-  reconciliation: 'Versöhnung · Fortsetzung folgt · R: Neue Runde',
+  reconciliation: 'Versöhnung · Pfeiltasten laut Anzeige · R: Neue Runde',
 };
 
 /** A scene-owned view; no input, physics, scoring or gameplay model references. */

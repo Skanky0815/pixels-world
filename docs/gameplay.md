@@ -28,9 +28,8 @@ ein zufällig gewählter trockener Kommentar; pro Stufe gibt es drei Varianten. 
 bleibt ohne Zeitlimit sichtbar. Sobald Pixel sitzt, bestätigt ein neuer Druck auf
 die Leertaste den Text; gehaltene Tasten überspringen ihn nicht. Auch dieser Ablauf
 pausiert bei Fokusverlust oder verstecktem Tab. Nach der Bestätigung
-wechselt die Runde einmalig in `reconciliation`: **„Versöhnung · Fortsetzung folgt“**
-ist der erkennbare Platzhalter, noch keine spielbare Versöhnung. Weitere Punkte und
-manuelle Bewegung bleiben während und nach der Sequenz gesperrt.
+wechselt die Runde einmalig in das Versöhnungs-Minispiel. Weitere Punkte und
+freie Bewegung bleiben während und nach der Sequenz gesperrt.
 
 Sara erscheint als animierte Chibi-Figur mit Brille, lockerem Pferdeschwanz und
 dunklem Hoodie. Eintritt und Idle laufen als Schleifen; die drei Reaktionen werden
@@ -125,3 +124,39 @@ wiederholt auch einmalige Reaktionen zur Kontrolle. [Assetvertrag und Prompts](.
 Der Raum verwendet 960×540 logische Pixel und skaliert im ursprünglichen Seitenverhältnis. Boden, Sofa, Regale und Klettervorhang sind geometrische Platzhalter. Bücher und Bild sind Dekoration. Der bestätigte 32×32-Pixel-Master erscheint im Grundzustand mit 64×64 Spielpixeln. Zur Laufzeit sind kein Backend, keine Konten und keine externen Grafikdownloads nötig.
 
 Instanzfähige Objekte, gemeinsame Schadensereignisse und der Lebenszyklus sind in der [Gameplay-Architektur](architecture/gameplay.md) dokumentiert. Handgebaute Räume, Objektvarianten, Assets und Validierung erklärt der [Content-Leitfaden](../src/content/README.md). Der Footer zeigt die beim Build übernommene Paketversion und das aktuelle Jahr; er bestätigt für sich allein keinen veröffentlichten Release.
+
+## Versöhnung: Pixels Charmeoffensive
+
+Nach Saras Kommentar und dessen Bestätigung beginnt das Pfeiltasten-Reaktionsspiel.
+Es erscheint nur die nächste Taste, niemals die gesamte zufällige Folge. Jede
+Taste muss innerhalb ihres Zeitfensters neu gedrückt werden; Gedrückthalten oder
+mehrere gleichzeitige Pfeile zählen nicht als weitere richtige Eingabe. Zwischen
+Tasten liegen 700 ms Vorbereitung. Eine vollständige Folge verdient ein Herz.
+
+| Chaos | Tasten pro Folge | Benötigte Folgen | Zeit pro Taste |
+| ----- | ---------------- | ---------------- | -------------- |
+| 0–24  | 3                | 3                | 1,8 s          |
+| 25–59 | 4                | 3                | 1,5 s          |
+| ab 60 | 4                | 4                | 1,2 s          |
+
+Das sind erste Playtestwerte aus `src/content/reconciliation.ts`, keine zweite
+Chaos-Schwellenlogik. Die Domain verwendet dieselbe `angerFor`-Auswahl wie Sara.
+Vor dem ersten Versuch und nach jeder Folge oder jedem Fehler gibt es eine
+Lesepause ohne Timer. Ein neuer Druck auf die Leertaste startet den nächsten Versuch.
+Während der Eingabe erscheint die aktive Taste auf einer großen eigenen Kachel;
+Saras Sprüche werden ausschließlich in den Lesepausen gezeigt und kursiv
+in warmem Gold und Anführungszeichen vom Spielhinweis abgesetzt. Leertaste bzw. R stehen unten rechts im Dialogfeld. Bereits
+verdiente Herzen bleiben. Pro Herz gibt es zwei Versuche für die gesamte Tastenfolge. Nach dem ersten Fehler
+wird das Eingabefenster um 300 ms verlängert; ein zweiter Fehler am selben Herz
+beendet die Versöhnung als gescheitert. Ein gewonnenes Herz setzt das Budget
+und die zusätzliche Hilfe zurück. Fehler und Timeouts zählen gleichermaßen.
+Es gibt kein Gesamtzeitlimit; Lesepausen verbrauchen keine Versuche.
+Nach dem Scheitern bleibt ein eindeutiger Abschluss mit R zum Neustart stehen.
+
+Texte und Herzchen zeigen Schnurren und Anschmiegen als grafische Platzhalter.
+Sara kommentiert abhängig von der ursprünglichen Chaosstufe. Bei voller Leiste
+folgt ein kurzer Streichel-Platzhalter und dann „Versöhnt“ mit Neustart über R.
+Eine ausführliche Ergebnisansicht bleibt #10; echte Zuneigungsanimationen und
+Audio sind in diesem Schritt nicht enthalten. Bei flüssigen Eingaben sind ungefähr
+10–20 Sekunden aktive Reaktionszeit vorgesehen; Lesepausen sind frei; das Spielgefühl muss noch mit Rico abgestimmt werden.
+Fokus-/Visibility-Pause stoppt alle Fristen; R verwirft auch Folge und Fortschritt.
