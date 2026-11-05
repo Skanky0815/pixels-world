@@ -60,3 +60,7 @@ Die Erfolg-/Misserfolgsszenarien prüfen zusätzlich die tatsächlichen Texte de
 Ergebnisansicht, den finalen Score, erhaltenen Originalkommentar und sichtbaren Abschlussspruch, zeitlich stabilen Abschluss
 und vollständigen R-Neustart. Der erfolgreiche Durchlauf erzeugt vorher echten
 Sofaschaden, damit Punkte und Objektreset nicht nur mit leerem Zustand geprüft werden.
+
+Die Herzanforderung 1/2/3 und Grenzen 24/25/59/60 sind in Domain-Tests
+explizit geprüft. Der Browserlauf mit niedrigem Chaos prüft zusätzlich die
+tatsächlich angezeigten Herzen (`♡ · 0/1` → `♥ · 1/1`) und den anschließenden Abschluss.

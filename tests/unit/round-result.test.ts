@@ -67,7 +67,7 @@ test('Ergebnis erhält Saras ursprüngliche Reaktion trotz erfolgreicher Versöh
 
 // eslint-disable-next-line max-lines-per-function -- Auch Scheitern nach Teilfortschritt ist ein Ergebnis; Neustart entfernt es vollständig.
 test('Gescheiterte Versöhnung behält verdiente Herzen; Reset entfernt das Ergebnis', () => {
-  const game = setup(0);
+  const game = setup(25);
 
   winHeart(game.charm);
 
@@ -79,7 +79,7 @@ test('Gescheiterte Versöhnung behält verdiente Herzen; Reset entfernt das Erge
 
   assert.equal(game.result()?.outcome, 'failed');
   assert.equal(game.result()?.hearts, 1);
-  assert.equal(game.result()?.score, 0);
+  assert.equal(game.result()?.score, 25);
   game.round.reset();
   assert.equal(game.result(), null);
 });
