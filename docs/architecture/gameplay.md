@@ -30,16 +30,20 @@ ersten Start ausgewertet. Snapshots und Auswahl sind eingefroren.
 
 Die Szene gibt der Sequenz dieselbe bereinigte aktive Framezeit wie zuvor der Runde.
 Sie besitzt Darstellung und Übergabe an die Versöhnung. `SaraReturnView` rendert
-Eintrittsbewegung, Reaktionsformen und Dialogpanel ohne eigene Timer oder Tweens;
+Eintrittsbewegung, animiertes Sprite und Dialogpanel ohne eigene Timer oder Tweens;
 das pausierte Gameplay hält deshalb Saras aktive Sequenz nicht an. Browserpause
 stoppt dagegen auch diese Sequenz. Es existieren keine verzögerten Callbacks, die
 nach R einen alten Ablauf fortsetzen könnten. Neustart erzeugt Modell und Ansicht neu.
 
 Der Vertrag für #88 reserviert `sara-enter`, `sara-idle`, `sara-react-calm`,
 `sara-react-annoyed` und `sara-react-angry`. Die Domain kennt weder Phaser noch
-Sprite-Dateien. Die vorläufige Ansicht interpretiert die Keys als Formen; #88 bindet
-die freigegebenen Frames an diese Zustände. Abweichungen bei der finalen Asset-Abnahme
-müssen gemeinsam in Content, Ansicht und Tests angepasst werden. Die Versöhnung ist
+Sprite-Dateien. Die Ansicht registriert die Clips aus `sara-animations.ts` als normale
+Phaser-Animationen und wechselt sie nur bei einem neuen Key. Einmalige Reaktionen
+werden dadurch nach ihrem Abschluss nicht pro Frame neu gestartet. Browsersichtbarkeit
+pausiert den tatsächlichen Animationszustand unabhängig vom bereits eingefrorenen
+Gameplay. Das Sprite verwendet den gemeinsamen Sohlenanker, hat keinen Physikkörper
+und wird beim Scene-Shutdown mit der Ansicht entfernt. Derselbe Clipvertrag steuert
+auch die nur im Dev-Betrieb verfügbare Größenvergleichsseite. Die Versöhnung ist
 bis zum eigenen Ticket nur eine sichtbare Endphase, ohne zusätzliche Spielmechanik.
 
 `PlayActivity` kapselt Fensterfokus und Document-Visibility. Beim Wechsel pausiert die

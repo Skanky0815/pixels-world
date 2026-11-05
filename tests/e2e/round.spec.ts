@@ -2,6 +2,7 @@ import { test, expect, state, start, until, reset, besideCouch } from './support
 import { advanceRoundTo, seedRoundRandom, useIdleFrames } from './round-clock';
 import { FAST_ROUND_CONFIG } from '../../tools/e2e-timing';
 import { ROUND_CONFIG } from '../../src/game/domain/round-controller';
+import { SARA_CLIPS } from '../../src/game/actors/sara-animations';
 
 const fullRound = process.env.E2E_FULL_ROUND === '1';
 const timing = fullRound ? ROUND_CONFIG : FAST_ROUND_CONFIG;
@@ -44,6 +45,11 @@ test(
     expect(finished.homecoming.selection?.score).toBe(finished.round.finalChaosScore);
     expect(finished.sara.visible).toBe(true);
     expect(finished.sara.animationKey).toBe('sara-enter');
+    expect(finished.sara.texture).toBe('sara');
+    expect(SARA_CLIPS['sara-enter'].frames).toContain(finished.sara.frame);
+    expect(finished.sara.soleY).toBe(468);
+    expect(finished.sara.originY).toBe(90 / 96);
+    expect(finished.sara.displayHeight).toBe(192);
     expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.round))).toBe(true);
     await page.keyboard.down('ArrowRight');
     await page.keyboard.down('Space');
@@ -68,6 +74,7 @@ test(
     await until(page, (s) => s.homecoming.stage === 'dialogue');
     const dialogue = await state(page);
 
+    expect(dialogue.sara.frame).toBe(SARA_CLIPS[dialogue.sara.animationKey].frames.at(-1));
     expect(dialogue.sara.dialogueText).toContain(finished.homecoming.selection?.dialogue);
     await test.info().attach('sara-dialogue', {
       body: await page.screenshot(),

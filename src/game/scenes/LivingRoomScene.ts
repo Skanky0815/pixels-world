@@ -54,10 +54,14 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   preload() {
-    const key = this.room.definition.pixelAsset;
+    this.preloadSprite(this.room.definition.pixelAsset);
+    this.preloadSprite('sara');
+  }
+
+  private preloadSprite(key: 'pixel' | 'sara') {
     const asset = ASSETS[key];
 
-    this.load.spritesheet('pixel', spriteUrl(key), {
+    this.load.spritesheet(key, spriteUrl(key), {
       frameWidth: asset.frameWidth,
       frameHeight: asset.frameHeight,
     });
@@ -266,6 +270,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (!active) this.controls.release();
     this.setWorldActive(active);
     this.pixel.setPaused(!active);
+    this.sara.setPaused(!this.activity.active);
     this.renderHud(this.pixel.nearCurtain);
   }
 

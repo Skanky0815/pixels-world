@@ -1,6 +1,7 @@
 /** Known assets only; content never supplies executable class names or raw URLs. */
 export const ASSETS = {
   pixel: { kind: 'sprite', frameWidth: 32, frameHeight: 32 },
+  sara: { kind: 'sprite', frameWidth: 64, frameHeight: 96 },
   'couch-default': { kind: 'couch', capabilities: ['automatic', 'damage', 'platform'] },
   'curtain-default': { kind: 'curtain', capabilities: ['climb', 'damage'] },
   'catgrass-default': { kind: 'plant', capabilities: ['automatic', 'damage'], width: 40, height: 60 },

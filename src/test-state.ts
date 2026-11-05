@@ -9,6 +9,11 @@ export interface GameTestState {
     readonly visible: boolean;
     readonly animationKey: SaraAnimation;
     readonly x: number;
+    readonly soleY: number;
+    readonly texture: string;
+    readonly frame: number;
+    readonly displayHeight: number;
+    readonly originY: number;
     readonly dialogueText: string;
   };
   readonly active: boolean;
