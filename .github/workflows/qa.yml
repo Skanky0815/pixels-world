@@ -6,6 +6,12 @@ on:
     paths:
       - 'src/**'
       - 'assets/**'
+      # Reference/source artwork and documentation are not runtime or test inputs.
+      - '!assets/**/reference-*/**'
+      - '!assets/**/*-source*.png'
+      - '!assets/**/*-preview*.png'
+      - '!assets/**/*.md'
+      - '!assets/banner.*'
       - 'tests/**'
       - 'tools/**'
       - '*.html'
@@ -27,6 +33,12 @@ on:
     paths:
       - 'src/**'
       - 'assets/**'
+      # Reference/source artwork and documentation are not runtime or test inputs.
+      - '!assets/**/reference-*/**'
+      - '!assets/**/*-source*.png'
+      - '!assets/**/*-preview*.png'
+      - '!assets/**/*.md'
+      - '!assets/banner.*'
       - 'tests/**'
       - 'tools/**'
       - '*.html'
