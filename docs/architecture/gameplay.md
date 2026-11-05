@@ -18,8 +18,29 @@ Pro Frame erhält das erste geeignete Bodenobjekt der stabilen Szenenreihenfolge
 
 `RoundController` besitzt ausschließlich Dauerwahl, aktive Laufzeit, grobe Zeitkategorie,
 Phase und finalen Score. Die Zufallsquelle ist für Unit-Tests injizierbar. Snapshots
-sind eingefroren. `reaction` ist als zukünftige Vertragsphase reserviert; bis #8 bleibt
-die Runde nach Ablauf in `returning`.
+sind eingefroren. Die geordneten Phasen lauten `chaos → returning → reaction →
+reconciliation`. Verfrühte oder wiederholte Phasenwechsel werden zurückgewiesen;
+der finale Score und die Rundenuhr bleiben nach der Heimkehr unverändert.
+
+`HomecomingSequence` ist ein reines Modell für Eintritt, Reaktionsmoment, Dialog und
+einmaligen Abschluss. `selectReaction` verwendet ausschließlich die zentralen
+`angerFor`-Grenzen; Dialoge und semantische Animations-Keys stehen in
+`src/content/sara-reactions.ts`. Die Zufallsquelle ist injizierbar und wird nur beim
+ersten Start ausgewertet. Snapshots und Auswahl sind eingefroren.
+
+Die Szene gibt der Sequenz dieselbe bereinigte aktive Framezeit wie zuvor der Runde.
+Sie besitzt Darstellung und Übergabe an die Versöhnung. `SaraReturnView` rendert
+Eintrittsbewegung, Reaktionsformen und Dialogpanel ohne eigene Timer oder Tweens;
+das pausierte Gameplay hält deshalb Saras aktive Sequenz nicht an. Browserpause
+stoppt dagegen auch diese Sequenz. Es existieren keine verzögerten Callbacks, die
+nach R einen alten Ablauf fortsetzen könnten. Neustart erzeugt Modell und Ansicht neu.
+
+Der Vertrag für #88 reserviert `sara-enter`, `sara-idle`, `sara-react-calm`,
+`sara-react-annoyed` und `sara-react-angry`. Die Domain kennt weder Phaser noch
+Sprite-Dateien. Die vorläufige Ansicht interpretiert die Keys als Formen; #88 bindet
+die freigegebenen Frames an diese Zustände. Abweichungen bei der finalen Asset-Abnahme
+müssen gemeinsam in Content, Ansicht und Tests angepasst werden. Die Versöhnung ist
+bis zum eigenen Ticket nur eine sichtbare Endphase, ohne zusätzliche Spielmechanik.
 
 `PlayActivity` kapselt Fensterfokus und Document-Visibility. Beim Wechsel pausiert die
 Szene Physik, Tweens und Pixels Animation und leert gehaltene Eingaben. Bei Shutdown

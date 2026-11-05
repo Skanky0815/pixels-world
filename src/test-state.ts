@@ -1,8 +1,16 @@
 import type { RoundSnapshot } from './game/domain/round-controller';
+import type { HomecomingSnapshot, SaraAnimation } from './game/domain/homecoming';
 
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
   readonly round: RoundSnapshot;
+  readonly homecoming: HomecomingSnapshot;
+  readonly sara: {
+    readonly visible: boolean;
+    readonly animationKey: SaraAnimation;
+    readonly x: number;
+    readonly dialogueText: string;
+  };
   readonly active: boolean;
   readonly ready: boolean;
   readonly generation: number;

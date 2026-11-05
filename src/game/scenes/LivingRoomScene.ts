@@ -24,10 +24,14 @@ import { Plant } from '../objects/Plant';
 import { RoundController } from '../domain/round-controller';
 import { PlayActivity } from '../input/play-activity';
 import { GameHud } from '../ui/GameHud';
+import { HomecomingSequence } from '../domain/homecoming';
+import { SaraReturnView } from '../ui/SaraReturnView';
 
 export class LivingRoomScene extends Phaser.Scene {
   private pixel!: Pixel;
   private round!: RoundController;
+  private homecoming!: HomecomingSequence;
+  private sara!: SaraReturnView;
   private activity!: PlayActivity;
   private controls!: InputController;
   private generation = 0;
@@ -76,6 +80,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.physics.disableUpdate();
     this.chaos.reset();
     this.round = new RoundController();
+    this.homecoming = new HomecomingSequence();
   }
 
   private configureCamera() {
@@ -119,6 +124,8 @@ export class LivingRoomScene extends Phaser.Scene {
               zoom: camera.zoom,
             },
             round: this.round.snapshot(),
+            homecoming: this.homecoming.snapshot(),
+            sara: this.sara.snapshot(),
             active: this.activity.active,
             chaos: {
               score: this.chaos.score,
@@ -193,6 +200,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.controls = new InputController(this);
     this.activity = new PlayActivity(() => this.syncActivity());
     this.hud = new GameHud(this, room.hud);
+    this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
     this.syncActivity();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
   }
@@ -203,6 +211,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.controls.destroy();
     this.pixel.destroy();
     this.hud.destroy();
+    this.sara.destroy();
   }
 
   private addPlatform(x: number, y: number, width: number, height: number) {
@@ -270,10 +279,12 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private updateRound(input: InputState, delta: number) {
-    if (!this.canPlay()) return;
     const elapsed = this.activity.delta(delta);
 
-    if (elapsed > 0) this.playFrame(input, elapsed);
+    if (elapsed <= 0) return;
+
+    if (this.canPlay()) this.playFrame(input, elapsed);
+    else this.advanceHomecoming(elapsed);
   }
 
   private playFrame(input: InputState, elapsed: number) {
@@ -282,8 +293,28 @@ export class LivingRoomScene extends Phaser.Scene {
     this.physics.world.update(time, elapsed);
     this.updateGameplay(input, time, elapsed);
 
-    if (this.round.advance(elapsed, this.chaos.score)) this.syncActivity();
+    if (this.round.advance(elapsed, this.chaos.score)) this.startHomecoming();
     else this.renderHud(this.pixel.nearCurtain);
+  }
+
+  private startHomecoming() {
+    const score = this.round.snapshot().finalChaosScore;
+
+    if (score === null) return;
+    this.homecoming.start(score);
+    this.sara.render(this.homecoming.snapshot());
+    this.syncActivity();
+  }
+
+  private advanceHomecoming(elapsed: number) {
+    this.homecoming.advance(elapsed);
+    const snapshot = this.homecoming.snapshot();
+
+    if (snapshot.stage !== 'entering' && snapshot.stage !== 'waiting') this.round.startReaction();
+
+    if (snapshot.stage === 'complete') this.round.startReconciliation();
+    this.sara.render(snapshot);
+    this.renderHud(this.pixel.nearCurtain);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die fachlich festgelegte Frame-Reihenfolge verwendet denselben Input und Snapshot; Bodenaktionen sind separat.

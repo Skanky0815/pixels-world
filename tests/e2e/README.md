@@ -15,6 +15,11 @@ aber während der langen Wartephase weniger Bilder. Zeitmeilensteine werden anha
 unveränderlichen Observers geprüft; die Uhr ersetzt keine Spielzustände. Die gewählte
 Rundendauer und Framezahl stehen als `round-simulation` im Testreport.
 
+Dasselbe Szenario prüft anschließend Saras Eintritt, Reaktions-Key, Dialog, Pause
+während der Reaktion, einmaligen Übergang zur Versöhnung und vollständigen Neustart.
+Pixel, Objektzustände und Punkte bleiben über den Ablauf unverändert. Ansichten von
+Dialog und Versöhnungsplatzhalter liegen als Bildanhänge im Browserreport.
+
 Das ist ein Lebenszyklustest bei 10 Hz, kein Ersatz für die übrigen Eingabe-, Physik- und
 Renderprüfungen mit normalem Frame-Takt. Die Zufallsgrenzen 60/105 Sekunden und genaue
 Zeitgrenzen bleiben zusätzlich durch die Domain-Unit-Tests abgedeckt. Das normale

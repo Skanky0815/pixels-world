@@ -23,7 +23,7 @@ sind verbindlich; Formatierungsfehler sind auch in CI, Release und Pages blockie
 8. R drücken: alle Vasen stehen wieder, Splitter verschwinden und Punkte/Ärger-Vorschau sind zurückgesetzt.
 9. Browsergröße ändern: Der gesamte Raum bleibt im ursprünglichen Seitenverhältnis sichtbar.
 10. Während Sprung/Klettern auf einen anderen Tab wechseln und zurückkehren: Uhr, Bewegung und Schaden pausieren; keine klemmenden Tasten oder nachgeholte Hintergrundzeit.
-11. Eine Runde abwarten: grobe Hinweise wechseln, nach 60–105 aktiven Sekunden erscheint „Sara ist zu Hause!“. Bewegung, weitere Schäden und Punkte bleiben danach unverändert. R stellt die gesamte Runde wieder her.
+11. Eine Runde abwarten: grobe Hinweise wechseln, nach 60–105 aktiven Sekunden tritt Sara ein. Eintritt, Reaktionsmoment, passender Dialog und „Versöhnung · Fortsetzung folgt“ folgen in dieser Reihenfolge. Bewegung, weitere Schäden und Punkte bleiben danach unverändert. Fokusverlust pausiert auch die Sara-Sequenz. R stellt die gesamte Runde samt unsichtbarer Sara und leerer Dialogauswahl wieder her.
 
 ## End-to-End-Tests
 
@@ -82,7 +82,7 @@ Die Unit- und Browserjobs zeigen nach ihren Testschritten alle gemeldeten Szenar
 
 Node erzeugt über `npm run test:unit:ci` neben der Terminalausgabe einen TAP-Report (`test-reports/unit.tap`). Playwright erzeugt zusätzlich zu List/HTML einen JUnit-Report (`test-reports/playwright.xml`). Die gepflegte [test-summary/action](https://github.com/test-summary/action) verarbeitet beide Formate; ihre Version ist als Commit gepinnt. Nodes JUnit-Ausgabe wird bewusst nicht verwendet: Die geprüfte Action übersieht die direkt unter `testsuites` liegenden Testfälle von Node 22. Der TAP-Reporter wird korrekt gelesen.
 
-Die Gesamtübersicht zählt **Ausführungen**: aktuell 53 Unit-Tests plus 31 Browser-Szenarien, also 84 Ergebnisse bei normaler CI. Bei manuell gewählten zwei Durchläufen sind es 115, bei drei Durchläufen 146. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
+Die Gesamtübersicht zählt **Ausführungen**: aktuell 59 Unit-Tests plus 31 Browser-Szenarien, also 90 Ergebnisse bei normaler CI. Bei manuell gewählten zwei Durchläufen sind es 121, bei drei Durchläufen 152. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
 
 Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Drei erwartete Reports (Unit und beide Shards) werden auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
 

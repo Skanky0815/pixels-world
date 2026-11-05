@@ -17,6 +17,12 @@ const STATUS: Record<HudState['activity'], string> = {
   wobbling: 'PIXEL · VORSICHT, DER TOPF WACKELT!',
 };
 
+const HOME_STATUS = {
+  returning: 'Sara kommt herein … · R: Neue Runde',
+  reaction: 'Sara schaut sich um … · R: Neue Runde',
+  reconciliation: 'Versöhnung · Fortsetzung folgt · R: Neue Runde',
+};
+
 /** A scene-owned view; no input, physics, scoring or gameplay model references. */
 export class GameHud {
   private readonly root: Phaser.GameObjects.Container;
@@ -53,10 +59,9 @@ export class GameHud {
 
   render(state: HudState) {
     this.renderRound(state);
-    this.scoreText.setText(
-      `CHAOS: ${state.score}  ·  SARAS ÄRGER (VORSCHAU): ${state.anger.label}`,
-    );
+    this.scoreText.setText(scoreCaption(state));
     this.climbHint.setAlpha(state.nearCurtain ? 1 : 0.65);
+    this.climbHint.setVisible(state.round.phase === 'chaos');
     this.renderAnger(state);
   }
 
@@ -64,9 +69,7 @@ export class GameHud {
     this.status.setText(
       state.round.phase === 'chaos' ? STATUS[state.activity] : 'PIXEL · SARA IST DA',
     );
-    this.roundText.setText(
-      state.round.paused ? 'Pause · Runde angehalten' : ROUND_STATUS[state.round.hint],
-    );
+    this.roundText.setText(state.round.paused ? 'Pause · Runde angehalten' : roundStatus(state));
   }
 
   private renderAnger(state: HudState) {
@@ -98,4 +101,16 @@ export class GameHud {
   destroy() {
     this.root.destroy(true);
   }
+}
+
+function roundStatus(state: HudState) {
+  return state.round.phase === 'chaos'
+    ? ROUND_STATUS[state.round.hint]
+    : HOME_STATUS[state.round.phase];
+}
+
+function scoreCaption(state: HudState) {
+  const label = state.round.phase === 'chaos' ? 'SARAS ÄRGER (VORSCHAU)' : 'SARAS ÄRGER';
+
+  return `CHAOS: ${state.score}  ·  ${label}: ${state.anger.label}`;
 }

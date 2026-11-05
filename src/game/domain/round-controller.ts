@@ -1,4 +1,4 @@
-export type RoundPhase = 'chaos' | 'returning' | 'reaction';
+export type RoundPhase = 'chaos' | 'returning' | 'reaction' | 'reconciliation';
 export type RoundHint = 'time' | 'soon' | 'imminent' | 'home';
 export interface RoundConfig {
   readonly minDurationMs: number;
@@ -15,7 +15,7 @@ export interface RoundSnapshot {
 export const ROUND_CONFIG: RoundConfig = { minDurationMs: 60_000, maxDurationMs: 105_000 };
 export const ROUND_HINTS = { soonRemainingRatio: 0.4, imminentRemainingRatio: 0.15 } as const;
 
-/** Pure round lifecycle. Reaction is reserved for #8; no transition into it exists yet. */
+/** Pure round lifecycle; only ordered one-shot homecoming transitions are accepted. */
 export class RoundController {
   private phase: RoundPhase = 'chaos';
   private elapsedMs = 0;
@@ -47,6 +47,20 @@ export class RoundController {
     if (!Number.isSafeInteger(score) || score < 0) throw new Error('Invalid final chaos score');
     this.finalChaosScore = score;
     this.phase = 'returning';
+  }
+
+  startReaction() {
+    if (this.phase !== 'returning') return false;
+    this.phase = 'reaction';
+
+    return true;
+  }
+
+  startReconciliation() {
+    if (this.phase !== 'reaction') return false;
+    this.phase = 'reconciliation';
+
+    return true;
   }
 
   reset() {

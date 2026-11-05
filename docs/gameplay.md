@@ -17,12 +17,24 @@ nachgeholt. Uhr und Physik verwenden denselben bereinigten Zeitschritt.
 Am Ende des letzten zulässigen Frames werden Physik-/Schadensereignisse und
 Interaktionen noch verarbeitet. Anschließend wechselt die Runde genau einmal von
 `chaos` nach `returning` und sichert den finalen Chaosstand. Physik, Steuerung,
-weitere Schäden und Animationen bleiben stehen. Der Platzhalter **„Sara ist zu
-Hause! · R: Neue Runde“** markiert die Übergabe an die spätere Reaktion. Es gibt hier
-noch kein Sara-Sprite, keine Reaktionsauswertung und keine Versöhnungsphase.
+weitere Schäden und Pixels Animation bleiben stehen. Sara tritt durch eine vorläufig
+dargestellte Tür ein und schaut sich das Zimmer an. Die Reaktion nutzt einmalig den
+eingefrorenen Score: **0–24** skeptisch/gelassen, **25–59** genervt und **ab 60**
+fassungslos/verärgert. Es gelten dieselben zentralen Ärgergrenzen wie im HUD.
+
+Der Eintritt dauert 1,2 Sekunden, der Reaktionsmoment 0,9 Sekunden. Danach erscheint
+für 3,6 Sekunden ein zufällig gewählter trockener Kommentar; pro Stufe gibt es drei
+Varianten. Auch dieser Ablauf pausiert bei Fokusverlust oder verstecktem Tab. Danach
+wechselt die Runde einmalig in `reconciliation`: **„Versöhnung · Fortsetzung folgt“**
+ist der erkennbare Platzhalter, noch keine spielbare Versöhnung. Weitere Punkte und
+Bewegung bleiben während und nach der Sequenz gesperrt.
+
+Saras Figur, Tür und Reaktionsdarstellung sind bewusst vorläufige Formen. Fertige
+Chibi-Sprites und Animationen folgen separat in #88; die bestätigte Referenz wird
+hier noch nicht als fertige Animation verwendet.
 
 **R** startet auch nach der Heimkehr eine vollständig neue Runde einschließlich
-neuer Zufallsauswahl, Zeit, Punkten, Schäden, Eingaben und HUD. Derselbe zufällig
+neuer Zufallsauswahl, Zeit, Punkten, Schäden, Eingaben, Sara-Sequenz und HUD. Derselbe zufällig
 gezogene Zeitpunkt darf dabei erneut vorkommen.
 
 ## Steuerung und Bewegungsrichtung
