@@ -23,7 +23,7 @@ sind verbindlich; Formatierungsfehler sind auch in CI, Release und Pages blockie
 8. R drücken: alle Vasen stehen wieder, Splitter verschwinden und Punkte/Ärger-Vorschau sind zurückgesetzt.
 9. Browsergröße ändern: Der gesamte Raum bleibt im ursprünglichen Seitenverhältnis sichtbar.
 10. Während Sprung/Klettern auf einen anderen Tab wechseln und zurückkehren: Uhr, Bewegung und Schaden pausieren; keine klemmenden Tasten oder nachgeholte Hintergrundzeit.
-11. Eine Runde abwarten: grobe Hinweise wechseln, nach 60–105 aktiven Sekunden erscheint „Sara ist zu Hause!“. Bewegung, weitere Schäden und Punkte bleiben danach unverändert. R stellt die gesamte Runde wieder her.
+11. Eine Runde abwarten: grobe Hinweise wechseln, nach 60–105 aktiven Sekunden tritt Sara ein. Eintritt, Reaktionsmoment, passender Dialog und „Versöhnung · Fortsetzung folgt“ folgen in dieser Reihenfolge. Bewegung, weitere Schäden und Punkte bleiben danach unverändert. Fokusverlust pausiert auch die Sara-Sequenz. R stellt die gesamte Runde samt unsichtbarer Sara und leerer Dialogauswahl wieder her.
 
 ## End-to-End-Tests
 
