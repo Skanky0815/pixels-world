@@ -14,7 +14,6 @@ Ein `ChaosEvent` trägt die als JSON-Tupel codierte ID aus Objektinstanz, Schade
 
 Pro Frame erhält das erste geeignete Bodenobjekt der stabilen Szenenreihenfolge ein aktives Update, alle anderen ein inaktives. Dadurch laufen überlappende Wartezeiten/Aktionen nicht parallel; Bewegung, Absprung und Zielwechsel unterbrechen sie. Objekte lesen eingefrorene Pixel-/Input-Daten und melden Aktion/Blickziel zurück, ohne Tastatur oder Pixel-Animation zu steuern. Der Animationsvergleich unter `src/dev/` bleibt ausschließlich im Dev-Betrieb unter seinem bisherigen URL erreichbar. Es bleibt ein npm-/Vite-Projekt.
 
-
 ## Frame-Reihenfolge und Lebenszyklus
 
 Ein Input-Snapshot → Reset-Flanke behandeln → Vasenfall aktualisieren → Pixel bewegen/Klettern bestimmen → Vorhang/Sofa/Pflanze mit demselben Input aktualisieren → Pixel-Aktion/Animation und HUD synchronisieren. Vorhangschaden wird weiterhin aus tatsächlicher Physikbewegung statt bloßer Renderzeit berechnet.
@@ -23,18 +22,17 @@ Ein Input-Snapshot → Reset-Flanke behandeln → Vasenfall aktualisieren → Pi
 
 Browserprüfungen beobachten echte Neustarts über R, unveränderte 52×52-Kollision, Eingabeflanken und DOM-Blur/Focus ohne Engine-Mutatoren. Generationsnummer und Listeneranzahl sind ausschließlich skalare Beobachtungswerte; der Produktionsbuild enthält den Testbeobachter nicht.
 
-
 ## Vorgeschlagene Zuständigkeiten
 
-| Baustein | Besitzt / tut | Grenze |
-| --- | --- | --- |
-| `main.ts` | Phaser-Bootstrap und Konfiguration | Keine Spielregeln oder Objektdarstellung |
-| `LivingRoomScene` | Raum und Objekte erzeugen, Kollisionspaare verdrahten, Update-/Reset-/Shutdown-Reihenfolge | Keine Tastenabfragen, Katzenbewegungsdetails oder HUD-Zeichenbefehle |
-| `InputController` | Hardwarebelegung, einmalige Flankenabfrage, Blur/Cleanup; liefert `InputState` | Keine Physics-, Score- oder UI-Entscheidungen |
-| `Pixel` | Physikkörper, Bewegungs-/Kletterzustand, aktive Aktion, Blickrichtung, sichtbares Sprite und Animationsanker | Keine Tastencodes, Möbelzeichnung oder Punktevergabe |
-| `Couch`, `Curtain`, `Plant`, `Vase` | Eigene Geometrie, Darstellung, Komponenten/Modelle und Lebenszyklus | Keine direkte Tastaturabfrage oder Änderung des Pixel-Sprites |
-| Bestehende reine Modelle | Wartezeiten, Phasen, Schaden, Ledger und Animationsauswahl | Keine Abhängigkeit von Phaser, DOM oder Hardware |
-| `GameHud` | Texte, Farben, Balken und Hinweise aus `HudState` | Keine Punktevergabe, Physics-Zugriffe oder Eingabeabfragen |
+| Baustein                            | Besitzt / tut                                                                                                | Grenze                                                               |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `main.ts`                           | Phaser-Bootstrap und Konfiguration                                                                           | Keine Spielregeln oder Objektdarstellung                             |
+| `LivingRoomScene`                   | Raum und Objekte erzeugen, Kollisionspaare verdrahten, Update-/Reset-/Shutdown-Reihenfolge                   | Keine Tastenabfragen, Katzenbewegungsdetails oder HUD-Zeichenbefehle |
+| `InputController`                   | Hardwarebelegung, einmalige Flankenabfrage, Blur/Cleanup; liefert `InputState`                               | Keine Physics-, Score- oder UI-Entscheidungen                        |
+| `Pixel`                             | Physikkörper, Bewegungs-/Kletterzustand, aktive Aktion, Blickrichtung, sichtbares Sprite und Animationsanker | Keine Tastencodes, Möbelzeichnung oder Punktevergabe                 |
+| `Couch`, `Curtain`, `Plant`, `Vase` | Eigene Geometrie, Darstellung, Komponenten/Modelle und Lebenszyklus                                          | Keine direkte Tastaturabfrage oder Änderung des Pixel-Sprites        |
+| Bestehende reine Modelle            | Wartezeiten, Phasen, Schaden, Ledger und Animationsauswahl                                                   | Keine Abhängigkeit von Phaser, DOM oder Hardware                     |
+| `GameHud`                           | Texte, Farben, Balken und Hinweise aus `HudState`                                                            | Keine Punktevergabe, Physics-Zugriffe oder Eingabeabfragen           |
 
 Phaser-Klassen gehören an die Engine-Grenze. Für den derzeit einen Raum genügt eine HUD-View; eine eigene UI-Scene kann bei mehreren Kameras oder übergreifenden Menüs sinnvoll werden. Ein `InputController` ist ein Adapter, keine zweite Game-Loop. Die Szene behält die koordinierende Aufgabe, Regeln bleiben bei den zuständigen Objekten/Modellen.
 
@@ -65,15 +63,15 @@ Stabile Objekt-ID statt Typname: beispielsweise `living-room/sofa-01` und `livin
 
 ## Ubiquitous Language
 
-| Begriff | Bedeutung und konkreter Vertrag | Heutiger Bezug |
-| --- | --- | --- |
+| Begriff        | Bedeutung und konkreter Vertrag                                                                                                                                                         | Heutiger Bezug                                                    |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | `Interactable` | Verwendeter TypeScript-Vertrag für automatische Bodenaktionen: Eignung und aktives/inaktives Update. Der sprachliche Oberbegriff interaktiver Objekte umfasst auch andere Kontaktarten. | Sofa, Pflanze; Vorhang nutzt `Climbable`, Vase physischen Kontakt |
-| `Interaction` | Die Handlung samt Warte-/Abbruchzustand; vom Objekt zu unterscheiden. | Kratzen, Knabbern, Schubsen, Klettern |
-| `Destructible` | Besitzt abfragbaren Schadenszustand und meldet neue Schadensstufen über den gemeinsamen Vertrag. | Alle vier aktuellen Interaktionsobjekte |
-| `Climbable` | Liefert eine tatsächliche Greif-/Kletterfläche mit Bewegungsparametern. | Vorhang; das aktuelle Sofa ist lediglich eine Sprungplattform |
-| `GoalTarget` | Kann ein konkret definiertes Levelziel erfüllen. Vertrag erst mit dem Zielsystem festlegen. | Geplant in #30, noch nicht implementiert |
-| `PanicTrigger` | Kann nach konkreten Regeln eine Panikreaktion auslösen. Vertrag erst mit diesem Gameplay festlegen. | Geplant in #33/#35, noch nicht implementiert |
-| `ChaosEvent` | Bereits verursachter Schaden, kein Spielobjekttyp und keine beliebige Spieleraktion. | Kratzer, Riss, Pflanzenbiss/-kippen und Vasenbruch |
+| `Interaction`  | Die Handlung samt Warte-/Abbruchzustand; vom Objekt zu unterscheiden.                                                                                                                   | Kratzen, Knabbern, Schubsen, Klettern                             |
+| `Destructible` | Besitzt abfragbaren Schadenszustand und meldet neue Schadensstufen über den gemeinsamen Vertrag.                                                                                        | Alle vier aktuellen Interaktionsobjekte                           |
+| `Climbable`    | Liefert eine tatsächliche Greif-/Kletterfläche mit Bewegungsparametern.                                                                                                                 | Vorhang; das aktuelle Sofa ist lediglich eine Sprungplattform     |
+| `GoalTarget`   | Kann ein konkret definiertes Levelziel erfüllen. Vertrag erst mit dem Zielsystem festlegen.                                                                                             | Geplant in #30, noch nicht implementiert                          |
+| `PanicTrigger` | Kann nach konkreten Regeln eine Panikreaktion auslösen. Vertrag erst mit diesem Gameplay festlegen.                                                                                     | Geplant in #33/#35, noch nicht implementiert                      |
+| `ChaosEvent`   | Bereits verursachter Schaden, kein Spielobjekttyp und keine beliebige Spieleraktion.                                                                                                    | Kratzer, Riss, Pflanzenbiss/-kippen und Vasenbruch                |
 
 Fähigkeiten sind kombinierbar. Ein späterer Gegenstand kann Ziel, Kletterfläche und beschädigbar sein, ohne drei voneinander ausschließenden Klassen anzugehören. Kleine TypeScript-Interfaces/Komponenten erhalten erst bei einem tatsächlich benutzten Verhalten einen Platz im Code. Eine gemeinsame abstrakte Phaser-Basisklasse ist dafür nicht erforderlich. Die bestehenden reinen Modelle bleiben pro Handlung spezialisiert.
 

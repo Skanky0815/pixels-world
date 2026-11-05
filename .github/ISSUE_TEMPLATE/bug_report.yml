@@ -1,4 +1,4 @@
-name: "🐛 Bug-Report"
+name: '🐛 Bug-Report'
 description: Einen Fehler melden und bei der Reproduktion helfen.
 labels: [bug]
 body:
@@ -24,7 +24,7 @@ body:
     id: environment
     attributes:
       label: Browser und Betriebssystem
-      placeholder: "Zum Beispiel: Firefox 144 auf Windows 11; genaue Version falls bekannt"
+      placeholder: 'Zum Beispiel: Firefox 144 auf Windows 11; genaue Version falls bekannt'
     validations:
       required: true
   - type: input

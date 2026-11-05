@@ -16,8 +16,12 @@ export class InputFrames {
       this.current = Object.freeze(sample());
       this.frame = frame;
     }
+
     return this.current;
   }
 
-  clear() { this.frame = -1; this.current = undefined; }
+  clear() {
+    this.frame = -1;
+    this.current = undefined;
+  }
 }

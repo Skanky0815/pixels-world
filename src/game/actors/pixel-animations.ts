@@ -25,11 +25,16 @@ interface AnimationState {
 /** Animation follows gameplay state; it never changes movement or interaction timers. */
 export function pixelAnimation(state: AnimationState): keyof typeof PIXEL_ANIMATIONS {
   if (state.climbing) return state.sliding ? 'slide' : 'climb';
+
   if (!state.grounded || state.velocityY < -1) {
     return state.velocityY < -60 ? 'jump' : state.velocityY > 60 ? 'fall' : 'apex';
   }
+
   if (state.nibbling) return 'nibble';
+
   if (state.scratching) return 'scratch';
+
   if (Math.abs(state.velocityX) > 1) return 'walk';
+
   return state.landing ? 'land' : 'idle';
 }

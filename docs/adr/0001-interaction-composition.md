@@ -16,12 +16,12 @@ Konkrete Klassen kapseln `Pixel`, `InputController`, `GameHud`, Szene und Spielo
 
 ## Abgewogene Alternativen
 
-| Alternative | Nutzen | Konsequenz |
-| --- | --- | --- |
-| Alles in der Szene belassen | Geringster unmittelbarer Umbau | Neue Objekte, Controls und Anzeigen erhöhen die bereits belegte Kopplung und die Reset-Sonderfälle |
-| Eine abstrakte Phaser-Klasse für alle Interaktiven | Gemeinsame Hilfsmethoden schnell verfügbar | Vase ist ein Physics-Image, Möbel können Graphics/Container/Flächen besitzen; ein fester Vererbungsbaum zwingt verschiedene Darstellungen in dieselbe Basis und erschwert kombinierbare Fähigkeiten |
-| Vollständiges ECS / universelle Interaction-Engine | Sehr flexible spätere Kombination | Für vier konkrete Objektarten zusätzlicher Aufwand ohne nachgewiesenen Bedarf; höhere Migrations- und Debug-Kosten |
-| Konkrete Besitzer plus kleine Fähigkeiten | Klare Zuständigkeit bei erhaltener Spezialisierung | Benötigt eindeutige Verträge, IDs und expliziten Lebenszyklus; diese sind durch die aktuellen Befunde ohnehin erforderlich |
+| Alternative                                        | Nutzen                                             | Konsequenz                                                                                                                                                                                          |
+| -------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Alles in der Szene belassen                        | Geringster unmittelbarer Umbau                     | Neue Objekte, Controls und Anzeigen erhöhen die bereits belegte Kopplung und die Reset-Sonderfälle                                                                                                  |
+| Eine abstrakte Phaser-Klasse für alle Interaktiven | Gemeinsame Hilfsmethoden schnell verfügbar         | Vase ist ein Physics-Image, Möbel können Graphics/Container/Flächen besitzen; ein fester Vererbungsbaum zwingt verschiedene Darstellungen in dieselbe Basis und erschwert kombinierbare Fähigkeiten |
+| Vollständiges ECS / universelle Interaction-Engine | Sehr flexible spätere Kombination                  | Für vier konkrete Objektarten zusätzlicher Aufwand ohne nachgewiesenen Bedarf; höhere Migrations- und Debug-Kosten                                                                                  |
+| Konkrete Besitzer plus kleine Fähigkeiten          | Klare Zuständigkeit bei erhaltener Spezialisierung | Benötigt eindeutige Verträge, IDs und expliziten Lebenszyklus; diese sind durch die aktuellen Befunde ohnehin erforderlich                                                                          |
 
 ## Folgen und Umsetzung
 

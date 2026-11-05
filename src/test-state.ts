@@ -6,33 +6,88 @@ export interface GameTestState {
   readonly scene: string;
   readonly frame: number;
   readonly room: { readonly id: string; readonly width: number; readonly height: number };
-  readonly camera: { readonly x: number; readonly y: number; readonly width: number; readonly height: number; readonly zoom: number };
-  readonly chaos: { readonly score: number; readonly damagedObjects: number; readonly anger: string };
+  readonly camera: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+    readonly zoom: number;
+  };
+  readonly chaos: {
+    readonly score: number;
+    readonly damagedObjects: number;
+    readonly anger: string;
+  };
   readonly hud: {
-    readonly statusText: string; readonly scoreText: string;
-    readonly climbHintText: string; readonly climbHintAlpha: number;
-    readonly angerRatio: number; readonly angerColor: number; readonly elements: number;
+    readonly statusText: string;
+    readonly scoreText: string;
+    readonly climbHintText: string;
+    readonly climbHintAlpha: number;
+    readonly angerRatio: number;
+    readonly angerColor: number;
+    readonly elements: number;
   };
   readonly objects: ReadonlyArray<{
-    readonly id: string; readonly kind: string; readonly variant: string; readonly damage: number; readonly events: number;
-    readonly lastDamage: { readonly id: string; readonly objectId: string; readonly kind: string; readonly stage: number; readonly value: number } | null;
+    readonly id: string;
+    readonly kind: string;
+    readonly variant: string;
+    readonly damage: number;
+    readonly events: number;
+    readonly lastDamage: {
+      readonly id: string;
+      readonly objectId: string;
+      readonly kind: string;
+      readonly stage: number;
+      readonly value: number;
+    } | null;
   }>;
   readonly vases: ReadonlyArray<{
-    readonly id: string; readonly x: number; readonly y: number; readonly bottom: number;
-    readonly velocityX: number; readonly velocityY: number;
-    readonly state: string; readonly points: number;
+    readonly id: string;
+    readonly x: number;
+    readonly y: number;
+    readonly bottom: number;
+    readonly velocityX: number;
+    readonly velocityY: number;
+    readonly state: string;
+    readonly points: number;
   }>;
   readonly curtain: {
-    readonly state: string; readonly damage: number; readonly events: number;
-    readonly lastDamage: { readonly id: string; readonly objectId: string; readonly kind: string; readonly stage: number; readonly value: number } | null;
+    readonly state: string;
+    readonly damage: number;
+    readonly events: number;
+    readonly lastDamage: {
+      readonly id: string;
+      readonly objectId: string;
+      readonly kind: string;
+      readonly stage: number;
+      readonly value: number;
+    } | null;
   } | null;
   readonly plant: {
-    readonly state: string; readonly damage: number; readonly progress: number; readonly angle: number; readonly events: number;
-    readonly lastDamage: { readonly id: string; readonly objectId: string; readonly kind: string; readonly stage: number; readonly value: number } | null;
+    readonly state: string;
+    readonly damage: number;
+    readonly progress: number;
+    readonly angle: number;
+    readonly events: number;
+    readonly lastDamage: {
+      readonly id: string;
+      readonly objectId: string;
+      readonly kind: string;
+      readonly stage: number;
+      readonly value: number;
+    } | null;
   } | null;
   readonly couch: {
-    readonly state: string; readonly damage: number; readonly events: number;
-    readonly lastDamage: { readonly id: string; readonly objectId: string; readonly kind: string; readonly stage: number; readonly value: number } | null;
+    readonly state: string;
+    readonly damage: number;
+    readonly events: number;
+    readonly lastDamage: {
+      readonly id: string;
+      readonly objectId: string;
+      readonly kind: string;
+      readonly stage: number;
+      readonly value: number;
+    } | null;
   } | null;
   readonly pixel: {
     readonly animation: string | null;

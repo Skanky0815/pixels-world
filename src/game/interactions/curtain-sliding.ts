@@ -28,30 +28,49 @@ export class CurtainSliding {
   constructor(config: TearConfig = CURTAIN_SLIDE, objectId = 'curtain') {
     assertObjectId(objectId);
     this.objectId = objectId;
-    if (!Number.isFinite(config.damageIntervalMs) || config.damageIntervalMs <= 0 ||
-      !Number.isSafeInteger(config.maxDamage) || config.maxDamage <= 0 ||
-      !Number.isSafeInteger(config.damageValue) || config.damageValue < 0) throw new Error('Invalid curtain configuration');
+
+    if (
+      !Number.isFinite(config.damageIntervalMs) ||
+      config.damageIntervalMs <= 0 ||
+      !Number.isSafeInteger(config.maxDamage) ||
+      config.maxDamage <= 0 ||
+      !Number.isSafeInteger(config.damageValue) ||
+      config.damageValue < 0
+    )
+      throw new Error('Invalid curtain configuration');
     this.config = { ...config };
   }
 
-  update(deltaMs: number, state: CurtainState, descending: boolean): CurtainDamageEvent | undefined {
+  update(
+    deltaMs: number,
+    state: CurtainState,
+    descending: boolean,
+  ): CurtainDamageEvent | undefined {
     if (this.phase !== state) this.elapsed = 0;
     this.phase = state;
+
     if (state !== 'sliding') {
       this.elapsed = 0;
+
       return;
     }
+
     if (!descending) return;
     this.elapsed += Number.isFinite(deltaMs) ? Math.max(0, deltaMs) : 0;
+
     if (this.elapsed < this.config.damageIntervalMs) return;
     // Never emit a backlog of damage events after a delayed frame.
     this.elapsed %= this.config.damageIntervalMs;
+
     if (this.damage >= this.config.maxDamage) return;
     this.damage++;
+
     return chaosEvent(this.objectId, 'tear', this.damage, this.config.damageValue);
   }
 
-  snapshot() { return { state: this.phase, damage: this.damage }; }
+  snapshot() {
+    return { state: this.phase, damage: this.damage };
+  }
 
   reset() {
     this.phase = 'detached';
