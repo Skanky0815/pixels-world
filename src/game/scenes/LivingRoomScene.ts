@@ -26,6 +26,7 @@ import { PlayActivity } from '../input/play-activity';
 import { GameHud } from '../ui/GameHud';
 import { HomecomingSequence } from '../domain/homecoming';
 import { SaraReturnView } from '../ui/SaraReturnView';
+import { roundConfigForPage } from '../input/round-profile';
 
 export class LivingRoomScene extends Phaser.Scene {
   private pixel!: Pixel;
@@ -79,7 +80,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private initializeRound() {
     this.physics.disableUpdate();
     this.chaos.reset();
-    this.round = new RoundController();
+    this.round = new RoundController(roundConfigForPage());
     this.homecoming = new HomecomingSequence();
   }
 

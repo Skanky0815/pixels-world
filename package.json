@@ -12,6 +12,8 @@
     "qa": "npm run format:check && npm run lint && npm run test:unit && npm run build",
     "build:e2e": "npm run typecheck && vite build --mode e2e --outDir dist-e2e",
     "test:e2e": "playwright test",
+    "test:e2e:full": "E2E_FULL_ROUND=1 playwright test",
+    "test:e2e:slow": "E2E_FULL_ROUND=1 playwright test --grep @slow",
     "test:e2e:debug": "playwright test --project=chromium --debug",
     "test:e2e:report": "playwright show-report",
     "test:unit:ci": "node --experimental-strip-types --test --test-reporter=spec --test-reporter=tap --test-reporter-destination=stdout --test-reporter-destination=test-reports/unit.tap tests/unit/*.test.ts",

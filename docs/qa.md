@@ -66,7 +66,19 @@ Bei einem gestarteten QA-Lauf bleiben Lint, Unit-Tests, Typprüfung, Build und b
 
 ## Manuelle Vollprüfung und Branch-Schutz
 
-Unter **Actions → QA → Run workflow** einen Branch und eine Durchlaufzahl (1, 2 oder 3; Standard 1) auswählen: `workflow_dispatch` ist ungefiltert und prüft immer alle Szenarien. Der separate manuelle Release-Workflow behält ebenfalls seine Prüfungen.
+Unter **Actions → QA → Run workflow** einen Branch, eine Durchlaufzahl (1, 2 oder 3;
+Standard 1) und das Rundenprofil `fast` oder `full` auswählen. `workflow_dispatch`
+ist ungefiltert und prüft immer alle 31 Szenarien. Normale PR-/Push-Läufe verwenden
+`fast`: Nur das explizite Heimkehr-Szenario nutzt 8–10 Sekunden Testdauer. `full`
+prüft denselben Ablauf mit den produktiven 60–105 Sekunden; alle Assertions bleiben
+gleich. Die Domain-Unit-Tests prüfen die echten Grenzen zusätzlich.
+
+Der Release-Workflow ruft die QA wiederverwendbar mit `full_round: true` auf. Sowohl
+`prepare` als auch `publish` warten auf diesen vollständigen erfolgreichen Check,
+bevor Release Please einen Versions-PR bzw. ein GitHub Release erstellen darf. Auch
+der manuelle/wiederverwendbare Pages-Build verwendet vollständige Produktionszeiten.
+Ein Testfehler oder fehlender notwendiger Job wird dadurch vor der Veröffentlichung
+blockierend. Ein echter Release-/Pages-Rollout wird nur ausdrücklich gestartet.
 
 Die pfadgefilterten Checks dürfen nicht als für **jeden** PR erforderliche Statuschecks konfiguriert werden: Ein komplett ausgelassener Workflow liefert keinen erfolgreichen Check; reine Dokumentations-PRs könnten dadurch blockiert bleiben. Rico übernimmt die Branch-Protection-Einstellungen. Falls künftig zwingend ein erfolgreicher Gesamtcheck für jeden PR erforderlich wird, muss das Workflow-Modell entsprechend angepasst werden.
 
@@ -82,7 +94,7 @@ Die Unit- und Browserjobs zeigen nach ihren Testschritten alle gemeldeten Szenar
 
 Node erzeugt über `npm run test:unit:ci` neben der Terminalausgabe einen TAP-Report (`test-reports/unit.tap`). Playwright erzeugt zusätzlich zu List/HTML einen JUnit-Report (`test-reports/playwright.xml`). Die gepflegte [test-summary/action](https://github.com/test-summary/action) verarbeitet beide Formate; ihre Version ist als Commit gepinnt. Nodes JUnit-Ausgabe wird bewusst nicht verwendet: Die geprüfte Action übersieht die direkt unter `testsuites` liegenden Testfälle von Node 22. Der TAP-Reporter wird korrekt gelesen.
 
-Die Gesamtübersicht zählt **Ausführungen**: aktuell 59 Unit-Tests plus 31 Browser-Szenarien, also 90 Ergebnisse bei normaler CI. Bei manuell gewählten zwei Durchläufen sind es 121, bei drei Durchläufen 152. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
+Die Gesamtübersicht zählt **Ausführungen**: aktuell 61 Unit-Tests plus 31 Browser-Szenarien, also 92 Ergebnisse bei normaler CI. Bei manuell gewählten zwei Durchläufen sind es 123, bei drei Durchläufen 154. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
 
 Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Drei erwartete Reports (Unit und beide Shards) werden auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
 
@@ -110,9 +122,9 @@ ein schnellerer Gesamtjob ist zu messen und wird nicht pauschal garantiert.
 Der Pages-Build verwendet vorerst weiterhin den GitHub-Host und seine bestehende
 Browserinstallation: Dort müssen auch `gh` und `jq` für die Release-Identitätsprüfung
 verfügbar sein. Diese Prüfung wird durch den QA-Containerwechsel nicht verändert.
-Der Release-Workflow selbst führt keine direkten Browseraufrufe aus; die vollständige
-Browserprüfung erfolgt beim anschließend aufgerufenen Pages-Build. Die spätere
-Trennung kurzer und vollständiger Tests wird in #95 für alle Aufrufer abgestimmt.
+Der Release-Workflow führt die vollständige Browserprüfung über die wiederverwendbare
+QA vor Release Please aus. Der danach aufgerufene Pages-Build prüft den exakten
+Veröffentlichungsstand weiterhin selbst vollständig.
 
 Grundlage: [Playwright-Docker-Image](https://playwright.dev/docs/docker) und
 [Container-Jobs in der Playwright-CI-Anleitung](https://playwright.dev/docs/ci#via-containers).

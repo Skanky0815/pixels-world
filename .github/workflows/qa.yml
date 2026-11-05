@@ -64,9 +64,26 @@ on:
         options: ['1', '2', '3']
         default: '1'
         required: true
+      round_mode:
+        description: Rundenprofil für den vollständigen Heimkehr-Test
+        type: choice
+        options: ['fast', 'full']
+        default: fast
+        required: true
+  workflow_call:
+    inputs:
+      full_round:
+        description: Produktionszeiten im Heimkehr-Test verwenden
+        type: boolean
+        default: false
+      repetitions:
+        description: Browserdurchläufe pro Szenario
+        type: string
+        default: '1'
 
 env:
   E2E_REPEATS: ${{ inputs.repetitions || '1' }}
+  E2E_FULL_ROUND: ${{ (inputs.full_round || inputs.round_mode == 'full') && '1' || '0' }}
 
 permissions:
   contents: read
@@ -177,6 +194,7 @@ jobs:
           SHARD: ${{ matrix.shard }}
         run: |
           echo "### Browser-Teil $SHARD/2 · $E2E_REPEATS Durchlauf/Durchläufe, null Retries" >> "$GITHUB_STEP_SUMMARY"
+          echo "Vollständige Produktionszeiten: $E2E_FULL_ROUND (1 = ja, 0 = kurze Testkonfiguration)." >> "$GITHUB_STEP_SUMMARY"
           if [ ! -s test-reports/playwright.xml ] || [ "$SUMMARY_OUTCOME" != success ]; then
             echo '::warning::Browser-Testreport fehlt oder konnte nicht dargestellt werden.'
             echo 'Report fehlt oder konnte nicht dargestellt werden; keine vollständige Ergebnisübersicht.' >> "$GITHUB_STEP_SUMMARY"

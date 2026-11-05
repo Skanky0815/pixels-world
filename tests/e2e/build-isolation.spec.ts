@@ -40,6 +40,8 @@ test('Produktionsbuild enthält weder Test-Schnittstelle noch Animationsvergleic
     const source = await response.text();
 
     expect(source).not.toContain('__pixelTest');
+    expect(source).not.toContain('round-profile');
+    expect(source).not.toContain('__E2E_ROUND_CONFIG__');
     expect(source).not.toContain('Vergleichsansicht unvollständig');
   }
 
