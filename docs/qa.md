@@ -92,6 +92,31 @@ Lokal: `mkdir -p test-reports && npm run test:unit:ci` erzeugt den TAP-Report; `
 
 ## Testaufteilung und Typprüfung
 
+Die beiden Browser-Jobs der QA laufen im offiziellen Microsoft-Image
+`mcr.microsoft.com/playwright:v1.64.1-noble`, zusätzlich durch den Manifest-Digest
+`sha256:2f05f8a734509a7b3f26a912639488ee08f58a7b292d14d62271bcff9038768f`
+festgehalten. Chromium und seine Systembibliotheken sind dort vorinstalliert;
+`playwright install --with-deps` entfällt in diesen Jobs. Node 22 und die npm-Pakete
+werden weiterhin über die bestehenden Schritte bereitgestellt. Die zusätzliche
+Versionsdimension der Matrix hat genau einen Wert; es bleiben zwei Shards.
+
+Vor dem Browserlauf muss die tatsächlich installierte Playwright-Version zur
+Image-Version passen. Bei einem Playwright-Update daher Lockfile, Matrix-Version
+und Image-Digest gemeinsam aktualisieren und beide Browser-Shards prüfen.
+`--init --ipc=host` folgt der empfohlenen Chromium-Containerkonfiguration. Es gibt
+keine eigene Image-Build-/Registry-Pipeline. Das Image muss weiterhin geladen werden;
+ein schnellerer Gesamtjob ist zu messen und wird nicht pauschal garantiert.
+
+Der Pages-Build verwendet vorerst weiterhin den GitHub-Host und seine bestehende
+Browserinstallation: Dort müssen auch `gh` und `jq` für die Release-Identitätsprüfung
+verfügbar sein. Diese Prüfung wird durch den QA-Containerwechsel nicht verändert.
+Der Release-Workflow selbst führt keine direkten Browseraufrufe aus; die vollständige
+Browserprüfung erfolgt beim anschließend aufgerufenen Pages-Build. Die spätere
+Trennung kurzer und vollständiger Tests wird in #95 für alle Aufrufer abgestimmt.
+
+Grundlage: [Playwright-Docker-Image](https://playwright.dev/docs/docker) und
+[Container-Jobs in der Playwright-CI-Anleitung](https://playwright.dev/docs/ci#via-containers).
+
 Die 31 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die zwei automatischen Shards bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
 
 Der Qualitätsjob verwendet die Typprüfung in `npm run build` statt eines zusätzlichen identischen Aufrufs davor. In der Playwright-Vorbereitung prüft `build:e2e` die Typen; die zweite Produktionsvorschau baut deshalb direkt mit Vite. Playwright verlangt beide erfolgreichen Serverstarts. Die eigenständig nutzbaren Befehle `build`, `build:e2e` und `qa` bleiben typgeprüft.
