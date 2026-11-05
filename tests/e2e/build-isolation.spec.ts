@@ -49,6 +49,7 @@ test('Produktionsbuild enthält weder Test-Schnittstelle noch Animationsvergleic
     for (const path of [
       '/animation-compare.html',
       '/src/dev/animation-compare.ts',
+      '/src/dev/sara-compare.ts',
       '/src/dev/animation-compare.css',
       '/src/animation-compare.ts',
       '/src/animation-compare.css',

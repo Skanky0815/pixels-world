@@ -29,20 +29,20 @@ Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nich
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
 Nach 60–105 Sekunden aktiver Spielzeit kommt Sara zurück und beendet die Chaosphase.
 Grobe Zeithinweise ersetzen einen genauen Countdown; bei Fokusverlust pausiert das Spiel.
-Sara tritt mit vorläufiger Grafik ein, reagiert auf den finalen Chaosstand und kommentiert
+Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
 das Zimmer. Danach folgt ein sichtbarer Platzhalter für die spätere Versöhnungsphase.
 
-Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik und Pixels bestätigtes Sprite-Sheet.
+Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.
 
 ## Steuerung
 
-| Taste     | Aktion                                               |
-| --------- | ---------------------------------------------------- |
-| ← / →     | Laufen und in der Luft steuern                       |
-| Leertaste | Springen; am Vorhang abspringen                      |
-| ↑ / ↓     | Vorhang greifen und hinauf-/hinabklettern            |
-| R         | Gesamtes Zimmer samt Schäden und Punkten neu starten |
+| Taste     | Aktion                                                    |
+| --------- | --------------------------------------------------------- |
+| ← / →     | Laufen und in der Luft steuern                            |
+| Leertaste | Springen; am Vorhang abspringen; Heimkehr-Text bestätigen |
+| ↑ / ↓     | Vorhang greifen und hinauf-/hinabklettern                 |
+| R         | Gesamtes Zimmer samt Schäden und Punkten neu starten      |
 
 Klicke zuerst ins Zimmer, damit es Tastatureingaben erhält.
 Beim Anspringen greift Pixel den Vorhang automatisch; ohne Klettereingabe rutscht er langsam ab.

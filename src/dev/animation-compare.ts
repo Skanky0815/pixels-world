@@ -1,6 +1,7 @@
 import sheetUrl from '../../assets/pixel/pixel-sheet.png?url';
 import { PIXEL_ANIMATIONS } from '../game/actors/pixel-animations';
 import './animation-compare.css';
+import { createSaraComparisons } from './sara-compare';
 
 if (!import.meta.env.DEV) throw new Error('Animationsvergleich ist nur im Dev-Betrieb verfügbar.');
 
@@ -18,10 +19,12 @@ const names: Record<Animation, string> = {
   nibble: 'Knabbern',
 };
 const host = document.querySelector('#comparisons');
+const saraHost = document.querySelector('#sara-comparisons');
 const pause = document.querySelector<HTMLButtonElement>('#pause');
 const step = document.querySelector<HTMLButtonElement>('#step');
 
-if (!host || !pause || !step) throw new Error('Vergleichsansicht unvollständig');
+if (!host || !saraHost || !pause || !step) throw new Error('Vergleichsansicht unvollständig');
+const saraComparisons = await createSaraComparisons(saraHost);
 const image = new Image();
 
 image.src = sheetUrl;
@@ -196,12 +199,15 @@ step.addEventListener('click', () => {
     panel.offset++;
     draw(panel);
   });
+  saraComparisons.step();
+  saraComparisons.draw(elapsed);
 });
 
 function tick(time: number) {
   if (!paused) elapsed += Math.min(time - lastTime, 100);
   lastTime = time;
   panels.forEach(draw);
+  saraComparisons.draw(elapsed);
   requestAnimationFrame(tick);
 }
 

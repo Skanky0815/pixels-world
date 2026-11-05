@@ -56,7 +56,8 @@ button:disabled {
 a {
   color: #e9be82;
 }
-#comparisons {
+#comparisons,
+#sara-comparisons {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 18px;
@@ -69,7 +70,8 @@ article {
   overflow: hidden;
   padding: 16px;
 }
-h2 {
+h2,
+h3 {
   margin: 0 0 12px;
   font-size: 20px;
 }

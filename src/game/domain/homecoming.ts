@@ -1,7 +1,9 @@
 import { SARA_ANIMATIONS, SARA_DIALOGUE } from '../../content/sara-reactions.ts';
 import { angerFor } from './chaos.ts';
 
-export const HOMECOMING_TIMING = { entering: 1200, reacting: 900, dialogue: 3600 } as const;
+export const HOMECOMING_TIMING = { entering: 1200, reacting: 900 } as const;
+const DIALOGUE_AT_MS = HOMECOMING_TIMING.entering + HOMECOMING_TIMING.reacting;
+
 export type HomecomingStage = 'waiting' | 'entering' | 'reacting' | 'dialogue' | 'complete';
 export type SaraAnimation = (typeof SARA_ANIMATIONS)[keyof typeof SARA_ANIMATIONS];
 export type ReactionSelection = ReturnType<typeof selectReaction>;
@@ -29,10 +31,11 @@ function chooseIndex(length: number, sample: number) {
   return Math.min(length - 1, Math.floor(sample * length));
 }
 
-/** Pure one-shot sequence, driven only by active frame time; no engine or timer callbacks. */
+/** Pure one-shot sequence, driven by active frame time and explicit confirmation; no engine or timer callbacks. */
 export class HomecomingSequence {
   private selection: ReactionSelection | null = null;
   private elapsedMs = 0;
+  private confirmed = false;
 
   start(score: number, random: () => number = Math.random) {
     if (this.selection) return false;
@@ -42,12 +45,17 @@ export class HomecomingSequence {
   }
 
   advance(deltaMs: number) {
-    if (!this.selection || this.stage() === 'complete') return false;
+    if (!this.selection || this.confirmed) return;
 
-    if (!Number.isFinite(deltaMs) || deltaMs <= 0) return false;
-    this.elapsedMs = Math.min(totalDuration(), this.elapsedMs + deltaMs);
+    if (!Number.isFinite(deltaMs) || deltaMs <= 0) return;
+    this.elapsedMs = Math.min(DIALOGUE_AT_MS, this.elapsedMs + deltaMs);
+  }
 
-    return this.stage() === 'complete';
+  confirm() {
+    if (this.stage() !== 'dialogue') return false;
+    this.confirmed = true;
+
+    return true;
   }
 
   snapshot() {
@@ -65,11 +73,13 @@ export class HomecomingSequence {
   private stage(): HomecomingStage {
     if (!this.selection) return 'waiting';
 
+    if (this.confirmed) return 'complete';
+
     if (this.elapsedMs < HOMECOMING_TIMING.entering) return 'entering';
 
     if (this.elapsedMs < HOMECOMING_TIMING.entering + HOMECOMING_TIMING.reacting) return 'reacting';
 
-    return this.elapsedMs < totalDuration() ? 'dialogue' : 'complete';
+    return 'dialogue';
   }
 
   private animationFor(stage: HomecomingStage): SaraAnimation {
@@ -80,8 +90,4 @@ export class HomecomingSequence {
 
     return SARA_ANIMATIONS.idle;
   }
-}
-
-function totalDuration() {
-  return HOMECOMING_TIMING.entering + HOMECOMING_TIMING.reacting + HOMECOMING_TIMING.dialogue;
 }

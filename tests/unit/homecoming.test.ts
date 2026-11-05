@@ -52,8 +52,9 @@ test('Eintritt, Reaktion, Dialog und Abschluss erfolgen einmalig mit stabiler Au
   const sequence = new HomecomingSequence();
   let draws = 0;
 
-  assert.equal(sequence.advance(100_000), false);
+  sequence.advance(100_000);
   assert.equal(sequence.snapshot().stage, 'waiting');
+  assert.equal(sequence.confirm(), false);
   assert.equal(
     sequence.start(25, () => {
       draws++;
@@ -72,40 +73,48 @@ test('Eintritt, Reaktion, Dialog und Abschluss erfolgen einmalig mit stabiler Au
   );
   assert.equal(draws, 1);
   assert.equal(sequence.snapshot().stage, 'entering');
+  assert.equal(sequence.confirm(), false);
   assert.equal(sequence.snapshot().animationKey, SARA_ANIMATIONS.enter);
   sequence.advance(HOMECOMING_TIMING.entering - 1);
   assert.equal(sequence.snapshot().stage, 'entering');
   sequence.advance(1);
   assert.equal(sequence.snapshot().stage, 'reacting');
+  assert.equal(sequence.confirm(), false);
   assert.equal(sequence.snapshot().animationKey, SARA_ANIMATIONS.annoyed);
   sequence.advance(HOMECOMING_TIMING.reacting - 1);
   assert.equal(sequence.snapshot().stage, 'reacting');
   sequence.advance(1);
   assert.equal(sequence.snapshot().stage, 'dialogue');
-  sequence.advance(HOMECOMING_TIMING.dialogue - 1);
-  assert.equal(sequence.snapshot().stage, 'dialogue');
-  assert.equal(sequence.advance(1), true);
+  const dialogue = sequence.snapshot();
+
+  sequence.advance(3_600_000);
+  assert.deepEqual(sequence.snapshot(), dialogue, 'Reading time never confirms a text');
+  assert.equal(sequence.confirm(), true);
   const complete = sequence.snapshot();
 
   assert.equal(complete.stage, 'complete');
   assert.equal(complete.animationKey, SARA_ANIMATIONS.idle);
   assert.deepEqual(complete.selection, selected);
   assert.equal(Object.isFrozen(complete), true);
-  assert.equal(sequence.advance(5000), false);
+  sequence.advance(5000);
+  assert.equal(sequence.confirm(), false);
   assert.deepEqual(sequence.snapshot(), complete);
 });
 
 // eslint-disable-next-line max-lines-per-function -- Ungültige Schritte, großer gültiger Schritt und frischer Lifecycle-Zustand gehören zum gleichen Zeitvertrag.
-test('Ungültige Deltas verändern nichts; große Schritte schließen einmalig ab', () => {
+test('Ungültige Deltas verändern nichts; große Schritte überspringen die Bestätigung nicht', () => {
   const sequence = new HomecomingSequence();
 
   sequence.start(60, () => 0);
   const before = sequence.snapshot();
 
-  for (const delta of [-1, 0, NaN, Infinity]) assert.equal(sequence.advance(delta), false);
+  for (const delta of [-1, 0, NaN, Infinity]) sequence.advance(delta);
   assert.deepEqual(sequence.snapshot(), before);
-  assert.equal(sequence.advance(100_000), true);
-  assert.equal(sequence.advance(100_000), false);
+  sequence.advance(100_000);
+  assert.equal(sequence.snapshot().stage, 'dialogue');
+  assert.equal(sequence.confirm(), true);
+  sequence.advance(100_000);
+  assert.equal(sequence.confirm(), false);
   assert.equal(new HomecomingSequence().snapshot().selection, null);
   assert.equal(new HomecomingSequence().snapshot().elapsedMs, 0);
 });

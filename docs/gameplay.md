@@ -16,22 +16,27 @@ nachgeholt. Uhr und Physik verwenden denselben bereinigten Zeitschritt.
 
 Am Ende des letzten zulässigen Frames werden Physik-/Schadensereignisse und
 Interaktionen noch verarbeitet. Anschließend wechselt die Runde genau einmal von
-`chaos` nach `returning` und sichert den finalen Chaosstand. Physik, Steuerung,
-weitere Schäden und Pixels Animation bleiben stehen. Sara tritt durch eine vorläufig
+`chaos` nach `returning` und sichert den finalen Chaosstand. Spielersteuerung, weitere Schäden und die übrigen dynamischen Objekte bleiben
+stehen. Pixel läuft mit seiner normalen Physik automatisch zu Sara, steigt dabei
+von Möbeln herunter und setzt sich links neben sie. Sara tritt durch eine vorläufig
 dargestellte Tür ein und schaut sich das Zimmer an. Die Reaktion nutzt einmalig den
 eingefrorenen Score: **0–24** skeptisch/gelassen, **25–59** genervt und **ab 60**
 fassungslos/verärgert. Es gelten dieselben zentralen Ärgergrenzen wie im HUD.
 
 Der Eintritt dauert 1,2 Sekunden, der Reaktionsmoment 0,9 Sekunden. Danach erscheint
-für 3,6 Sekunden ein zufällig gewählter trockener Kommentar; pro Stufe gibt es drei
-Varianten. Auch dieser Ablauf pausiert bei Fokusverlust oder verstecktem Tab. Danach
+ein zufällig gewählter trockener Kommentar; pro Stufe gibt es drei Varianten. Er
+bleibt ohne Zeitlimit sichtbar. Sobald Pixel sitzt, bestätigt ein neuer Druck auf
+die Leertaste den Text; gehaltene Tasten überspringen ihn nicht. Auch dieser Ablauf
+pausiert bei Fokusverlust oder verstecktem Tab. Nach der Bestätigung
 wechselt die Runde einmalig in `reconciliation`: **„Versöhnung · Fortsetzung folgt“**
 ist der erkennbare Platzhalter, noch keine spielbare Versöhnung. Weitere Punkte und
-Bewegung bleiben während und nach der Sequenz gesperrt.
+manuelle Bewegung bleiben während und nach der Sequenz gesperrt.
 
-Saras Figur, Tür und Reaktionsdarstellung sind bewusst vorläufige Formen. Fertige
-Chibi-Sprites und Animationen folgen separat in #88; die bestätigte Referenz wird
-hier noch nicht als fertige Animation verwendet.
+Sara erscheint als animierte Chibi-Figur mit Brille, lockerem Pferdeschwanz und
+dunklem Hoodie. Eintritt und Idle laufen als Schleifen; die drei Reaktionen werden
+jeweils einmal abgespielt und halten dann ihre Endpose bis zum nächsten Zustand.
+Alle Posen verwenden eine gemeinsame Palette und denselben Fußanker. Die Tür
+bleibt eine einfache Raumdarstellung; die Versöhnung ist weiterhin ein Platzhalter.
 
 **R** startet auch nach der Heimkehr eine vollständig neue Runde einschließlich
 neuer Zufallsauswahl, Zeit, Punkten, Schäden, Eingaben, Sara-Sequenz und HUD. Derselbe zufällig
@@ -107,6 +112,13 @@ Die Animation folgt der vorhandenen Physik. Neue Bewegung unterbricht die Landep
 ### Animationen direkt vergleichen
 
 Bei laufendem Entwicklungsserver öffnet [Animationsvergleich](http://127.0.0.1:5173/animation-compare.html) eine separate Arbeitsansicht. Jede Pose steht neben dem bestätigten Idle-Master auf derselben Pfotenlinie. Pause, Einzelschritt und Größenregler helfen beim Beurteilen; die Regler ändern ausschließlich die Vorschau. Andere Posen lassen sich je Karte auswählen. Die Ansicht verwendet dasselbe Sheet und dieselben Größen wie das Spiel, ist ausdrücklich nur im Dev-Betrieb erlaubt. `vite.config.ts` baut ausschließlich die Spielseite; E2E- und Produktionsvorschau liefern für die Vergleichsseite und ihre Quelldateien 404 statt einer SPA-Weiterleitung. Eine zusätzliche Laufzeitprüfung verhindert den Start außerhalb von `import.meta.env.DEV`.
+
+Unter den Pixel-Karten stehen Saras fünf Zustände: Idle/Blinzeln, Hereinkommen und
+die drei Reaktionen. Jede Karte zeigt Saras bestätigte Idle-Silhouette, Pixel im
+Spielmaßstab und die auswählbare animierte Pose. Es gelten dieselben 64×96-Zellen,
+der Faktor 2, die gemeinsame Fußlinie und die Clip-Geschwindigkeiten wie im Spiel.
+Pause und Einzelschritt steuern beide Figuren gemeinsam. Nur diese Arbeitsansicht
+wiederholt auch einmalige Reaktionen zur Kontrolle. [Assetvertrag und Prompts](../assets/sara/README.md).
 
 ## Raum und Content
 

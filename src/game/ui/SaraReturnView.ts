@@ -1,15 +1,15 @@
 import type Phaser from 'phaser';
 import type { HomecomingSnapshot, SaraAnimation } from '../domain/homecoming';
 import { SARA_ANIMATIONS } from '../../content/sara-reactions';
+import { SARA_CLIPS, SARA_SPRITE } from '../actors/sara-animations';
+import { homecomingPositions } from '../content/homecoming-layout';
 
 const REACTION_LABELS = { calm: 'Skeptischer Blick', annoyed: 'Genervtes Seufzen', angry: '…' };
-const REACTION_FACES = { calm: '–', annoyed: 'Hm.', angry: '!?' };
 
-/** Temporary shapes behind the semantic animation contract; final artwork belongs to #88. */
+/** Scene-owned sprite and dialogue view; selection and timing stay in the domain. */
 export class SaraReturnView {
   private readonly root: Phaser.GameObjects.Container;
-  private readonly actor: Phaser.GameObjects.Container;
-  private readonly face: Phaser.GameObjects.Text;
+  private readonly actor: Phaser.GameObjects.Sprite;
   private readonly message: Phaser.GameObjects.Text;
   private key: SaraAnimation = SARA_ANIMATIONS.idle;
 
@@ -24,8 +24,6 @@ export class SaraReturnView {
     const knob = scene.add.circle(width - 57, floorY - 64, 4, 0xe4c182);
 
     this.actor = this.buildActor();
-    this.face = scene.add.text(-12, -99, '–', this.textStyle(12));
-    this.actor.add(this.face);
     const panel = scene.add.rectangle(width / 2, 188, width - 80, 112, 0x403a35, 0.96);
 
     panel.setStrokeStyle(2, 0xd4b488);
@@ -37,43 +35,52 @@ export class SaraReturnView {
     this.root.add([door, knob, this.actor, panel, this.message]);
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Die vorläufige Figurenzeichnung bleibt als ein deklarativer Aufbau lesbar und wird durch #88 ersetzt.
   private buildActor() {
-    const s = this.scene;
-    const actor = s.add.container(this.layout.width + 32, this.layout.floorY);
+    registerAnimations(this.scene);
 
-    actor.add([
-      s.add.rectangle(-10, -17, 14, 34, 0x302e31),
-      s.add.rectangle(10, -17, 14, 34, 0x302e31),
-      s.add.rectangle(0, -57, 42, 50, 0x414044),
-      s.add.rectangle(21, -92, 12, 43, 0xdab676),
-      s.add.rectangle(0, -101, 36, 32, 0xe6af84),
-      s.add.rectangle(0, -119, 38, 10, 0xdab676),
-      s.add.rectangle(-13, -106, 10, 9, 0x25242a),
-      s.add.rectangle(0, -106, 10, 9, 0x25242a),
-      s.add.text(-20, -145, 'Sara', this.textStyle(12)),
-    ]);
-
-    return actor;
+    return this.scene.add
+      .sprite(this.layout.width + 32, this.layout.floorY, 'sara', 0)
+      .setOrigin(SARA_SPRITE.origin.x, SARA_SPRITE.origin.y)
+      .setScale(SARA_SPRITE.scale)
+      .play(SARA_ANIMATIONS.idle);
   }
 
-  render(snapshot: HomecomingSnapshot) {
+  render(snapshot: HomecomingSnapshot, canContinue = false) {
+    const positions = homecomingPositions(this.layout.width);
+
     this.root.setVisible(snapshot.stage !== 'waiting');
-    this.key = snapshot.animationKey;
-    this.actor.x = this.layout.width + 32 - snapshot.entryProgress * 146;
-    this.face.setText(snapshot.selection ? REACTION_FACES[snapshot.selection.anger] : '–');
-    this.message.setText(messageFor(snapshot));
+    this.play(snapshot.animationKey);
+    this.actor.x =
+      positions.saraStartX + snapshot.entryProgress * (positions.saraEndX - positions.saraStartX);
+    this.message.setText(messageFor(snapshot, canContinue));
+  }
+
+  private play(key: SaraAnimation) {
+    if (key === this.key) return;
+    this.key = key;
+    this.actor.play(key);
+  }
+
+  setPaused(paused: boolean) {
+    if (paused) this.actor.anims.pause();
+    else this.actor.anims.resume();
   }
 
   private textStyle(size: number) {
     return { fontFamily: 'monospace', fontSize: `${size}px`, color: '#fff1cf' };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der flache nur lesbare Darstellungsvertrag enthält Anker, Textur und den tatsächlichen Animationsframe.
   snapshot() {
     return {
       visible: this.root.visible,
       animationKey: this.key,
       x: this.actor.x,
+      soleY: this.actor.y,
+      texture: this.actor.texture.key,
+      frame: Number(this.actor.frame.name),
+      displayHeight: this.actor.displayHeight,
+      originY: this.actor.originY,
       dialogueText: this.message.text,
     };
   }
@@ -83,14 +90,33 @@ export class SaraReturnView {
   }
 }
 
-function messageFor(snapshot: HomecomingSnapshot) {
+// eslint-disable-next-line max-lines-per-function -- Die fünf Clips werden mit ihren zusammengehörigen Frames, Geschwindigkeiten und Wiederholungen registriert.
+function registerAnimations(scene: Phaser.Scene) {
+  for (const [key, clip] of Object.entries(SARA_CLIPS)) {
+    if (scene.anims.exists(key)) continue;
+    scene.anims.create({
+      key,
+      frames: clip.frames.map((frame) => ({ key: 'sara', frame })),
+      frameRate: clip.frameRate,
+      repeat: clip.repeat,
+    });
+  }
+}
+
+function messageFor(snapshot: HomecomingSnapshot, canContinue: boolean) {
   if (snapshot.stage === 'waiting') return '';
 
   if (snapshot.stage === 'entering') return 'SARA\nDie Tür geht auf …';
 
   if (snapshot.stage === 'complete') return 'VERSÖHNUNG\nFortsetzung folgt · R: Neue Runde';
 
-  if (snapshot.stage === 'dialogue') return `SARA\n${snapshot.selection?.dialogue ?? ''}`;
+  if (snapshot.stage === 'dialogue') return dialogueMessage(snapshot, canContinue);
 
   return `SARA\n${snapshot.selection ? REACTION_LABELS[snapshot.selection.anger] : ''}`;
+}
+
+function dialogueMessage(snapshot: HomecomingSnapshot, canContinue: boolean) {
+  const cue = canContinue ? 'LEERTASTE: Weiter' : 'Pixel kommt zu Sara …';
+
+  return `SARA\n${snapshot.selection?.dialogue ?? ''}\n${cue}`;
 }

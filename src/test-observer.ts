@@ -13,6 +13,7 @@ export function installTestObserver(read: () => GameTestState) {
         ...state,
         round: Object.freeze(state.round),
         homecoming: Object.freeze(state.homecoming),
+        pixelReturn: Object.freeze(state.pixelReturn),
         sara: Object.freeze(state.sara),
         room: Object.freeze(state.room),
         camera: Object.freeze(state.camera),

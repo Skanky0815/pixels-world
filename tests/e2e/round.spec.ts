@@ -2,6 +2,7 @@ import { test, expect, state, start, until, reset, besideCouch } from './support
 import { advanceRoundTo, seedRoundRandom, useIdleFrames } from './round-clock';
 import { FAST_ROUND_CONFIG } from '../../tools/e2e-timing';
 import { ROUND_CONFIG } from '../../src/game/domain/round-controller';
+import { SARA_CLIPS } from '../../src/game/actors/sara-animations';
 
 const fullRound = process.env.E2E_FULL_ROUND === '1';
 const timing = fullRound ? ROUND_CONFIG : FAST_ROUND_CONFIG;
@@ -44,13 +45,19 @@ test(
     expect(finished.homecoming.selection?.score).toBe(finished.round.finalChaosScore);
     expect(finished.sara.visible).toBe(true);
     expect(finished.sara.animationKey).toBe('sara-enter');
+    expect(finished.sara.texture).toBe('sara');
+    expect(SARA_CLIPS['sara-enter'].frames).toContain(finished.sara.frame);
+    expect(finished.sara.soleY).toBe(468);
+    expect(finished.sara.originY).toBe(90 / 96);
+    expect(finished.sara.displayHeight).toBe(192);
     expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.round))).toBe(true);
     await page.keyboard.down('ArrowRight');
     await page.keyboard.down('Space');
     await page.clock.runFor(2000);
     const later = await state(page);
 
-    expect(later.pixel).toEqual(finished.pixel);
+    expect(later.pixel.x).toBeGreaterThan(finished.pixel.x);
+    expect(later.pixelReturn.stage).toBe('walking');
     expect(later.chaos).toEqual(finished.chaos);
     expect(later.objects).toEqual(finished.objects);
     expect(later.round).toEqual({ ...finished.round, phase: 'reaction' });
@@ -64,10 +71,13 @@ test(
     await page.clock.runFor(10_000);
     expect((await state(page)).homecoming).toEqual(paused.homecoming);
     expect((await state(page)).sara).toEqual(paused.sara);
+    expect((await state(page)).pixel).toEqual(paused.pixel);
+    expect((await state(page)).pixelReturn).toEqual(paused.pixelReturn);
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
     await until(page, (s) => s.homecoming.stage === 'dialogue');
     const dialogue = await state(page);
 
+    expect(dialogue.sara.frame).toBe(SARA_CLIPS[dialogue.sara.animationKey].frames.at(-1));
     expect(dialogue.sara.dialogueText).toContain(finished.homecoming.selection?.dialogue);
     await test.info().attach('sara-dialogue', {
       body: await page.screenshot(),
@@ -76,8 +86,23 @@ test(
     expect(
       await page.evaluate(() => Object.isFrozen(window.__pixelTest?.homecoming.selection)),
     ).toBe(true);
-    await page.clock.runFor(4000);
-    await until(page, (s) => s.homecoming.stage === 'complete');
+    await until(page, (s) => s.pixelReturn.stage === 'seated', 500);
+    const seated = await state(page);
+
+    expect(Math.abs(seated.pixel.x - (seated.sara.x - 64))).toBeLessThanOrEqual(4);
+    expect(seated.pixel.bottom).toBeCloseTo(468, 0);
+    expect(seated.pixel.animation).toBe('idle');
+    expect(seated.pixel.flipX).toBe(false);
+    expect(seated.sara.dialogueText).toContain('LEERTASTE: Weiter');
+    await page.clock.runFor(10_000);
+    expect((await state(page)).homecoming).toEqual(seated.homecoming);
+    await page.keyboard.down('Space');
+    await page.clock.runFor(200);
+    expect((await state(page)).homecoming.stage).toBe('dialogue');
+    await page.keyboard.up('Space');
+    await page.keyboard.down('Space');
+    await until(page, (s) => s.homecoming.stage === 'complete', 100);
+    await page.keyboard.up('Space');
     const complete = await state(page);
 
     expect(complete.round.phase).toBe('reconciliation');
@@ -89,7 +114,10 @@ test(
       body: await page.screenshot(),
       contentType: 'image/png',
     });
-    expect(complete.pixel).toEqual(finished.pixel);
+    expect(complete.pixel.x).toBeCloseTo(seated.pixel.x, 1);
+    expect(complete.pixel.bottom).toBeCloseTo(468, 0);
+    expect(complete.pixel.velocityX).toBe(0);
+    expect(complete.pixel.velocityY).toBe(0);
     expect(complete.chaos).toEqual(finished.chaos);
     expect(complete.objects).toEqual(finished.objects);
     await page.clock.runFor(2000);
@@ -108,6 +136,7 @@ test(
     expect(fresh.homecoming.stage).toBe('waiting');
     expect(fresh.homecoming.selection).toBeNull();
     expect(fresh.homecoming.elapsedMs).toBe(0);
+    expect(fresh.pixelReturn.stage).toBe('waiting');
     expect(fresh.sara.visible).toBe(false);
     expect(fresh.sara.dialogueText).toBe('');
   },

@@ -1,0 +1,132 @@
+{
+  "frameWidth": 64,
+  "frameHeight": 96,
+  "columns": 6,
+  "frames": 12,
+  "scale": 2,
+  "origin": {
+    "x": 0.5,
+    "y": 0.9375
+  },
+  "soleRow": 89,
+  "sourceScale": 0.1935483870967742,
+  "horizontalShift": -4,
+  "sourceBounds": [
+    {
+      "left": 65,
+      "right": 256,
+      "top": 83,
+      "bottom": 392,
+      "center": 147.5
+    },
+    {
+      "left": 361,
+      "right": 552,
+      "top": 83,
+      "bottom": 392,
+      "center": 443
+    },
+    {
+      "left": 657,
+      "right": 847,
+      "top": 83,
+      "bottom": 392,
+      "center": 739
+    },
+    {
+      "left": 952,
+      "right": 1143,
+      "top": 83,
+      "bottom": 392,
+      "center": 1034.5
+    },
+    {
+      "left": 1248,
+      "right": 1439,
+      "top": 83,
+      "bottom": 392,
+      "center": 1330
+    },
+    {
+      "left": 1544,
+      "right": 1734,
+      "top": 83,
+      "bottom": 392,
+      "center": 1626
+    },
+    {
+      "left": 58,
+      "right": 256,
+      "top": 520,
+      "bottom": 836,
+      "center": 147.5
+    },
+    {
+      "left": 362,
+      "right": 551,
+      "top": 531,
+      "bottom": 836,
+      "center": 443
+    },
+    {
+      "left": 657,
+      "right": 847,
+      "top": 526,
+      "bottom": 836,
+      "center": 739
+    },
+    {
+      "left": 930,
+      "right": 1144,
+      "top": 525,
+      "bottom": 836,
+      "center": 1034.5
+    },
+    {
+      "left": 1247,
+      "right": 1439,
+      "top": 526,
+      "bottom": 836,
+      "center": 1330
+    },
+    {
+      "left": 1546,
+      "right": 1738,
+      "top": 526,
+      "bottom": 836,
+      "center": 1626
+    }
+  ],
+  "alphaThreshold": 192,
+  "alpha": [
+    0,
+    255
+  ],
+  "palette": [
+    "161315",
+    "29272c",
+    "3b383f",
+    "514d54",
+    "69636a",
+    "89818a",
+    "3c2923",
+    "644435",
+    "8a634a",
+    "b88a56",
+    "dab273",
+    "f2cb85",
+    "ffe2a4",
+    "aa6d51",
+    "d08d67",
+    "edaf83",
+    "ffd0a1",
+    "465931",
+    "75854b",
+    "acb375",
+    "f7ebce",
+    "9b7666",
+    "c5a58a",
+    "e2c4a2"
+  ],
+  "canonicalIdle": "reference-v4/sara-idle-left-v4.png; identical silhouette, shared palette mapping"
+}

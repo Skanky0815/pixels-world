@@ -2,6 +2,7 @@ export interface InputState {
   readonly horizontal: number;
   readonly vertical: number;
   readonly jumpPressed: boolean;
+  readonly confirmPressed: boolean;
   readonly resetPressed: boolean;
   readonly active: boolean;
 }

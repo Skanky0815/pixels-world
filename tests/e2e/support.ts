@@ -70,12 +70,12 @@ async function start(page: Page, path = '/') {
 }
 
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
-async function until(page: Page, check: (s: RoomTestState) => boolean) {
+async function until(page: Page, check: (s: RoomTestState) => boolean, stepMs = 32) {
   await expect
     .poll(
       async () => {
         // Real keyboard input, deterministic simulation steps: runner latency must not hold a key longer.
-        await page.clock.runFor(32);
+        await page.clock.runFor(stepMs);
         const snapshot = await state(page);
 
         return check(snapshot) ? { matched: true } : { matched: false, snapshot };

@@ -23,23 +23,27 @@ reconciliation`. Verfrühte oder wiederholte Phasenwechsel werden zurückgewiese
 der finale Score und die Rundenuhr bleiben nach der Heimkehr unverändert.
 
 `HomecomingSequence` ist ein reines Modell für Eintritt, Reaktionsmoment, Dialog und
-einmaligen Abschluss. `selectReaction` verwendet ausschließlich die zentralen
+einmaligen Abschluss durch explizite Bestätigung. Der Dialog hat kein Zeitlimit. `selectReaction` verwendet ausschließlich die zentralen
 `angerFor`-Grenzen; Dialoge und semantische Animations-Keys stehen in
 `src/content/sara-reactions.ts`. Die Zufallsquelle ist injizierbar und wird nur beim
 ersten Start ausgewertet. Snapshots und Auswahl sind eingefroren.
 
 Die Szene gibt der Sequenz dieselbe bereinigte aktive Framezeit wie zuvor der Runde.
 Sie besitzt Darstellung und Übergabe an die Versöhnung. `SaraReturnView` rendert
-Eintrittsbewegung, Reaktionsformen und Dialogpanel ohne eigene Timer oder Tweens;
+Eintrittsbewegung, animiertes Sprite und Dialogpanel ohne eigene Timer oder Tweens;
 das pausierte Gameplay hält deshalb Saras aktive Sequenz nicht an. Browserpause
 stoppt dagegen auch diese Sequenz. Es existieren keine verzögerten Callbacks, die
 nach R einen alten Ablauf fortsetzen könnten. Neustart erzeugt Modell und Ansicht neu.
 
 Der Vertrag für #88 reserviert `sara-enter`, `sara-idle`, `sara-react-calm`,
 `sara-react-annoyed` und `sara-react-angry`. Die Domain kennt weder Phaser noch
-Sprite-Dateien. Die vorläufige Ansicht interpretiert die Keys als Formen; #88 bindet
-die freigegebenen Frames an diese Zustände. Abweichungen bei der finalen Asset-Abnahme
-müssen gemeinsam in Content, Ansicht und Tests angepasst werden. Die Versöhnung ist
+Sprite-Dateien. Die Ansicht registriert die Clips aus `sara-animations.ts` als normale
+Phaser-Animationen und wechselt sie nur bei einem neuen Key. Einmalige Reaktionen
+werden dadurch nach ihrem Abschluss nicht pro Frame neu gestartet. Browsersichtbarkeit
+pausiert den tatsächlichen Animationszustand unabhängig vom bereits eingefrorenen
+Gameplay. Das Sprite verwendet den gemeinsamen Sohlenanker, hat keinen Physikkörper
+und wird beim Scene-Shutdown mit der Ansicht entfernt. Derselbe Clipvertrag steuert
+auch die nur im Dev-Betrieb verfügbare Größenvergleichsseite. Die Versöhnung ist
 bis zum eigenen Ticket nur eine sichtbare Endphase, ohne zusätzliche Spielmechanik.
 
 `PlayActivity` kapselt Fensterfokus und Document-Visibility. Beim Wechsel pausiert die
@@ -169,3 +173,15 @@ Umsetzung: [#37](https://github.com/Skanky0815/pixels-world/issues/37), [#38](ht
 `RoomDefinition` und diskriminierte `ObjectDefinition` liegen unter `src/game/content/`. `src/content/rooms/` und `src/content/objects/` liefern ausschließlich Daten. Die Szene enthält keine festen Objektlisten oder Hintergrundkoordinaten mehr; sie verbindet die erzeugten Adapter und verarbeitet ihre Ergebnisse. Instanz-IDs, Varianten, Assets, Fähigkeiten, Geometrie, sichere Punktwerte und Flächenreferenzen werden vor `Phaser.Game` geprüft. Der Resolver ist unabhängig von Phaser ausführbar; Engine-Typen werden nur für die strukturellen Konstruktor-Konfigurationen importiert und zur Laufzeit entfernt.
 
 Eine zweite handgebaute Raumvariante verändert Platzierung und Werte ohne neue Spielklassen. Sie ist über einen Dev-/E2E-Vorschauparameter wählbar; die Produktion bleibt beim bisherigen Standardraum. Der spätere Generator liefert denselben Raumvertrag, kein paralleles Format. Details: [Content-Leitfaden](../../src/content/README.md).
+
+## Automatische Heimkehr
+
+`PixelReturnController` erzeugt reine Bewegungseingaben aus losgelösten Kontaktdaten.
+Er führt Pixel über die Kante einer tragenden Plattform zum Boden und zum gemeinsamen
+Sitzanker aus `homecoming-layout.ts`; er verändert keine Physikkörper direkt.
+Die Szene deaktiviert nach Rundenende die übrigen dynamischen Körper und lässt nur
+Pixels normale Arcade-Bewegung weiterlaufen. Interaktionen und Punkte bleiben gesperrt.
+Nach dem Hinsetzen pausiert die Physikwelt. Pixels Animation bleibt bis zur
+Browserpause aktiv. Die Bewegungszeit läuft unabhängig vom wartenden Dialog weiter.
+`confirmPressed` nutzt eine neue Leertastenflanke ohne native Tastenwiederholung und
+bestätigt erst nach dem Hinsetzen. Fokusverlust und R behandeln auch diese Phase.
