@@ -40,7 +40,7 @@ test(
     expect(finished.round.phase).toBe('returning');
     expect(finished.round.finalChaosScore).toBe(finished.chaos.score);
     expect(finished.chaos.score).toBeGreaterThan(0);
-    expect(finished.hud.roundText).toBe('Sara kommt herein … · R: Neue Runde');
+    expect(finished.hud.roundText).toBe('Sara kommt herein …');
     expect(finished.homecoming.stage).toBe('entering');
     expect(finished.homecoming.selection?.score).toBe(finished.round.finalChaosScore);
     expect(finished.sara.visible).toBe(true);

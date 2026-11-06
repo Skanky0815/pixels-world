@@ -8,23 +8,22 @@ import {
   type TextKey,
 } from './locale';
 
-const label = document.createElement('label');
+const picker = document.createElement('div');
 
-label.className = 'language-setting';
-label.innerHTML =
-  '<span data-i18n="language"></span><select id="language" aria-label="Sprache"><option value="de">Deutsch</option><option value="en">English</option></select>';
-document.querySelector('header')?.append(label);
-const select = requiredSelect();
+picker.className = 'language-setting';
+picker.setAttribute('role', 'group');
+picker.innerHTML =
+  '<button type="button" data-language="de" aria-label="Deutsch" lang="de">DE</button><span aria-hidden="true">/</span><button type="button" data-language="en" aria-label="English" lang="en">EN</button>';
+document.querySelector('header')?.append(picker);
+picker.addEventListener('click', (event) => {
+  const button =
+    event.target instanceof Element
+      ? event.target.closest<HTMLButtonElement>('[data-language]')
+      : null;
+  const next = button?.dataset.language;
 
-function requiredSelect() {
-  const node = label.querySelector('select');
-
-  if (!node) throw new Error('Language select missing');
-
-  return node;
-}
-
-select.addEventListener('change', () => setLanguage(select.value === 'en' ? 'en' : 'de'));
+  if ((next === 'de' || next === 'en') && next !== currentLanguage()) setLanguage(next);
+});
 onLanguageChange(refresh);
 restoreLanguage();
 
@@ -37,8 +36,14 @@ function refresh() {
 
   for (const node of Array.from(document.querySelectorAll<HTMLElement>('[data-i18n-title]')))
     node.title = t(node.dataset.i18nTitle as TextKey);
-  select.value = currentLanguage();
-  select.setAttribute('aria-label', t('language'));
+  refreshButtons();
+}
+
+function refreshButtons() {
+  picker.setAttribute('aria-label', t('language'));
+
+  for (const button of Array.from(picker.querySelectorAll<HTMLButtonElement>('button')))
+    button.setAttribute('aria-pressed', String(button.dataset.language === currentLanguage()));
 }
 
 if (import.meta.env.DEV) {

@@ -170,7 +170,7 @@ function affectionText(s: ReconciliationSnapshot) {
 }
 
 function isHint(line: string) {
-  return line.startsWith(t('space')) || line.startsWith('R:');
+  return line.startsWith(t('space')) || line.startsWith(t('rNewRound'));
 }
 
 function quotedLine(line: string | undefined) {

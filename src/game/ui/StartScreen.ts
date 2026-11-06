@@ -74,7 +74,6 @@ function introMarkup() {
       <div><dt>← →</dt><dd>${t('moveAndSteerInMidAir')}</dd></div>
       <div><dt>${t('spaceLabel')}</dt><dd>${t('jumpAndLeapOffTheCurtain')}</dd></div>
       <div><dt>↑ ↓</dt><dd>${t('climbTheCurtain')}</dd></div>
-      <div><dt>R</dt><dd>${t('restartTheRound')}</dd></div>
     </dl>
     <p>${t('makingAmendsPressTheBigArrow')}</p>
     <p class="touch-prompt">${t('theArrowsMovePixelAndGuide')}</p>

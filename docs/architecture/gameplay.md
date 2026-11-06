@@ -321,6 +321,11 @@ Ein zentraler Sprachwechsel benachrichtigt die Ansichten, ohne Physik oder
 Domain-Timer weiterzuschalten. Die Szene rendert vorhandene Snapshots erneut;
 Einführung und Touch-Adapter aktualisieren ihre Texte und räumen ihre
 Abonnements beim Shutdown auf. Nur die lokale Sprachwahl wird gespeichert.
-Rechtsseiten bleiben als deutsche Rechtstexte erhalten und sind auf Englisch
-entsprechend als deutschsprachig gekennzeichnet. Entwicklerwerkzeuge,
-technische Fehlermeldungen, Eigennamen und Tastensymbole sind ausgenommen.
+Rechtsseiten bleiben als deutsche Rechtstexte erhalten. Entwicklerwerkzeuge,
+technische Fehlermeldungen, Eigennamen, englische Markenslogans und Tastensymbole
+sind ausgenommen.
+
+Die kompakte Sprachwahl verwendet DE-/EN-Buttons mit markierter aktiver Sprache.
+Die englischen Markenslogans bleiben in beiden Sprachen unverändert. R bleibt
+als versteckte Debug-Eingabe erhalten; Hinweise darauf sind aus der Spiel-UI
+entfernt. „Neue Runde“ am Ergebnis funktioniert mit Touch und Maus.
