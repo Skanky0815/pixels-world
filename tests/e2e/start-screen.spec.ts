@@ -16,7 +16,6 @@ test('Einführung zeigt README-Banner; vor dem Start bleiben Uhr, Schäden und P
     'Lieblingsball',
   );
   await expect(intro.locator('.start-goal-text')).toContainText('1,2 Sekunden');
-  await expect(intro.locator('.start-goal')).toContainText('Sara kommt vorzeitig');
   await page.keyboard.down('ArrowRight');
   await page.keyboard.down('ArrowUp');
   await page.keyboard.down('r');

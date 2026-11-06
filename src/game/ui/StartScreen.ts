@@ -51,8 +51,6 @@ function introMarkup() {
     <aside class="start-goal" aria-label="Dein Hauptziel">
       <strong>Dein Hauptziel</strong>
       <p class="start-goal-text"></p>
-      <p>Ziel erreicht? Sara kommt vorzeitig nach Hause. Sonst kommt sie, wenn die Zeit abläuft.
-      Chaos ist keine Voraussetzung.</p>
     </aside>
     <dl>
       <div><dt>← →</dt><dd>Laufen und im Sprung steuern</dd></div>

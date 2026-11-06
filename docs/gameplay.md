@@ -197,7 +197,7 @@ den Link regulär; nach der Rückkehr ins Zimmer geht die Runde weiter.
 
 Pixel will spielen: Auf dem obersten Regal ganz rechts liegt ein goldener Ball
 mit Sternmarkierung. Ein eigener Zielkasten auf der Startseite erklärt Position,
-Kontaktzeit und vorzeitige Heimkehr aus derselben Raumdefinition. Erreiche ihn über den Vorhang und bleib auf seiner Auflage
+Kontaktzeit aus derselben Raumdefinition, ohne Saras überraschende Rückkehr vorwegzunehmen. Erreiche ihn über den Vorhang und bleib auf seiner Auflage
 **1,2 Sekunden ohne Eingabe** stehen. Weglaufen, Springen oder Klettern bricht
 die Interaktion ab und setzt den Teilfortschritt zurück. Ein kurzer Hinweis
 zeigt Ziel und Fortschritt; es gibt genau ein Ziel und keine Bedürfnisbalken.
