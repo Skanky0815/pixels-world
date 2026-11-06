@@ -1,6 +1,6 @@
 # E2E-Laufzeit: vier Shards (#124)
 
-Vollständige manuelle und Release-QA verteilt die vorhandenen 48 Browser-Szenarien
+Vollständige manuelle und Release-QA verteilt die vorhandenen 56 Browser-Szenarien
 auf vier unabhängige Runner statt zwei. Ein Worker pro Runner bleibt erhalten: Phaser/Chromium nutzt Software-Rendering,
 und zusätzliche Worker auf derselben Maschine können um CPU konkurrieren. Lokal
 bleibt es bei zwei Workern. `fullyParallel: true` verteilt weiterhin einzelne Tests.
@@ -15,7 +15,7 @@ Die Release-Vereinfachung #122/#123 ist ein getrennter PR.
 
 Die folgende Messung betrifft komplette Suites. Mehr Shards reduzieren deren
 Wartezeit, nicht deren Runner-Verbrauch. Deshalb gilt vor dem Phase-2-Release:
-Lokal alle Szenarien mit `npm run check:pr`, PR-CI nur drei `@smoke`-Szenarien auf
+Lokal alle Szenarien mit `npm run check:pr`, PR-CI vier `@smoke`-Szenarien auf
 einem Runner, Main-CI keine Browsertests. Die vier Shards bleiben für vollständige
 manuelle und Release-Prüfungen. Qualitäts-/Unit-Tests und Release-Gates bleiben
 aktiv. Tatsächliche Kosten hängen auch von GitHub-Tarif und Abrechnung ab; es werden

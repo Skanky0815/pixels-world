@@ -52,7 +52,7 @@ npm run test:e2e:report             # Letzten HTML-Bericht öffnen
 
 Auf Linux bei Bedarf einmal `npx playwright install --with-deps chromium` ausführen. CI führt jeden Test normalerweise einmal ohne automatische Retries aus; zusätzliche Durchläufe sind manuell wählbar, installiert Chromium samt Systemabhängigkeiten und speichert den HTML-Bericht sowie Screenshots/Traces fehlgeschlagener Tests für 14 Tage getrennt je Teil-Suite als `playwright-results-1` bis `playwright-results-4`. Ein Trace lässt sich mit `npx playwright show-trace <pfad-zur-trace.zip>` öffnen.
 
-Lokal laufen Tests isoliert mit zwei Workern, auch innerhalb derselben Testdatei, und geben Tasten im Cleanup frei. PR-CI prüft nur die drei `@smoke`-Szenarien auf einem Runner. Main-CI startet keine Browserjobs. Manuelle QA und Release-Rollout verteilen die vollständige Suite mit Playwrights `--shard=1/4` bis `--shard=4/4` auf vier unabhängige Runner mit je einem Worker. `fullyParallel` erlaubt die Aufteilung einzelner Tests statt ganzer Dateien. Der Gesamtcheck **Playwright (Chromium)** verlangt Quality und alle geplanten Browserjobs. Nur auf Main zählt das ausdrücklich geplante Auslassen des Browserjobs als Erfolg; bei PR/Release zählt Überspringen, Fehler oder Abbruch nicht als Erfolg; ein Fehler bricht die anderen Teil-Suites nicht vorzeitig ab. Jeder Test besitzt seinen eigenen Browser-Kontext und seine eigene pausierte Uhr; die statischen Vorschau-Server werden gemeinsam genutzt. Ein Worker je CI-Runner vermeidet Konkurrenz beim Software-Rendering; zwei lokale Worker nutzen die lokale Hardware. Bei knappen Ressourcen lässt sich mit `--workers=1` seriell ausführen; `--workers=N` überschreibt die Vorgabe auch in CI. Testabdeckung und null automatische Retries bleiben erhalten; zusätzliche Durchläufe lassen sich manuell wählen.
+Lokal laufen Tests isoliert mit zwei Workern, auch innerhalb derselben Testdatei, und geben Tasten im Cleanup frei. PR-CI prüft nur die vier `@smoke`-Szenarien auf einem Runner. Main-CI startet keine Browserjobs. Manuelle QA und Release-Rollout verteilen die vollständige Suite mit Playwrights `--shard=1/4` bis `--shard=4/4` auf vier unabhängige Runner mit je einem Worker. `fullyParallel` erlaubt die Aufteilung einzelner Tests statt ganzer Dateien. Der Gesamtcheck **Playwright (Chromium)** verlangt Quality und alle geplanten Browserjobs. Nur auf Main zählt das ausdrücklich geplante Auslassen des Browserjobs als Erfolg; bei PR/Release zählt Überspringen, Fehler oder Abbruch nicht als Erfolg; ein Fehler bricht die anderen Teil-Suites nicht vorzeitig ab. Jeder Test besitzt seinen eigenen Browser-Kontext und seine eigene pausierte Uhr; die statischen Vorschau-Server werden gemeinsam genutzt. Ein Worker je CI-Runner vermeidet Konkurrenz beim Software-Rendering; zwei lokale Worker nutzen die lokale Hardware. Bei knappen Ressourcen lässt sich mit `--workers=1` seriell ausführen; `--workers=N` überschreibt die Vorgabe auch in CI. Testabdeckung und null automatische Retries bleiben erhalten; zusätzliche Durchläufe lassen sich manuell wählen.
 
 Playwrights Browser-Uhr ist vor dem Laden installiert und pausiert; zwischen Zustandsabfragen werden Timer und Animationen in kleinen Simulationsschritten weitergeführt. So verlängert die Antwortzeit eines langsamen CI-Runners keine Tastatureingaben. Abbruchgrenzen und tolerante Ergebnisprüfungen ersetzen feste Echtzeitpausen und exakte Frame-Positionen.
 
@@ -70,13 +70,13 @@ Die Reihenfolge ist wesentlich: Die negativen Asset-Muster stehen **nach** `asse
 
 Reine README-/Dokumentationsänderungen außerhalb dieser Pfade starten keine Game-QA. Neue Build-Eingaben außerhalb der Liste müssen in **beiden** Pfadlisten ergänzt werden. Änderungen an Workflows starten zusätzlich den separaten Workflow **Workflow validation** mit Actionlint, entsprechend der Vorlage aus The Sara Protocol.
 
-Bei einem gestarteten QA-Lauf bleiben Lint, Unit-Tests, Typprüfung, Build und Audit erhalten. PRs führen drei Smoke-Szenarien aus; Main-Pushes keine Browsertests. Manuelle QA und Release-Rollout führen alle Szenarien aus, null Retries. Der abschließende Check **Playwright (Chromium)** verlangt erfolgreiche Qualität und erfolgreiche Shards; Fehler, Abbruch oder übersprungene notwendige Jobs zählen nicht als Erfolg.
+Bei einem gestarteten QA-Lauf bleiben Lint, Unit-Tests, Typprüfung, Build und Audit erhalten. PRs führen vier Smoke-Szenarien aus; Main-Pushes keine Browsertests. Manuelle QA und Release-Rollout führen alle Szenarien aus, null Retries. Der abschließende Check **Playwright (Chromium)** verlangt erfolgreiche Qualität und erfolgreiche Shards; Fehler, Abbruch oder übersprungene notwendige Jobs zählen nicht als Erfolg.
 
 ## Manuelle Vollprüfung und Branch-Schutz
 
 Unter **Actions → QA → Run workflow** einen Branch, eine Durchlaufzahl (1, 2 oder 3;
 Standard 1) und das Rundenprofil `fast` oder `full` auswählen. `workflow_dispatch`
-ist ungefiltert und prüft immer alle 48 Szenarien. Normale PR-/Push-Läufe verwenden
+ist ungefiltert und prüft immer alle 56 Szenarien. Normale PR-/Push-Läufe verwenden
 `fast`: Nur das explizite Heimkehr-Szenario nutzt 8–10 Sekunden Testdauer. `full`
 prüft denselben Ablauf mit den produktiven 60–105 Sekunden; alle Assertions bleiben
 gleich. Die Domain-Unit-Tests prüfen die echten Grenzen zusätzlich.
@@ -102,7 +102,7 @@ Die Unit- und Browserjobs zeigen nach ihren Testschritten alle gemeldeten Szenar
 
 Node erzeugt über `npm run test:unit:ci` neben der Terminalausgabe einen TAP-Report (`test-reports/unit.tap`). Playwright erzeugt zusätzlich zu List/HTML einen JUnit-Report (`test-reports/playwright.xml`). Die gepflegte [test-summary/action](https://github.com/test-summary/action) verarbeitet beide Formate; ihre Version ist als Commit gepinnt. Nodes JUnit-Ausgabe wird bewusst nicht verwendet: Die geprüfte Action übersieht die direkt unter `testsuites` liegenden Testfälle von Node 22. Der TAP-Reporter wird korrekt gelesen.
 
-Die Gesamtübersicht zählt **Ausführungen**: aktuell 87 Unit-Tests plus 3 Browser-Szenarien, also 90 Ergebnisse bei PR-CI. Main-CI zählt 87 Unit-Tests und kennzeichnet Browsertests als absichtlich nicht geplant. Vollständige manuelle QA und Release-Rollout zählen 87 plus 48, also 135 Ergebnisse. Bei manuell gewählten zwei Durchläufen sind es 183, bei drei Durchläufen 231. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
+Die Gesamtübersicht zählt **Ausführungen**: aktuell 91 Unit-Tests plus 4 Browser-Szenarien, also 95 Ergebnisse bei PR-CI. Main-CI zählt 91 Unit-Tests und kennzeichnet Browsertests als absichtlich nicht geplant. Vollständige manuelle QA und Release-Rollout zählen 91 plus 56, also 147 Ergebnisse. Bei manuell gewählten zwei Durchläufen sind es 203, bei drei Durchläufen 259. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
 
 Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Je nach Profil werden ein (Main), zwei (PR-Smoke) oder fünf (vollständige QA) erwartete Reports auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
 
@@ -129,7 +129,7 @@ ein schnellerer Gesamtjob ist zu messen und wird nicht pauschal garantiert.
 
 Pages installiert keinen Browser mehr: Die vollständige Browserprüfung läuft im
 Playwright-Container der wiederverwendbaren QA. Shard 1 übergibt bei `full` den
-getesteten Produktionsbuild als `qa-pages-dist-<SHA>`; der Quality-Job und beide
+getesteten Produktionsbuild als `qa-pages-dist-<SHA>`; der Quality-Job und alle vier
 Shards müssen erfolgreich sein. Pages übernimmt nur dieses Artefakt aus demselben
 Workflow-Lauf, ohne Neubau. Der GitHub-Host stellt weiterhin `gh` und `jq` für die
 unveränderten Release-Identitätsprüfungen bereit. Details und Messwerte stehen in
@@ -138,7 +138,7 @@ unveränderten Release-Identitätsprüfungen bereit. Details und Messwerte stehe
 Grundlage: [Playwright-Docker-Image](https://playwright.dev/docs/docker) und
 [Container-Jobs in der Playwright-CI-Anleitung](https://playwright.dev/docs/ci#via-containers).
 
-Die 48 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die zwei automatischen Shards bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
+Die 56 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die vier Shards bei vollständigen Läufen bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
 
 Der Qualitätsjob verwendet die Typprüfung in `npm run build` statt eines zusätzlichen identischen Aufrufs davor. In der Playwright-Vorbereitung prüft `build:e2e` die Typen; die zweite Produktionsvorschau baut deshalb direkt mit Vite. Playwright verlangt beide erfolgreichen Serverstarts. Die eigenständig nutzbaren Befehle `build`, `build:e2e` und `qa` bleiben typgeprüft.
 
@@ -149,3 +149,19 @@ Die gemeinsame lokale Action `.github/actions/npm-audit` läuft im Qualityjob. D
 `--audit-level` ändert die Fehlerschwelle, nicht den Inhalt des Berichts. Moderate Findings werden deshalb weiterhin angezeigt. Findings nach betroffenem Runtime-/Tooling-Pfad und tatsächlicher Nutzung bewerten, konkrete Folgeissues anlegen und kontrollierte Updates als getestete PRs liefern. Keine pauschalen Ausnahmen und keine ungeprüften Force-Upgrades. Die bestehenden Runtime-Findings werden nicht durch einen erfolgreichen Gesamtbericht maskiert.
 
 Aktueller Tooling-Befund: [moderates minimatch-Advisory im ESLint-Baum (#66)](https://github.com/Skanky0815/pixels-world/issues/66). Der Runtime-Audit meldet derzeit keine Findings.
+
+## Mobile Touch-Abnahme (#54, erster Schritt)
+
+Automatisiert: Chromium/Playwright 1.64.1, Viewports 390×844 und 844×390,
+Touch-/Pointer-Eingaben inklusive Mehrfinger-Sprung, Klettern, Abbruch, Fokus,
+Rotation, Neustart und komplette Versöhnung. Desktop-Tastatur-Suite bleibt Teil
+der lokalen Vollprüfung. Richtungspaare neutralisieren sich nach gehaltenen
+Aktionen, nicht nach Anzahl der Finger. Frische Quellenimpulse werden pro Aktion
+und Spielframe zusammengefasst; reine Wiederholung einer gehaltenen Taste erzeugt
+keine neue Flanke. Touch-Abbruch verwirft noch nicht konsumierte Touch-Flanken.
+
+Manuelle Hardware-Abnahme noch offen: Safari auf iPhone/iPad sowie Chrome auf Android.
+Dort dieselben Abläufe mit realen Fingern, Geräte-Rotation, App-/Tabwechsel und
+Neustart-Rückfrage prüfen. Keine solche Prüfung wird durch Chromium-Emulation
+ersetzt. Darstellung von HUD, Dialogen und Minispiel auf kleinen Displays ist #108;
+Touch-Buttons liegen bereits außerhalb des Canvas und verwenden Safe-Area-Abstände.

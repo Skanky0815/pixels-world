@@ -60,5 +60,9 @@ function introMarkup() {
     </dl>
     <p>Bei der Versöhnung: die große Pfeiltaste rechtzeitig drücken.
     Texte liest du in Ruhe und bestätigst mit Leertaste. Bei Fokusverlust pausiert das Spiel.</p>
-  </div><p class="start-prompt">Leertaste drücken, um zu starten</p>`;
+    <p class="touch-prompt">Die Pfeile bewegen Pixel und steuern die Charmeoffensive.
+    „Sprung / Weiter“ springt und bestätigt Start, Dialoge und Rückmeldungen.
+    „Neustart“ fragt vor einer neuen Runde nach.</p>
+  </div><p class="start-prompt"><span class="keyboard-prompt">Leertaste drücken, um zu starten</span>
+  <span class="touch-prompt">„Sprung / Weiter“ antippen, um zu starten</span></p>`;
 }

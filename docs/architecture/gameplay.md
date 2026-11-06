@@ -272,3 +272,18 @@ frühe Ziele wechseln sofort zu `returning`. `endReason` bleibt bis zum R-Neusta
 fest. Erst dieser akzeptierte Grund finalisiert den Zielstatus, sodass ein
 gleichzeitig beobachteter, aber späterer Zielkontakt nicht als Erfolg gezählt wird.
 Die Auswertung führt `goalReached` getrennt von Punkten und Versöhnungsausgang.
+
+## Gemeinsame Tastatur- und Pointer-Eingabe
+
+`InputController` liest weiterhin genau einen unveränderlichen Snapshot pro Frame.
+Der szeneneigene `TouchControls`-Adapter übersetzt Pointer- und native
+Button-Eingaben in gehaltene Aktionen und einmalige Flanken. `PointerActions`
+verwaltet Finger getrennt; ein Fingerwechsel darf die Aktion eines anderen nicht
+loslassen. Achsen entstehen aus der Vereinigung gehaltener Tasten, Gegenrichtungen
+neutralisieren sich. Gleichzeitige Flanken derselben Aktion zählen einmal.
+
+Spielobjekte bleiben frei von DOM-/Touch-Abfragen. Der Adapter verwendet Pointer
+Capture, behandelt Verlassen/Cancel/Lost-Capture und wird beim Szenenende samt
+AbortController-Listenern entfernt. Blur, Visibility und Resize räumen Eingaben auf.
+Die Bestätigungstaste versorgt Start, Dialog und Charmeoffensive über denselben
+InputState wie Leertaste. Neustart fragt im Touch-Adapter ausdrücklich nach.

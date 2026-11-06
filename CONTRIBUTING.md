@@ -16,7 +16,7 @@ Jeder Implementierungs-PR verweist auf sein Issue: `Refs #N` für Teilschritte, 
 
 ## Prüfen und Review
 
-Für Code- oder Tooling-Änderungen `npm ci` und vor Erstellen/Aktualisieren des PRs `npm run check:pr` ausführen: vollständige Projekt-QA und alle 48 E2E-Szenarien lokal. Tatsächliche Ergebnisse im PR dokumentieren. Bei Bewegungs- oder Physikänderungen zusätzlich den [manuellen Spieltest](docs/qa.md#manueller-spieltest) durchführen. Bei Gameplay-, Rendering- oder Teständerungen zusätzlich `npm run test:e2e` ausführen; Installation und Debugging stehen in der [QA-Dokumentation](docs/qa.md#end-to-end-tests). Bei reinen Dokumentationsänderungen Sprache, Aussagen und Links prüfen.
+Für Code- oder Tooling-Änderungen `npm ci` und vor Erstellen/Aktualisieren des PRs `npm run check:pr` ausführen: vollständige Projekt-QA und alle E2E-Szenarien lokal. Tatsächliche Ergebnisse im PR dokumentieren. Bei Bewegungs- oder Physikänderungen zusätzlich den [manuellen Spieltest](docs/qa.md#manueller-spieltest) durchführen. Bei Gameplay-, Rendering- oder Teständerungen zusätzlich `npm run test:e2e` ausführen; Installation und Debugging stehen in der [QA-Dokumentation](docs/qa.md#end-to-end-tests). Bei reinen Dokumentationsänderungen Sprache, Aussagen und Links prüfen.
 
 Sara übernimmt ihre Issues und PRs als `Sara-Pixel42`; fertige PRs gehen zur Review an `Skanky0815`, sofern Rico niemand anderen bestimmt. Issue, Branch und PR nachvollziehbar verknüpfen. Bestehende Branches nicht für eine Verknüpfung löschen oder neu erstellen; bei fehlender API-Unterstützung die Grenze und den direkten Branch-Link im Issue dokumentieren. Review- und Branch-Schutzregeln bleiben verbindlich.
 
@@ -28,7 +28,7 @@ Einmalig Node 22/Abhängigkeiten und Chromium vorbereiten (`npm ci`, `npx playwr
 
 Der Hook prüft den aktuellen HEAD mit sauberem getracktem Arbeitsstand; Pushes anderer Commits werden abgewiesen, reine Löschungen benötigen keine Tests. Ungetrackte Dateien dürfen keine fehlenden Build-Eingaben des Commits ersetzen. Hooks sind eine lokale Hilfe und können umgangen werden. Bei GitHub-API-Änderungen läuft kein lokaler Git-Hook: denselben Prüfbefehl ausdrücklich vor Veröffentlichung ausführen. Keine alten Testergebnisse als frischen Nachweis verwenden.
 
-PR-CI prüft Quality und drei `@smoke`-Szenarien auf einem Browser-Runner; Main-CI wiederholt nur Quality. Manuelle QA und Release-Rollout prüfen alle Szenarien auf vier Shards, beim Release mit Produktionszeiten. Details: [CI-Prüfstrategie](docs/ci-strategy.md).
+PR-CI prüft Quality und vier `@smoke`-Szenarien auf einem Browser-Runner; Main-CI wiederholt nur Quality. Manuelle QA und Release-Rollout prüfen alle Szenarien auf vier Shards, beim Release mit Produktionszeiten. Details: [CI-Prüfstrategie](docs/ci-strategy.md).
 
 ## Versionierung und Releases
 

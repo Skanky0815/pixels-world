@@ -16,7 +16,8 @@ Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich gro�
 
 **[Pixel’s World im Browser öffnen →](https://skanky0815.github.io/pixels-world/)**
 
-Du brauchst eine Tastatur und einen aktuellen Desktop-Browser.
+Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
+mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.
 Das Spiel läuft ohne Konto und ohne Backend.
 Den aktuellen Versionsstand findest du unter [Releases](https://github.com/Skanky0815/pixels-world/releases).
 
@@ -70,6 +71,24 @@ und Feature-Wünsche in einem neuen Tab. Für eigene Beiträge brauchst du ein G
 über den Footer erreichbar und öffnen im selben Tab. „Zum Spiel“ führt zurück zur Einführung.
 
 Mehr dazu: [Spielmechaniken und Punkte](docs/gameplay.md).
+
+### Touch-Steuerung
+
+Unter dem Zimmer erscheinen auf Touch-Geräten vier Richtungstasten und
+**Sprung / Weiter**. Mehrere Finger funktionieren gleichzeitig, etwa rechts laufen
+und springen. Sprung / Weiter startet die Runde, bestätigt Saras Texte und die
+Versöhnungsanleitung; die Pfeile spielen auch die Charmeoffensive. **Neustart**
+fragt vor dem Verwerfen der aktuellen Runde nach.
+
+Ein Finger bleibt seiner Taste zugeordnet. Verlassen einer Taste, Abbruch,
+Fokus-/Sichtbarkeitsverlust und Rotation lösen gehaltene Eingaben. Browsergesten
+außerhalb der Buttons bleiben verfügbar. Tastatur und Touch können gemeinsam
+verwendet werden; entgegengesetzte Richtungen sind neutral.
+
+Die Eingabe ist in Chromium mit emuliertem Touch geprüft. Ein echtes Mobilgerät
+steht noch zur Abnahme aus (#54); lesbare HUD-/Dialogdarstellung auf kleinen
+Bildschirmen folgt separat mit #108. Dies ist der erste Schritt des Meilensteins
+„Mobile Ready“, keine abgeschlossene Mobilgeräte-Freigabe.
 
 ## Lokal starten
 
