@@ -4,7 +4,6 @@ body.legal-page {
   display: block;
 }
 .legal-page main {
-  width: min(820px, 100%);
   margin: 0 auto;
 }
 .legal-page header {

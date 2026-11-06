@@ -27,8 +27,8 @@ test('Impressum und Datenschutz sind aus Einführung und Spiel in eigenen Tabs e
     await popup.waitForURL(`**/${path}`);
     await expect(popup.getByRole('heading', { name: title, exact: true })).toBeVisible();
     await expect(
-      popup.getByRole('link', { name: 'info@nerd-bubble.de', exact: true }),
-    ).toHaveAttribute('href', 'mailto:info@nerd-bubble.de');
+      popup.getByRole('link', { name: 'rico-schulz@web.de', exact: true }),
+    ).toHaveAttribute('href', 'mailto:rico-schulz@web.de');
     await expect(popup.locator('canvas, script')).toHaveCount(0);
     expect(page.url()).toBe(url);
     expect((await state(page)).generation).toBe(before.generation);

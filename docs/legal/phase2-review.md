@@ -13,7 +13,8 @@ Anbieter- und Kontaktdaten:
 - [App-Impressum, festgehaltener Commit](https://github.com/Skanky0815/NerdBubble/blob/1875578cd9ca941626c0dd48220396387be20bdb/app/src/application/pages/Imprint.tsx)
 - [Web-App-Impressum, derselbe Commit](https://github.com/Skanky0815/NerdBubble/blob/1875578cd9ca941626c0dd48220396387be20bdb/web-app/src/pages/imprint.tsx)
 
-Übernommen wurden Name, Anschrift und E-Mail. Die Anschrift wird hier und in
+Übernommen wurden zunächst Name, Anschrift und E-Mail. Rico hat die Kontakt-E-Mail
+anschließend ausdrücklich aktualisiert; beide Rechtsseiten verwenden diese neue Adresse. Die Anschrift wird hier und in
 Issue-/PR-Beschreibungen nicht nochmals ausgeschrieben; die bewusste Übernahme
 steht in den vorgesehenen öffentlichen Rechtsseiten. Es wurden keine weiteren
 privaten Daten gesucht, ergänzt oder geraten. Ob die bereits veröffentlichten
