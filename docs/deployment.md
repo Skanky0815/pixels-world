@@ -1,47 +1,67 @@
 # Veröffentlichung auf GitHub Pages
 
-Zieladresse: [Pixel’s World](https://skanky0815.github.io/pixels-world/). Der Prototyp ist seit dem erfolgreichen [Deployment vom 2026-11-04](https://github.com/Skanky0815/pixels-world/actions/runs/41918859915) öffentlich spielbar. Der Live-Spieltest bestätigte Assets, Bewegung, Sprung und Sofa-Schaden mit sichtbaren Chaospunkten, ohne Browserfehler oder Testobserver. Der erste Versionsrelease [v0.1.1](https://github.com/Skanky0815/pixels-world/releases/tag/v0.1.1) wurde am 5. November 2026 erfolgreich automatisch ausgerollt; Abnahme siehe unten.
+Spieladresse: [Pixel’s World](https://skanky0815.github.io/pixels-world/).
+Pages verwendet GitHub Actions als Quelle und die Umgebung `github-pages`.
 
 ## Einmalige Einrichtung
 
-Nach dem Merge unter **Settings → Pages → Build and deployment → Source** die Quelle **GitHub Actions** wählen. Die Umgebung `github-pages` auf `main` beschränken; bei Bedarf eine manuelle Freigabe verlangen. Der Workflow benötigt kein zusätzliches Secret. Pages ist bereits aktiviert und verwendet `workflow` als Quelle.
+Unter Settings → Pages die Quelle GitHub Actions wählen; die Umgebung auf `main`
+beschränken und bei Bedarf eine Freigabe verlangen. Nur der Deploymentjob erhält
+`pages: write` und `id-token: write`. Der Releasejob besitzt die benötigten
+Release-/PR-Rechte und `actions: read` für die bestehende Main-QA. Kein neuer PAT.
 
-## Veröffentlichen
+## Veröffentlichung
 
-1. Unter **Actions → Spiel auf GitHub Pages → Run workflow** ausdrücklich `main` auswählen. Andere Branches werden übersprungen. Es gibt zunächst keine automatische Veröffentlichung bei Push oder PR.
-2. Der vorgelagerte wiederverwendbare QA-Workflow installiert die Lockdatei und prüft Lint, Formatierung, Unit-Tests, Typen, Build und den verpflichtenden Runtime-Audit. Beide Browser-Shards prüfen alle Szenarien einmal mit Produktionszeiten, ohne Retries. Playwright erstellt zusätzlich den echten Produktionsbuild mit Vites `--base=/pixels-world/` und prüft Start, Sprite-Asset, Footer und die Isolation von Dev-/Testcode unter diesem Pfad. Gameplay wird vollständig am E2E-Build mit echten Tastatureingaben geprüft.
-3. Nach erfolgreicher Gesamt-QA übernimmt der Buildjob das geprüfte `dist/` aus dem SHA-benannten Artefakt dieses Workflow-Laufs und lädt es als Pages-Artefakt hoch, ohne weitere Installation, Testwiederholung oder Neubau. Fehlende oder abgelaufene QA-Artefakte blockieren; dann die gesamte QA erneut ausführen. QA-Builds bleiben einen Tag verfügbar. Der Deploymentjob hängt vom erfolgreichen Buildjob ab. Nur er besitzt `pages: write` und `id-token: write`; eine optionale Umgebungsfreigabe erfolgt vor diesem Job. Direkt vor der Veröffentlichung muss der geprüfte Commit weiterhin dem aktuellen `main` entsprechen. Ist `main` weitergelaufen, den Workflow neu starten. Ein Push nach diesem Vergleich kann naturgemäß nicht atomar mit dem Pages-Dienst gesperrt werden.
-4. Den Link im Deploymentjob öffnen: Raum und Pixel sichtbar, keine fehlenden Assets; Pfeiltasten, Sprung, Sofa, Pflanze, Vorhang und Neustart ausprobieren. `animation-compare.html` muss unter dem Spielpfad 404 liefern. Dieser Live-Spieltest wurde für den ersten main-Stand erfolgreich durchgeführt.
+1. PR-QA und Review abschließen, nach Merge die Main-QA abwarten.
+2. **Spielrelease → main → prepare** erstellt den Versions-PR. Version und Changelog
+   prüfen, PR-QA bei automatisch mit `GITHUB_TOKEN` erstellten PRs nötigenfalls manuell
+   starten, reviewen und mergen. Die `autorelease`-Labels erhalten.
+3. Grüne Main-QA auf dem Versions-Merge abwarten. **Spielrelease → main → publish**
+   prüft exakt diese bereits vorhandene QA, den aktuellen Main-SHA und den
+   ausstehenden Versions-Merge; dann erstellt Release Please Tag und GitHub Release.
+4. Bei neuem Release ruft derselbe Workflow Pages auf: Release-Identität bestätigen,
+   vollständige gemeinsame QA mit Produktionszeiten einschließlich Audit und beiden
+   Browser-Shards ausführen, getestetes SHA-Artefakt übernehmen, erneut Release-Tag
+   und Commit bestätigen und deployen. Kein zweiter Build oder zweiter Testlauf.
+5. Öffentliche Spieladresse prüfen: Startbildschirm, Spiel, Assets und Rechtsseiten
+   erreichbar; Bewegung, Sprung, Schäden und Neustart funktionieren, kein Testobserver.
 
-Lokale Entwicklung bleibt unter `/`. Der Pages-Basispfad wird beim Produktionsbuild per CLI gesetzt; Sprite-Importe werden von Vite passend umgeschrieben. Die Quellablage `src/game/` verändert den öffentlichen Pfad nicht.
+Ein unabhängiger Pages-Start ohne Release ist nicht mehr vorgesehen. `prepare` und
+ein ergebnisloses `publish` veröffentlichen keine Website. Das direkte Aufrufen des
+wiederverwendbaren Pages-Workflows nach erfolgreicher Release-Aktion vermeidet einen
+zusätzlichen Event-Trigger: `GITHUB_TOKEN` startet nicht zuverlässig weitere
+Workflows über selbst erzeugte `release`-Ereignisse.
 
-## Fehlersuche und erneute Veröffentlichung
+## Fehler und Wiederholung
 
-- **404 / Pages noch nicht aktiv:** Quelle GitHub Actions, Repository-Berechtigungen und Umgebung prüfen. Die Website entsteht erst nach einem erfolgreichen Deployment.
-- **Leere Seite oder fehlende Assets:** Spieladresse einschließlich `/pixels-world/` und Network-Tab prüfen. Kein Build mit Root-Basispfad hochladen.
-- **QA oder Audit fehlgeschlagen:** Buildjob prüfen; das vorherige Deployment bleibt erhalten. Keine Gates umgehen.
-- **main inzwischen geändert:** Den gesamten Workflow erneut auf `main` starten. Alte Artefakte werden nicht separat veröffentlicht.
-- **Deployment blockiert:** Umgebungsfreigabe/Branch-Regeln und Pages-Berechtigungen prüfen. Fehlerartefakte aus Browserprüfungen stehen 14 Tage bereit.
+- **Keine grüne Main-QA:** bestehenden Lauf abwarten oder Fehler beheben. Es wird
+  keine Ersatz-QA im Releasejob gestartet.
+- **Kein Versions-Merge:** zuerst `prepare`, aktuellen Versions-PR prüfen/mergen,
+  Main-QA abwarten und dann `publish`. Der frühere unklare Abbruch nach langer QA
+  wird durch diese konkrete Fehlermeldung ersetzt.
+- **main weitergelaufen:** Release auf aktuellem Main neu vorbereiten und prüfen.
+- **Volle QA oder Deployment gescheitert:** Tag und GitHub Release können bereits
+  existieren; der alte Pages-Stand bleibt erhalten. Fehlgeschlagene Rollout-Jobs
+  desselben Laufs erneut starten. `publish` erzeugt kein zweites Release und löst
+  bei No-op kein neues Deployment aus.
+- **Build-Artefakt abgelaufen:** ein reiner Deployment-Retry reicht nicht; die QA
+  muss erneut einen geprüften Build liefern. QA-Artefakte bleiben einen Tag,
+  Fehler-/Testreports 14 Tage erhalten. Keine ungeprüften Ersatzbuilds hochladen.
 
-Bei fehlerhaftem Spielstand den verursachenden Commit über einen geprüften PR rückgängig machen und den Workflow erneut starten. Veröffentlichung ersetzt den statischen Spielstand; es gibt kein Backend und keine zusätzlichen Zugangsdaten.
+Tag, Nicht-Draft-Veröffentlichung und Commit werden mehrfach durch
+`.github/scripts/verify-release.sh` bestätigt. Checkout und Artefakt sind an den
+Workflow-SHA gebunden. Ein inzwischen neuerer Main-Stand wird beim Rollout nicht
+statt des Release-Commits ausgeliefert. Die Pages-Concurrency serialisiert Rollouts.
 
-Quelle: [GitHub: eigene Pages-Workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+## Bisherige Integration und aktuelle Grenze
 
-## Automatischer Rollout nach Versionsrelease (#69)
+Der ursprüngliche [Pages-Lauf 41918859915](https://github.com/Skanky0815/pixels-world/actions/runs/41918859915)
+und der automatische [v0.1.1-Rollout 41945123257](https://github.com/Skanky0815/pixels-world/actions/runs/41945123257)
+wurden am öffentlichen Spiel abgenommen. Das belegt den damaligen Ablauf.
+Die neue Reihenfolge aus #122 wird lokal und im PR geprüft; ein vollständiger
+Publish-/Pages-Integrationstest folgt erst nach Review/Merge und ausdrücklichem
+Start des nächsten Releases. Diese Änderung erzeugt selbst keinen Release.
 
-`Spielrelease` bleibt manuell mit `prepare`/`publish` gestartet. Nur nach erfolgreichem `publish` **und** `release_created == 'true'` ruft er `pages.yml` als wiederverwendbaren Workflow auf. Es gibt keinen zweiten Deployment-Workflow und keinen neuen PAT. Ein `release: published`-Trigger wäre mit dem bestehenden `GITHUB_TOKEN` nicht zuverlässig, da dessen Ereignisse keine weiteren Workflows starten.
-
-Release Please liefert den Root-Tag und Commit. Vor dem Rollout prüft `.github/scripts/verify-release.sh`: vollständiger SHA entspricht dem geprüften Workflow-Commit, veröffentlichtes Nicht-Draft-Release existiert, Tag zeigt auf denselben Commit (auch bei annotierten Tags). Die Prüfung wird vor der Übernahme des QA-Builds und unmittelbar vor Deployment wiederholt. Die vollständige Release-QA liefert den Build aus demselben Workflow-Lauf; Pages startet keine zweite QA. Checkout erfolgt ausdrücklich mit diesem SHA; ein inzwischen neuerer main-Stand wird beim Release-Rollout weder gebaut noch ausgeliefert. Der manuelle main-Rollout behält seinen bisherigen Aktualitätsvergleich.
-
-Die gemeinsame Pages-Concurrency serialisiert manuelle und Release-Rollouts ohne laufende Veröffentlichungen abzubrechen. Release-Rechte bleiben im Releasejob; nur der Pages-Deploymentjob nutzt Pages-/OIDC-Schreibrechte, der Buildjob ausdrücklich nur Leserechte. Das aufrufende Pages-Jobdelegat erlaubt diese Rechte für den Unterworkflow. Die Summary nennt Tag, Commit und Spieladresse. Schlägt das Deployment nach erfolgreicher Release-Erstellung fehl, bleibt das Release bestehen: Ein erneutes `publish` erzeugt kein zweites Release und startet deshalb keinen automatischen Rollout. Fehler untersuchen und die fehlgeschlagenen Jobs desselben Laufs erneut starten; kein neues main-Artefakt unterschieben.
-
-### Validierung und erste Release-Abnahme
-
-- Actionlint und Bash-Syntaxprüfung erfolgreich.
-- Release-Prüfskript mit simulierten GitHub-Antworten ausgeführt: Lightweight- und annotierter Tag akzeptiert; Draft, fehlende Veröffentlichung, falscher Tag-Commit, API-Fehler, abweichender Workflow-SHA und ungültiger Tag abgewiesen (8 Fälle).
-- Workflow-Gates geprüft: erfolgreicher Publish mit `release_created=true` startet Pages; `prepare`, No-op/false/leere Outputs oder fehlgeschlagener Releasejob starten nicht. Jobabhängigkeiten bleiben fehlersicher: Der Artefaktjob akzeptiert nur erfolgreiche manuelle QA oder den Release-Pfad mit verifizierter Identität; Deployment verlangt ausdrücklich einen erfolgreichen Artefaktjob.
-- Projekt-QA erneut ausgeführt. Gameplay-/Buildkonfiguration unverändert; der vollständige Pages-Lauf samt Browser-Suite ist bereits auf main erfolgreich.
-- **Integrationstest am 5. November 2026 bestanden:** [Spielrelease-Lauf 41945123257](https://github.com/Skanky0815/pixels-world/actions/runs/41945123257) führte `publish`, Pages-Build mit allen Browser-Szenarien und Deployment erfolgreich aus. Das veröffentlichte [Release v0.1.1](https://github.com/Skanky0815/pixels-world/releases/tag/v0.1.1), sein Lightweight-Tag und der geprüfte Versions-Merge zeigen auf `95c113d4e8f4dc23269e1a218ada09616bf3c51f`. Die öffentliche Seite zeigte bei der Browserabnahme `© 2026 Pixel’s World · v0.1.1` und den geladenen Spielraum.
-- Der erfolgreiche [prepare-Lauf 41921798940](https://github.com/Skanky0815/pixels-world/actions/runs/41921798940) veröffentlichte nicht; der frühere abgewiesene Publish-Lauf ohne gültigen Versions-Merge startete ebenfalls kein Deployment. Die bereits dokumentierten lokalen Negativfälle ergänzen diese realen Workflow-Pfade.
-
-Quellen: [Release-Please-Outputs und GITHUB_TOKEN](https://github.com/googleapis/release-please-action#outputs), [wiederverwendbare Workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows).
+Details und Messgrenzen: [CI-Prüfstrategie](ci-strategy.md).
+Quellen: [Pages-Workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
+und [Release Please](https://github.com/googleapis/release-please-action#outputs).

@@ -81,19 +81,18 @@ ist ungefiltert und prüft immer alle 48 Szenarien. Normale PR-/Push-Läufe verw
 prüft denselben Ablauf mit den produktiven 60–105 Sekunden; alle Assertions bleiben
 gleich. Die Domain-Unit-Tests prüfen die echten Grenzen zusätzlich.
 
-Der Release-Workflow ruft die QA wiederverwendbar mit `full_round: true` auf. Sowohl
-`prepare` als auch `publish` warten auf diesen vollständigen erfolgreichen Check,
-bevor Release Please einen Versions-PR bzw. ein GitHub Release erstellen darf. Auch
-ein manueller Pages-Lauf ruft diese vollständige QA auf. Beim Release-Rollout
-übernimmt Pages stattdessen das Artefakt der bereits erfolgreichen Release-QA.
-Ein Testfehler oder fehlender notwendiger Job wird dadurch vor der Veröffentlichung
-blockierend. Ein echter Release-/Pages-Rollout wird nur ausdrücklich gestartet.
+PR und Main prüfen regulär mit `fast`. Der manuelle Release bestätigt die bereits
+erfolgreiche Main-QA für exakt seinen Commit und erstellt Tag/Release. Erst der
+anschließende Pages-Rollout ruft die QA mit `full_round: true` auf und übernimmt
+deren getestetes Artefakt. Es gibt keinen separaten Pages-Start ohne Release.
+Ein Testfehler oder fehlender notwendiger Job blockiert den Pages-Rollout;
+Tag und GitHub Release existieren zu diesem Zeitpunkt bereits. Ein echter Release-/Pages-Rollout wird nur ausdrücklich gestartet.
 
 Die pfadgefilterten Checks dürfen nicht als für **jeden** PR erforderliche Statuschecks konfiguriert werden: Ein komplett ausgelassener Workflow liefert keinen erfolgreichen Check; reine Dokumentations-PRs könnten dadurch blockiert bleiben. Rico übernimmt die Branch-Protection-Einstellungen. Falls künftig zwingend ein erfolgreicher Gesamtcheck für jeden PR erforderlich wird, muss das Workflow-Modell entsprechend angepasst werden.
 
 GitHub verwendet bei PRs einen Drei-Punkt-Vergleich, bei bestehenden Push-Branches einen Zwei-Punkt-Vergleich. Die native Pfaderkennung hat dokumentierte Grenzen: Sie wertet höchstens die ersten 300 geänderten Dateien aus; bei mehr als 1.000 Commits oder einem Diff-Timeout läuft der Workflow unabhängig vom Filter. Große Änderungen bei Bedarf ausdrücklich manuell prüfen.
 
-Das [manuelle Pages-Deployment](deployment.md) prüft den **exakten zu veröffentlichenden Commit** ungefiltert mit vollständiger QA, Runtime-Audit und allen Browser-Szenarien. Die dabei getesteten Produktionsdateien unter `/pixels-world/` werden unverändert veröffentlicht.
+Der [Pages-Rollout nach Release-Erstellung](deployment.md) prüft den **exakten zu veröffentlichenden Commit** ungefiltert mit vollständiger QA, Runtime-Audit und allen Browser-Szenarien. Die dabei getesteten Produktionsdateien unter `/pixels-world/` werden unverändert veröffentlicht.
 
 Quelle: [GitHub-Dokumentation zu Pfadfiltern, Vergleichen und ausgelassenen Checks](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onpushpull_requestpull_request_targetpathspaths-ignore).
 
@@ -145,7 +144,7 @@ Der Qualitätsjob verwendet die Typprüfung in `npm run build` statt eines zusä
 
 ## Abhängigkeiten und Release-Gate
 
-Die gemeinsame lokale Action `.github/actions/npm-audit` läuft nach den Qualitätsprüfungen und vor Release-Vorbereitung/Veröffentlichung. `npm audit --omit=dev --audit-level=high` ist verpflichtend: Runtime high/critical sowie Audit-/Registry-Fehler schlagen fehl. Der vollständige Audit inklusive Dev-Abhängigkeiten läuft sichtbar, aber zunächst nicht blockierend. Beide Originalberichte stehen in Job-Log und Summary, auch bei Auditfehlern. Der Audit verändert keine Abhängigkeiten und führt kein `audit fix` aus.
+Die gemeinsame lokale Action `.github/actions/npm-audit` läuft im Qualityjob. Die reguläre Main-QA prüft sie vor der Release-Erstellung; die vollständige QA wiederholt sie nach Release-Erstellung vor dem Pages-Rollout. `npm audit --omit=dev --audit-level=high` ist verpflichtend: Runtime high/critical sowie Audit-/Registry-Fehler schlagen fehl. Der vollständige Audit inklusive Dev-Abhängigkeiten läuft sichtbar, aber zunächst nicht blockierend. Beide Originalberichte stehen in Job-Log und Summary, auch bei Auditfehlern. Der Audit verändert keine Abhängigkeiten und führt kein `audit fix` aus.
 
 `--audit-level` ändert die Fehlerschwelle, nicht den Inhalt des Berichts. Moderate Findings werden deshalb weiterhin angezeigt. Findings nach betroffenem Runtime-/Tooling-Pfad und tatsächlicher Nutzung bewerten, konkrete Folgeissues anlegen und kontrollierte Updates als getestete PRs liefern. Keine pauschalen Ausnahmen und keine ungeprüften Force-Upgrades. Die bestehenden Runtime-Findings werden nicht durch einen erfolgreichen Gesamtbericht maskiert.
 

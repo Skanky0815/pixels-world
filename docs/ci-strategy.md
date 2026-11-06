@@ -1,102 +1,87 @@
-# CI-Prüfstrategie und Laufzeitvergleich
+# CI-Prüfstrategie
 
-## Prüfungen je Anlass
+Der Ablauf hat vier Stufen:
 
-| Anlass                          | Qualitätsprüfung und Audit | Browser-Suite                               | Veröffentlichung                          |
-| ------------------------------- | -------------------------- | ------------------------------------------- | ----------------------------------------- |
-| Relevanter PR / Push auf `main` | Jeweils einmal             | Jeweils einmal, zwei Shards, `fast`         | Keine                                     |
-| Manuelle QA                     | Einmal                     | Einmal, gewähltes Profil und Wiederholungen | Keine                                     |
-| Spielrelease `prepare`          | Einmal über gemeinsame QA  | Einmal, zwei Shards, `full`                 | Nur Versions-PR                           |
-| Spielrelease `publish`          | Einmal über gemeinsame QA  | Einmal, zwei Shards, `full`                 | Verifizierter Release und geprüfter Build |
-| Manueller Pages-Lauf            | Einmal über gemeinsame QA  | Einmal, zwei Shards, `full`                 | Geprüfter aktueller `main`-Stand          |
+1. **PR:** normale QA mit Formatierung, Lint, Unit-Tests, Typprüfung, Build, Audit
+   und beiden Browser-Shards als Grundlage für die Review.
+2. **Merge:** dieselbe normale QA auf dem tatsächlichen `main`-Commit. Ein
+   Squash-/Merge-Commit kann vom PR-Stand abweichen.
+3. **Manueller Release:** bereits erfolgreiche Push-QA für genau diesen aktuellen
+   `main`-Commit bestätigen; Release Please erstellt Tag und GitHub Release.
+   Hier startet keine weitere QA.
+4. **Rollout nach Release-Erstellung:** Release-Identität bestätigen, gemeinsame
+   QA mit `full_round: true` ausführen, getesteten Produktionsbuild übernehmen
+   und GitHub Pages veröffentlichen.
 
-PR und Merge bleiben bewusst getrennt geprüft: Ein Squash-/Merge-Commit kann von
-seinem PR-Stand abweichen. Es gibt keinen erfolgsbasierten Cache und keine pauschale
-Ausnahme für Release-Please-Branches. Ein Versions-PR kann Paket-/Lockdateien ändern.
-Automatisch mit `GITHUB_TOKEN` erstellte Versions-PRs weiterhin manuell prüfen.
-`workflow_call` startet keinen unabhängigen Zusatzlauf, sondern Jobs im aufrufenden
-Workflow. Die vorhandenen Pfadfilter und Checknamen bleiben unverändert.
+Der Versions-PR-Prozess bleibt: `prepare` erstellt/aktualisiert den Release-Please-PR;
+dieser wird geprüft und gemerged. `publish` muss auf dem ausstehenden Versions-Merge
+starten. Normale Feature-/CI-Merges sind keine Versions-Merges. Beide Modi prüfen
+zunächst die vorhandene erfolgreiche Main-QA. Fehlende, laufende, abgebrochene oder
+fehlgeschlagene QA sowie ein inzwischen anderer Main-Commit blockieren früh mit
+verständlicher Fehlermeldung. Der Releasejob benötigt dafür `actions: read`.
 
-Neuere PR-/Push-Läufe dürfen ältere Läufe derselben Workflow-/Ref-Gruppe abbrechen.
-Manuelle QA sowie die wiederverwendbaren Release-/Pages-Gates verwenden kein
-`cancel-in-progress`; die äußeren Release-/Pages-Gruppen serialisieren weiterhin.
-Ein fehlgeschlagener oder abgebrochener notwendiger Job liefert keinen Erfolg.
+Pages hat keinen separaten manuellen Einstieg. Der Release-Workflow ruft ihn nur
+bei `publish` und `release_created == 'true'` wiederverwendbar auf. Das funktioniert
+auch mit `GITHUB_TOKEN`; ein zusätzliches `release: published`-Ereignis ist nicht
+nötig. Manueller QA-Start bleibt zur Diagnose ohne Veröffentlichung verfügbar.
 
-## Getesteten Build weiterreichen
+## Build, Identität und Fehler
 
-Bei `full` lädt Browser-Shard 1 nach erfolgreicher Suite das tatsächlich unter
-`/pixels-world/` getestete `dist/` als `qa-pages-dist-<github.sha>` hoch. Beide Shards
-bauen denselben Commit aus derselben Lockdatei; der Quality-Job einschließlich Audit
-und **beide** Shards müssen erfolgreich sein. Ein erfolgreicher Upload allein gibt
-kein Release frei. Normale `fast`-Läufe erzeugen kein Deployment-Artefakt.
+Die vollständige QA läuft nach der Release-Erstellung. Schlägt sie fehl, existieren
+Tag und GitHub Release bereits, aber der bisherige öffentliche Spielstand bleibt
+unverändert. Fehlgeschlagene Rollout-Jobs desselben Laufs erneut starten, nachdem
+die Ursache geklärt wurde; ein erneutes `publish` mit bereits erstelltem Release
+startet keinen zweiten Rollout.
 
-Pages lädt ausschließlich das SHA-benannte Artefakt aus **demselben Workflow-Lauf**:
-kein anderer Run, kein beliebiger Download und kein Neubau als Ersatz. Beim Release
-wartet der Aufrufer zuerst auf die gesamte QA und Release-Identitätsprüfung; beim
-manuellen Pages-Lauf übernimmt ein eigener Aufruf derselben QA dieses Gate.
-Release-Tag, veröffentlichter Release und Commit werden weiterhin vor Artefaktübernahme
-und vor Deployment geprüft. Der manuelle Pfad vergleicht weiterhin mit aktuellem
-`main`. Nur ein erfolgreicher Artefaktjob erlaubt Deployment.
+Browser-Shard 1 lädt nach erfolgreichem `full`-Test das tatsächlich unter
+`/pixels-world/` getestete `dist/` als `qa-pages-dist-<github.sha>` hoch. Quality
+inklusive Audit und beide Shards müssen erfolgreich sein. Pages lädt dieses Artefakt
+nur aus demselben Workflow-Lauf und vom gleichen Commit, ohne Installation, zweite
+Testsuite oder Neubau. Fehlende Artefakte blockieren. QA-Builds bleiben einen Tag,
+Test-/Fehlerreports 14 Tage verfügbar. Nach Ablauf der Build-Aufbewahrung genügt ein
+isolierter Deployment-Retry nicht; die QA muss erneut einen geprüften Build liefern.
 
-QA-Artefakte bleiben einen Tag verfügbar. Bei Ablauf den gesamten Lauf einschließlich
-QA wiederholen; fehlende Artefakte dürfen nicht durch ungeprüfte Builds ersetzt
-werden. Die bestehenden Fehler-/Testreports bleiben 14 Tage erhalten.
+Tag, veröffentlichtes Nicht-Draft-Release und vollständiger Commit-SHA werden vor
+vollständiger QA, vor Artefaktübernahme und vor Deployment überprüft. Ein neuerer
+Main-Stand wird beim Rollout nicht untergeschoben.
 
-Grundlage: [Download Artifact](https://github.com/actions/download-artifact#usage)
-verwendet standardmäßig den aktuellen Lauf. Die
-[GitHub-Kontexte](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context)
-liefern Commit, Ereignis und Workflow zur Bindung von Artefakt und Concurrency.
+Die äußeren Release-/Pages-Concurrency-Gruppen serialisieren ohne laufende Gates
+abzubrechen. Normale PR-/Push-QA darf überholte Läufe derselben Ref abbrechen;
+manuelle und aufgerufene Release-QA darf dies nicht. Kein notwendiger Job darf
+übersprungen sein und trotzdem Deployment freigeben.
 
-## Formatierung generierter Dateien (#119)
+## Warum die Vereinfachung (#122)
 
-Release Please pflegt `.release-please-manifest.json` und `CHANGELOG.md`; der
-Versions-Merge `489b46d` enthält die beanstandete Generatorausgabe. Lokal beanstandete
-`npm run format:check` vor der Korrektur genau diese zwei Dateien, entsprechend den
-fehlgeschlagenen Läufen [main](https://github.com/Skanky0815/pixels-world/actions/runs/42143792701)
-und [Versions-PR](https://github.com/Skanky0815/pixels-world/actions/runs/42143583461).
-Nur diese zwei Pfade sind nun zusätzlich ignoriert. Die Ausgabe bleibt unverändert,
-sodass ein erneuter Generatorlauf keinen Formatierungskonflikt erzeugt. Insbesondere
-`package.json`, eigener TypeScript-Code und normale Dokumentation bleiben geprüft.
+[Spielrelease 42176256152](https://github.com/Skanky0815/pixels-world/actions/runs/42176256152)
+bestand die gesamte vollständige QA und scheiterte danach am Versions-Merge-Gate:
+`46b8f78` war der CI-Fix #121, kein ausstehender Versions-Merge. Die Prüfung war
+sachlich richtig, aber zu spät und ohne hilfreiche Fehlermeldung. Sie läuft jetzt
+vor der Release-Aktion, ohne vorherige zusätzliche Vollprüfung.
 
-## Messung und Einsparung (#120)
+Der vorige Ablauf wiederholte schon vor #121 Installationen und komplette QA-Suites.
+[prepare 42142382295](https://github.com/Skanky0815/pixels-world/actions/runs/42142382295)
+enthielt 20 Sekunden zusätzliche Installations-/QA-/Audit-Schritte im Releasejob.
+#121 entfernte sie und ersetzte die zweite Pages-Suite durch Artefaktübernahme.
+Die erste volle QA lag dort noch vor der Release-Erstellung und wurde nun in den
+Rollout verschoben. Insgesamt bleibt es bei einer vollen Suite pro neuem Release;
+`prepare` benötigt keine zusätzliche Suite mehr. Zeiten schwanken mit Runnerlast;
+eine tatsächliche neue Release-Laufzeit wird erst nach dem ersten bewussten Rollout
+gemessen, keine Euro-Ersparnis behauptet.
 
-Am 6. November 2026 zeigten die letzten 15 Runs sechs `push`-QA-Läufe, acht PR-Läufe
-(drei davon durch weitere Updates abgebrochen) und einen manuellen Release-Lauf.
-PR und Push prüfen dabei unterschiedliche Commit-Identitäten.
+## Formatierung und Branch-Schutz
 
-Messwerte aus [prepare 42142382295](https://github.com/Skanky0815/pixels-world/actions/runs/42142382295):
+Release Please pflegt `.release-please-manifest.json` und `CHANGELOG.md`. Nur diese
+beiden generierten Root-Dateien sind gezielt von Prettier ausgenommen (#119).
+`package.json`, eigener Code und normale Dokumentation bleiben geprüft.
 
-- Vollständige QA: erster Jobstart 01:13:38 UTC, Gesamtcheck fertig 01:23:21 UTC,
-  also 9 min 43 s einschließlich paralleler Jobs und Wartezeiten.
-- Anschließender Releasejob: 41 s. Davon wiederholte Installation 3 s, `npm run qa`
-  16 s und Audit 1 s: **20 s redundante serielle Schritte**, jetzt entfernt.
-- Der ausgelassene Pages-Job war kein zusätzlicher Testlauf. Die Gesamtspanne des
-  Runs bis 01:27:50 UTC darf daher nicht als reine QA-Rechenzeit ausgegeben werden.
+Die bisherigen Pfadfilter und PR-Checknamen bleiben erhalten. Bei der Prüfung am 6. November 2026 hatte das aktive Repository-Ruleset `main protection` Review-,
+Linearitäts-, Lösch- und Force-Push-Regeln, aber keine `required_status_checks`.
+Schutzeinstellungen werden nicht verändert. Pfadgefilterte Workflows dürfen nicht
+für jeden PR verpflichtend eingestellt werden: Dokumentations-PRs könnten sonst auf
+Pending bleiben. Dafür wäre zunächst ein immer gestarteter Gesamtcheck nötig.
 
-Das frühere echte [publish 41945123257](https://github.com/Skanky0815/pixels-world/actions/runs/41945123257)
-hatte zusätzlich einen Pages-Buildjob von 4 min 44 s einschließlich Installation,
-zweiter Qualitätsprüfung und Browser-Suite. Das ist eine historische Größenordnung
-mit älterem Spielstand, keine garantierte aktuelle Zeitersparnis.
+Prüfung der Release-Quell-Gates: `bash tests/ci/release-gates.sh` (auch im QA-Qualityjob).
 
-Strukturell sinken die Prüfungen pro `publish` von **drei auf eine Qualitäts-Suite**
-und von **zwei auf eine vollständige Browser-Suite**. `prepare` sinkt von zwei auf
-eine Qualitäts-Suite. Beim manuellen Pages-Lauf bleibt die Abdeckung erhalten und
-nutzt nun dieselben zwei vorbereiteten Browser-Container wie die übrige QA.
-Upload/Download ersetzen die zweite Installation und Tests beim Release-Rollout.
-
-Nachher-Messung: Die PR-QA und eine manuelle `full`-QA prüfen die Änderung vor dem
-Merge; Links und gemessene Laufzeiten werden im PR ergänzt. Ein echter Publish mit
-Deployment ist ein separater, ausdrücklich gestarteter Integrationstest nach dem
-Merge. Daher werden hier weder eine neue Release-Laufzeit noch Kosten in Euro
-behauptet. Abrechnungsdaten wurden nicht erhoben; Runner-Minuten und Wartezeit sind
-unterschiedliche Messgrößen.
-
-## Required Checks
-
-Die klassische Branch-Protection-API meldete am 6. November 2026 „Branch not protected“.
-Zusätzlich existiert ein aktives Repository-Ruleset `main protection` mit Review-,
-Linearitäts-, Lösch- und Force-Push-Regeln, aber ohne `required_status_checks`.
-Es werden keine Schutzeinstellungen verändert. Pfadgefilterte Workflows dürfen
-weiterhin nicht als für jeden PR verpflichtend eingestellt werden: Bei reinen
-Dokumentationsänderungen würden sonst Checks auf Pending bleiben. Vor einer solchen
-Umstellung muss ein immer gestarteter Gesamtcheck eingeführt werden.
+Quellen: [Download Artifact](https://github.com/actions/download-artifact#usage),
+[Release-Please-Outputs](https://github.com/googleapis/release-please-action#outputs)
+und [GitHub-Kontexte](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context).
