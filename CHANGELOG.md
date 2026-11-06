@@ -1,6 +1,8 @@
 # Changelog
 
-## [0.1.3](https://github.com/Skanky0815/pixels-world/compare/v0.1.2...v0.1.3) (2026-11-06)
+## [0.1.3](https://github.com/Skanky0815/pixels-world/compare/v0.1.1...v0.1.3) (2026-11-06)
+
+Hinweis: `0.1.2` war ein unveröffentlichter, abgelöster Kandidat (#118). `0.1.3` umfasst dessen Änderungen und die nachfolgenden Korrekturen; der letzte veröffentlichte Stand ist `0.1.1`.
 
 
 ### Funktionen
@@ -49,7 +51,9 @@
 * review gameplay architecture and plan module and content boundaries ([#41](https://github.com/Skanky0815/pixels-world/issues/41)) ([f9ee539](https://github.com/Skanky0815/pixels-world/commit/f9ee539c7f7b9e55ff2332efd5ab9e2cc6e13548))
 * simplify README and add German issue forms ([#77](https://github.com/Skanky0815/pixels-world/issues/77)) ([a51b93f](https://github.com/Skanky0815/pixels-world/commit/a51b93f5c1346b02b8d49384a10150669e28ab05))
 
-## [0.1.2](https://github.com/Skanky0815/pixels-world/compare/v0.1.1...v0.1.2) (2026-11-06)
+## [0.1.2](https://github.com/Skanky0815/pixels-world/pull/118) (2026-11-06)
+
+Nicht veröffentlicht: Kandidat #118 wurde zugunsten von `0.1.3` abgelöst.
 
 
 ### Funktionen
