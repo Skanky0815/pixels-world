@@ -36,7 +36,7 @@ branch=$(jq -r '.[0].head.ref' <<< "$pulls")
 version=$(gh api "repos/$GITHUB_REPOSITORY/contents/.release-please-manifest.json?ref=$sha" --jq '.content | gsub("\n"; "") | @base64d | fromjson | .["."]')
 [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([+-][a-zA-Z0-9.-]+)?$ ]] || fail 'Ungültige Kandidatenversion.'
 if [ "$sha" = "$GITHUB_SHA" ]; then
-  note "Versions-PR #$number (v$version, $sha) ist bereits gemergt und aktuell. Kein neuer PR nötig: nach grüner Main-QA publish starten."
+  note "Versions-PR #$number (v$version, $sha) ist bereits gemergt und aktuell. Kein neuer PR nötig: nach grüner Main-QA automatische Veröffentlichung abwarten; bei fehlendem Ereignis QA auf genau diesem Main erneut starten."
   output false
   exit 0
 fi

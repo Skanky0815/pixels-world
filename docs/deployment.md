@@ -9,8 +9,8 @@ Die Quellen des Ablaufs sind [release.yml](../.github/workflows/release.yml),
 
 Pages verwendet GitHub Actions und die Umgebung `github-pages`; zugelassene
 Deployments auf `main` beschränken. Nur der Deploymentjob erhält Pages-/OIDC-Rechte.
-Der Releasejob braucht seine expliziten Release-/PR-Rechte und Lesezugriff auf
-Main-QA. GitHub Actions muss PRs erstellen dürfen. Kein zusätzlicher PAT nötig.
+Der Releasejob braucht seine expliziten Release-/PR-Rechte und Actions-Zugriff für
+Main-QA sowie das gezielte Starten der Versions-PR-QA. GitHub Actions muss PRs erstellen dürfen. Kein zusätzlicher PAT nötig.
 
 Release Please pflegt Paket-/Lockversion, `.release-please-manifest.json`,
 `CHANGELOG.md`, Tags und GitHub Releases. Versionen nicht einzeln von Hand erhöhen.
@@ -22,14 +22,19 @@ Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
 
 1. Vor Code-/Tooling-PRs lokal `npm run check:pr`, PR-Checks und Review abschließen.
    Nach Merge erfolgreiche Main-QA für genau den aktuellen Main-Commit abwarten.
-2. **Actions → Spielrelease → main → prepare** erstellt/aktualisiert den Versions-PR.
-   Version und Changelog prüfen. Mit `GITHUB_TOKEN` erstellte PRs starten nicht
-   automatisch weitere Workflows: QA nötigenfalls manuell auf dem Release-Branch
-   ausführen. Sara zuweisen, Rico zur Review anfragen und erst bei grünen Checks
-   mergen. `autorelease`-Labels erhalten.
-3. Auf dem gemergten Versions-PR grüne Main-QA abwarten. **Spielrelease → main →
-   publish** bestätigt Quell-Commit, Versions-Merge und vorhandene QA und erzeugt
-   Tag/Release. Normale Feature-/CI-Merges dürfen nicht veröffentlichen.
+2. **Actions → Spielrelease → main → Run workflow** startet ausschließlich `prepare`
+   und erstellt/aktualisiert den Versions-PR.
+   Version und Changelog prüfen. Weil `GITHUB_TOKEN`-PR-Ereignisse keine normale
+   PR-QA starten, stößt prepare ausdrücklich `workflow_dispatch` mit Smoke-Profil
+   auf dem Release-Branch an. Vollprüfungen bleiben manuell möglich. Sara
+   zuweisen, Rico zur Review anfragen und erst bei grünen Checks mergen.
+   `autorelease`-Labels erhalten.
+3. Der Abschluss von Main-QA löst `workflow_run` aus. Nur der jüngste erfolgreiche
+   Push-/manuelle QA-Versuch für exakt den aktuellen Main-Commit kann einen
+   eindeutigen gemergten Release-Please-Versions-PR veröffentlichen. Branch,
+   Version, erlaubte Versionsdateien und Abwesenheit von Tag/Release werden
+   zusätzlich geprüft. Normale Feature-/CI-/Doku-Merges sind erklärte No-ops.
+   Ein separater manueller `publish`-Modus entfällt.
 4. Nur ein neu erstelltes Release startet im selben Lauf Pages: Release-Identität
    prüfen, vollständige QA mit Produktionszeiten und Audit, getesteten Build aus
    derselben Run-/SHA-Zuordnung übernehmen, Identität erneut prüfen und deployen.
@@ -38,8 +43,9 @@ Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
    Kein E2E-Observer; verlinkte Version muss dem veröffentlichten Tag entsprechen.
 
 Dieser direkte Workflow-Aufruf berücksichtigt, dass von `GITHUB_TOKEN` erzeugte
-Release-Ereignisse keine weitere Pipeline zuverlässig anstoßen. Manuelle Diagnose-
-QA bleibt ohne Veröffentlichung möglich. QA-Profile und Reports: [QA](qa.md).
+Release-Ereignisse keine weitere Pipeline zuverlässig anstoßen. Diagnose-QA ohne passenden Versions-Merge veröffentlicht nichts.
+Eine erfolgreiche manuelle Main-QA auf dem gemergten Versions-Kandidaten kann
+dagegen den automatischen Publish auslösen. QA-Profile und Reports: [QA](qa.md).
 
 ## Identität und Wiederanlauf
 
@@ -48,14 +54,14 @@ Commit vor Vollprüfung, Artefaktübernahme und Deployment. Ein neuer Main-Stand
 nicht statt des Release-Commits ausgeliefert werden. Concurrency serialisiert
 Release/Rollout; notwendige Gates dürfen nicht übersprungen sein.
 
-| Zustand                                                                 | Vorgehen                                                                                                                                                                 |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Main-QA fehlt/läuft/ist fehlgeschlagen                                  | Abwarten bzw. Fehler beheben; keine Ersatz-QA im Releasejob. Bei gefiltertem Docs-Merge QA manuell auf genau diesem Main starten.                                        |
-| Kein aktueller Versions-Merge                                           | `prepare`, Versions-PR prüfen/mergen und Main-QA abwarten. Normale Merges sind keine Veröffentlichung.                                                                   |
-| Main nach Versions-Merge weitergelaufen                                 | Neu auf aktuellem grünem Main vorbereiten; keinen alten Kandidaten ungeprüft veröffentlichen.                                                                            |
-| Mehrere pending-Kandidaten, Tag/Release vorhanden oder unklare Historie | Status untersuchen; keine automatische Bereinigung erzwingen.                                                                                                            |
-| Vollprüfung/Rollout fehlgeschlagen                                      | Tag/Release können existieren, der bisherige Pages-Stand bleibt. Fehlgeschlagene Jobs desselben Laufs erneut starten. Ein Release-No-op erzeugt keinen weiteren Rollout. |
-| QA-Artefakt abgelaufen                                                  | Erneut geprüften Build im selben Release-Ablauf liefern; keinen ungeprüften Ersatz hochladen. Aufbewahrung steht im Workflow.                                            |
+| Zustand                                                                 | Vorgehen                                                                                                                                                         |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Main-QA fehlt/läuft/ist fehlgeschlagen                                  | Abwarten bzw. Fehler beheben; keine Ersatz-QA im Releasejob. Bei gefiltertem Docs-Merge QA manuell auf genau diesem Main starten.                                |
+| Kein aktueller Versions-Merge                                           | `prepare`, Versions-PR prüfen/mergen und Main-QA abwarten. Normale Merges sind keine Veröffentlichung.                                                           |
+| Main nach Versions-Merge weitergelaufen                                 | Neu auf aktuellem grünem Main vorbereiten; keinen alten Kandidaten ungeprüft veröffentlichen.                                                                    |
+| Mehrere pending-Kandidaten, Tag/Release vorhanden oder unklare Historie | Status untersuchen; keine automatische Bereinigung erzwingen.                                                                                                    |
+| Vollprüfung/Rollout fehlgeschlagen                                      | Tag/Release können existieren, der bisherige Pages-Stand bleibt. Fehlgeschlagene Jobs desselben Laufs erneut starten. Ein No-op erzeugt keinen weiteren Rollout. |
+| QA-Artefakt abgelaufen                                                  | Erneut geprüften Build im selben Release-Ablauf liefern; keinen ungeprüften Ersatz hochladen. Aufbewahrung steht im Workflow.                                    |
 
 `prepare-release-candidate.sh` darf einen alten unveröffentlichten Kandidaten nur
 bei eindeutigem Root-Paket/Tagformat, gültiger Manifestversion, Merge als Main-
@@ -63,13 +69,23 @@ Vorfahr und Abwesenheit von Tag/Release ablösen. Es dokumentiert die Ablösung 
 alten PR und entfernt nur `autorelease: pending`. Der neue PR entsteht durch
 Release Please; kein manuelles `tagged`, keine manuelle Versionsänderung.
 Ein aktueller Kandidat ergibt einen erklärten No-op mit nächstem Schritt.
+Fehlt sein erfolgreicher QA-Abschluss als Ereignis, QA manuell auf genau diesem
+aktuellen Main erneut starten; alte/überholte Versuche werden nicht übernommen.
 
 ```sh
 GITHUB_REPOSITORY=Skanky0815/pixels-world GITHUB_SHA=<aktueller-main-sha>   bash .github/scripts/prepare-release-candidate.sh --dry-run
 ```
 
+`workflow_run` verwendet vertrauenswürdigen Code des Default-Branches, nicht
+Code/Artefakte aus dem auslösenden PR. Repository, Branch, Workflow-Pfad,
+Commit, Run-ID und Versuch werden gegen die bekannte QA-API geprüft. Main und
+die globale Eindeutigkeit des pending-Kandidaten werden vor Release Please erneut
+bestätigt. Gemeinsame Concurrency und vorhandene Tags/Release-Metadaten verhindern
+doppelte Veröffentlichungen; No-ops und Fehler erscheinen in der Summary.
+Ein zwischenzeitlich weitergelaufener Main wird nicht nachträglich freigegeben.
+
 Release- und Retry-Nachweise gehören in PR/Actions, nicht als zweite Statuschronik
-hier. Grundlagen: [Release Please](https://github.com/googleapis/release-please-action#outputs)
+hier. Grundlagen: [Release Please](https://github.com/googleapis/release-please-action#outputs), [workflow_run](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_run)
 und [Pages-Workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
 ## Versionslink im Footer
