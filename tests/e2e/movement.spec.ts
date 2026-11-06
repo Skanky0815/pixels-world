@@ -11,19 +11,23 @@ import {
   reset,
 } from './support';
 
-// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
-test('Pfeiltasten bewegen Pixel; Boden und Raumgrenze halten ihn auf', async ({ page }) => {
-  await start(page);
-  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x > 150);
-  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.left <= 0.1);
-  await framesPass(page);
-  const { pixel } = await state(page);
+test(
+  'Pfeiltasten bewegen Pixel; Boden und Raumgrenze halten ihn auf',
+  { tag: '@smoke' },
+  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
+  async ({ page }) => {
+    await start(page);
+    await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x > 150);
+    await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.left <= 0.1);
+    await framesPass(page);
+    const { pixel } = await state(page);
 
-  expect(pixel.x).toBeGreaterThanOrEqual(0);
-  expect(pixel.grounded).toBe(true);
-  expect(pixel.bottom).toBeCloseTo(468, 0);
-  expect(pixel.velocityY).toBe(0);
-});
+    expect(pixel.x).toBeGreaterThanOrEqual(0);
+    expect(pixel.grounded).toBe(true);
+    expect(pixel.bottom).toBeCloseTo(468, 0);
+    expect(pixel.velocityY).toBe(0);
+  },
+);
 
 test('Tastatursprünge landen auf Sofa und erstem Regal', async ({ page }) => {
   await start(page);

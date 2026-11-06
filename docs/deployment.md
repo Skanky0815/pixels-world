@@ -12,7 +12,7 @@ Release-/PR-Rechte und `actions: read` für die bestehende Main-QA. Kein neuer P
 
 ## Veröffentlichung
 
-1. PR-QA und Review abschließen, nach Merge die Main-QA abwarten.
+1. Lokal `npm run check:pr` ausführen, PR-Quality/Smoke und Review abschließen; nach Merge die Main-Quality-Prüfung ohne Browserwiederholung abwarten.
 2. **Spielrelease → main → prepare** erstellt den Versions-PR. Version und Changelog
    prüfen, PR-QA bei automatisch mit `GITHUB_TOKEN` erstellten PRs nötigenfalls manuell
    starten, reviewen und mergen. Die `autorelease`-Labels erhalten.

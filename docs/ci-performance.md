@@ -1,15 +1,25 @@
 # E2E-Laufzeit: vier Shards (#124)
 
-CI verteilt die vorhandenen 48 Browser-Szenarien auf vier unabhängige Runner statt
-zwei. Ein Worker pro Runner bleibt erhalten: Phaser/Chromium nutzt Software-Rendering,
+Vollständige manuelle und Release-QA verteilt die vorhandenen 48 Browser-Szenarien
+auf vier unabhängige Runner statt zwei. Ein Worker pro Runner bleibt erhalten: Phaser/Chromium nutzt Software-Rendering,
 und zusätzliche Worker auf derselben Maschine können um CPU konkurrieren. Lokal
 bleibt es bei zwei Workern. `fullyParallel: true` verteilt weiterhin einzelne Tests.
 
-Es werden keine Tests ausgelassen, Spielzeiten oder Assertions geändert und keine
-Retries eingeführt. Alle vier Matrixjobs müssen erfolgreich sein. Der Sammelcheck
+In vollständigen Läufen werden keine Tests ausgelassen, Spielzeiten oder Assertions
+geändert und keine Retries eingeführt. Alle vier Matrixjobs müssen erfolgreich sein. Der Sammelcheck
 behält seinen Namen und erwartet Unit-Report plus vier Browserreports. Nur Shard 1
 liefert im Vollprofil das Pages-Artefakt; Release-Ablauf und -Gates bleiben erhalten.
 Die Release-Vereinfachung #122/#123 ist ein getrennter PR.
+
+## Runner-Kosten senken (#126)
+
+Die folgende Messung betrifft komplette Suites. Mehr Shards reduzieren deren
+Wartezeit, nicht deren Runner-Verbrauch. Deshalb gilt vor dem Phase-2-Release:
+Lokal alle Szenarien mit `npm run check:pr`, PR-CI nur drei `@smoke`-Szenarien auf
+einem Runner, Main-CI keine Browsertests. Die vier Shards bleiben für vollständige
+manuelle und Release-Prüfungen. Qualitäts-/Unit-Tests und Release-Gates bleiben
+aktiv. Tatsächliche Kosten hängen auch von GitHub-Tarif und Abrechnung ab; es werden
+keine Euro-Ersparnisse behauptet.
 
 ## Referenzmessung mit zwei Shards
 
