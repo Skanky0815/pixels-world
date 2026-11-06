@@ -206,8 +206,3 @@ kbd {
   outline: 2px solid #edc37c;
   outline-offset: 4px;
 }
-#feedback-note {
-  grid-column: 1 / -1;
-  font-size: 11px;
-  color: #c1afa0;
-}

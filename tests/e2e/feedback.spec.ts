@@ -24,7 +24,7 @@ test('Feedback öffnet die Issue-Auswahl in einem neuen Tab; Rückkehr erhält d
   await expect(link).toBeVisible();
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-  await expect(page.locator('#feedback-note')).toContainText('GitHub-Konto');
+  await expect(page.locator('#feedback-note')).toHaveCount(0);
   const opened = page.waitForEvent('popup');
 
   await link.click();

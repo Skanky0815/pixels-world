@@ -72,7 +72,7 @@ explizit geprüft. Der Browserlauf mit niedrigem Chaos prüft zusätzlich die
 tatsächlich angezeigten Herzen (`♡ · 0/1` → `♥ · 1/1`) und den anschließenden Abschluss.
 
 `feedback.spec.ts` prüft echtes Öffnen eines neuen Tabs per Maus und Enter,
-Kontohinweis, Fokus-/Pause-Lifecycle, unterdrückte Spieltasten bei Linkfokus
+Fokus-/Pause-Lifecycle, unterdrückte Spieltasten bei Linkfokus
 und schmale Darstellung außerhalb der Spielfläche. Externe GitHub-Navigation
 wird im Browser abgefangen; die Suite benötigt weder GitHub-Anmeldung noch
 Netzwerkzugriff zu GitHub und erstellt keine Issues. Die vorhandenen Formulare
