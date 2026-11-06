@@ -18,7 +18,9 @@ Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich gro�
 
 Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
 mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.
-Das Spiel läuft ohne Konto und ohne Backend.
+Das Spiel läuft ohne Konto und ohne Backend. Über die Sprachwahl im Kopfbereich
+spielst du auf Deutsch oder Englisch. Nur diese Einstellung bleibt lokal im
+Browser gespeichert; ein Sprachwechsel erhält die laufende Runde.
 Den aktuellen Versionsstand findest du unter [Releases](https://github.com/Skanky0815/pixels-world/releases).
 
 ## Spielidee

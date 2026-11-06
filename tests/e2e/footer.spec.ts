@@ -16,7 +16,7 @@ test('Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spie
   ]) {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto(base);
-    await expect(page.locator('h1 span')).toHaveText('01 / THE LIVING ROOM');
+    await expect(page.locator('h1 span')).toHaveText('01 / DAS WOHNZIMMER');
     const year = await page.evaluate(() => new Date().getFullYear());
     const footer = page.locator('#build-info');
 

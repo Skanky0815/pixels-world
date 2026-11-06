@@ -1,3 +1,4 @@
+import { t, onLanguageChange } from './i18n/locale';
 const footer = document.querySelector('#build-info');
 
 if (!footer) throw new Error('Build footer missing');
@@ -10,7 +11,12 @@ if (version instanceof HTMLAnchorElement && __APP_RELEASE_URL__) {
   version.href = __APP_RELEASE_URL__;
   version.target = '_blank';
   version.rel = 'noopener noreferrer';
-  version.title = `Release-Notes zu v${__APP_VERSION__} (neuer Tab)`;
+  const refresh = () => {
+    version.title = t('releaseNotesForVNewTab', { v0: __APP_VERSION__ });
+  };
+
+  refresh();
+  onLanguageChange(refresh);
 }
 
 footer.append(version);

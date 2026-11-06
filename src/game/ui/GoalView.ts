@@ -1,13 +1,12 @@
+import { t, translateExact } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { MainGoal, ResolvedGoal } from '../domain/main-goal';
-
 export class GoalView {
   private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
   private readonly caption: Phaser.GameObjects.Text;
   private readonly marker: Phaser.GameObjects.Container;
-
   // eslint-disable-next-line max-lines-per-function -- Zielmarker und kurzer Hinweis werden gemeinsam aus derselben validierten Platzierung aufgebaut.
   constructor(scene: Phaser.Scene, goal: ResolvedGoal) {
     this.root = scene.add.container(0, 0).setDepth(9).setVisible(false);
@@ -32,7 +31,7 @@ export class GoalView {
   render(goal: ReturnType<MainGoal['snapshot']>, started: boolean) {
     this.root.setVisible(started);
     this.marker.setVisible(goal.status === 'active');
-    this.caption.setText(goalCaption(goal));
+    this.caption.setText(translateExact(goalCaption(goal)));
   }
 
   snapshot() {
@@ -46,12 +45,12 @@ export class GoalView {
 }
 
 function goalCaption(goal: ReturnType<MainGoal['snapshot']>) {
-  if (goal.status === 'reached') return `Ziel erreicht: ${goal.label} · Sara kommt nach Hause.`;
+  if (goal.status === 'reached') return t('goalReachedSaraIsComingHome', { v0: goal.label });
 
-  if (goal.status === 'missed') return `Ziel nicht erreicht: ${goal.label} · Sara ist zurück.`;
+  if (goal.status === 'missed') return t('goalMissedSaraIsBack', { v0: goal.label });
 
   if (goal.progress > 0)
-    return `Pixel spielt mit dem ${goal.label} … ${Math.round(goal.progress * 100)} %`;
+    return t('pixelIsPlayingWithThe', { v0: goal.label, v1: Math.round(goal.progress * 100) });
 
   return goal.motivation;
 }

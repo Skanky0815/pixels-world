@@ -76,7 +76,7 @@ Bei einem gestarteten QA-Lauf bleiben Lint, Unit-Tests, Typprüfung, Build und A
 
 Unter **Actions → QA → Run workflow** einen Branch, eine Durchlaufzahl (1, 2 oder 3;
 Standard 1) und das Rundenprofil `fast` oder `full` auswählen. `workflow_dispatch`
-ist ungefiltert und prüft immer alle 60 Szenarien. Normale PR-/Push-Läufe verwenden
+ist ungefiltert und prüft immer alle 63 Szenarien. Normale PR-/Push-Läufe verwenden
 `fast`: Nur das explizite Heimkehr-Szenario nutzt 8–10 Sekunden Testdauer. `full`
 prüft denselben Ablauf mit den produktiven 60–105 Sekunden; alle Assertions bleiben
 gleich. Die Domain-Unit-Tests prüfen die echten Grenzen zusätzlich.
@@ -102,7 +102,7 @@ Die Unit- und Browserjobs zeigen nach ihren Testschritten alle gemeldeten Szenar
 
 Node erzeugt über `npm run test:unit:ci` neben der Terminalausgabe einen TAP-Report (`test-reports/unit.tap`). Playwright erzeugt zusätzlich zu List/HTML einen JUnit-Report (`test-reports/playwright.xml`). Die gepflegte [test-summary/action](https://github.com/test-summary/action) verarbeitet beide Formate; ihre Version ist als Commit gepinnt. Nodes JUnit-Ausgabe wird bewusst nicht verwendet: Die geprüfte Action übersieht die direkt unter `testsuites` liegenden Testfälle von Node 22. Der TAP-Reporter wird korrekt gelesen.
 
-Die Gesamtübersicht zählt **Ausführungen**: aktuell 94 Unit-Tests plus 4 Browser-Szenarien, also 98 Ergebnisse bei PR-CI. Main-CI zählt 94 Unit-Tests und kennzeichnet Browsertests als absichtlich nicht geplant. Vollständige manuelle QA und Release-Rollout zählen 94 plus 60, also 154 Ergebnisse. Bei manuell gewählten zwei Durchläufen sind es 214, bei drei Durchläufen 274. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
+Die Gesamtübersicht zählt **Ausführungen**: aktuell 98 Unit-Tests plus 4 Browser-Szenarien, also 102 Ergebnisse bei PR-CI. Main-CI zählt 98 Unit-Tests und kennzeichnet Browsertests als absichtlich nicht geplant. Vollständige manuelle QA und Release-Rollout zählen 98 plus 63, also 161 Ergebnisse. Bei manuell gewählten zwei Durchläufen sind es 224, bei drei Durchläufen 287. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
 
 Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Je nach Profil werden ein (Main), zwei (PR-Smoke) oder fünf (vollständige QA) erwartete Reports auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
 
@@ -138,7 +138,7 @@ unveränderten Release-Identitätsprüfungen bereit. Details und Messwerte stehe
 Grundlage: [Playwright-Docker-Image](https://playwright.dev/docs/docker) und
 [Container-Jobs in der Playwright-CI-Anleitung](https://playwright.dev/docs/ci#via-containers).
 
-Die 60 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die vier Shards bei vollständigen Läufen bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
+Die 63 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die vier Shards bei vollständigen Läufen bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
 
 Der Qualitätsjob verwendet die Typprüfung in `npm run build` statt eines zusätzlichen identischen Aufrufs davor. In der Playwright-Vorbereitung prüft `build:e2e` die Typen; die zweite Produktionsvorschau baut deshalb direkt mit Vite. Playwright verlangt beide erfolgreichen Serverstarts. Die eigenständig nutzbaren Befehle `build`, `build:e2e` und `qa` bleiben typgeprüft.
 
@@ -219,3 +219,19 @@ E2E-/Vorschaubuild. Mit `PIXELS_RELEASE_TAG=v<package-Version> npm run test:e2e
 Der E2E-Build bleibt unverlinkt, der Produktionsbuild zeigt exakt den Tag.
 Unit-Tests prüfen Buildmodus, Fallback und Abbruch bei abweichenden Metadaten.
 Der tatsächliche Pages-Rollout ist beim nächsten Release gegenzuprüfen.
+
+## Sprachen (#105)
+
+Deutsch ist Standard. Die Auswahl im Kopfbereich wechselt zwischen Deutsch und
+Englisch, ohne die Szene neu zu starten. Nur die Sprachwahl wird unter
+`pixels-world.language` gespeichert; bei fehlendem, ungültigem oder gesperrtem
+Speicher bleibt Deutsch der Startwert. Eine gewählte Sprache funktioniert auch
+ohne Speicherzugriff für die aktuelle Sitzung. Die Datenschutzerklärung
+beschreibt diese Einstellung.
+
+`localization.spec.ts` prüft Einführung, Persistenz, blockierten Speicher und
+eine komplette englische Touch-Runde mit Sprachwechsel während Heimkehr und
+Versöhnung. Unit-Tests prüfen Katalog-/Platzhalterparität, Fallback, Meldung
+fehlender Übersetzungen und kanonische Spieldaten. Die bestehende deutsche
+Suite bleibt vollständig erhalten. Hardware-Prüfung beider Sprachen auf
+iPhone/Safari und Android bleibt zusätzlich sinnvoll.

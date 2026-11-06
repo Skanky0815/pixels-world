@@ -305,3 +305,22 @@ Darstellungsfreigabe an den Input-Adapter weiter; Eingaben laufen weiterhin
 
 Touch-Geräte verwenden beim Start Phasers Canvas-2D-Renderer, Desktop weiterhin
 AUTO. Begründung, Alternativen und Hardware-Grenzen: [ADR 0002](../adr/0002-mobile-text-rendering.md).
+
+### Lokalisierung
+
+`src/i18n/de.ts` und `en.ts` enthalten typisierte Schlüssel mit denselben
+Platzhaltern. `t` formatiert UI-Texte in der gewählten Sprache; `copy` liefert
+kanonische deutsche Inhaltsdaten für bereits vorhandene Domain-Verträge.
+Ausgewählte Sprüche und Ärgerstufen ändern sich deshalb bei einem Sprachwechsel
+nicht. `translateExact` übersetzt diese skalaren Inhalte erst zur Darstellung.
+Es vergleicht vollständige Katalogwerte, keine Satzfragmente oder DOM-Inhalte.
+Fehlende englische Werte fallen auf Deutsch zurück und werden in Entwicklung
+aufgelistet. Unbekannte Inhaltswerte bleiben unverändert.
+
+Ein zentraler Sprachwechsel benachrichtigt die Ansichten, ohne Physik oder
+Domain-Timer weiterzuschalten. Die Szene rendert vorhandene Snapshots erneut;
+Einführung und Touch-Adapter aktualisieren ihre Texte und räumen ihre
+Abonnements beim Shutdown auf. Nur die lokale Sprachwahl wird gespeichert.
+Rechtsseiten bleiben als deutsche Rechtstexte erhalten und sind auf Englisch
+entsprechend als deutschsprachig gekennzeichnet. Entwicklerwerkzeuge,
+technische Fehlermeldungen, Eigennamen und Tastensymbole sind ausgenommen.

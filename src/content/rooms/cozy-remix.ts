@@ -1,11 +1,11 @@
+import { copy } from '../../i18n/locale.ts';
 import { LIVING_ROOM } from './living-room.ts';
 import type { RoomDefinition } from '../../game/content/definitions.ts';
-
 /** Hand-authored content variant; the game classes are identical. */
 export const COZY_REMIX = {
   ...LIVING_ROOM,
   id: 'cozy-remix',
-  caption: '02 / A COZIER CORNER',
+  caption: copy('aCozierCorner'),
   objects: [
     {
       id: 'couch',

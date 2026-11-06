@@ -1,11 +1,11 @@
+import { t } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { HomecomingSnapshot, SaraAnimation } from '../domain/homecoming';
 import { SARA_ANIMATIONS } from '../../content/sara-reactions';
 import { SARA_CLIPS, SARA_SPRITE } from '../actors/sara-animations';
 import { homecomingPositions } from '../content/homecoming-layout';
-
-const REACTION_LABELS = { calm: 'Skeptischer Blick', annoyed: 'Genervtes Seufzen', angry: '…' };
+const REACTION_LABELS = { calm: t('aSuspiciousLook'), annoyed: t('anExasperatedSigh'), angry: '…' };
 
 /** Scene-owned sprite and dialogue view; selection and timing stay in the domain. */
 export class SaraReturnView {
@@ -17,11 +17,13 @@ export class SaraReturnView {
   private readonly hint: Phaser.GameObjects.Text;
   private readonly message: Phaser.GameObjects.Text;
   private key: SaraAnimation = SARA_ANIMATIONS.idle;
-
   // eslint-disable-next-line max-lines-per-function -- Der deklarative Aufbau hält Tür, Figur und Dialogpanel mit ihrer gemeinsamen Raumgeometrie zusammen.
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly layout: { readonly width: number; readonly floorY: number },
+    private readonly layout: {
+      readonly width: number;
+      readonly floorY: number;
+    },
   ) {
     this.root = scene.add.container(0, 0).setDepth(12).setVisible(false);
     const { width, floorY } = layout;
@@ -76,7 +78,7 @@ export class SaraReturnView {
     const lines = this.caption.split('\n');
 
     this.message.setText(dialogue ? lines[0] : this.caption);
-    this.quote.setText(dialogue ? `„${lines[1]}“` : '');
+    this.quote.setText(dialogue ? t('caption', { v0: lines[1] }) : '');
     this.hint.setText(dialogue ? lines[2] : '');
   }
 
@@ -133,17 +135,17 @@ function registerAnimations(scene: Phaser.Scene) {
 function messageFor(snapshot: HomecomingSnapshot, canContinue: boolean) {
   if (snapshot.stage === 'waiting') return '';
 
-  if (snapshot.stage === 'entering') return 'SARA\nDie Tür geht auf …';
+  if (snapshot.stage === 'entering') return t('saraTheDoorOpens');
 
-  if (snapshot.stage === 'complete') return 'VERSÖHNUNG\nPixels Charme-Offensive beginnt …';
+  if (snapshot.stage === 'complete') return t('makeAmendsPixelTurnsOnThe');
 
   if (snapshot.stage === 'dialogue') return dialogueMessage(snapshot, canContinue);
 
-  return `SARA\n${snapshot.selection ? REACTION_LABELS[snapshot.selection.anger] : ''}`;
+  return t('sara', { v0: snapshot.selection ? REACTION_LABELS[snapshot.selection.anger] : '' });
 }
 
 function dialogueMessage(snapshot: HomecomingSnapshot, canContinue: boolean) {
-  const cue = canContinue ? 'LEERTASTE: Weiter' : 'Pixel kommt zu Sara …';
+  const cue = canContinue ? t('spaceContinue') : t('pixelIsComingOverToSara');
 
-  return `SARA\n${snapshot.selection?.dialogue ?? ''}\n${cue}`;
+  return t('saraLabel', { v0: snapshot.selection?.dialogue ?? '', v1: cue });
 }

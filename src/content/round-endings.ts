@@ -1,20 +1,23 @@
+import { copy } from '../i18n/locale.ts';
 import type { ReconciliationLevel } from './reconciliation.ts';
-
 /** Final remarks combine the original anger level with the reconciliation outcome. */
 export const ROUND_ENDINGS: Record<
   ReconciliationLevel,
-  { readonly success: string; readonly failed: string }
+  {
+    readonly success: string;
+    readonly failed: string;
+  }
 > = {
   calm: {
-    success: 'Na gut, du darfst bleiben. War ohnehin dein Plan, oder?',
-    failed: 'Heute gibt es Streicheln erst nach einer kleinen Denkpause.',
+    success: copy('fineYouCanStayThatWas'),
+    failed: copy('cuddlesCanWaitUntilWeVe'),
   },
   annoyed: {
-    success: 'Dir ist verziehen. Dem Sofa noch nicht.',
-    failed: 'Der Blick ist süß. Die Kratzer bleiben trotzdem.',
+    success: copy('youReForgivenTheSofaIsn'),
+    failed: copy('cuteFaceStillDoesnTUn'),
   },
   angry: {
-    success: 'Ich hab dich lieb. Über die Einrichtung reden wir morgen.',
-    failed: 'Nein, Pixel. Das war heute selbst für dein Schnurren zu viel.',
+    success: copy('iLoveYouWeLlDiscuss'),
+    failed: copy('noPixelEvenYourPurringHas'),
   },
 };
