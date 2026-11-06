@@ -50,9 +50,9 @@ npm run test:e2e:debug              # Sichtbarer Browser und Playwright Inspecto
 npm run test:e2e:report             # Letzten HTML-Bericht öffnen
 ```
 
-Auf Linux bei Bedarf einmal `npx playwright install --with-deps chromium` ausführen. CI führt jeden Test normalerweise einmal ohne automatische Retries aus; zusätzliche Durchläufe sind manuell wählbar, installiert Chromium samt Systemabhängigkeiten und speichert den HTML-Bericht sowie Screenshots/Traces fehlgeschlagener Tests für 14 Tage getrennt je Teil-Suite als `playwright-results-1` und `playwright-results-2`. Ein Trace lässt sich mit `npx playwright show-trace <pfad-zur-trace.zip>` öffnen.
+Auf Linux bei Bedarf einmal `npx playwright install --with-deps chromium` ausführen. CI führt jeden Test normalerweise einmal ohne automatische Retries aus; zusätzliche Durchläufe sind manuell wählbar, installiert Chromium samt Systemabhängigkeiten und speichert den HTML-Bericht sowie Screenshots/Traces fehlgeschlagener Tests für 14 Tage getrennt je Teil-Suite als `playwright-results-1` bis `playwright-results-4`. Ein Trace lässt sich mit `npx playwright show-trace <pfad-zur-trace.zip>` öffnen.
 
-Lokal laufen Tests isoliert mit zwei Workern, auch innerhalb derselben Testdatei, und geben Tasten im Cleanup frei. CI verteilt die vollständige Suite mit Playwrights `--shard=1/2` und `--shard=2/2` auf zwei unabhängige Runner mit je einem Worker. `fullyParallel` erlaubt die Aufteilung einzelner Tests statt ganzer Dateien. Der Gesamtcheck **Playwright (Chromium)** wird nur grün, wenn beide Teil-Suites erfolgreich sind; ein Fehler bricht die andere Teil-Suite nicht vorzeitig ab. Jeder Test besitzt seinen eigenen Browser-Kontext und seine eigene pausierte Uhr; die statischen Vorschau-Server werden gemeinsam genutzt. Ein Worker je CI-Runner vermeidet Konkurrenz beim Software-Rendering; zwei lokale Worker nutzen die lokale Hardware. Bei knappen Ressourcen lässt sich mit `--workers=1` seriell ausführen; `--workers=N` überschreibt die Vorgabe auch in CI. Testabdeckung und null automatische Retries bleiben erhalten; zusätzliche Durchläufe lassen sich manuell wählen.
+Lokal laufen Tests isoliert mit zwei Workern, auch innerhalb derselben Testdatei, und geben Tasten im Cleanup frei. CI verteilt die vollständige Suite mit Playwrights `--shard=1/4` bis `--shard=4/4` auf vier unabhängige Runner mit je einem Worker. `fullyParallel` erlaubt die Aufteilung einzelner Tests statt ganzer Dateien. Der Gesamtcheck **Playwright (Chromium)** wird nur grün, wenn alle vier Teil-Suites erfolgreich sind; ein Fehler bricht die anderen Teil-Suites nicht vorzeitig ab. Jeder Test besitzt seinen eigenen Browser-Kontext und seine eigene pausierte Uhr; die statischen Vorschau-Server werden gemeinsam genutzt. Ein Worker je CI-Runner vermeidet Konkurrenz beim Software-Rendering; zwei lokale Worker nutzen die lokale Hardware. Bei knappen Ressourcen lässt sich mit `--workers=1` seriell ausführen; `--workers=N` überschreibt die Vorgabe auch in CI. Testabdeckung und null automatische Retries bleiben erhalten; zusätzliche Durchläufe lassen sich manuell wählen.
 
 Playwrights Browser-Uhr ist vor dem Laden installiert und pausiert; zwischen Zustandsabfragen werden Timer und Animationen in kleinen Simulationsschritten weitergeführt. So verlängert die Antwortzeit eines langsamen CI-Runners keine Tastatureingaben. Abbruchgrenzen und tolerante Ergebnisprüfungen ersetzen feste Echtzeitpausen und exakte Frame-Positionen.
 
@@ -70,7 +70,7 @@ Die Reihenfolge ist wesentlich: Die negativen Asset-Muster stehen **nach** `asse
 
 Reine README-/Dokumentationsänderungen außerhalb dieser Pfade starten keine Game-QA. Neue Build-Eingaben außerhalb der Liste müssen in **beiden** Pfadlisten ergänzt werden. Änderungen an Workflows starten zusätzlich den separaten Workflow **Workflow validation** mit Actionlint, entsprechend der Vorlage aus The Sara Protocol.
 
-Bei einem gestarteten QA-Lauf bleiben Lint, Unit-Tests, Typprüfung, Build und beide Playwright-Shards vollständig erhalten: ein Browserdurchlauf pro normalem PR/Push, null Retries. Der abschließende Check **Playwright (Chromium)** verlangt erfolgreiche Qualität und erfolgreiche Shards; Fehler, Abbruch oder übersprungene notwendige Jobs zählen nicht als Erfolg.
+Bei einem gestarteten QA-Lauf bleiben Lint, Unit-Tests, Typprüfung, Build und alle vier Playwright-Shards vollständig erhalten: ein Browserdurchlauf pro normalem PR/Push, null Retries. Der abschließende Check **Playwright (Chromium)** verlangt erfolgreiche Qualität und erfolgreiche Shards; Fehler, Abbruch oder übersprungene notwendige Jobs zählen nicht als Erfolg.
 
 ## Manuelle Vollprüfung und Branch-Schutz
 
@@ -104,7 +104,7 @@ Node erzeugt über `npm run test:unit:ci` neben der Terminalausgabe einen TAP-Re
 
 Die Gesamtübersicht zählt **Ausführungen**: aktuell 87 Unit-Tests plus 48 Browser-Szenarien, also 135 Ergebnisse bei normaler CI. Bei manuell gewählten zwei Durchläufen sind es 183, bei drei Durchläufen 231. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
 
-Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Drei erwartete Reports (Unit und beide Shards) werden auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
+Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Fünf erwartete Reports (Unit und alle vier Shards) werden auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
 
 Bei Docs-only startet die pfadgefilterte QA nicht und erzeugt entsprechend keine Testszenarien. Der separate Release-Workflow verwendet denselben verpflichtenden Runtime-Audit.
 
@@ -122,7 +122,7 @@ Versionsdimension der Matrix hat genau einen Wert; es bleiben zwei Shards.
 
 Vor dem Browserlauf muss die tatsächlich installierte Playwright-Version zur
 Image-Version passen. Bei einem Playwright-Update daher Lockfile, Matrix-Version
-und Image-Digest gemeinsam aktualisieren und beide Browser-Shards prüfen.
+und Image-Digest gemeinsam aktualisieren und alle vier Browser-Shards prüfen.
 `--init --ipc=host` folgt der empfohlenen Chromium-Containerkonfiguration. Es gibt
 keine eigene Image-Build-/Registry-Pipeline. Das Image muss weiterhin geladen werden;
 ein schnellerer Gesamtjob ist zu messen und wird nicht pauschal garantiert.

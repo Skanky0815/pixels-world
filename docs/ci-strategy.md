@@ -3,7 +3,7 @@
 Der Ablauf hat vier Stufen:
 
 1. **PR:** normale QA mit Formatierung, Lint, Unit-Tests, Typprüfung, Build, Audit
-   und beiden Browser-Shards als Grundlage für die Review.
+   und vier Browser-Shards als Grundlage für die Review.
 2. **Merge:** dieselbe normale QA auf dem tatsächlichen `main`-Commit. Ein
    Squash-/Merge-Commit kann vom PR-Stand abweichen.
 3. **Manueller Release:** bereits erfolgreiche Main-QA für genau diesen aktuellen
@@ -35,7 +35,7 @@ startet keinen zweiten Rollout.
 
 Browser-Shard 1 lädt nach erfolgreichem `full`-Test das tatsächlich unter
 `/pixels-world/` getestete `dist/` als `qa-pages-dist-<github.sha>` hoch. Quality
-inklusive Audit und beide Shards müssen erfolgreich sein. Pages lädt dieses Artefakt
+inklusive Audit und alle vier Shards müssen erfolgreich sein. Pages lädt dieses Artefakt
 nur aus demselben Workflow-Lauf und vom gleichen Commit, ohne Installation, zweite
 Testsuite oder Neubau. Fehlende Artefakte blockieren. QA-Builds bleiben einen Tag,
 Test-/Fehlerreports 14 Tage verfügbar. Nach Ablauf der Build-Aufbewahrung genügt ein
