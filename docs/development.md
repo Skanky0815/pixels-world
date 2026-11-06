@@ -34,3 +34,11 @@ Der Build prüft TypeScript und erzeugt die statische Website unter `dist/`. Pha
 - [Räume und Assets](../src/content/README.md)
 - [Architektur](architecture/gameplay.md)
 - [Beiträge und Versionsreleases](../CONTRIBUTING.md)
+
+## Rechtliche Seiten
+
+`impressum.html` und `datenschutz.html` sind eigene Vite-Einstiegspunkte mit
+`src/legal.css`. Sie laden weder Phaser noch den Test-Observer. Relative Links
+erhalten den Pages-Unterpfad. Die dokumentierte Quellen- und Datenschutzprüfung
+steht in [legal/phase2-review.md](legal/phase2-review.md); Kontaktangaben nur
+nach bewusster Betreiberfreigabe ändern, nicht automatisch aus Fremdprojekten synchronisieren.

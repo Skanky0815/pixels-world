@@ -188,7 +188,7 @@ kbd {
 .footer-meta {
   flex-basis: 100%;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: baseline;
   gap: 2px 12px;
 }
@@ -196,6 +196,9 @@ kbd {
   text-align: right;
 }
 .feedback-link {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   font-size: 12px;
 }
 .feedback-link a {
