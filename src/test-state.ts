@@ -12,7 +12,7 @@ export interface GameTestState {
   readonly started: boolean;
   readonly intro: { readonly visible: boolean };
   readonly result: ResultViewSnapshot;
-  readonly charmDisplay: { readonly heartsText: string };
+  readonly charmDisplay: { readonly heartsText: string; readonly canvasTextVisible: boolean };
   readonly reconciliation: ReconciliationSnapshot;
   readonly round: RoundSnapshot;
   readonly homecoming: HomecomingSnapshot;
@@ -27,6 +27,7 @@ export interface GameTestState {
     readonly displayHeight: number;
     readonly originY: number;
     readonly dialogueText: string;
+    readonly canvasTextVisible: boolean;
   };
   readonly active: boolean;
   readonly ready: boolean;

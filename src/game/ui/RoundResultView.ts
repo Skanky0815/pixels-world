@@ -1,3 +1,4 @@
+import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { RoundResult } from '../domain/round-result';
 
@@ -5,6 +6,7 @@ export type ResultViewSnapshot = ReturnType<RoundResultView['snapshot']>;
 
 /** Persistent, keyboard-restartable summary; timing and round state remain in the scene. */
 export class RoundResultView {
+  private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
   private readonly summary: Phaser.GameObjects.Text;
   private readonly quote: Phaser.GameObjects.Text;
@@ -27,7 +29,10 @@ export class RoundResultView {
       wordWrap: { width: width - 120 },
     });
     this.hint = scene.add.text(width - 60, 330, 'R: Neue Runde', style(14)).setOrigin(1, 1);
-    this.root.add([panel, title, this.summary, this.quote, this.hint]);
+    const dialogue = scene.add.container(0, 0, [panel, title, this.summary, this.quote, this.hint]);
+
+    this.removeCompactListener = compactVisibility(dialogue);
+    this.root.add(dialogue);
   }
 
   render(result: RoundResult | null) {
@@ -39,12 +44,14 @@ export class RoundResultView {
     this.quote.setText(`Sara: „${result.closingLine}“`);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der flache Ergebnisvertrag enthält die skalare Sichtbarkeit beider Darstellungen ohne Engine-Referenzen.
   snapshot() {
     if (!this.result) return null;
 
     return Object.freeze({
       ...this.result,
       visible: this.root.visible,
+      canvasTextVisible: this.root.visible && this.summary.parentContainer.visible,
       summaryText: this.summary.text,
       quoteText: this.quote.text,
       hint: this.hint.text,
@@ -52,6 +59,7 @@ export class RoundResultView {
   }
 
   destroy() {
+    this.removeCompactListener();
     this.root.destroy(true);
   }
 }

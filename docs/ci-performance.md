@@ -1,6 +1,6 @@
 # E2E-Laufzeit: vier Shards (#124)
 
-Vollständige manuelle und Release-QA verteilt die vorhandenen 56 Browser-Szenarien
+Vollständige manuelle und Release-QA verteilt die vorhandenen 60 Browser-Szenarien
 auf vier unabhängige Runner statt zwei. Ein Worker pro Runner bleibt erhalten: Phaser/Chromium nutzt Software-Rendering,
 und zusätzliche Worker auf derselben Maschine können um CPU konkurrieren. Lokal
 bleibt es bei zwei Workern. `fullyParallel: true` verteilt weiterhin einzelne Tests.

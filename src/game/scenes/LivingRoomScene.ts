@@ -1,3 +1,4 @@
+import { MobileReadout } from '../ui/MobileReadout';
 import { MainGoal } from '../domain/main-goal';
 import { GoalView } from '../ui/GoalView';
 import { StartScreen } from '../ui/StartScreen';
@@ -38,6 +39,7 @@ import { homecomingPositions } from '../content/homecoming-layout';
 import { PixelReturnController } from '../domain/pixel-return';
 
 export class LivingRoomScene extends Phaser.Scene {
+  private mobile!: MobileReadout;
   private goal!: MainGoal;
   private goalView!: GoalView;
   private started = false;
@@ -251,6 +253,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private initializeViews() {
     const room = this.room.definition;
 
+    this.mobile = new MobileReadout();
     this.controls = new InputController(this);
     this.activity = new PlayActivity(() => this.syncActivity());
     this.hud = new GameHud(this, room.hud);
@@ -276,6 +279,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.resultView.destroy();
     this.startScreen.destroy();
     this.goalView.destroy();
+    this.mobile.destroy();
   }
 
   private addPlatform(x: number, y: number, width: number, height: number) {
@@ -324,6 +328,22 @@ export class LivingRoomScene extends Phaser.Scene {
     }
 
     this.updateRound(input, delta);
+    this.renderMobile();
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Nur Darstellungsdaten bestehender Ansichten; keine zweite Spielzustandsmaschine.
+  private renderMobile() {
+    this.controls.setActionLabel(this.round.snapshot().phase === 'chaos' ? 'Sprung' : 'Weiter');
+    this.mobile.render({
+      hud: this.hud.snapshot(),
+      goal: this.goalView.snapshot().text,
+      homecoming: this.homecoming.snapshot().stage,
+      dialogue: this.sara.snapshot().dialogueText,
+      charmStage: this.charm.snapshot().stage,
+      charm: this.charmView.readableText(),
+      result: this.resultView.snapshot(),
+      remaining: this.charm.snapshot().remainingMs / this.charm.snapshot().inputMs,
+    });
   }
 
   private tryStart(input: InputState) {
@@ -450,6 +470,7 @@ export class LivingRoomScene extends Phaser.Scene {
     );
 
     this.resultView.render(result);
+    this.controls.showRestart(result !== null);
 
     if (result) this.hud.showResult(result.outcome);
   }

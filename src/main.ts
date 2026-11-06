@@ -18,10 +18,16 @@ const caption = document.querySelector('h1 span');
 if (caption) caption.textContent = room.definition.caption;
 const gameHost = document.querySelector<HTMLElement>('#game');
 
-if (gameHost) gameHost.style.aspectRatio = `${room.definition.width} / ${room.definition.height}`;
+if (gameHost) {
+  gameHost.style.aspectRatio = `${room.definition.width} / ${room.definition.height}`;
+  gameHost.style.setProperty(
+    '--room-ratio',
+    String(room.definition.width / room.definition.height),
+  );
+}
 
 new Phaser.Game({
-  type: Phaser.AUTO,
+  type: matchMedia('(any-pointer: coarse)').matches ? Phaser.CANVAS : Phaser.AUTO,
   parent: 'game',
   width: room.definition.width,
   height: room.definition.height,

@@ -1,3 +1,4 @@
+import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import { ARROW_LABELS, CHARM_LINES } from '../../content/reconciliation';
 import type { ReconciliationSnapshot } from '../domain/reconciliation';
@@ -5,6 +6,7 @@ import { homecomingPositions } from '../content/homecoming-layout';
 
 /** Reading and timed input are visually separate; only the current arrow needs attention. */
 export class ReconciliationView {
+  private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
   private readonly message: Phaser.GameObjects.Text;
   private readonly quote: Phaser.GameObjects.Text;
@@ -43,7 +45,7 @@ export class ReconciliationView {
     this.affection = scene.add
       .text(homecomingPositions(width).pixelSeatX, floorY - 120, '', style(18))
       .setOrigin(0.5);
-    this.root.add([
+    const dialogue = scene.add.container(0, 0, [
       panel,
       this.message,
       this.quote,
@@ -55,8 +57,10 @@ export class ReconciliationView {
       heartTrack,
       this.heartLabel,
       this.hearts,
-      this.affection,
     ]);
+
+    this.removeCompactListener = compactVisibility(dialogue);
+    this.root.add([dialogue, this.affection]);
   }
 
   render(snapshot: ReconciliationSnapshot) {
@@ -90,11 +94,25 @@ export class ReconciliationView {
     this.timer.width = active ? (140 * s.remainingMs) / s.inputMs : 0;
   }
 
+  readableText() {
+    return {
+      message: this.message.text,
+      quote: this.quote.text,
+      hint: this.hint.text,
+      key: this.key.visible ? this.key.text : '',
+      hearts: this.heartLabel.text,
+    };
+  }
+
   snapshot() {
-    return Object.freeze({ heartsText: this.heartLabel.text });
+    return Object.freeze({
+      heartsText: this.heartLabel.text,
+      canvasTextVisible: this.root.visible && this.message.parentContainer.visible,
+    });
   }
 
   destroy() {
+    this.removeCompactListener();
     this.root.destroy(true);
   }
 }

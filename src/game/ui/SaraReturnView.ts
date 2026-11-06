@@ -1,3 +1,4 @@
+import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { HomecomingSnapshot, SaraAnimation } from '../domain/homecoming';
 import { SARA_ANIMATIONS } from '../../content/sara-reactions';
@@ -8,6 +9,7 @@ const REACTION_LABELS = { calm: 'Skeptischer Blick', annoyed: 'Genervtes Seufzen
 
 /** Scene-owned sprite and dialogue view; selection and timing stay in the domain. */
 export class SaraReturnView {
+  private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
   private readonly actor: Phaser.GameObjects.Sprite;
   private caption = '';
@@ -42,7 +44,10 @@ export class SaraReturnView {
       wordWrap: { width: width - 120 },
     });
     this.hint = scene.add.text(width - 60, 232, '', this.textStyle(14)).setOrigin(1, 1);
-    this.root.add([door, knob, this.actor, panel, this.message, this.quote, this.hint]);
+    const dialogue = scene.add.container(0, 0, [panel, this.message, this.quote, this.hint]);
+
+    this.removeCompactListener = compactVisibility(dialogue);
+    this.root.add([door, knob, this.actor, dialogue]);
   }
 
   private buildActor() {
@@ -102,10 +107,12 @@ export class SaraReturnView {
       displayHeight: this.actor.displayHeight,
       originY: this.actor.originY,
       dialogueText: this.caption,
+      canvasTextVisible: this.root.visible && this.message.parentContainer.visible,
     };
   }
 
   destroy() {
+    this.removeCompactListener();
     this.root.destroy(true);
   }
 }

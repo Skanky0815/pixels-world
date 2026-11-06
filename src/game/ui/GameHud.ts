@@ -1,3 +1,4 @@
+import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { HudState } from './hud-state';
 
@@ -25,6 +26,7 @@ const HOME_STATUS = {
 
 /** A scene-owned view; no input, physics, scoring or gameplay model references. */
 export class GameHud {
+  private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
   private readonly status: Phaser.GameObjects.Text;
   private readonly scoreText: Phaser.GameObjects.Text;
@@ -55,6 +57,7 @@ export class GameHud {
     this.roundText = scene.add.text(26, 88, '', textStyle);
     this.angerBar = scene.add.graphics();
     this.root.add([this.climbHint, this.status, this.scoreText, this.angerBar, this.roundText]);
+    this.removeCompactListener = compactVisibility(this.root);
   }
 
   render(state: HudState) {
@@ -106,6 +109,7 @@ export class GameHud {
   }
 
   destroy() {
+    this.removeCompactListener();
     this.root.destroy(true);
   }
 }

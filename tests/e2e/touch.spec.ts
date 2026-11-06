@@ -13,6 +13,7 @@ test(
     const controls = page.getByRole('navigation', { name: 'Touch-Steuerung' });
 
     await expect(controls).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Sprung', exact: true })).toBeVisible();
     const before = (await state(page)).pixel.x;
 
     await touch.press('right', 1);
@@ -62,33 +63,19 @@ test('Touch und Tastatur: entgegengesetzte Richtungen sind neutral', async ({ pa
   await until(page, (s) => s.pixel.velocityX > 0);
   await page.keyboard.up('ArrowRight');
   await until(page, (s) => s.pixel.velocityX === 0);
-  await page.getByRole('button', { name: 'Sprung / Weiter' }).focus();
+  await page.getByRole('button', { name: 'Sprung' }).focus();
   await page.keyboard.down('Enter');
   await until(page, (s) => !s.pixel.grounded);
   await page.keyboard.up('Enter');
   await until(page, (s) => s.pixel.grounded);
 });
 
-test('Touch: Neustart fragt nach; wiederholter Reset hinterlässt genau eine Steuerung', async ({
-  page,
-  // eslint-disable-next-line max-lines-per-function -- Zusammenhängender Nutzerablauf mit echten Touch-Ereignissen und vollständiger Zustandsprüfung.
-}) => {
-  const touch = await startTouch(page);
-  const before = await state(page);
-
-  page.once('dialog', (dialog) => dialog.dismiss());
-  await touch.tap('reset');
-  await page.clock.runFor(100);
-  expect((await state(page)).generation).toBe(before.generation);
-
-  for (let round = 1; round <= 2; round++) {
-    page.once('dialog', (dialog) => dialog.accept());
-    await touch.tap('reset');
-    await until(page, (s) => s.generation === before.generation + round);
-    await expect(page.getByRole('navigation', { name: 'Touch-Steuerung' })).toHaveCount(1);
-    expect((await state(page)).blurListeners).toBe(before.blurListeners);
-    expect((await state(page)).chaos.score).toBe(0);
-  }
+test('Touch: Während der Runde gibt es keinen Neustart-Button', async ({ page }) => {
+  await startTouch(page);
+  await expect(page.getByRole('button', { name: 'Neue Runde' })).toHaveCount(0);
+  await expect(page.locator('[data-control="reset"]')).toBeHidden();
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect(page.locator('[data-control="reset"]')).toBeHidden();
 });
 
 // eslint-disable-next-line max-lines-per-function -- Der komplette Vorhangweg nutzt ausschließlich echte Touch-Eingaben und dieselben Physikregeln wie die Tastatur.
@@ -130,12 +117,15 @@ test('Touch: Rotation löst Finger, behält die Runde und alle Ziele passen in d
   await page.setViewportSize({ width: 390, height: 844 });
   const dimensions = await page.locator('[data-control]').evaluateAll((buttons) =>
     buttons.map((button) => ({
+      hidden: (button as HTMLButtonElement).hidden,
       width: button.getBoundingClientRect().width,
       height: button.getBoundingClientRect().height,
     })),
   );
 
-  expect(dimensions.every((rect) => rect.width >= 48 && rect.height >= 48)).toBe(true);
+  expect(dimensions.every((rect) => rect.hidden || (rect.width >= 48 && rect.height >= 48))).toBe(
+    true,
+  );
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await test.info().attach('mobile-steuerung', {
     body: await page.screenshot({ fullPage: true }),
@@ -170,6 +160,7 @@ test(
   { tag: full ? '@slow' : '@fast' },
   // eslint-disable-next-line max-lines-per-function -- Zusammenhängender Nutzerablauf mit echten Touch-Ereignissen und vollständiger Zustandsprüfung.
   async ({ page }) => {
+    await page.setViewportSize({ width: 844, height: 390 });
     await seedRoundRandom(page);
     const touch = await startTouch(page, full ? '/' : '/?round-profile=fast');
 
@@ -180,8 +171,13 @@ test(
       (s) => s.pixelReturn.stage === 'seated' && s.homecoming.stage === 'dialogue',
       500,
     );
+    expect((await state(page)).sara.canvasTextVisible).toBe(false);
     await touch.tap('jump');
     await until(page, (s) => s.reconciliation.stage === 'reading', 100);
+    expect((await state(page)).charmDisplay.canvasTextVisible).toBe(false);
+    await expect(page.locator('.mobile-dialogue')).toBeVisible();
+    await expect(page.locator('.mobile-dialogue')).toContainText('PIXELS CHARME-OFFENSIVE');
+    await expect(page.getByRole('button', { name: 'Weiter', exact: true })).toBeVisible();
     const initial = (await state(page)).reconciliation;
 
     await touch.tap('jump');
@@ -192,6 +188,8 @@ test(
         const direction = (await state(page)).reconciliation.expected;
 
         expect(direction).not.toBeNull();
+        await expect(page.locator('.mobile-dialogue progress')).toBeVisible();
+        await expect(page.locator('.mobile-key')).not.toBeEmpty();
 
         if (direction) await touch.tap(direction);
         await page.clock.runFor(100);
@@ -203,5 +201,28 @@ test(
     await until(page, (s) => s.reconciliation.stage === 'complete', 100);
     expect((await state(page)).reconciliation.failures).toBe(0);
     expect((await state(page)).result?.outcome).toBe('success');
+    await expect(page.locator('.mobile-dialogue')).toContainText('RUNDENERGEBNIS');
+    await expect(page.getByRole('button', { name: 'Neue Runde' })).toBeVisible();
+    await test.info().attach('mobiles-ergebnis', {
+      body: await page.screenshot({ fullPage: true }),
+      contentType: 'image/png',
+    });
+    expect((await state(page)).result!.canvasTextVisible).toBe(false);
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.clock.runFor(100);
+    await expect(page.locator('.mobile-dialogue')).toBeHidden();
+    await until(page, (s) => s.result!.canvasTextVisible, 100);
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.clock.runFor(100);
+    await until(page, (s) => !s.result!.canvasTextVisible, 100);
+    const beforeReset = await state(page);
+
+    await touch.tap('reset');
+    await until(page, (s) => s.generation === beforeReset.generation + 1);
+    await expect(page.locator('[data-control="reset"]')).toBeHidden();
+    await expect(page.locator('.touch-controls')).toHaveCount(1);
+    await expect(page.locator('.mobile-hud')).toHaveCount(1);
+    await expect(page.locator('.mobile-dialogue')).toHaveCount(1);
+    expect((await state(page)).chaos.score).toBe(0);
   },
 );

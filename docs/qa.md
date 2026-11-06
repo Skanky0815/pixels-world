@@ -76,7 +76,7 @@ Bei einem gestarteten QA-Lauf bleiben Lint, Unit-Tests, Typprüfung, Build und A
 
 Unter **Actions → QA → Run workflow** einen Branch, eine Durchlaufzahl (1, 2 oder 3;
 Standard 1) und das Rundenprofil `fast` oder `full` auswählen. `workflow_dispatch`
-ist ungefiltert und prüft immer alle 56 Szenarien. Normale PR-/Push-Läufe verwenden
+ist ungefiltert und prüft immer alle 60 Szenarien. Normale PR-/Push-Läufe verwenden
 `fast`: Nur das explizite Heimkehr-Szenario nutzt 8–10 Sekunden Testdauer. `full`
 prüft denselben Ablauf mit den produktiven 60–105 Sekunden; alle Assertions bleiben
 gleich. Die Domain-Unit-Tests prüfen die echten Grenzen zusätzlich.
@@ -102,7 +102,7 @@ Die Unit- und Browserjobs zeigen nach ihren Testschritten alle gemeldeten Szenar
 
 Node erzeugt über `npm run test:unit:ci` neben der Terminalausgabe einen TAP-Report (`test-reports/unit.tap`). Playwright erzeugt zusätzlich zu List/HTML einen JUnit-Report (`test-reports/playwright.xml`). Die gepflegte [test-summary/action](https://github.com/test-summary/action) verarbeitet beide Formate; ihre Version ist als Commit gepinnt. Nodes JUnit-Ausgabe wird bewusst nicht verwendet: Die geprüfte Action übersieht die direkt unter `testsuites` liegenden Testfälle von Node 22. Der TAP-Reporter wird korrekt gelesen.
 
-Die Gesamtübersicht zählt **Ausführungen**: aktuell 91 Unit-Tests plus 4 Browser-Szenarien, also 95 Ergebnisse bei PR-CI. Main-CI zählt 91 Unit-Tests und kennzeichnet Browsertests als absichtlich nicht geplant. Vollständige manuelle QA und Release-Rollout zählen 91 plus 56, also 147 Ergebnisse. Bei manuell gewählten zwei Durchläufen sind es 203, bei drei Durchläufen 259. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
+Die Gesamtübersicht zählt **Ausführungen**: aktuell 91 Unit-Tests plus 4 Browser-Szenarien, also 95 Ergebnisse bei PR-CI. Main-CI zählt 91 Unit-Tests und kennzeichnet Browsertests als absichtlich nicht geplant. Vollständige manuelle QA und Release-Rollout zählen 91 plus 60, also 151 Ergebnisse. Bei manuell gewählten zwei Durchläufen sind es 211, bei drei Durchläufen 271. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
 
 Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Je nach Profil werden ein (Main), zwei (PR-Smoke) oder fünf (vollständige QA) erwartete Reports auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
 
@@ -138,7 +138,7 @@ unveränderten Release-Identitätsprüfungen bereit. Details und Messwerte stehe
 Grundlage: [Playwright-Docker-Image](https://playwright.dev/docs/docker) und
 [Container-Jobs in der Playwright-CI-Anleitung](https://playwright.dev/docs/ci#via-containers).
 
-Die 56 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die vier Shards bei vollständigen Läufen bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
+Die 60 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die vier Shards bei vollständigen Läufen bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
 
 Der Qualitätsjob verwendet die Typprüfung in `npm run build` statt eines zusätzlichen identischen Aufrufs davor. In der Playwright-Vorbereitung prüft `build:e2e` die Typen; die zweite Produktionsvorschau baut deshalb direkt mit Vite. Playwright verlangt beide erfolgreichen Serverstarts. Die eigenständig nutzbaren Befehle `build`, `build:e2e` und `qa` bleiben typgeprüft.
 
@@ -154,14 +154,59 @@ Aktueller Tooling-Befund: [moderates minimatch-Advisory im ESLint-Baum (#66)](ht
 
 Automatisiert: Chromium/Playwright 1.64.1, Viewports 390×844 und 844×390,
 Touch-/Pointer-Eingaben inklusive Mehrfinger-Sprung, Klettern, Abbruch, Fokus,
-Rotation, Neustart und komplette Versöhnung. Desktop-Tastatur-Suite bleibt Teil
+Rotation, Neustart erst am Ergebnis und komplette Versöhnung. Desktop-Tastatur-Suite bleibt Teil
 der lokalen Vollprüfung. Richtungspaare neutralisieren sich nach gehaltenen
 Aktionen, nicht nach Anzahl der Finger. Frische Quellenimpulse werden pro Aktion
 und Spielframe zusammengefasst; reine Wiederholung einer gehaltenen Taste erzeugt
 keine neue Flanke. Touch-Abbruch verwirft noch nicht konsumierte Touch-Flanken.
 
-Manuelle Hardware-Abnahme noch offen: Safari auf iPhone/iPad sowie Chrome auf Android.
+Erster Praxistest auf iPhone/Safari positiv bestätigt. Die vollständige
+Hardware-Abnahme bleibt offen: Safari auf iPhone/iPad sowie Chrome auf Android.
 Dort dieselben Abläufe mit realen Fingern, Geräte-Rotation, App-/Tabwechsel und
-Neustart-Rückfrage prüfen. Keine solche Prüfung wird durch Chromium-Emulation
-ersetzt. Darstellung von HUD, Dialogen und Minispiel auf kleinen Displays ist #108;
+den erst am Ergebnis sichtbaren Button „Neue Runde“ prüfen. Keine solche Prüfung wird durch Chromium-Emulation
+ersetzt. Darstellung von HUD, Dialogen und Minispiel auf kleinen Displays folgt unten (#108);
 Touch-Buttons liegen bereits außerhalb des Canvas und verwenden Safe-Area-Abstände.
+
+## Responsives Layout (#108)
+
+`responsive.spec.ts` prüft Handheld-Geometrie bei 667×375, 844×390 und
+1024×768 CSS-Pixeln: Richtungstasten links, unverzerrtes Zimmer mittig,
+Aktionen rechts und alle drei Bereiche innerhalb des sichtbaren Viewports.
+320×568 prüft die separat scrollbar bleibende Einführung; 390×844 → 844×390
+prüft Zustandserhalt und fortgesetzte Eingabe nach Rotation. Die komplette
+Touch-Heimkehr in `touch.spec.ts` prüft im Querformat lesbare Anleitung,
+Pfeilkachel, Zeitbalken und Ergebnis. Desktop-Szenarien bleiben unverändert.
+
+Canvas und Raum behalten ihr Seitenverhältnis, `pixelArt` und
+`image-rendering: pixelated` verhindern geglättete Interpolation. Bei kleinen
+Displays wird bewusst nicht auf ganzzahlige Vergrößerungen bestanden: die
+ganze Spielfläche muss hineinpassen. Dialoge verwenden dann 14 CSS-Pixel, der seitliche Status 13 CSS-Pixel
+statt proportional geschrumpfter Canvas-Schrift. Die Textansicht liest
+ausschließlich die bestehenden Szenenansichten, keine E2E-Beobachter.
+Es gibt kein separates Einstellungsmenü; Fokusverlust pausiert weiterhin.
+
+Manuell auf iPhone/Safari und Android/Chrome ergänzend prüfen: Browserleisten
+ein-/ausblenden, Safe Areas, zwei Finger, Rotation während Bewegung und Dialog,
+Einführung bis unten lesen, vollständige Runde und „Neue Runde“ am Ergebnis. Das neue Layout
+ist zunächst in Chromium emuliert geprüft; Ricos positives Hardwarefeedback
+bezieht sich auf #54 vor dieser Layoutänderung. Unterhalb 667×375 im Querformat
+können Texte und Footer zusätzlich Scrollen benötigen; Hochformat bleibt
+verfügbar. Längere Einführung/Dialoge scrollen bewusst innerhalb ihrer Box.
+
+Während der laufenden Touch-Runde bleibt der Neustart-Button verborgen.
+Erst am Ergebnis wird „Neue Runde“ angeboten, danach ist er wieder verborgen.
+Der Tastaturkurzbefehl R bleibt für Desktop unverändert.
+
+Querformat-Review: Titel über dem Steuerkreuz und kompakter Status über der
+Aktionstaste statt voller Infobox; der Zieltext bleibt in der Einführung und
+im Hochformat. Die Aktion heißt anfangs „Weiter“, im Spiel „Sprung“ und
+bei Dialogen „Weiter“. Am Ergebnis erscheint ausschließlich „Neue Runde“.
+
+Die Querformat-Prüfung verlangt mindestens 16 CSS-Pixel Abstand zwischen
+Steuerungsgruppen und Zimmer. Der mobile Footer verwendet gedeckte Linkfarben
+und kleinere Metadaten; Tastatur-Fokus bleibt deutlich sichtbar.
+
+Im kompakten Touch-Layout sind die Canvas-Textpanels für Heimkehr, Versöhnung
+und Ergebnis ausgeblendet. Nur die DOM-Textbox ist sichtbar; Schauspieler und
+Zuneigungsanimationen bleiben im Raum. Beim Wechsel auf Desktop erscheinen
+die Canvas-Panels wieder, ohne die Runde neu zu starten.

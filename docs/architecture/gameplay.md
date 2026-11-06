@@ -286,4 +286,22 @@ Spielobjekte bleiben frei von DOM-/Touch-Abfragen. Der Adapter verwendet Pointer
 Capture, behandelt Verlassen/Cancel/Lost-Capture und wird beim Szenenende samt
 AbortController-Listenern entfernt. Blur, Visibility und Resize räumen Eingaben auf.
 Die Bestätigungstaste versorgt Start, Dialog und Charmeoffensive über denselben
-InputState wie Leertaste. Neustart fragt im Touch-Adapter ausdrücklich nach.
+InputState wie Leertaste. „Neue Runde“ wird nur am Ergebnis angeboten.
+
+### Mobile Lesbarkeit
+
+`#play-area` hält den Canvas und die szeneneigene Touch-Steuerung zusammen.
+CSS ordnet bei kompakten Touch-Geräten im Querformat die beiden Steuerungsgruppen
+links und rechts des Zimmers an; im Hochformat bleiben sie darunter.
+`MobileReadout` gehört zur Szene und wird beim Neustart entfernt. Es übernimmt
+nur Text-/Fortschrittsdaten bestehender Ansichten und rendert sie in CSS-Pixeln.
+Canvas-HUD, Zieltext und die bisherigen Dialog-/Ergebnispanels werden dort
+über aufgeräumte MediaQuery-Listener ausgeblendet; Zielmarker, Schauspieler, Physik und Rundenzustand bleiben identisch.
+Starttexte und lange Dialoge können unabhängig von der Spielfläche scrollen.
+
+Der mobile Neustart-Button ist nur am Ergebnis sichtbar. Die Szene leitet diese
+Darstellungsfreigabe an den Input-Adapter weiter; Eingaben laufen weiterhin
+über denselben Frame-Snapshot. Tastatur-R bleibt unverändert.
+
+Touch-Geräte verwenden beim Start Phasers Canvas-2D-Renderer, Desktop weiterhin
+AUTO. Begründung, Alternativen und Hardware-Grenzen: [ADR 0002](../adr/0002-mobile-text-rendering.md).

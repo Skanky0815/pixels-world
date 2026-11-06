@@ -2,7 +2,7 @@
 
 Die Specs sind fachlich aufgeteilt: `movement`, `lifecycle`, `rendering`, `couch`, `curtain`, `plant`, `vases`, `content`, `hud`, `footer`, `round`, `pixel-return`, `reconciliation`, `start-screen`, `feedback`, `main-goal`, `legal` und `build-isolation`. `support.ts` enthält die gemeinsame Browsergesundheits-/Clock-Fixture und Eingabehelfer. Jede Spec bleibt unabhängig; alle verwenden echte Tastatureingaben und ausschließlich lesbare Snapshots.
 
-Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. PR-CI wählt mit `npm run test:e2e:smoke` vier `@smoke`-Szenarien: Produktionsisolation, Bewegung/Raumgrenzen, Sprung/Reset und Touch-Start/Mehrfinger-Sprung. Manuelle QA und Release-Rollout verteilen alle Szenarien auf vier Shards; Main-CI wiederholt keine Browsertests. Lokal prüft `npm run check:pr` vor dem PR die Projekt-QA und alle Szenarien. Die Suite umfasst 56 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
+Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. PR-CI wählt mit `npm run test:e2e:smoke` vier `@smoke`-Szenarien: Produktionsisolation, Bewegung/Raumgrenzen, Sprung/Reset und Touch-Start/Mehrfinger-Sprung. Manuelle QA und Release-Rollout verteilen alle Szenarien auf vier Shards; Main-CI wiederholt keine Browsertests. Lokal prüft `npm run check:pr` vor dem PR die Projekt-QA und alle Szenarien. Die Suite umfasst 60 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
 Headless-Chromium meldet Hintergrundseiten weiterhin als sichtbar. Der Visibility-Test
 simuliert deshalb ausschließlich `document.hidden` und das Browserereignis, ohne
 Spielzustand zu setzen; echte Tabwechsel gehören zusätzlich zum manuellen Spieltest.
@@ -14,7 +14,7 @@ E2E-Build `?round-profile=fast` auf. Die übrigen Szenarien behalten die normale
 Rundengrenzen. Die Testkonfiguration entsteht beim Build; im Produktionsbuild werden
 Einstieg und Query-Auswertung entfernt. Es gibt keine schreibbare Browser-Schnittstelle.
 
-`npm run test:e2e:full` startet alle 56 Szenarien mit echten Produktionszeiten; der
+`npm run test:e2e:full` startet alle 60 Szenarien mit echten Produktionszeiten; der
 identische Rundentest ist dann `@slow` markiert und dauert im Spiel 60–105 Sekunden.
 `npm run test:e2e:slow` wählt diese acht vollständigen Heimkehr-/Versöhnungstests. Beide Befehle setzen vor
 Test und Vite-Build `E2E_FULL_ROUND=1`. Die Skripte verwenden die Shell-Schreibweise
@@ -97,8 +97,8 @@ abgerufen; die Suite veröffentlicht keine Kontaktanfragen oder Issues.
 `touch.spec.ts` verwendet Chromium mit 390×844 CSS-Pixeln, `hasTouch` und `isMobile`.
 Acht Szenarien prüfen echten Start, Mehrfinger-Bewegung/Sprung, getrenntes
 Loslassen, Verlassen/Abbruch, gemischte Tastatur-/Touch-Eingaben, bestätigten und
-abgebrochenen Neustart, vollständiges Vorhang-Klettern und den Rundenablauf bis
-zum erfolgreichen Ergebnis. Ein Resize auf 844×390 und zurück prüft Cleanup und
+fehlenden Neustart während der Runde, vollständiges Vorhang-Klettern und den Rundenablauf bis
+zum erfolgreichen Ergebnis mit anschließendem Neustart. Ein Resize auf 844×390 und zurück prüft Cleanup und
 Rundenerhalt. Alle Button-Ziele sind mindestens 48×48 CSS-Pixel groß.
 
 `touch-support.ts` verwendet Chromiums `Input.dispatchTouchEvent` für Browserinput;
@@ -113,5 +113,13 @@ läuft auf dem bestehenden PR-Runner. Die übrigen mobilen Szenarien laufen loka
 vor dem PR und in vollständiger manueller/Release-QA.
 
 Dies ist Browser-Emulation, keine Abnahme auf iPhone/iPad oder Android-Hardware.
-Die echte Geräteprüfung bleibt in #54 offen. Canvas-Lesbarkeit und umfassendes
-Hoch-/Querformat-Layout folgen in #108; Sprachen in #105.
+Ein erster iPhone-/Safari-Praxistest ist positiv bestätigt, die vollständige
+Geräteprüfung bleibt in #54 offen. Responsive Lesbarkeit siehe #108 unten;
+Sprachen bleiben #105.
+
+## Responsive Darstellung (#108)
+
+`responsive.spec.ts` ergänzt vier Prüfungen für drei Handheld-Querformate,
+schmale Einführung und Rotation mit fortgesetzter Eingabe. Die vollständige
+Touch-Runde prüft auch die mobile Textansicht und ihren Eingabezeitbalken.
+Diese Szenarien laufen lokal/manuell/beim Release, ohne zusätzliche PR-Runner.

@@ -91,6 +91,14 @@ export class InputController {
     return { jumpPressed, confirmPressed: jumpPressed && !this.keys.jump.originalEvent?.repeat };
   }
 
+  setActionLabel(label: 'Sprung' | 'Weiter') {
+    this.touch.setActionLabel(label);
+  }
+
+  showRestart(available: boolean) {
+    this.touch.showRestart(available);
+  }
+
   release() {
     this.keyboard.resetKeys();
     this.touch.clear();
