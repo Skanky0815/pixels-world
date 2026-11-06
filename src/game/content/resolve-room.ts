@@ -455,7 +455,7 @@ class RoomResolver {
     this.validateHud();
     const spawn = this.resolveSpawn();
 
-    return { definition: room, spawn, objects };
+    return { definition: room, spawn, objects, goal: this.resolveGoal() };
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die drei Wertungsformen und die Ganzzahlprüfung nach jeder Addition bleiben in einer Schleife sichtbar.
@@ -486,6 +486,29 @@ class RoomResolver {
 
     if (room.hud.climbHint.x > room.width || room.hud.climbHint.y > room.height)
       fail(`${root}.hud.climbHint`, 'outside room viewport');
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Eindeutiges Ziel, erlaubter Typ, Zeit und Auflage werden gemeinsam vor dem Szenenstart geprüft.
+  private resolveGoal() {
+    const goal = this.room.goal;
+    const path = `${this.root}.goal`;
+
+    record(goal, path);
+    this.unique(goal.id, `${path}.id`);
+
+    if (goal.kind !== 'toy') fail(`${path}.kind`, 'unknown goal kind');
+    id(goal.label, `${path}.label`);
+    id(goal.motivation, `${path}.motivation`);
+    number(goal.x, `${path}.x`);
+    number(goal.dwellMs, `${path}.dwellMs`, Number.EPSILON);
+    const surface = this.surface(goal.surfaceId, `${path}.surfaceId`);
+
+    supportFits(goal.x - 10, 20, surface, path);
+    const area = { x: goal.x - 10, y: surface.y - 20, width: 20, height: 20 };
+
+    bounds(area, this.room, `${path}.area`);
+
+    return { ...goal, area, surfaceY: surface.y };
   }
 
   private resolveSpawn() {

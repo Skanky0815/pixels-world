@@ -26,3 +26,14 @@ Normaler Start bleibt das unveränderte Standardzimmer. Im Dev-/E2E-Betrieb zeig
 Content verwendet nur Schlüssel aus [dem Asset-Katalog](../game/assets/definitions.ts). Prozedurale Platzhalter sind ihrem tatsächlichen Objekttyp zugeordnet. Das Pixel-Sheet wird über einen Vite-Asset-Import aufgelöst, ohne fest codierten Host oder Repository-Präfix. Ein Produktionsbuild mit `--base=/pixels-world/` wurde dafür im Browser geprüft; der öffentliche Spielstand ist über [GitHub Pages](https://skanky0815.github.io/pixels-world/) erreichbar.
 
 Die Versionsangabe im normalen Seitenfooter stammt beim Build aus der zentralen `package.json`. Das Jahr wird zur Laufzeit ermittelt. Die Anzeige ist eine Build-Version, kein zusätzlicher Veröffentlichungsmechanismus; Release Please pflegt dieselbe Versionsquelle.
+
+## Hauptziel pro Raum
+
+`RoomDefinition.goal` enthält genau ein festes Ziel: ID, `kind: toy`,
+Bezeichnung/Motivation, `surfaceId`, X-Position und `dwellMs`. Die bestehende
+Auflagenauflösung prüft Position und eindeutige ID vor dem Szenenstart.
+Das Ziel ist ein nicht zerstörbares Spielobjekt mit eigener reiner Kontaktlogik,
+kein zusätzlicher Chaosobjekt-Typ oder Punktelieferant. Der erste akzeptierte
+Rundenabschluss (Ziel oder Deadline) führt in den vorhandenen Heimkehrablauf.
+Die aktuelle Platzierung am oberen Regal ist in beiden Räumen schadenfrei
+per Tastatur erreichbar; neue Platzierungen benötigen denselben Spieltest.

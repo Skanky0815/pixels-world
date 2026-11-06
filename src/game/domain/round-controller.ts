@@ -1,3 +1,4 @@
+export type RoundEndReason = 'timer' | 'goal';
 export type RoundPhase = 'chaos' | 'returning' | 'reaction' | 'reconciliation';
 export type RoundHint = 'time' | 'soon' | 'imminent' | 'home';
 export interface RoundConfig {
@@ -8,6 +9,7 @@ export interface RoundSnapshot {
   readonly phase: RoundPhase;
   readonly elapsedMs: number;
   readonly returnAtMs: number;
+  readonly endReason: RoundEndReason | null;
   readonly finalChaosScore: number | null;
   readonly hint: RoundHint;
 }
@@ -19,6 +21,7 @@ export const ROUND_HINTS = { soonRemainingRatio: 0.4, imminentRemainingRatio: 0.
 export class RoundController {
   private phase: RoundPhase = 'chaos';
   private elapsedMs = 0;
+  private endReason: RoundEndReason | null = null;
   private finalChaosScore: number | null = null;
   private returnAtMs: number;
   private readonly config: RoundConfig;
@@ -32,20 +35,32 @@ export class RoundController {
   }
 
   /** Called after the last eligible frame's actions, including all score awards. */
-  advance(deltaMs: number, score: number, active = true): boolean {
-    if (!active || this.phase !== 'chaos' || !Number.isFinite(deltaMs) || deltaMs <= 0)
-      return false;
+  advance(deltaMs: number, score: number, active = true, goalReached = false): boolean {
+    if (!this.canAdvance(deltaMs, active)) return false;
     this.elapsedMs = Math.min(this.returnAtMs, this.elapsedMs + deltaMs);
+    const reason = this.endCandidate(goalReached);
 
-    if (this.elapsedMs < this.returnAtMs) return false;
-    this.finish(score);
+    if (!reason) return false;
+    this.finish(score, reason);
 
     return true;
   }
 
-  private finish(score: number) {
+  private canAdvance(deltaMs: number, active: boolean) {
+    return active && this.phase === 'chaos' && Number.isFinite(deltaMs) && deltaMs > 0;
+  }
+
+  /** A deadline and goal observed in the same frame deterministically favor the deadline. */
+  private endCandidate(goalReached: boolean): RoundEndReason | null {
+    if (this.elapsedMs >= this.returnAtMs) return 'timer';
+
+    return goalReached ? 'goal' : null;
+  }
+
+  private finish(score: number, reason: RoundEndReason) {
     if (!Number.isSafeInteger(score) || score < 0) throw new Error('Invalid final chaos score');
     this.finalChaosScore = score;
+    this.endReason = reason;
     this.phase = 'returning';
   }
 
@@ -69,6 +84,7 @@ export class RoundController {
     this.phase = 'chaos';
     this.elapsedMs = 0;
     this.finalChaosScore = null;
+    this.endReason = null;
     this.returnAtMs = duration;
   }
 
@@ -78,6 +94,7 @@ export class RoundController {
       elapsedMs: this.elapsedMs,
       returnAtMs: this.returnAtMs,
       finalChaosScore: this.finalChaosScore,
+      endReason: this.endReason,
       hint: this.hint(),
     });
   }

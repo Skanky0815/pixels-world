@@ -8,12 +8,13 @@ import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
 import { CHARM_TIMING } from '../../src/content/reconciliation.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Die echte Modellvorbereitung erzeugt konsistente Snapshots aller beteiligten Rundenphasen.
-function setup(score = 60) {
-  const round = new RoundController({ minDurationMs: 1, maxDurationMs: 1 });
+function setup(score = 60, reachedGoal = false) {
+  const duration = reachedGoal ? 2 : 1;
+  const round = new RoundController({ minDurationMs: duration, maxDurationMs: duration });
   const home = new HomecomingSequence();
   const charm = new Reconciliation(() => 0);
 
-  round.advance(1, score);
+  round.advance(1, score, true, reachedGoal);
   home.start(score, () => 0);
   home.advance(2100);
   home.confirm();
@@ -127,3 +128,13 @@ function failTwice(charm: Reconciliation) {
     charm.input(['right']);
   }
 }
+
+test('Frühes Hauptziel bleibt im Ergebnis unabhängig von Punkten und Versöhnung erfasst', () => {
+  const game = setup(0, true);
+
+  winHeart(game.charm);
+  game.charm.advance(CHARM_TIMING.finaleMs);
+  assert.equal(game.result()?.goalReached, true);
+  assert.equal(game.result()?.score, 0);
+  assert.equal(game.result()?.outcome, 'success');
+});

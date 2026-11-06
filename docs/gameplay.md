@@ -192,3 +192,29 @@ Fokusverlust pausiert die Runde nach derselben Regel wie andere Tabwechsel.
 Solange ein Link oder anderes interaktives HTML-Element Tastaturfokus hat,
 werden Spieltasten verworfen und gehaltene Eingaben gelöst. Enter bedient
 den Link regulär; nach der Rückkehr ins Zimmer geht die Runde weiter.
+
+## Ein Hauptziel: Pixels Lieblingsball
+
+Pixel will spielen: Auf dem obersten Regal ganz rechts liegt ein goldener Ball
+mit Sternmarkierung. Ein eigener Zielkasten auf der Startseite erklärt Position,
+Kontaktzeit aus derselben Raumdefinition, ohne Saras überraschende Rückkehr vorwegzunehmen. Erreiche ihn über den Vorhang und bleib auf seiner Auflage
+**1,2 Sekunden ohne Eingabe** stehen. Weglaufen, Springen oder Klettern bricht
+die Interaktion ab und setzt den Teilfortschritt zurück. Ein kurzer Hinweis
+zeigt Ziel und Fortschritt; es gibt genau ein Ziel und keine Bedürfnisbalken.
+
+Zielerreichung beendet die Chaosphase sofort. Verstreicht vorher der vorhandene
+Timer, endet sie mit „Ziel nicht erreicht“. Beide Wege verwenden denselben
+Heimkehr-/Reaktions-/Versöhnungsablauf und frieren denselben finalen Score ein.
+Pro Runde wird genau ein Abschluss akzeptiert. Werden Ziel und Deadline im
+selben Simulationsframe beobachtet, gewinnt deterministisch die Deadline.
+Ein früheres Ziel bleibt auch nach dem späteren Timerende der einzige Trigger.
+
+Das Ziel ist in beiden handgebauten Räumen ohne Sachschaden erreichbar. Bewegung
+und vorhandene Chaosaktionen bleiben frei; die Ballinteraktion vergibt keine Punkte.
+Der Ergebnisbildschirm führt „Hauptziel: Erreicht/Nicht erreicht“ unabhängig
+von Chaospunkten und Versöhnung auf. Fokus-/Tabpause hält auch den Zielkontakt
+an; R stellt Ziel, Fortschritt, Uhr und Ergebnis vollständig zurück.
+
+Die feste Raumdefinition enthält Ziel-ID, Spielzeugtyp, Bezeichnung, Motivation,
+Auflage, X-Position und Interaktionsdauer. Weitere Zieltypen, wechselnde Bedürfnisse,
+Zufallsauswahl und ein atmosphärischer Zeitsprung sind spätere Erweiterungen.

@@ -44,6 +44,8 @@ test(
     expect(finished.homecoming.stage).toBe('entering');
     expect(finished.homecoming.selection?.score).toBe(finished.round.finalChaosScore);
     expect(finished.sara.visible).toBe(true);
+    expect(finished.round.endReason).toBe('timer');
+    expect(finished.goal.status).toBe('missed');
     expect(finished.sara.animationKey).toBe('sara-enter');
     expect(finished.sara.texture).toBe('sara');
     expect(SARA_CLIPS['sara-enter'].frames).toContain(finished.sara.frame);

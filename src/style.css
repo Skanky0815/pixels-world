@@ -206,3 +206,16 @@ kbd {
   outline: 2px solid #edc37c;
   outline-offset: 4px;
 }
+
+.start-goal {
+  margin: 12px 0;
+  padding: 8px 12px;
+  border-left: 3px solid #e4c182;
+  background: #51473e;
+}
+.start-goal strong {
+  color: #e4c182;
+}
+.start-goal p {
+  margin: 4px 0;
+}

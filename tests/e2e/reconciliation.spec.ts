@@ -186,17 +186,22 @@ test('Charme scheitert nach zwei Versuchen am selben Herz', { tag }, async ({ pa
 async function expectResult(page: Page, outcome: 'success' | 'failed') {
   const current = await state(page);
 
-  expect(current.result).toMatchObject({
+  const result = current.result;
+
+  if (!result) throw new Error('Ergebnis fehlt');
+  expect(result).toMatchObject({
     visible: true,
     score: current.round.finalChaosScore,
     outcome,
     dialogue: current.homecoming.selection?.dialogue,
     hearts: current.reconciliation.successes,
   });
-  expect(current.result?.summaryText).toContain(`Chaospunkte: ${current.chaos.score}`);
-  expect(current.result?.summaryText).toContain(outcome === 'success' ? 'Gelungen' : 'Gescheitert');
-  expect(current.result?.hint).toBe('R: Neue Runde');
-  expect(current.result?.quoteText).toBe(`Sara: „${current.result?.closingLine}“`);
+  expect(result.summaryText).toContain(`Chaospunkte: ${current.chaos.score}`);
+  expect(result.summaryText).toContain(outcome === 'success' ? 'Gelungen' : 'Gescheitert');
+  expect(result.hint).toBe('R: Neue Runde');
+  expect(result.goalReached).toBe(current.round.endReason === 'goal');
+  expect(result.summaryText).toContain('Hauptziel:');
+  expect(result.quoteText).toBe(`Sara: „${result.closingLine}“`);
   expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.result))).toBe(true);
   await page.clock.runFor(3000);
   expect((await state(page)).result).toEqual(current.result);

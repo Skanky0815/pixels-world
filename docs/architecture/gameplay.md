@@ -249,3 +249,26 @@ Der Feedback-Einstieg ist ein normaler Footer-Link mit `target="_blank"` und
 Der Input-Adapter liefert bei Fokus auf interaktiven HTML-Elementen einen
 unveränderlichen neutralen Snapshot und löst gehaltene Tasten. Die bestehende
 Browserpause behandelt den Wechsel zum neuen Tab.
+
+## Festes Hauptziel und konkurrierende Rundenenden
+
+`RoomDefinition.goal` beschreibt genau ein Ziel; `RoomResolver` prüft ID, Typ,
+Texte, Interaktionsdauer, existierende Auflage und Platz innerhalb des Raums.
+`ResolvedRoom.goal` enthält die abgeleitete Kontaktfläche. Erreichbarkeit der
+konkreten handgebauten Platzierung wird zusätzlich durch echte Tastaturrouten
+in beiden Raumvarianten nachgewiesen; es gibt hier keinen allgemeinen Pfadfinder.
+
+`MainGoal` ist ein Phaser-unabhängiges Modell mit aktivem Kontaktfortschritt und
+terminalem Zustand `reached` oder `missed`. Es vergibt keine Punkte und besitzt
+keinen separaten Timer. Die Szene gibt ihm nur aktive bereinigte Framezeit und
+losgelöste Körper-/Eingabedaten nach dem normalen Interaktionsframe. Bewegung
+oder falsche Auflage setzt den Kontaktfortschritt zurück. `GoalView` zeichnet
+den Spielzeug-Platzhalter und genau einen kurzen Hinweis.
+
+`RoundController.advance` arbitriert Deadline und fertige Zielinteraktion atomar.
+Es gelten derselbe letzte Interaktionsframe, einmaliger Score-Freeze und dieselbe
+Phasenfolge. Die Deadline gewinnt einen Gleichstand im selben Simulationsframe;
+frühe Ziele wechseln sofort zu `returning`. `endReason` bleibt bis zum R-Neustart
+fest. Erst dieser akzeptierte Grund finalisiert den Zielstatus, sodass ein
+gleichzeitig beobachteter, aber späterer Zielkontakt nicht als Erfolg gezählt wird.
+Die Auswertung führt `goalReached` getrennt von Punkten und Versöhnungsausgang.

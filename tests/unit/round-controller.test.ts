@@ -82,6 +82,7 @@ test('Exakte Rückkehrgrenze und Reset mit neuer Zufallsauswahl', () => {
   round.reset();
   assert.deepEqual(round.snapshot(), {
     phase: 'chaos',
+    endReason: null,
     elapsedMs: 0,
     returnAtMs: 105_000,
     finalChaosScore: null,

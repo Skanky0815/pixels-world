@@ -29,6 +29,8 @@ sind verbindlich; Formatierungsfehler sind auch in CI, Release und Pages blockie
 
 13. „Feedback & Ideen“ per Maus und Tab/Enter öffnen: neuer GitHub-Tab, unveränderte Spielseite. Feedback links und Copyright rechts in derselben Zeile, ohne zusätzlichen Infotext; während Linkfokus lösen Leertaste/R/Pfeile keine Spielaktion aus. Bei Tabwechsel pausiert die Runde, nach Rückkehr geht sie weiter. Im schmalen Fenster überdeckt der Link weder Spiel noch HUD.
 
+14. Zum goldenen Lieblingsball auf dem oberen rechten Regal klettern und 1,2 Sekunden stehen bleiben: Fortschritt, dann vorzeitige Heimkehr mit Zielerfolg, auch ohne Chaospunkte. Bewegung bricht Teilfortschritt ab, Browserpause hält ihn an. Ohne Zielkontakt endet die Runde wie bisher am Timer mit nicht erreichtem Ziel. Auswertung und R-Neustart behandeln beide Wege konsistent.
+
 ## End-to-End-Tests
 
 ```sh
@@ -72,7 +74,7 @@ Bei einem gestarteten QA-Lauf bleiben Lint, Unit-Tests, Typprüfung, Build und b
 
 Unter **Actions → QA → Run workflow** einen Branch, eine Durchlaufzahl (1, 2 oder 3;
 Standard 1) und das Rundenprofil `fast` oder `full` auswählen. `workflow_dispatch`
-ist ungefiltert und prüft immer alle 43 Szenarien. Normale PR-/Push-Läufe verwenden
+ist ungefiltert und prüft immer alle 45 Szenarien. Normale PR-/Push-Läufe verwenden
 `fast`: Nur das explizite Heimkehr-Szenario nutzt 8–10 Sekunden Testdauer. `full`
 prüft denselben Ablauf mit den produktiven 60–105 Sekunden; alle Assertions bleiben
 gleich. Die Domain-Unit-Tests prüfen die echten Grenzen zusätzlich.
@@ -98,7 +100,7 @@ Die Unit- und Browserjobs zeigen nach ihren Testschritten alle gemeldeten Szenar
 
 Node erzeugt über `npm run test:unit:ci` neben der Terminalausgabe einen TAP-Report (`test-reports/unit.tap`). Playwright erzeugt zusätzlich zu List/HTML einen JUnit-Report (`test-reports/playwright.xml`). Die gepflegte [test-summary/action](https://github.com/test-summary/action) verarbeitet beide Formate; ihre Version ist als Commit gepinnt. Nodes JUnit-Ausgabe wird bewusst nicht verwendet: Die geprüfte Action übersieht die direkt unter `testsuites` liegenden Testfälle von Node 22. Der TAP-Reporter wird korrekt gelesen.
 
-Die Gesamtübersicht zählt **Ausführungen**: aktuell 80 Unit-Tests plus 43 Browser-Szenarien, also 123 Ergebnisse bei normaler CI. Bei manuell gewählten zwei Durchläufen sind es 166, bei drei Durchläufen 209. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
+Die Gesamtübersicht zählt **Ausführungen**: aktuell 87 Unit-Tests plus 45 Browser-Szenarien, also 132 Ergebnisse bei normaler CI. Bei manuell gewählten zwei Durchläufen sind es 177, bei drei Durchläufen 222. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
 
 Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Drei erwartete Reports (Unit und beide Shards) werden auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
 
@@ -133,7 +135,7 @@ Veröffentlichungsstand weiterhin selbst vollständig.
 Grundlage: [Playwright-Docker-Image](https://playwright.dev/docs/docker) und
 [Container-Jobs in der Playwright-CI-Anleitung](https://playwright.dev/docs/ci#via-containers).
 
-Die 43 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die zwei automatischen Shards bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
+Die 45 Szenarien sind nach Inhalt auf Spec-Dateien verteilt, mit gemeinsamer Clock-/Gesundheits-Fixture und Eingabehelfern. [Lokale Auswahl und Gruppen](../tests/e2e/README.md). `fullyParallel` und die zwei automatischen Shards bleiben erhalten; die Gruppen erzeugen keine weiteren CI-Jobs. Zeitverteilung anhand echter Läufe beurteilen.
 
 Der Qualitätsjob verwendet die Typprüfung in `npm run build` statt eines zusätzlichen identischen Aufrufs davor. In der Playwright-Vorbereitung prüft `build:e2e` die Typen; die zweite Produktionsvorschau baut deshalb direkt mit Vite. Playwright verlangt beide erfolgreichen Serverstarts. Die eigenständig nutzbaren Befehle `build`, `build:e2e` und `qa` bleiben typgeprüft.
 

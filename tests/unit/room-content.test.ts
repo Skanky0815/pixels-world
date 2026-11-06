@@ -252,8 +252,16 @@ test('Sichere Einzelwerte dürfen gemeinsam keine unsichere Gesamtpunktzahl erge
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Leere Räume sind gültig; Variantenwahl ist im Produktionsmodus deaktiviert', () => {
   assert.equal(
-    resolveRoom({ ...LIVING_ROOM, objects: [], platforms: [], decorations: [] }, OBJECTS).objects
-      .length,
+    resolveRoom(
+      {
+        ...LIVING_ROOM,
+        goal: { ...LIVING_ROOM.goal, surfaceId: 'floor', x: 500 },
+        objects: [],
+        platforms: [],
+        decorations: [],
+      },
+      OBJECTS,
+    ).objects.length,
     0,
   );
   assert.strictEqual(selectRoom('cozy-remix', true), COZY_REMIX);
