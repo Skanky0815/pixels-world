@@ -19,11 +19,18 @@ for (const viewport of [
     expect(room && left && right).toBeTruthy();
 
     if (!room || !left || !right) throw new Error('Layout fehlt');
-    expect(left.x + left.width).toBeLessThanOrEqual(room.x);
-    expect(room.x + room.width).toBeLessThanOrEqual(right.x);
+    expect(left.x + left.width + 16).toBeLessThanOrEqual(room.x);
+    expect(room.x + room.width + 16).toBeLessThanOrEqual(right.x);
     expect(
       Math.max(room.y + room.height, left.y + left.height, right.y + right.height),
     ).toBeLessThanOrEqual(viewport.height);
+    const title = await page.locator('header').boundingBox();
+    const info = await page.locator('.mobile-hud').boundingBox();
+
+    expect(title!.x + title!.width).toBeLessThanOrEqual(room.x);
+    expect(title!.y + title!.height).toBeLessThanOrEqual(left.y);
+    expect(info!.x).toBeGreaterThanOrEqual(room.x + room.width);
+    expect(info!.y + info!.height).toBeLessThanOrEqual(right.y);
     const canvas = await page.locator('canvas').boundingBox();
 
     expect(canvas).not.toBeNull();
@@ -49,6 +56,7 @@ test('Schmales Hochformat: Einführung scrollbar, Start erreichbar und Rotation 
   await page.setViewportSize({ width: 320, height: 568 });
   await loadIntro(page);
   await expect(page.locator('.start-prompt')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Weiter', exact: true })).toBeVisible();
   expect(
     await page.locator('.start-copy').evaluate((node) => node.scrollHeight > node.clientHeight),
   ).toBe(true);

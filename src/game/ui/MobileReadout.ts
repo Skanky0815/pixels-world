@@ -16,6 +16,8 @@ interface Readout {
 /** CSS-pixel text from the scene-owned views, independent of room/canvas scaling. */
 export class MobileReadout {
   private readonly hud = document.createElement('section');
+  private readonly goal = document.createElement('p');
+  private readonly status = document.createElement('p');
   private readonly panel = document.createElement('section');
   private readonly message = document.createElement('p');
   private readonly quote = document.createElement('p');
@@ -27,6 +29,8 @@ export class MobileReadout {
   constructor() {
     this.hud.className = 'mobile-hud';
     this.hud.setAttribute('aria-label', 'Spielstatus');
+    this.goal.className = 'mobile-goal';
+    this.hud.append(this.status, this.goal);
     this.panel.className = 'mobile-dialogue';
     this.panel.setAttribute('aria-label', 'Spieltext');
     this.panel.hidden = true;
@@ -43,9 +47,10 @@ export class MobileReadout {
   // eslint-disable-next-line max-lines-per-function -- Die zusammengehörigen Textknoten und die Zeitleiste werden in einem Renderdurchlauf synchronisiert.
   render(state: Readout) {
     setText(
-      this.hud,
-      `${state.hud.scoreText}\n${state.hud.roundText.replace(/ · R:.*/, '')}\n${state.goal}`,
+      this.status,
+      `${compactScore(state.hud.scoreText)}\n${state.hud.roundText.replace(/ · R:.*/, '')}`,
     );
+    setText(this.goal, state.goal);
     const text = panelText(state);
 
     this.panel.hidden = !text.message;
@@ -99,5 +104,11 @@ function panelText(s: Readout) {
 }
 
 function touchHint(text: string) {
-  return text.replace('LEERTASTE:', 'Sprung / Weiter:').replace('R:', 'Neustart:');
+  return text.replace('LEERTASTE:', 'Weiter:').replace('R:', 'Neustart:');
+}
+
+function compactScore(text: string) {
+  return text
+    .replace('  ·  SARAS ÄRGER (VORSCHAU):', '\nÄrger:')
+    .replace('  ·  SARAS ÄRGER:', '\nÄrger:');
 }

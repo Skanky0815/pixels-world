@@ -61,8 +61,8 @@ function introMarkup() {
     <p>Bei der Versöhnung: die große Pfeiltaste rechtzeitig drücken.
     Texte liest du in Ruhe und bestätigst mit Leertaste. Bei Fokusverlust pausiert das Spiel.</p>
     <p class="touch-prompt">Die Pfeile bewegen Pixel und steuern die Charmeoffensive.
-    „Sprung / Weiter“ springt und bestätigt Start, Dialoge und Rückmeldungen.
+    „Sprung“ springt. Bei Start und Dialogen heißt die Taste „Weiter“.
     Am Rundenende kannst du mit „Neue Runde“ weiterspielen.</p>
   </div><p class="start-prompt"><span class="keyboard-prompt">Leertaste drücken, um zu starten</span>
-  <span class="touch-prompt">„Sprung / Weiter“ antippen, um zu starten</span></p>`;
+  <span class="touch-prompt">„Weiter“ antippen, um zu starten</span></p>`;
 }

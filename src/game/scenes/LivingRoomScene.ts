@@ -333,6 +333,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Nur Darstellungsdaten bestehender Ansichten; keine zweite Spielzustandsmaschine.
   private renderMobile() {
+    this.controls.setActionLabel(this.round.snapshot().phase === 'chaos' ? 'Sprung' : 'Weiter');
     this.mobile.render({
       hud: this.hud.snapshot(),
       goal: this.goalView.snapshot().text,

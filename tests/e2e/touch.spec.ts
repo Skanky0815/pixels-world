@@ -13,6 +13,7 @@ test(
     const controls = page.getByRole('navigation', { name: 'Touch-Steuerung' });
 
     await expect(controls).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Sprung', exact: true })).toBeVisible();
     const before = (await state(page)).pixel.x;
 
     await touch.press('right', 1);
@@ -62,7 +63,7 @@ test('Touch und Tastatur: entgegengesetzte Richtungen sind neutral', async ({ pa
   await until(page, (s) => s.pixel.velocityX > 0);
   await page.keyboard.up('ArrowRight');
   await until(page, (s) => s.pixel.velocityX === 0);
-  await page.getByRole('button', { name: 'Sprung / Weiter' }).focus();
+  await page.getByRole('button', { name: 'Sprung' }).focus();
   await page.keyboard.down('Enter');
   await until(page, (s) => !s.pixel.grounded);
   await page.keyboard.up('Enter');
@@ -170,10 +171,13 @@ test(
       (s) => s.pixelReturn.stage === 'seated' && s.homecoming.stage === 'dialogue',
       500,
     );
+    expect((await state(page)).sara.canvasTextVisible).toBe(false);
     await touch.tap('jump');
     await until(page, (s) => s.reconciliation.stage === 'reading', 100);
+    expect((await state(page)).charmDisplay.canvasTextVisible).toBe(false);
     await expect(page.locator('.mobile-dialogue')).toBeVisible();
     await expect(page.locator('.mobile-dialogue')).toContainText('PIXELS CHARME-OFFENSIVE');
+    await expect(page.getByRole('button', { name: 'Weiter', exact: true })).toBeVisible();
     const initial = (await state(page)).reconciliation;
 
     await touch.tap('jump');
@@ -203,6 +207,14 @@ test(
       body: await page.screenshot({ fullPage: true }),
       contentType: 'image/png',
     });
+    expect((await state(page)).result!.canvasTextVisible).toBe(false);
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.clock.runFor(100);
+    await expect(page.locator('.mobile-dialogue')).toBeHidden();
+    await until(page, (s) => s.result!.canvasTextVisible, 100);
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.clock.runFor(100);
+    await until(page, (s) => !s.result!.canvasTextVisible, 100);
     const beforeReset = await state(page);
 
     await touch.tap('reset');

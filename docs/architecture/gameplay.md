@@ -295,8 +295,8 @@ CSS ordnet bei kompakten Touch-Geräten im Querformat die beiden Steuerungsgrupp
 links und rechts des Zimmers an; im Hochformat bleiben sie darunter.
 `MobileReadout` gehört zur Szene und wird beim Neustart entfernt. Es übernimmt
 nur Text-/Fortschrittsdaten bestehender Ansichten und rendert sie in CSS-Pixeln.
-Canvas-HUD und Zieltext werden dort über einen aufgeräumten MediaQuery-Listener
-ausgeblendet; Zielmarker, Schauspieler, Physik und Rundenzustand bleiben identisch.
+Canvas-HUD, Zieltext und die bisherigen Dialog-/Ergebnispanels werden dort
+über aufgeräumte MediaQuery-Listener ausgeblendet; Zielmarker, Schauspieler, Physik und Rundenzustand bleiben identisch.
 Starttexte und lange Dialoge können unabhängig von der Spielfläche scrollen.
 
 Der mobile Neustart-Button ist nur am Ergebnis sichtbar. Die Szene leitet diese

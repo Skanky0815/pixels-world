@@ -180,7 +180,7 @@ Pfeilkachel, Zeitbalken und Ergebnis. Desktop-Szenarien bleiben unverändert.
 Canvas und Raum behalten ihr Seitenverhältnis, `pixelArt` und
 `image-rendering: pixelated` verhindern geglättete Interpolation. Bei kleinen
 Displays wird bewusst nicht auf ganzzahlige Vergrößerungen bestanden: die
-ganze Spielfläche muss hineinpassen. HUD und Dialoge verwenden dann 14 CSS-Pixel
+ganze Spielfläche muss hineinpassen. Dialoge verwenden dann 14 CSS-Pixel, der seitliche Status 13 CSS-Pixel
 statt proportional geschrumpfter Canvas-Schrift. Die Textansicht liest
 ausschließlich die bestehenden Szenenansichten, keine E2E-Beobachter.
 Es gibt kein separates Einstellungsmenü; Fokusverlust pausiert weiterhin.
@@ -196,3 +196,17 @@ verfügbar. Längere Einführung/Dialoge scrollen bewusst innerhalb ihrer Box.
 Während der laufenden Touch-Runde bleibt der Neustart-Button verborgen.
 Erst am Ergebnis wird „Neue Runde“ angeboten, danach ist er wieder verborgen.
 Der Tastaturkurzbefehl R bleibt für Desktop unverändert.
+
+Querformat-Review: Titel über dem Steuerkreuz und kompakter Status über der
+Aktionstaste statt voller Infobox; der Zieltext bleibt in der Einführung und
+im Hochformat. Die Aktion heißt anfangs „Weiter“, im Spiel „Sprung“ und
+bei Dialogen „Weiter“. Am Ergebnis erscheint ausschließlich „Neue Runde“.
+
+Die Querformat-Prüfung verlangt mindestens 16 CSS-Pixel Abstand zwischen
+Steuerungsgruppen und Zimmer. Der mobile Footer verwendet gedeckte Linkfarben
+und kleinere Metadaten; Tastatur-Fokus bleibt deutlich sichtbar.
+
+Im kompakten Touch-Layout sind die Canvas-Textpanels für Heimkehr, Versöhnung
+und Ergebnis ausgeblendet. Nur die DOM-Textbox ist sichtbar; Schauspieler und
+Zuneigungsanimationen bleiben im Raum. Beim Wechsel auf Desktop erscheinen
+die Canvas-Panels wieder, ohne die Runde neu zu starten.
