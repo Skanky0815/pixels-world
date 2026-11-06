@@ -1,7 +1,9 @@
+import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { MainGoal, ResolvedGoal } from '../domain/main-goal';
 
 export class GoalView {
+  private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
   private readonly caption: Phaser.GameObjects.Text;
   private readonly marker: Phaser.GameObjects.Container;
@@ -24,6 +26,7 @@ export class GoalView {
       scene.add.text(0, -28, '★', { fontSize: '18px', color: '#584637' }).setOrigin(0.5),
     ]);
     this.root.add([this.caption, this.marker]);
+    this.removeCompactListener = compactVisibility(this.caption);
   }
 
   render(goal: ReturnType<MainGoal['snapshot']>, started: boolean) {
@@ -37,6 +40,7 @@ export class GoalView {
   }
 
   destroy() {
+    this.removeCompactListener();
     this.root.destroy(true);
   }
 }

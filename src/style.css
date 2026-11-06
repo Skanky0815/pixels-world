@@ -296,3 +296,164 @@ kbd {
     display: none;
   }
 }
+
+/* Text stays in CSS pixels while Phaser fits the complete room without cropping. */
+.mobile-hud,
+.mobile-dialogue {
+  display: none;
+}
+@media (any-pointer: coarse) and (max-width: 1100px) {
+  body:has(#play-area) {
+    padding-top: max(8px, env(safe-area-inset-top));
+  }
+  #play-area {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  #play-area #game {
+    min-width: 0;
+  }
+  .mobile-hud {
+    display: block;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-line;
+    background: #403a35;
+    padding: 8px;
+    border: 1px solid #a78d77;
+  }
+  .mobile-hud:empty {
+    display: none;
+  }
+  .mobile-dialogue:not([hidden]) {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 12px;
+    background: #403a35;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-line;
+  }
+  .mobile-dialogue p {
+    margin: 0 0 8px;
+  }
+  .mobile-quote {
+    color: #e4c182;
+    font-style: italic;
+  }
+  .mobile-key {
+    text-align: center;
+    font-size: 44px;
+    line-height: 1;
+    color: #e4c182;
+  }
+  .mobile-hint {
+    text-align: right;
+    color: #e4c182;
+  }
+  .start-screen {
+    font-size: 14px;
+    gap: 4px;
+    padding: 8px;
+  }
+  .start-prompt {
+    padding-top: 4px;
+    text-align: left;
+  }
+}
+@media (any-pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  body:has(#play-area) {
+    padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+      max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    align-items: start;
+  }
+  main:has(#play-area) header {
+    margin-bottom: 4px;
+  }
+  main:has(#play-area) .eyebrow,
+  main:has(#play-area) h1 span,
+  main:has(#play-area) .badge,
+  main:has(#play-area) footer .hint {
+    display: none;
+  }
+  main:has(#play-area) h1 {
+    font-size: 20px;
+    letter-spacing: 0;
+  }
+  #play-area {
+    grid-template-columns: 156px minmax(0, 1fr) 104px;
+    align-items: center;
+    column-gap: 8px;
+  }
+  .mobile-hud {
+    grid-column: 1 / -1;
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+  #play-area #game {
+    grid-column: 2;
+    grid-row: 2;
+    width: min(100%, calc((100svh - 160px) * var(--room-ratio, 1.777778)));
+    justify-self: center;
+    border-width: 2px;
+  }
+  #play-area .touch-controls {
+    display: contents;
+  }
+  .touch-directions {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .touch-actions {
+    grid-column: 3;
+    grid-row: 2;
+    width: 100%;
+  }
+  main:has(#play-area) footer {
+    margin-top: 4px;
+  }
+}
+@media (any-pointer: coarse) and (max-width: 1100px) {
+  .mobile-dialogue progress {
+    display: block;
+    width: min(180px, 100%);
+    height: 8px;
+    margin: 8px auto;
+    accent-color: #e4c182;
+  }
+  .mobile-dialogue progress[hidden] {
+    display: none;
+  }
+}
+@media (any-pointer: coarse) and (max-width: 1100px) {
+  .mobile-dialogue:not([hidden]) {
+    bottom: auto;
+    max-height: calc(100% - 64px);
+  }
+  .mobile-dialogue p:empty {
+    display: none;
+  }
+  .mobile-dialogue:has(.mobile-key:not(:empty)):not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 72px;
+    gap: 4px 8px;
+  }
+  .mobile-dialogue:has(.mobile-key:not(:empty)) > p:first-child {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+  .mobile-dialogue .mobile-key {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+  }
+  .mobile-dialogue progress {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}

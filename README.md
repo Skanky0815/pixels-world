@@ -74,21 +74,23 @@ Mehr dazu: [Spielmechaniken und Punkte](docs/gameplay.md).
 
 ### Touch-Steuerung
 
-Unter dem Zimmer erscheinen auf Touch-Geräten vier Richtungstasten und
+Auf Touch-Geräten erscheinen vier Richtungstasten und
 **Sprung / Weiter**. Mehrere Finger funktionieren gleichzeitig, etwa rechts laufen
 und springen. Sprung / Weiter startet die Runde, bestätigt Saras Texte und die
-Versöhnungsanleitung; die Pfeile spielen auch die Charmeoffensive. **Neustart**
-fragt vor dem Verwerfen der aktuellen Runde nach.
+Versöhnungsanleitung; die Pfeile spielen auch die Charmeoffensive. Während der
+laufenden Runde gibt es keinen Neustart-Button. Erst beim Ergebnis erscheint
+**Neue Runde**. Der bestehende Tastaturkurzbefehl R bleibt verfügbar.
 
 Ein Finger bleibt seiner Taste zugeordnet. Verlassen einer Taste, Abbruch,
 Fokus-/Sichtbarkeitsverlust und Rotation lösen gehaltene Eingaben. Browsergesten
 außerhalb der Buttons bleiben verfügbar. Tastatur und Touch können gemeinsam
 verwendet werden; entgegengesetzte Richtungen sind neutral.
 
-Die Eingabe ist in Chromium mit emuliertem Touch geprüft. Ein echtes Mobilgerät
-steht noch zur Abnahme aus (#54); lesbare HUD-/Dialogdarstellung auf kleinen
-Bildschirmen folgt separat mit #108. Dies ist der erste Schritt des Meilensteins
-„Mobile Ready“, keine abgeschlossene Mobilgeräte-Freigabe.
+Die Eingabe ist in Chromium mit emuliertem Touch geprüft. Ein erster Praxistest auf iPhone/Safari war erfolgreich (#54). Eine vollständige
+Geräteabnahme steht noch aus. Auf kompakten Touch-Geräten bleiben HUD und Dialoge
+in CSS-Pixeln lesbar. Im Querformat liegt das Zimmer zwischen Richtungstasten links
+und Aktionstasten rechts, im Hochformat stehen die Buttons darunter. Die Einführung
+und längere Dialoge haben ein eigenes Scrollfeld; der komplette Raum bleibt sichtbar.
 
 ## Lokal starten
 

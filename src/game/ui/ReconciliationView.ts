@@ -90,6 +90,16 @@ export class ReconciliationView {
     this.timer.width = active ? (140 * s.remainingMs) / s.inputMs : 0;
   }
 
+  readableText() {
+    return {
+      message: this.message.text,
+      quote: this.quote.text,
+      hint: this.hint.text,
+      key: this.key.visible ? this.key.text : '',
+      hearts: this.heartLabel.text,
+    };
+  }
+
   snapshot() {
     return Object.freeze({ heartsText: this.heartLabel.text });
   }

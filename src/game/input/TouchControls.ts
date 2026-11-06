@@ -16,7 +16,7 @@ export class TouchControls {
     this.root.className = 'touch-controls';
     this.root.setAttribute('aria-label', 'Touch-Steuerung');
     this.root.innerHTML = markup();
-    host.after(this.root);
+    host.parentElement?.append(this.root);
     this.bindPointers();
     this.bindLifecycle();
     this.root.addEventListener('click', this.virtualClick, { signal: this.abort.signal });
@@ -89,7 +89,7 @@ export class TouchControls {
   private restart() {
     this.clear();
 
-    if (window.confirm('Die aktuelle Runde wirklich neu starten?')) this.pulse('reset');
+    this.pulse('reset');
   }
 
   private readonly virtualClick = (event: MouseEvent) => {
@@ -133,6 +133,12 @@ export class TouchControls {
       );
   }
 
+  showRestart(available: boolean) {
+    const button = this.root.querySelector<HTMLButtonElement>('[data-control="reset"]');
+
+    if (button) button.hidden = !available;
+  }
+
   read() {
     return this.actions.read();
   }
@@ -167,6 +173,6 @@ function markup() {
     <button type="button" data-control="right" aria-label="Rechts" aria-pressed="false">→</button>
   </div><div class="touch-actions">
     <button type="button" data-control="jump" aria-pressed="false">Sprung / Weiter</button>
-    <button type="button" data-control="reset" aria-pressed="false">Neustart</button>
+    <button type="button" data-control="reset" aria-pressed="false" hidden>Neue Runde</button>
   </div>`;
 }

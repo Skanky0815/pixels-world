@@ -91,6 +91,10 @@ export class InputController {
     return { jumpPressed, confirmPressed: jumpPressed && !this.keys.jump.originalEvent?.repeat };
   }
 
+  showRestart(available: boolean) {
+    this.touch.showRestart(available);
+  }
+
   release() {
     this.keyboard.resetKeys();
     this.touch.clear();
