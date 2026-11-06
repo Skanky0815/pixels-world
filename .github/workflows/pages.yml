@@ -42,6 +42,7 @@ jobs:
     uses: ./.github/workflows/qa.yml
     with:
       full_round: true
+      release_tag: ${{ inputs.release_tag }}
 
   build:
     needs: full-qa

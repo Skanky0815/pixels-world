@@ -90,3 +90,17 @@ grüner Main-QA ausdrücklich publish starten. Die Automatisierung #127 bleibt P
 
 Grundlage: [Release Pleases Kandidaten-Sperre](https://github.com/googleapis/release-please/blob/main/src/manifest.ts)
 und [Outputs der gepinnten Action](https://github.com/googleapis/release-please-action/blob/v5.0.0/src/index.ts).
+
+### Versionslink im Spiel
+
+Nach der bestehenden Prüfung von Veröffentlichung, Tag und Commit reicht Pages
+den `release_tag` an die wiederverwendbare QA weiter. Deren Produktionsbuild
+erhält `PIXELS_RELEASE_TAG`; Vite vergleicht den Tag mit der Paketversion und
+bettet nur den exakt passenden GitHub-Release-Link ein. Der danach deployte
+Build ist weiterhin dasselbe getestete Artefakt, ohne Neubau.
+
+Ohne expliziten Release-Kontext wird nur die Versionsnummer angezeigt.
+Entwicklungs- und E2E-Builds verlinken auch bei gesetzter Variable keinen Release.
+Die Umgebungsvariable allein ersetzt keine Veröffentlichungsprüfung: diese
+bleibt im Pages-Identity-Gate. Die Release-Notes öffnen in einem neuen Tab,
+damit die laufende Runde erhalten bleibt.

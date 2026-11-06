@@ -533,3 +533,22 @@ kbd {
     color: #a08f83;
   }
 }
+
+.build-info a {
+  color: inherit;
+  text-underline-offset: 3px;
+  text-decoration-style: dotted;
+}
+.build-info a:hover,
+.build-info a:focus-visible {
+  color: #e4c182;
+  text-decoration-style: solid;
+}
+.build-info a:focus-visible {
+  outline: 2px solid #edc37c;
+  outline-offset: 4px;
+}
+.build-info > span {
+  margin: 0;
+  color: inherit;
+}

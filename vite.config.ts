@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 import { OBJECTS } from './src/content/objects/catalog';
 import { ROOMS } from './src/content/rooms';
 import { resolveRoom } from './src/game/content/resolve-room';
+import { releaseUrl } from './tools/release-metadata';
 import { roundConfigForBuild } from './tools/e2e-timing';
 
 // Fail before bundling/serving when any registered content is invalid.
@@ -15,9 +16,10 @@ const { version } = JSON.parse(
 ) as { version: string };
 
 // eslint-disable-next-line max-lines-per-function -- Der deklarative Buildvertrag hält Modi, feste Defines und gemeinsame Ein-/Ausgänge zusammen.
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, command }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(version),
+    __APP_RELEASE_URL__: JSON.stringify(releaseUrl(mode, command, version, env.PIXELS_RELEASE_TAG)),
     __E2E_ROUND_CONFIG__:
       JSON.stringify(roundConfigForBuild(mode, env.E2E_FULL_ROUND)) ?? 'undefined',
   },

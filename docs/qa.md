@@ -102,7 +102,7 @@ Die Unit- und Browserjobs zeigen nach ihren Testschritten alle gemeldeten Szenar
 
 Node erzeugt über `npm run test:unit:ci` neben der Terminalausgabe einen TAP-Report (`test-reports/unit.tap`). Playwright erzeugt zusätzlich zu List/HTML einen JUnit-Report (`test-reports/playwright.xml`). Die gepflegte [test-summary/action](https://github.com/test-summary/action) verarbeitet beide Formate; ihre Version ist als Commit gepinnt. Nodes JUnit-Ausgabe wird bewusst nicht verwendet: Die geprüfte Action übersieht die direkt unter `testsuites` liegenden Testfälle von Node 22. Der TAP-Reporter wird korrekt gelesen.
 
-Die Gesamtübersicht zählt **Ausführungen**: aktuell 91 Unit-Tests plus 4 Browser-Szenarien, also 95 Ergebnisse bei PR-CI. Main-CI zählt 91 Unit-Tests und kennzeichnet Browsertests als absichtlich nicht geplant. Vollständige manuelle QA und Release-Rollout zählen 91 plus 60, also 151 Ergebnisse. Bei manuell gewählten zwei Durchläufen sind es 211, bei drei Durchläufen 271. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
+Die Gesamtübersicht zählt **Ausführungen**: aktuell 94 Unit-Tests plus 4 Browser-Szenarien, also 98 Ergebnisse bei PR-CI. Main-CI zählt 94 Unit-Tests und kennzeichnet Browsertests als absichtlich nicht geplant. Vollständige manuelle QA und Release-Rollout zählen 94 plus 60, also 154 Ergebnisse. Bei manuell gewählten zwei Durchläufen sind es 214, bei drei Durchläufen 274. Beide Rundenprofile haben dieselbe Szenarioanzahl; das gewählte Profil ist in Job Summary und Rundentest-Annotation erkennbar. Wiederholungen erscheinen als eigene Zeilen mit demselben Szenarionamen. Es gibt weiterhin null Retries. Jeder Report fließt genau einmal in die Gesamtsumme ein; die zusätzlichen Job-Ansichten werden nicht nochmals mitgezählt.
 
 Die Darstellung läuft mit `always()` auch nach Testfehlern. Reporting- und Downloadfehler werden als Hinweise angezeigt, während die ursprünglichen Testschritte und der immer ausgeführte QA-Gesamtcheck ihren Fehlerstatus behalten. Nur die rein darstellenden Summary-/Transfer-Schritte dürfen mit Fehlern fortfahren. Je nach Profil werden ein (Main), zwei (PR-Smoke) oder fünf (vollständige QA) erwartete Reports auf Vorhandensein geprüft; fehlende Reports sind ausdrücklich als unvollständig markiert. Nach einem harten Runner-Abbruch können nur vorhandene Teilergebnisse angezeigt werden. Aus fehlenden Reports wird kein erfolgreicher Testlauf abgeleitet.
 
@@ -210,3 +210,12 @@ Im kompakten Touch-Layout sind die Canvas-Textpanels für Heimkehr, Versöhnung
 und Ergebnis ausgeblendet. Nur die DOM-Textbox ist sichtbar; Schauspieler und
 Zuneigungsanimationen bleiben im Raum. Beim Wechsel auf Desktop erscheinen
 die Canvas-Panels wieder, ohne die Runde neu zu starten.
+
+## Release-Link im Footer (#131)
+
+Die normale Suite prüft Versionsanzeige und fehlenden Release-Link im
+E2E-/Vorschaubuild. Mit `PIXELS_RELEASE_TAG=v<package-Version> npm run test:e2e
+-- tests/e2e/footer.spec.ts` wird zusätzlich der Release-Kontext geprüft:
+Der E2E-Build bleibt unverlinkt, der Produktionsbuild zeigt exakt den Tag.
+Unit-Tests prüfen Buildmodus, Fallback und Abbruch bei abweichenden Metadaten.
+Der tatsächliche Pages-Rollout ist beim nächsten Release gegenzuprüfen.
