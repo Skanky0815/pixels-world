@@ -11,7 +11,7 @@ import {
   besideCouch,
 } from './support';
 
-test('R setzt Pixel von einer Plattform zurück', async ({ page }) => {
+test('R setzt Pixel von einer Plattform zurück', { tag: '@smoke' }, async ({ page }) => {
   await start(page);
   await couch(page);
   await reset(page);

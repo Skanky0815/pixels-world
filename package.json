@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "qa": "npm run format:check && npm run lint && npm run test:unit && npm run build",
+    "qa": "npm run format:check && npm run lint && npm run test:ci && npm run test:unit && npm run build",
     "build:e2e": "npm run typecheck && vite build --mode e2e --outDir dist-e2e",
     "test:e2e": "playwright test",
     "test:e2e:full": "E2E_FULL_ROUND=1 playwright test",
@@ -19,7 +19,11 @@
     "test:unit:ci": "node --experimental-strip-types --test --test-reporter=spec --test-reporter=tap --test-reporter-destination=stdout --test-reporter-destination=test-reports/unit.tap tests/unit/*.test.ts",
     "test:unit": "node --experimental-strip-types --test tests/unit/*.test.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check:pr": "npm run qa && npm run test:e2e",
+    "hooks:install": "sh tools/install-hooks.sh",
+    "test:e2e:smoke": "playwright test --grep @smoke",
+    "test:ci": "bash tests/ci/release-gates.sh && bash tests/ci/pre-push.sh && node tests/ci/qa-scope.test.mjs"
   },
   "dependencies": {
     "phaser": "^3.90.0"

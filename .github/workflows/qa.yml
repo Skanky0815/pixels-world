@@ -29,6 +29,7 @@ on:
       - '.github/workflows/**'
       - '.github/scripts/**'
       - '.github/actions/**'
+      - '.githooks/**'
   pull_request:
     paths:
       - 'src/**'
@@ -56,6 +57,7 @@ on:
       - '.github/workflows/**'
       - '.github/scripts/**'
       - '.github/actions/**'
+      - '.githooks/**'
   workflow_dispatch:
     inputs:
       repetitions:
@@ -82,6 +84,8 @@ on:
         default: '1'
 
 env:
+  # Full reusable QA overrides event defaults; main pushes intentionally omit browsers.
+  E2E_SCOPE: ${{ inputs.full_round && 'all' || github.event_name == 'pull_request' && 'smoke' || github.event_name == 'push' && 'none' || 'all' }}
   E2E_REPEATS: ${{ inputs.repetitions || '1' }}
   E2E_FULL_ROUND: ${{ (inputs.full_round || inputs.round_mode == 'full') && '1' || '0' }}
 
@@ -106,8 +110,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - name: Release-Gates prüfen
-        run: bash tests/ci/release-gates.sh
+      - name: Release- und Hook-Gates prüfen
+        run: npm run test:ci
       - name: Formatierung prüfen
         run: npm run format:check
       - name: Unit-Tests mit TAP-Report
@@ -145,7 +149,8 @@ jobs:
         uses: ./.github/actions/npm-audit
 
   e2e-shard:
-    name: Playwright (Chromium, Teil ${{ matrix.shard }}/2)
+    if: github.event_name != 'push' || inputs.full_round
+    name: Playwright (Chromium, Teil ${{ matrix.shard }}/${{ matrix.total }})
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     container:
@@ -154,7 +159,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shard: ${{ fromJSON(github.event_name == 'pull_request' && !inputs.full_round && '[1]' || '[1,2,3,4]') }}
+        total: ${{ fromJSON(github.event_name == 'pull_request' && !inputs.full_round && '[1]' || '[4]') }}
         # Keep this version and the image digest aligned with package-lock.json.
         playwright: ['1.64.1']
     steps:
@@ -179,9 +185,12 @@ jobs:
       - name: Browser-Szenarien
         env:
           SHARD: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ matrix.total }}
         run: |
           case "$E2E_REPEATS" in 1|2|3) ;; *) echo 'Ungültige Durchlaufzahl'; exit 1 ;; esac
-          npm run test:e2e -- --repeat-each="$E2E_REPEATS" --shard="$SHARD/2"
+          set -- --repeat-each="$E2E_REPEATS" --shard="$SHARD/$SHARD_TOTAL"
+          if [ "$E2E_SCOPE" = smoke ]; then set -- "$@" --grep @smoke; fi
+          npm run test:e2e -- "$@"
       - name: Geprüften Pages-Build bereitstellen
         if: matrix.shard == 1 && env.E2E_FULL_ROUND == '1'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -203,8 +212,9 @@ jobs:
         env:
           SUMMARY_OUTCOME: ${{ steps.browser-summary.outcome }}
           SHARD: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ matrix.total }}
         run: |
-          echo "### Browser-Teil $SHARD/2 · $E2E_REPEATS Durchlauf/Durchläufe, null Retries" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Browser-Teil $SHARD/$SHARD_TOTAL · $E2E_REPEATS Durchlauf/Durchläufe, null Retries" >> "$GITHUB_STEP_SUMMARY"
           echo "Vollständige Produktionszeiten: $E2E_FULL_ROUND (1 = ja, 0 = kurze Testkonfiguration)." >> "$GITHUB_STEP_SUMMARY"
           if [ ! -s test-reports/playwright.xml ] || [ "$SUMMARY_OUTCOME" != success ]; then
             echo '::warning::Browser-Testreport fehlt oder konnte nicht dargestellt werden.'
@@ -270,7 +280,14 @@ jobs:
             echo '::warning::Gesamtübersicht konnte nicht erzeugt werden.'
             echo 'Keine auswertbare Gesamtübersicht vorhanden.' >> "$GITHUB_STEP_SUMMARY"
           fi
-          for report in qa-test-reports-unit/unit.tap qa-test-reports-browser-1/playwright.xml qa-test-reports-browser-2/playwright.xml; do
+          reports=(qa-test-reports-unit/unit.tap)
+          case "$E2E_SCOPE" in
+            smoke) reports+=(qa-test-reports-browser-1/playwright.xml) ;;
+            all) reports+=(qa-test-reports-browser-{1..4}/playwright.xml) ;;
+            none) echo 'Main: keine Browsertests geplant; nur Qualitätsprüfungen und Unit-Tests ausgeführt.' >> "$GITHUB_STEP_SUMMARY" ;;
+            *) echo 'Unbekannter E2E-Prüfumfang'; exit 1 ;;
+          esac
+          for report in "${reports[@]}"; do
             if [ ! -s "qa-reports/$report" ]; then
               echo "::warning::Erwarteter Report fehlt: $report"
               echo "**Unvollständig:** Report fehlt: $report" >> "$GITHUB_STEP_SUMMARY"
@@ -281,9 +298,15 @@ jobs:
           fi
           echo "Qualität: $QUALITY_RESULT · Browser-Shards: $SHARD_RESULT" >> "$GITHUB_STEP_SUMMARY"
           echo "Browserdurchläufe pro Szenario: $E2E_REPEATS. Wiederholungen werden einzeln gezählt. Fehlende/abgebrochene Ausführungen können in den Reports fehlen." >> "$GITHUB_STEP_SUMMARY"
-      - name: Qualität und beide Teil-Suites müssen erfolgreich sein
+      - name: Qualität und geplanter Browserumfang müssen erfolgreich sein
         if: ${{ always() }}
         env:
           QUALITY_RESULT: ${{ needs.quality.result }}
           SHARD_RESULT: ${{ needs.e2e-shard.result }}
-        run: test "$QUALITY_RESULT" = success && test "$SHARD_RESULT" = success
+        run: |
+          test "$QUALITY_RESULT" = success
+          if [ "$E2E_SCOPE" = none ]; then
+            test "$SHARD_RESULT" = skipped
+          else
+            test "$SHARD_RESULT" = success
+          fi

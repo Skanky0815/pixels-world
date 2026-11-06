@@ -2,9 +2,9 @@
 
 Der Ablauf hat vier Stufen:
 
-1. **PR:** normale QA mit Formatierung, Lint, Unit-Tests, Typprüfung, Build, Audit
-   und beiden Browser-Shards als Grundlage für die Review.
-2. **Merge:** dieselbe normale QA auf dem tatsächlichen `main`-Commit. Ein
+1. **PR:** Quality mit Formatierung, Lint, CI-Gate-/Hook-Tests, Unit-Tests, Typprüfung, Build, Audit
+   und drei Smoke-Szenarien auf einem Runner als Grundlage für die Review.
+2. **Merge:** Quality ohne erneute Browsertests auf dem tatsächlichen `main`-Commit. Ein
    Squash-/Merge-Commit kann vom PR-Stand abweichen.
 3. **Manueller Release:** bereits erfolgreiche Main-QA für genau diesen aktuellen
    `main`-Commit bestätigen; Release Please erstellt Tag und GitHub Release.
@@ -25,6 +25,21 @@ bei `publish` und `release_created == 'true'` wiederverwendbar auf. Das funktion
 auch mit `GITHUB_TOKEN`; ein zusätzliches `release: published`-Ereignis ist nicht
 nötig. Manueller QA-Start bleibt zur Diagnose ohne Veröffentlichung verfügbar.
 
+## Lokale Verantwortung und Kosten (#126)
+
+Vor Erstellen/Aktualisieren eines Code-/Tooling-PRs führt `npm run check:pr` die
+vollständige Projekt-QA und alle 48 Browser-Szenarien lokal aus. Der native
+`pre-push`-Hook lässt sich mit `npm run hooks:install` ausdrücklich aktivieren;
+bestehende Hook-Konfigurationen werden nicht überschrieben. GitHub-API-Änderungen
+lösen ihn nicht aus: gleicher lokaler Prüfbefehl und tatsächlicher Nachweis im PR
+bleiben erforderlich. Details und Grenzen stehen in CONTRIBUTING.md.
+
+PRs verwenden nur einen Browser-Runner mit drei getaggten Smoke-Szenarien; Main
+startet keinen Browser-Runner. Vollständige manuelle und Release-QA verwendet vier
+Shards. Der Sammelcheck behält seinen Namen und unterscheidet absichtlich geplantes
+Auslassen auf Main von fehlgeschlagenen/abgebrochenen/übersprungenen notwendigen
+Browserjobs. Kein vollständiger E2E-Erfolg wird für einen Smoke-/Main-Lauf behauptet.
+
 ## Build, Identität und Fehler
 
 Die vollständige QA läuft nach der Release-Erstellung. Schlägt sie fehl, existieren
@@ -35,7 +50,7 @@ startet keinen zweiten Rollout.
 
 Browser-Shard 1 lädt nach erfolgreichem `full`-Test das tatsächlich unter
 `/pixels-world/` getestete `dist/` als `qa-pages-dist-<github.sha>` hoch. Quality
-inklusive Audit und beide Shards müssen erfolgreich sein. Pages lädt dieses Artefakt
+inklusive Audit und alle vier Shards müssen erfolgreich sein. Pages lädt dieses Artefakt
 nur aus demselben Workflow-Lauf und vom gleichen Commit, ohne Installation, zweite
 Testsuite oder Neubau. Fehlende Artefakte blockieren. QA-Builds bleiben einen Tag,
 Test-/Fehlerreports 14 Tage verfügbar. Nach Ablauf der Build-Aufbewahrung genügt ein
