@@ -1,7 +1,6 @@
 name: Spiel auf GitHub Pages
 
 on:
-  workflow_dispatch:
   workflow_call:
     inputs:
       release_tag:
@@ -19,8 +18,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  identity:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.release_sha }}
+          persist-credentials: false
+      - name: Veröffentlichten Release vor vollständiger QA bestätigen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        run: bash .github/scripts/verify-release.sh
+
   full-qa:
-    if: github.ref == 'refs/heads/main' && inputs.release_tag == ''
+    needs: identity
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
     uses: ./.github/workflows/qa.yml
@@ -29,11 +45,7 @@ jobs:
 
   build:
     needs: full-qa
-    # Release callers already passed full QA; manual deployments run it above.
-    if: >-
-      ${{ !cancelled() && github.ref == 'refs/heads/main' &&
-          (needs.full-qa.result == 'success' ||
-           (needs.full-qa.result == 'skipped' && inputs.release_tag != '')) }}
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -41,10 +53,9 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.release_sha || github.sha }}
+          ref: ${{ inputs.release_sha }}
           persist-credentials: false
       - name: Release-Identität bestätigen
-        if: inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag }}
@@ -63,7 +74,6 @@ jobs:
 
   deploy:
     needs: build
-    if: ${{ !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -76,17 +86,9 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.release_sha || github.sha }}
+          ref: ${{ inputs.release_sha }}
           persist-credentials: false
-      - name: Geprüften Commit vor Veröffentlichung mit main abgleichen
-        if: inputs.release_tag == ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          current_main=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
-          test "$current_main" = "$GITHUB_SHA"
       - name: Release-Tag vor Deployment erneut bestätigen
-        if: inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag }}
@@ -98,8 +100,8 @@ jobs:
       - name: Veröffentlichter Spielstand
         env:
           TAG: ${{ inputs.release_tag }}
-          SHA: ${{ inputs.release_sha || github.sha }}
+          SHA: ${{ inputs.release_sha }}
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
-          echo "Version/Tag: ${TAG:-manueller main-Stand} · Commit: $SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "Version/Tag: $TAG · Commit: $SHA" >> "$GITHUB_STEP_SUMMARY"
           echo "Spieladresse: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
