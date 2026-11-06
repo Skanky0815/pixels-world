@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.4](https://github.com/Skanky0815/pixels-world/compare/v0.1.3...v0.1.4) (2026-11-06)
+
+
+### Funktionen
+
+* add mobile touch controls ([#142](https://github.com/Skanky0815/pixels-world/issues/142)) ([e3e44e5](https://github.com/Skanky0815/pixels-world/commit/e3e44e5601d1b30d9451fc20d4924fa75f1b0a0a))
+* add shared touch controls for mobile play ([e3e44e5](https://github.com/Skanky0815/pixels-world/commit/e3e44e5601d1b30d9451fc20d4924fa75f1b0a0a)), closes [#54](https://github.com/Skanky0815/pixels-world/issues/54)
+* **i18n:** add persistent German and English language selection ([#146](https://github.com/Skanky0815/pixels-world/issues/146)) ([3434e16](https://github.com/Skanky0815/pixels-world/commit/3434e16573a1abce4380b1a9e9adb589d59d59f1))
+* **ui:** add responsive handheld layout and readable mobile text ([#143](https://github.com/Skanky0815/pixels-world/issues/143)) ([f716821](https://github.com/Skanky0815/pixels-world/commit/f71682147e06173bdc01b13f3a83fb5af422b48c))
+* **ui:** link deployed game version to verified release notes ([853068a](https://github.com/Skanky0815/pixels-world/commit/853068aafb9f008595eb9b25043d84a4bb875763))
+* **ui:** link deployed game version to verified release notes ([#145](https://github.com/Skanky0815/pixels-world/issues/145)) ([853068a](https://github.com/Skanky0815/pixels-world/commit/853068aafb9f008595eb9b25043d84a4bb875763))
+
 ## [0.1.3](https://github.com/Skanky0815/pixels-world/compare/v0.1.1...v0.1.3) (2026-11-06)
 
 Hinweis: `0.1.2` war ein unveröffentlichter, abgelöster Kandidat (#118). `0.1.3` umfasst dessen Änderungen und die nachfolgenden Korrekturen; der letzte veröffentlichte Stand ist `0.1.1`.
