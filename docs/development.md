@@ -34,7 +34,10 @@ freigeben, nicht pauschal alle Hosts erlauben.
 ## Animationen vergleichen
 
 Im Dev-Server `/animation-compare.html` öffnen. Pixel und Sara verwenden dort die
-Spiel-Assets, gemeinsamen Fußanker, Größenregler, Pause und Einzelschritt.
+Spiel-Assets und gemeinsamen Fußanker in genau einer Box je Figur. Jede Box bietet
+alle Animationen, Größenregler, eigene Pause und Einzelschritt. Ein Auswahlwechsel
+startet beim ersten Frame. Die oberen Tasten steuern beide gemeinsam; einzeln
+pausierte Figuren bleiben beim gemeinsamen Fortsetzen angehalten.
 Einmalige Reaktionen werden nur in dieser Arbeitsansicht wiederholt.
 Die Vergleichsseite und ihre Quellen sind aus Produktions- und E2E-Builds
 ausgeschlossen; fehlende Dev-Seiten dürfen dort keinen SPA-Fallback erhalten.

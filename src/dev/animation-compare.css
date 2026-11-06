@@ -56,10 +56,9 @@ button:disabled {
 a {
   color: #e9be82;
 }
-#comparisons,
-#sara-comparisons {
+.figures {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: 18px;
 }
 article {
@@ -100,4 +99,16 @@ input {
 output {
   font-variant-numeric: tabular-nums;
   color: #f2e4c9;
+}
+
+.preview-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+button,
+select,
+input {
+  min-height: 44px;
 }

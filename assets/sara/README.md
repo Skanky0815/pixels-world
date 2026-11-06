@@ -43,8 +43,9 @@ farbreicheren Vorlage. Das Skript zeichnet weder Arme noch Augen oder Bewegungsp
 
 ## Vergleich im Spielmaßstab
 
-Im lokalen Dev-Server `/animation-compare.html` öffnen: Unter Pixel stehen Saras
-fünf Zustände mit bestätigter Idle-Silhouette, Pixel als Größenreferenz, Auswahl,
-Größenregler sowie gemeinsamer Pause und Einzelschritt. Die Dev-Seite wiederholt
+Im lokalen Dev-Server `/animation-compare.html` öffnen: Eine Box je Figur bietet
+alle Animationen. Saras Box zeigt die bestätigte Idle-Silhouette und Pixel als
+Größenreferenz, mit Auswahl und Größenregler. Pause und Einzelschritt funktionieren
+je Figur sowie gemeinsam; ein Auswahlwechsel startet beim ersten Frame. Die Dev-Seite wiederholt
 einmalige Reaktionen zur Kontrolle; das Spiel spielt sie einmalig ab. Die Seite ist
 kein Produktionsartefakt. Dialog-/Score-Auswahl bleiben im bestehenden Domain-Modell.

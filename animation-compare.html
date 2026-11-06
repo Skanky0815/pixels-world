@@ -14,23 +14,32 @@
         derselben Pfotenlinie. Die Regler ändern nur diese Vorschau.
       </p>
       <nav>
-        <button id="pause">Anhalten</button><button id="step" disabled>Ein Frame weiter</button
-        ><a href="/">Zurück zum Spiel</a>
+        <button id="pause">Alle anhalten</button
+        ><button id="step" disabled>Beide ein Frame weiter</button><a href="/">Zurück zum Spiel</a>
       </nav>
-      <h2>Pixel</h2>
-      <section id="comparisons" aria-label="Animationsvergleiche"></section>
+      <div class="figures">
+        <section aria-labelledby="pixel-heading">
+          <h2 id="pixel-heading">Pixel</h2>
+          <div id="comparisons"></div>
+          <p class="note">
+            Vergleiche Kopf und Rumpf mit dem Idle-Master. Sprung und Landung dürfen gestreckt oder
+            geduckt sein. Einmalige Posen werden zur Kontrolle wiederholt.
+          </p>
+        </section>
+        <section aria-labelledby="sara-heading">
+          <h2 id="sara-heading">Sara</h2>
+          <div id="sara-comparisons"></div>
+          <p class="note">
+            Links Saras Idle-Silhouette, mittig Pixel im Spielmaßstab, rechts die gewählte Pose.
+            Palette und Geschwindigkeit entsprechen dem Spiel.
+          </p>
+        </section>
+      </div>
       <p class="note">
-        Vergleiche besonders Kopf und Rumpf. Bei Sprung und Landung darf die Haltung gestreckt oder
-        geduckt sein. Die Vorschau wiederholt auch einmalige Posen zur Kontrolle.
+        Auswahl, Größe, Pause und Einzelschritt gelten jeweils für eine Figur. Die oberen Tasten
+        steuern beide gemeinsam; einzeln angehaltene Figuren bleiben beim gemeinsamen Fortsetzen
+        pausiert. Ein Auswahlwechsel beginnt beim ersten Frame.
       </p>
-      <h2>Sara</h2>
-      <p>
-        Links steht Saras bestätigte Idle-Silhouette, in der Mitte Pixel im Spielmaßstab, rechts die
-        gewählte Sara-Animation. Alle stehen auf derselben Fußlinie. Die gemeinsame Palette und die
-        Geschwindigkeiten entsprechen dem Spiel. Anhalten und Einzelschritt gelten für beide
-        Figuren; einmalige Reaktionen werden hier zur Kontrolle wiederholt.
-      </p>
-      <section id="sara-comparisons" aria-label="Saras Animationsvergleiche"></section>
     </main>
     <script type="module" src="/src/dev/animation-compare.ts"></script>
   </body>
