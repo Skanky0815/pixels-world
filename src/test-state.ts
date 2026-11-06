@@ -6,6 +6,8 @@ import type { PixelReturnSnapshot } from './game/domain/pixel-return';
 
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
+  readonly started: boolean;
+  readonly intro: { readonly visible: boolean };
   readonly result: ResultViewSnapshot;
   readonly charmDisplay: { readonly heartsText: string };
   readonly reconciliation: ReconciliationSnapshot;

@@ -168,3 +168,17 @@ Versöhnungsfortschritt und Ergebnis gemeinsam zurück. Echte Zuneigungsanimatio
 und Audio sind in diesem Schritt nicht enthalten. Bei flüssigen Eingaben sind ungefähr
 je nach Ärgerstufe wenige Sekunden bis etwa 20 Sekunden aktive Reaktionszeit vorgesehen; Lesepausen sind frei; das Spielgefühl muss noch mit Rico abgestimmt werden.
 Fokus-/Visibility-Pause stoppt alle Fristen; R verwirft auch Folge und Fortschritt.
+
+## Einstieg vor der ersten Runde
+
+Die Seite zeigt zuerst eine Einführung mit dem unveränderten README-Banner,
+Spielidee und aktuellen Tastenhinweisen. Leertaste startet genau einmal;
+diese Eingabe wird verbraucht und löst keinen Sprung aus. Gedrückthalten
+startet nicht mehrfach. Vorher laufen weder Uhr noch Physik, Animationen
+oder Chaosaktionen. R wird vor dem Start ignoriert. Browserfokus und
+Sichtbarkeit müssen für das Startsignal aktiv sein.
+
+Nach dem ersten Start führt R direkt in eine frische Runde, auch aus der
+Auswertung. Erst das Neuladen der Seite zeigt die Einführung wieder.
+Die Startseite verwendet normalen Browsertext; im schmalen Fenster ist
+der Inhalt scrollbar, während der Start-Hinweis sichtbar bleibt.

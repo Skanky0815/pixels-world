@@ -114,3 +114,73 @@ kbd {
   color: #b6a195;
   overflow-wrap: anywhere;
 }
+
+#game {
+  position: relative;
+}
+.start-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(12px, 2vw, 24px);
+  background: #403a35;
+  color: #fff1cf;
+  font-size: clamp(14px, 1.3vw, 16px);
+  line-height: 1.5;
+}
+.start-screen[hidden] {
+  display: none;
+}
+.start-copy {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.start-copy img {
+  display: block;
+  width: min(560px, 100%);
+  height: auto;
+  margin: 0 auto 12px;
+}
+.start-copy h2 {
+  font-size: clamp(17px, 1.8vw, 22px);
+  margin: 0 0 8px;
+}
+.start-copy p {
+  margin: 8px 0 12px;
+}
+.start-copy dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 20px;
+  margin: 12px 0;
+}
+.start-copy dl div {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 8px;
+}
+.start-copy dt {
+  color: #e4c182;
+}
+.start-copy dd {
+  margin: 0;
+}
+.start-prompt {
+  flex-shrink: 0;
+  margin: auto 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #d4b488;
+  color: #e4c182;
+  font-weight: bold;
+  text-align: right;
+}
+@media (max-width: 640px) {
+  .start-copy dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

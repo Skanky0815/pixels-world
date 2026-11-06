@@ -1,3 +1,4 @@
+import { StartScreen } from '../ui/StartScreen';
 import { roundResult } from '../domain/round-result';
 import { RoundResultView } from '../ui/RoundResultView';
 import { Reconciliation } from '../domain/reconciliation';
@@ -35,6 +36,8 @@ import { homecomingPositions } from '../content/homecoming-layout';
 import { PixelReturnController } from '../domain/pixel-return';
 
 export class LivingRoomScene extends Phaser.Scene {
+  private started = false;
+  private startScreen!: StartScreen;
   private pixel!: Pixel;
   private round!: RoundController;
   private charm!: Reconciliation;
@@ -141,6 +144,8 @@ export class LivingRoomScene extends Phaser.Scene {
               height: camera.height,
               zoom: camera.zoom,
             },
+            started: this.started,
+            intro: this.startScreen.snapshot(),
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
             reconciliation: this.charm.snapshot(),
@@ -245,10 +250,12 @@ export class LivingRoomScene extends Phaser.Scene {
     this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
+    this.startScreen = new StartScreen(!this.started);
     this.syncActivity();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Alle szeneneigenen Ressourcen werden an derselben Lebensdauergrenze freigegeben.
   private shutdown() {
     for (const object of this.objects) object.destroy();
     this.activity.destroy();
@@ -258,6 +265,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.sara.destroy();
     this.charmView.destroy();
     this.resultView.destroy();
+    this.startScreen.destroy();
   }
 
   private addPlatform(x: number, y: number, width: number, height: number) {
@@ -288,9 +296,16 @@ export class LivingRoomScene extends Phaser.Scene {
       this.events.emit('object-damaged', event);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Startsignal, Neustart und aktiver Frame werden in fester Reihenfolge mit derselben Eingabe behandelt.
   update(_time: number, delta: number) {
     if (!this.pixel) return;
     const input = this.controls.read(this.game.loop.frame);
+
+    if (!this.started) {
+      this.tryStart(input);
+
+      return;
+    }
 
     if (input.resetPressed) {
       this.scene.restart();
@@ -301,8 +316,15 @@ export class LivingRoomScene extends Phaser.Scene {
     this.updateRound(input, delta);
   }
 
+  private tryStart(input: InputState) {
+    if (!input.confirmPressed || !this.activity.active) return;
+    this.started = true;
+    this.startScreen.hide();
+    this.syncActivity();
+  }
+
   private canPlay() {
-    return this.activity.active && this.round.snapshot().phase === 'chaos';
+    return this.started && this.activity.active && this.round.snapshot().phase === 'chaos';
   }
 
   private syncActivity() {
@@ -310,7 +332,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (!active) this.controls.release();
     this.setWorldActive(active);
-    this.pixel.setPaused(!this.activity.active);
+    this.pixel.setPaused(!this.activity.active || !this.started);
     this.sara.setPaused(!this.activity.active);
     this.renderHud(this.pixel.nearCurtain);
   }

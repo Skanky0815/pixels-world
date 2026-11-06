@@ -1,8 +1,8 @@
 # Browser-Szenarien
 
-Die Specs sind fachlich aufgeteilt: `movement`, `lifecycle`, `rendering`, `couch`, `curtain`, `plant`, `vases`, `content`, `hud`, `footer`, `round`, `pixel-return`, `reconciliation` und `build-isolation`. `support.ts` enthält die gemeinsame Browsergesundheits-/Clock-Fixture und Eingabehelfer. Jede Spec bleibt unabhängig; alle verwenden echte Tastatureingaben und ausschließlich lesbare Snapshots.
+Die Specs sind fachlich aufgeteilt: `movement`, `lifecycle`, `rendering`, `couch`, `curtain`, `plant`, `vases`, `content`, `hud`, `footer`, `round`, `pixel-return`, `reconciliation`, `start-screen` und `build-isolation`. `support.ts` enthält die gemeinsame Browsergesundheits-/Clock-Fixture und Eingabehelfer. Jede Spec bleibt unabhängig; alle verwenden echte Tastatureingaben und ausschließlich lesbare Snapshots.
 
-Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. Playwright verteilt die Szenarien weiterhin automatisch auf zwei CI-Shards; die Dateien erzeugen keine zusätzlichen Jobs. Die Suite umfasst 37 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
+Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. Playwright verteilt die Szenarien weiterhin automatisch auf zwei CI-Shards; die Dateien erzeugen keine zusätzlichen Jobs. Die Suite umfasst 40 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
 Headless-Chromium meldet Hintergrundseiten weiterhin als sichtbar. Der Visibility-Test
 simuliert deshalb ausschließlich `document.hidden` und das Browserereignis, ohne
 Spielzustand zu setzen; echte Tabwechsel gehören zusätzlich zum manuellen Spieltest.
@@ -14,7 +14,7 @@ E2E-Build `?round-profile=fast` auf. Die übrigen Szenarien behalten die normale
 Rundengrenzen. Die Testkonfiguration entsteht beim Build; im Produktionsbuild werden
 Einstieg und Query-Auswertung entfernt. Es gibt keine schreibbare Browser-Schnittstelle.
 
-`npm run test:e2e:full` startet alle 37 Szenarien mit echten Produktionszeiten; der
+`npm run test:e2e:full` startet alle 40 Szenarien mit echten Produktionszeiten; der
 identische Rundentest ist dann `@slow` markiert und dauert im Spiel 60–105 Sekunden.
 `npm run test:e2e:slow` wählt diese sieben vollständigen Heimkehr-/Versöhnungstests. Beide Befehle setzen vor
 Test und Vite-Build `E2E_FULL_ROUND=1`. Die Skripte verwenden die Shell-Schreibweise
@@ -60,6 +60,12 @@ Die Erfolg-/Misserfolgsszenarien prüfen zusätzlich die tatsächlichen Texte de
 Ergebnisansicht, den finalen Score, erhaltenen Originalkommentar und sichtbaren Abschlussspruch, zeitlich stabilen Abschluss
 und vollständigen R-Neustart. Der erfolgreiche Durchlauf erzeugt vorher echten
 Sofaschaden, damit Punkte und Objektreset nicht nur mit leerem Zustand geprüft werden.
+
+`loadIntro` lädt die echte Einführung ohne Startsignal. Der gemeinsame Helfer
+`start` bestätigt anschließend mit echter Leertaste und wartet auf Bodenkontakt;
+die übrigen Gameplay-Tests umgehen den Startbildschirm nicht.
+`start-screen.spec.ts` prüft Stillstand vor dem Start, Logo, gehaltene Taste,
+Fokus, anschließenden Sprung, direkten R-Neustart, Reload und schmale Darstellung.
 
 Die Herzanforderung 1/2/3 und Grenzen 24/25/59/60 sind in Domain-Tests
 explizit geprüft. Der Browserlauf mit niedrigem Chaos prüft zusätzlich die
