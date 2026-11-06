@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.1.2](https://github.com/Skanky0815/pixels-world/compare/v0.1.1...v0.1.2) (2026-11-06)
+
+
+### Funktionen
+
+* add feedback link in a compact footer ([#115](https://github.com/Skanky0815/pixels-world/issues/115)) ([2463b3b](https://github.com/Skanky0815/pixels-world/commit/2463b3bda3686599706047593bec59860a45e87d)), closes [#85](https://github.com/Skanky0815/pixels-world/issues/85)
+* add introduction and start the game with Space ([#114](https://github.com/Skanky0815/pixels-world/issues/114)) ([2e9d1f2](https://github.com/Skanky0815/pixels-world/commit/2e9d1f2c280ab64753b4526203b8edf540ee2d25)), closes [#104](https://github.com/Skanky0815/pixels-world/issues/104)
+* add legal notice and privacy pages ([#117](https://github.com/Skanky0815/pixels-world/issues/117)) ([6e27d08](https://github.com/Skanky0815/pixels-world/commit/6e27d081e6a32554eb8ea05470154f328fa86ad1)), closes [#112](https://github.com/Skanky0815/pixels-world/issues/112)
+* add Pixels charm offensive with limited attempts ([#101](https://github.com/Skanky0815/pixels-world/issues/101)) ([467a9ea](https://github.com/Skanky0815/pixels-world/commit/467a9eaf754a93885c0412edc9f183974f9869fa)), closes [#9](https://github.com/Skanky0815/pixels-world/issues/9)
+* add Pixels main goal as an early homecoming trigger ([#116](https://github.com/Skanky0815/pixels-world/issues/116)) ([2dfb658](https://github.com/Skanky0815/pixels-world/commit/2dfb65867c14a50486ce6fca5d0f4008bd5c1069)), closes [#30](https://github.com/Skanky0815/pixels-world/issues/30)
+* add randomized Sara homecoming and round lifecycle ([#84](https://github.com/Skanky0815/pixels-world/issues/84)) ([f76fe7e](https://github.com/Skanky0815/pixels-world/commit/f76fe7e050d3dc6a5d07ae11e249fcc216c57e7b))
+* add Sara homecoming reactions and dialogue sequence ([#94](https://github.com/Skanky0815/pixels-world/issues/94)) ([3002820](https://github.com/Skanky0815/pixels-world/commit/300282027679caf66156250bb79b9808fac913f8))
+* animate Sara and guide Pixel through homecoming ([#99](https://github.com/Skanky0815/pixels-world/issues/99)) ([ec8617f](https://github.com/Skanky0815/pixels-world/commit/ec8617f88852efe7fdae25bb8581daacdb24d356))
+* require hearts according to Saras anger ([#113](https://github.com/Skanky0815/pixels-world/issues/113)) ([d76faef](https://github.com/Skanky0815/pixels-world/commit/d76faef12cf79f7917fcaa18b23f1c5ae4859f42)), closes [#103](https://github.com/Skanky0815/pixels-world/issues/103)
+* summarize round results with Saras closing remarks ([#102](https://github.com/Skanky0815/pixels-world/issues/102)) ([ad0a229](https://github.com/Skanky0815/pixels-world/commit/ad0a22978ed64562d21487eb6da6f71578e65020)), closes [#10](https://github.com/Skanky0815/pixels-world/issues/10)
+
+
+### Fehlerkorrekturen
+
+* **ci:** skip reference artwork in game QA path filters ([79fcc1a](https://github.com/Skanky0815/pixels-world/commit/79fcc1a514a2a2f2e136268c8cf17946e6d68974))
+* **ci:** skip reference artwork in game QA path filters ([#92](https://github.com/Skanky0815/pixels-world/issues/92)) ([79fcc1a](https://github.com/Skanky0815/pixels-world/commit/79fcc1a514a2a2f2e136268c8cf17946e6d68974))
+
+
+### Dokumentation
+
+* restore README technology badges ([78a9f70](https://github.com/Skanky0815/pixels-world/commit/78a9f7078bb5da78e9a89d515d9a2dfb9dcee85b))
+* simplify README and add German issue forms ([#77](https://github.com/Skanky0815/pixels-world/issues/77)) ([a51b93f](https://github.com/Skanky0815/pixels-world/commit/a51b93f5c1346b02b8d49384a10150669e28ab05))
+
 ## [0.1.1](https://github.com/Skanky0815/pixels-world/compare/v0.1.0...v0.1.1) (2026-11-04)
 
 ### Funktionen
