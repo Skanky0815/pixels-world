@@ -182,3 +182,13 @@ Nach dem ersten Start führt R direkt in eine frische Runde, auch aus der
 Auswertung. Erst das Neuladen der Seite zeigt die Einführung wieder.
 Die Startseite verwendet normalen Browsertext; im schmalen Fenster ist
 der Inhalt scrollbar, während der Start-Hinweis sichtbar bleibt.
+
+## Feedback und Ideen
+
+Unter der Spielfläche ist die GitHub-Issue-Auswahl dauerhaft per Link erreichbar,
+auch während Einführung oder Ergebnis. Sie öffnet in einem neuen Tab und ersetzt
+die Spielseite nicht. Für Beiträge ist ein GitHub-Konto erforderlich.
+Fokusverlust pausiert die Runde nach derselben Regel wie andere Tabwechsel.
+Solange ein Link oder anderes interaktives HTML-Element Tastaturfokus hat,
+werden Spieltasten verworfen und gehaltene Eingaben gelöst. Enter bedient
+den Link regulär; nach der Rückkehr ins Zimmer geht die Runde weiter.

@@ -61,6 +61,9 @@ Beim Anspringen greift Pixel den Vorhang automatisch; ohne Klettereingabe rutsch
 Am Sofa oder Katzengras kurz stehen bleiben: Pixel wird von selbst aktiv.
 Weglaufen oder Springen unterbricht die Bodenaktionen.
 
+Unter dem Spiel öffnet **Feedback & Ideen** die GitHub-Auswahl für Fehlerberichte
+und Feature-Wünsche in einem neuen Tab. Für eigene Beiträge brauchst du ein GitHub-Konto.
+
 Mehr dazu: [Spielmechaniken und Punkte](docs/gameplay.md).
 
 ## Lokal starten

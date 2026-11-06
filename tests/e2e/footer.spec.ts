@@ -26,6 +26,13 @@ test('Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spie
       gameBox = await page.locator('#game').boundingBox();
 
     expect(footerBox && gameBox && footerBox.y >= gameBox.y + gameBox.height).toBe(true);
+    const feedbackBox = await page.getByRole('link', { name: 'Feedback & Ideen' }).boundingBox();
+
+    expect(feedbackBox).not.toBeNull();
+
+    if (!feedbackBox || !footerBox) throw new Error('Footer-Zeile fehlt');
+    expect(Math.abs(feedbackBox.y - footerBox.y)).toBeLessThan(6);
+    expect(feedbackBox.x).toBeLessThan(footerBox.x);
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(footer).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(

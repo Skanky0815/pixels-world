@@ -243,3 +243,9 @@ für die zentralen Ärgerstufen. Ein zweites Herzsystem oder neue Chaosgrenzen
 sind nicht nötig. Das Profil wird einmal beim Start gewählt, der Zähler bleibt
 in der vorhandenen Domain. Die Ansicht zeigt gefüllte/leere Herzen und den
 gesammelten/benötigten Zähler; das Budget bleibt zwei Versuche pro Herz.
+
+Der Feedback-Einstieg ist ein normaler Footer-Link mit `target="_blank"` und
+`rel="noopener noreferrer"`, ohne Feedback-Backend oder Spielzustandsänderung.
+Der Input-Adapter liefert bei Fokus auf interaktiven HTML-Elementen einen
+unveränderlichen neutralen Snapshot und löst gehaltene Tasten. Die bestehende
+Browserpause behandelt den Wechsel zum neuen Tab.

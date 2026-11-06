@@ -184,3 +184,25 @@ kbd {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.footer-meta {
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 2px 12px;
+}
+.footer-meta .build-info {
+  text-align: right;
+}
+.feedback-link {
+  font-size: 12px;
+}
+.feedback-link a {
+  color: #e4c182;
+  text-underline-offset: 3px;
+}
+.feedback-link a:focus-visible {
+  outline: 2px solid #edc37c;
+  outline-offset: 4px;
+}
