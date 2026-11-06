@@ -9,10 +9,10 @@ fail() {
 current_main=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
 [ "$current_main" = "$GITHUB_SHA" ] || fail 'main ist weitergelaufen. Release erneut auf dem aktuellen main starten.'
 
-# Check existing push QA for this exact commit; do not start another test run.
+# Check existing main QA for this exact commit; do not start another test run.
 runs=$(gh api --method GET "repos/$GITHUB_REPOSITORY/actions/workflows/qa.yml/runs" \
-  -f event=push -f branch=main -f head_sha="$GITHUB_SHA" -f per_page=1)
-jq -e --arg sha "$GITHUB_SHA" '.workflow_runs[0] | .head_sha == $sha and .head_branch == "main" and .event == "push" and .status == "completed" and .conclusion == "success"' <<< "$runs" > /dev/null \
+  -f branch=main -f head_sha="$GITHUB_SHA" -f per_page=1)
+jq -e --arg sha "$GITHUB_SHA" '.workflow_runs[0] | .head_sha == $sha and .head_branch == "main" and (.event == "push" or .event == "workflow_dispatch") and .status == "completed" and .conclusion == "success"' <<< "$runs" > /dev/null \
   || fail 'Keine erfolgreiche Main-QA für diesen Commit. Erst den grünen QA-Lauf abwarten; fehlgeschlagene QA beheben und erneut prüfen.'
 
 if [ "$RELEASE_MODE" = publish ]; then

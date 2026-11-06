@@ -7,6 +7,7 @@ trap 'rm -rf "$fixture_dir"' EXIT
 cat > "$fixture_dir/gh" <<'MOCK'
 #!/usr/bin/env bash
 set -euo pipefail
+[ "${MOCK_API_FAILURE:-0}" != 1 ] || exit 1
 case "$*" in
   *git/ref/heads/main*) printf '%s\n' "${MAIN_SHA:-$GITHUB_SHA}" ;;
   *actions/workflows/qa.yml/runs*) cat "$FIXTURE_DIR/runs.json" ;;
@@ -20,6 +21,8 @@ export GITHUB_REPOSITORY=example/game GITHUB_SHA=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 printf '[{"merged_at":"2026-11-06","base":{"ref":"main"},"merge_commit_sha":"%s","labels":[{"name":"autorelease: pending"}]}]' "$GITHUB_SHA" > "$fixture_dir/pulls.json"
 printf '{"workflow_runs":[{"head_sha":"%s","head_branch":"main","event":"push","status":"completed","conclusion":"success"}]}' "$GITHUB_SHA" > "$fixture_dir/success.json"
 cp "$fixture_dir/success.json" "$fixture_dir/runs.json"
+bash "$repo_root/.github/scripts/verify-release-source.sh"
+sed 's/"push"/"workflow_dispatch"/' "$fixture_dir/success.json" > "$fixture_dir/runs.json"
 bash "$repo_root/.github/scripts/verify-release-source.sh"
 
 expect_failure() {
@@ -39,10 +42,13 @@ for pair in 'completed in_progress' 'push pull_request' 'main feature' "$GITHUB_
 done
 printf '{"workflow_runs":[]}' > "$fixture_dir/runs.json"
 expect_failure
+printf 'invalid-json' > "$fixture_dir/runs.json"
+expect_failure
 cp "$fixture_dir/success.json" "$fixture_dir/runs.json"
+MOCK_API_FAILURE=1 expect_failure
 MAIN_SHA=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb expect_failure
 printf '[]' > "$fixture_dir/pulls.json"
 expect_failure
 grep -q 'Zuerst prepare starten' "$fixture_dir/result.log"
 RELEASE_MODE=prepare bash "$repo_root/.github/scripts/verify-release-source.sh"
-echo 'Release-Gates: publish/prepare akzeptiert; 11 negative Fälle korrekt abgewiesen.'
+echo 'Release-Gates: drei positive und 13 negative Fälle korrekt abgewiesen.'

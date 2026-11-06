@@ -6,7 +6,7 @@ Der Ablauf hat vier Stufen:
    und beiden Browser-Shards als Grundlage für die Review.
 2. **Merge:** dieselbe normale QA auf dem tatsächlichen `main`-Commit. Ein
    Squash-/Merge-Commit kann vom PR-Stand abweichen.
-3. **Manueller Release:** bereits erfolgreiche Push-QA für genau diesen aktuellen
+3. **Manueller Release:** bereits erfolgreiche Main-QA für genau diesen aktuellen
    `main`-Commit bestätigen; Release Please erstellt Tag und GitHub Release.
    Hier startet keine weitere QA.
 4. **Rollout nach Release-Erstellung:** Release-Identität bestätigen, gemeinsame
@@ -76,7 +76,10 @@ beiden generierten Root-Dateien sind gezielt von Prettier ausgenommen (#119).
 
 Die bisherigen Pfadfilter und PR-Checknamen bleiben erhalten. Bei der Prüfung am 6. November 2026 hatte das aktive Repository-Ruleset `main protection` Review-,
 Linearitäts-, Lösch- und Force-Push-Regeln, aber keine `required_status_checks`.
-Schutzeinstellungen werden nicht verändert. Pfadgefilterte Workflows dürfen nicht
+Schutzeinstellungen werden nicht verändert. Falls ein reiner Dokumentations-Merge
+keine Push-QA auslöst, vor `prepare` die QA ausdrücklich auf `main` manuell starten.
+Der Quell-Check akzeptiert Push- und manuelle QA auf exakt diesem Main-Commit,
+aber keine PR-Checks. Pfadgefilterte Workflows dürfen nicht
 für jeden PR verpflichtend eingestellt werden: Dokumentations-PRs könnten sonst auf
 Pending bleiben. Dafür wäre zunächst ein immer gestarteter Gesamtcheck nötig.
 
