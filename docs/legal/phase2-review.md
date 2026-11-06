@@ -2,7 +2,8 @@
 
 Prüfstand: 6. November 2026. Die öffentlichen Seiten liegen unter
 `impressum.html` und `datenschutz.html`; sie sind aus Einführung, Spiel und
-Ergebnis über denselben Footer erreichbar. Die Links öffnen eigene Tabs.
+Ergebnis über denselben Footer erreichbar. Die internen Rechtsseiten öffnen nach Ricos Vorgabe im selben Tab. „Zum Spiel“
+lädt die Einführung neu; ein laufender Spielstand wird dabei nicht gespeichert.
 
 ## Freigegebene Kontaktdaten
 

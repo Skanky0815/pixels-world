@@ -1,38 +1,35 @@
-import { test, expect, loadIntro, start, state } from './support';
+import { test, expect, loadIntro, start } from './support';
 
-test('Impressum und Datenschutz sind aus Einführung und Spiel in eigenen Tabs erreichbar', async ({
+test('Rechtsseiten öffnen aus Einführung und Spiel im selben Tab', async ({
   page,
-  // eslint-disable-next-line max-lines-per-function -- Dokumentnavigation, Datenschutzbeobachtung und vollständige Browser-Assertions bleiben gemeinsam nachvollziehbar.
+  // eslint-disable-next-line max-lines-per-function -- Navigation aus beiden Spielzuständen, derselbe Tab und funktionsfähige Rücklinks werden gemeinsam geprüft.
 }) => {
-  await loadIntro(page);
-  await expect(page.getByRole('link', { name: 'Impressum', exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Datenschutz', exact: true })).toBeVisible();
-  await start(page);
-  const before = await state(page);
-  const url = page.url();
+  for (const playing of [false, true]) {
+    for (const [title, path] of [
+      ['Impressum', 'impressum.html'],
+      ['Datenschutz', 'datenschutz.html'],
+    ]) {
+      if (playing) await start(page);
+      else await loadIntro(page);
+      const pages = page.context().pages().length;
 
-  for (const [title, path] of [
-    ['Impressum', 'impressum.html'],
-    ['Datenschutz', 'datenschutz.html'],
-  ]) {
-    const link = page.getByRole('link', { name: title, exact: true });
+      await page.getByRole('link', { name: title, exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(`/${path}$`));
+      expect(page.context().pages()).toHaveLength(pages);
+      await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: 'rico-schulz@web.de', exact: true }),
+      ).toHaveAttribute('href', 'mailto:rico-schulz@web.de');
+      await expect(page.locator('canvas, script')).toHaveCount(0);
+      await page.getByRole('link', { name: 'Zum Spiel' }).click();
+      await expect
+        .poll(async () => {
+          await page.clock.runFor(32);
 
-    await expect(link).toHaveAttribute('target', '_blank');
-    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    const opened = page.waitForEvent('popup');
-
-    await link.click();
-    const popup = await opened;
-
-    await popup.waitForURL(`**/${path}`);
-    await expect(popup.getByRole('heading', { name: title, exact: true })).toBeVisible();
-    await expect(
-      popup.getByRole('link', { name: 'rico-schulz@web.de', exact: true }),
-    ).toHaveAttribute('href', 'mailto:rico-schulz@web.de');
-    await expect(popup.locator('canvas, script')).toHaveCount(0);
-    expect(page.url()).toBe(url);
-    expect((await state(page)).generation).toBe(before.generation);
-    await popup.close();
+          return page.locator('.start-screen:visible').count();
+        })
+        .toBe(1);
+    }
   }
 });
 

@@ -85,7 +85,7 @@ und Neustart. Der vorhandene Rundentest prüft weiterhin den Timer-Fallback
 mit nicht erreichtem Ziel. Die Deadline-/Ziel-Rennen sind exakt in Domain-Tests
 abgedeckt; kein schreibbarer Browserzustand wird ergänzt.
 
-`legal.spec.ts` prüft echte lokale Rechtsseiten in neuen Tabs, direkte Aufrufe
+`legal.spec.ts` prüft echte lokale Rechtsseiten im selben Tab mit Rückkehr zur Einführung, direkte Aufrufe
 im Root- und Pages-Unterpfad, schmale Darstellung und die Rücklinks. Zusätzlich
 beobachtet ein Produktionslauf externe HTTP-Anfragen, Cookies, Local Storage,
 Session Storage und IndexedDB. Rechtsseiten laden keinen Spielcode. Externe

@@ -31,7 +31,7 @@ sind verbindlich; Formatierungsfehler sind auch in CI, Release und Pages blockie
 
 14. Zum goldenen Lieblingsball auf dem oberen rechten Regal klettern und 1,2 Sekunden stehen bleiben: Fortschritt, dann vorzeitige Heimkehr mit Zielerfolg, auch ohne Chaospunkte. Bewegung bricht Teilfortschritt ab, Browserpause hält ihn an. Ohne Zielkontakt endet die Runde wie bisher am Timer mit nicht erreichtem Ziel. Auswertung und R-Neustart behandeln beide Wege konsistent.
 
-15. Impressum und Datenschutz vom Startbildschirm und laufenden Spiel aus öffnen: eigener Tab, korrekte Kontaktdaten aus der freigegebenen Quelle, keine ersetzte Runde. Beide Seiten unter Root- und Pages-Unterpfad direkt erreichbar, zurück zum Spiel verlinkt und bei 390 px ohne horizontalen Überlauf lesbar.
+15. Impressum und Datenschutz vom Startbildschirm und laufenden Spiel aus öffnen: derselbe Tab ohne zusätzliches Fenster, korrekte Kontaktdaten aus der freigegebenen Quelle und Rückkehr zur Einführung über „Zum Spiel“. Beide Seiten unter Root- und Pages-Unterpfad direkt erreichbar, zurück zum Spiel verlinkt und bei 390 px ohne horizontalen Überlauf lesbar.
 
 ## End-to-End-Tests
 
