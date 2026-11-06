@@ -19,8 +19,8 @@ export class RoundResultView {
       .setStrokeStyle(2, 0xd4b488);
     const title = scene.add.text(60, 140, 'RUNDENERGEBNIS', style(18));
 
-    this.summary = scene.add.text(60, 176, '', style(16));
-    this.quote = scene.add.text(60, 276, '', {
+    this.summary = scene.add.text(60, 169, '', style(16));
+    this.quote = scene.add.text(60, 288, '', {
       ...style(14),
       fontStyle: 'italic',
       color: '#e4c182',
@@ -59,7 +59,7 @@ export class RoundResultView {
 function summaryText(result: RoundResult) {
   const outcome = result.outcome === 'success' ? 'Gelungen' : 'Gescheitert';
 
-  return `Chaospunkte: ${result.score}\nSaras Reaktion: ${result.reaction}\nVersöhnung: ${outcome}\nHerzen: ${result.hearts}/${result.required}`;
+  return `Chaospunkte: ${result.score}\nSaras Reaktion: ${result.reaction}\nVersöhnung: ${outcome}\nHerzen: ${result.hearts}/${result.required}\nHauptziel: ${result.goalReached ? 'Erreicht' : 'Nicht erreicht'}`;
 }
 
 function style(size: number) {

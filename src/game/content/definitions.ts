@@ -1,3 +1,4 @@
+import type { GoalDefinition, ResolvedGoal } from '../domain/main-goal.ts';
 import type { AssetKey } from '../assets/definitions.ts';
 import type { Bounds } from '../interactions/contracts.ts';
 import type { ScratchConfig } from '../interactions/couch-scratching.ts';
@@ -61,6 +62,7 @@ export type Decoration =
       readonly color: number;
     };
 export interface RoomDefinition {
+  readonly goal: GoalDefinition;
   readonly id: string;
   readonly caption: string;
   readonly width: number;
@@ -96,6 +98,7 @@ export type ResolvedObject =
   | (ResolvedBase & { readonly kind: 'plant'; readonly config: PlantObjectConfig })
   | (ResolvedBase & { readonly kind: 'vase'; readonly config: VaseConfig });
 export interface ResolvedRoom {
+  readonly goal: ResolvedGoal;
   readonly definition: RoomDefinition;
   readonly spawn: { readonly x: number; readonly bottom: number };
   readonly objects: readonly ResolvedObject[];

@@ -12,6 +12,11 @@ test('Einführung zeigt README-Banner; vor dem Start bleiben Uhr, Schäden und P
   await expect(intro.getByAltText('Pixel’s World')).toBeVisible();
   await expect(intro).toContainText('Leertaste drücken, um zu starten');
   await expect(intro).toContainText('Charmeoffensive');
+  await expect(intro.getByRole('complementary', { name: 'Dein Hauptziel' })).toContainText(
+    'Lieblingsball',
+  );
+  await expect(intro.locator('.start-goal-text')).toContainText('1,2 Sekunden');
+  await expect(intro.locator('.start-goal')).toContainText('Sara kommt vorzeitig');
   await page.keyboard.down('ArrowRight');
   await page.keyboard.down('ArrowUp');
   await page.keyboard.down('r');

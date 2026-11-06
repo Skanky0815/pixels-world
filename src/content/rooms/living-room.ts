@@ -33,6 +33,15 @@ const decorations: readonly Decoration[] = [
 
 export const LIVING_ROOM = {
   id: 'living-room',
+  goal: {
+    id: 'favorite-ball',
+    kind: 'toy',
+    label: 'Lieblingsball',
+    motivation: 'Pixel will spielen. Finde den Ball ganz oben rechts und bleib kurz dort.',
+    surfaceId: 'upper-shelf',
+    x: 866,
+    dwellMs: 1200,
+  },
   caption: '01 / THE LIVING ROOM',
   width: 960,
   height: 540,

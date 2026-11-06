@@ -27,7 +27,10 @@ Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimm
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
 
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
-Nach 60–105 Sekunden aktiver Spielzeit kommt Sara zurück und beendet die Chaosphase.
+Pixel möchte seinen Lieblingsball auf dem obersten Regal erreichen. Bleib dort kurz
+stehen, um mit ihm zu spielen: Das holt Sara vorzeitig nach Hause. Sonst kommt sie
+nach 60–105 Sekunden aktiver Spielzeit zurück und beendet die Chaosphase.
+Der Ball ist auch ohne Schaden erreichbar; Chaos bleibt optional.
 Grobe Zeithinweise ersetzen einen genauen Countdown; bei Fokusverlust pausiert das Spiel.
 Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
 das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen

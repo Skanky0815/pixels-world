@@ -1,3 +1,4 @@
+import type { MainGoal } from './game/domain/main-goal';
 import type { ResultViewSnapshot } from './game/ui/RoundResultView';
 import type { ReconciliationSnapshot } from './game/domain/reconciliation';
 import type { RoundSnapshot } from './game/domain/round-controller';
@@ -6,6 +7,8 @@ import type { PixelReturnSnapshot } from './game/domain/pixel-return';
 
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
+  readonly goal: ReturnType<MainGoal['snapshot']>;
+  readonly goalView: { readonly text: string; readonly visible: boolean };
   readonly started: boolean;
   readonly intro: { readonly visible: boolean };
   readonly result: ResultViewSnapshot;

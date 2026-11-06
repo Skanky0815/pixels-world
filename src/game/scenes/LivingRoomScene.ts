@@ -1,3 +1,5 @@
+import { MainGoal } from '../domain/main-goal';
+import { GoalView } from '../ui/GoalView';
 import { StartScreen } from '../ui/StartScreen';
 import { roundResult } from '../domain/round-result';
 import { RoundResultView } from '../ui/RoundResultView';
@@ -36,6 +38,8 @@ import { homecomingPositions } from '../content/homecoming-layout';
 import { PixelReturnController } from '../domain/pixel-return';
 
 export class LivingRoomScene extends Phaser.Scene {
+  private goal!: MainGoal;
+  private goalView!: GoalView;
   private started = false;
   private startScreen!: StartScreen;
   private pixel!: Pixel;
@@ -102,6 +106,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.homecoming = new HomecomingSequence();
     this.charm = new Reconciliation();
     this.returnTime = 0;
+    this.goal = new MainGoal(this.room.goal);
   }
 
   private configureCamera() {
@@ -146,6 +151,8 @@ export class LivingRoomScene extends Phaser.Scene {
             },
             started: this.started,
             intro: this.startScreen.snapshot(),
+            goal: this.goal.snapshot(),
+            goalView: this.goalView.snapshot(),
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
             reconciliation: this.charm.snapshot(),
@@ -250,7 +257,9 @@ export class LivingRoomScene extends Phaser.Scene {
     this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
-    this.startScreen = new StartScreen(!this.started);
+    this.startScreen = new StartScreen(!this.started, this.room.goal);
+    this.goalView = new GoalView(this, this.room.goal);
+    this.goalView.render(this.goal.snapshot(), this.started);
     this.syncActivity();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
   }
@@ -266,6 +275,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.charmView.destroy();
     this.resultView.destroy();
     this.startScreen.destroy();
+    this.goalView.destroy();
   }
 
   private addPlatform(x: number, y: number, width: number, height: number) {
@@ -320,6 +330,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (!input.confirmPressed || !this.activity.active) return;
     this.started = true;
     this.startScreen.hide();
+    this.goalView.render(this.goal.snapshot(), true);
     this.syncActivity();
   }
 
@@ -362,7 +373,11 @@ export class LivingRoomScene extends Phaser.Scene {
     this.physics.world.update(time, elapsed);
     this.updateGameplay(input, time, elapsed);
 
-    if (this.round.advance(elapsed, this.chaos.score)) this.startHomecoming();
+    const reached = this.goal.advance(elapsed, this.pixel.snapshot(), input.active);
+
+    this.goalView.render(this.goal.snapshot(), true);
+
+    if (this.round.advance(elapsed, this.chaos.score, true, reached)) this.startHomecoming();
     else this.renderHud(this.pixel.nearCurtain);
   }
 
@@ -370,6 +385,8 @@ export class LivingRoomScene extends Phaser.Scene {
     const score = this.round.snapshot().finalChaosScore;
 
     if (score === null) return;
+    this.goal.finish(this.round.snapshot().endReason ?? 'timer');
+    this.goalView.render(this.goal.snapshot(), true);
     this.homecoming.start(score);
     this.beginPixelReturn();
     this.sara.render(this.homecoming.snapshot());
