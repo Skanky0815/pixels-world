@@ -1,7 +1,7 @@
 # ADR 0002: Lesbare mobile Texte und Canvas-Renderer
 
 - Datum: 2026-11-06
-- Status: Zur Review mit #108 implementiert
+- Status: Implementiert
 
 ## Anlass
 
@@ -19,7 +19,7 @@ Darstellungsdaten vorhandener Ansichten und zeigt HUD, Dialoge, Eingabezeit und
 Ergebnis unabhängig von der Raumskalierung in CSS-Pixeln. Lange Texte scrollen
 innerhalb ihrer Box. Canvas-Zielmarker und Figuren bleiben Teil des Zimmers.
 
-Bei beim Start erkanntem grobem Zeiger (`any-pointer: coarse`) verwendet Phaser
+Bei einem beim Start erkannten groben Zeiger (`any-pointer: coarse`) verwendet Phaser
 Canvas 2D. Sonst bleibt `AUTO` mit WebGL bzw. Canvas-Fallback erhalten. Ein
 Rendererwechsel während einer Runde ist nicht nötig. Auch Hybridgeräte mit
 grobem Zeiger erhalten deshalb Canvas 2D. Rotation verändert nur das Layout.

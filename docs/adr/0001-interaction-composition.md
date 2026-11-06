@@ -1,14 +1,17 @@
 # ADR 0001: Spielobjekte und kombinierbare Interaktionsfähigkeiten
 
 - Datum: 2026-11-02
-- Status: **Vorgeschlagen zur Review in #22**; noch keine implementierte Migration
-- Kontext: [Gameplay-Architektur](../architecture/gameplay.md), [Befunde R1–R5](../reviews/2026-11-02-architecture.md)
+- Status: Implementiert; aktuelle Verträge siehe Architektur
+- Kontext: [Gameplay-Architektur](../architecture/gameplay.md), [ursprüngliches Review #22](https://github.com/Skanky0815/pixels-world/issues/22)
 
 ## Anlass
 
+Der Anlass beschreibt die ursprüngliche Entscheidungssituation. Aktuelle
+Implementierungsdetails stehen in der verlinkten Architektur.
+
 Die Szene bündelt Controls, Pixel, UI und drei Objektadapter. Die reinen Handlungsmodelle sind bereits getrennt, konkrete Objektidentitäten und ein gemeinsamer Ereignisvertrag fehlen aber. Neue Level und Objektarten (#21, #27–#31, #33/#35) benötigen unterschiedliche, kombinierbare Fähigkeiten. Ricos Ziel ist eine klare Klassen-/Objektstruktur mit isolierten Controls und UI.
 
-## Vorgeschlagene Entscheidung
+## Entscheidung
 
 Konkrete Klassen kapseln `Pixel`, `InputController`, `GameHud`, Szene und Spielobjekte. Spielregeln bleiben in kleinen reinen Modellen. Interaktionsobjekte kombinieren **funktionale Interfaces/Komponenten** wie `Interactable`, `Destructible` und `Climbable`, soweit ein aktuelles Verhalten sie braucht. IDs sind instanzbezogen; unveränderliche Schadensereignisse führen über einen gemeinsamen Score-Pfad zum vorhandenen Ledger. Der sichtbare Pixel bleibt vom Physikkörper getrennt.
 
@@ -27,4 +30,7 @@ Konkrete Klassen kapseln `Pixel`, `InputController`, `GameHud`, Szene und Spielo
 
 Ein neuer Gegenstand erweitert seine konkrete Klasse und die tatsächlich benötigten Fähigkeiten. UI- oder Tastenänderungen berühren keine Schadensregeln. Typisierte Datenübergänge und eine definierte Zielauswahl ersetzen direkte Zugriffe auf Tastatur und Pixel-Darstellung aus Möbelaktionen.
 
-Die Umsetzung erfolgt über #37–#39 in überprüfbaren Schritten, mit unverändertem Standardspielablauf und bestehender Browser-Suite. #40 behebt unabhängig die Ganzzahlvalidierung. Die ergänzenden Planungsissues #42 (typisierte Inhalte) und #43 (später JSON-Import) sowie die Verknüpfung zu #29 verwenden denselben Vertrag. #32 bleibt davon unabhängig. Dieses ADR legt keine neue Feature-Priorität und keinen zusätzlichen Meilenstein fest; die Review des Vorschlags entscheidet über seine Annahme.
+Die Umsetzung verwendet konkrete Adapter, instanzbezogene Ereignisse und den
+getrennten Input-/HUD-Vertrag. Ein künftiger Content-Import oder Generator verwendet
+denselben validierten Raumvertrag; er benötigt keine neue Objekthierarchie.
+Aktuelle Aufgaben und Umsetzungsverlauf stehen in Issues und PRs.

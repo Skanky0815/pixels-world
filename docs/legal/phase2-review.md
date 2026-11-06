@@ -1,6 +1,6 @@
-# Anbieterkennzeichnung und Datenschutz vor v0.2
+# Rechtliche Seiten, Quellen und Datenflüsse
 
-Prüfstand: 6. November 2026. Die öffentlichen Seiten liegen unter
+Die öffentlichen Seiten liegen unter
 `impressum.html` und `datenschutz.html`; sie sind aus Einführung, Spiel und
 Ergebnis über denselben Footer erreichbar. Die internen Rechtsseiten öffnen nach Ricos Vorgabe im selben Tab. „Zum Spiel“
 lädt die Einführung neu; ein laufender Spielstand wird dabei nicht gespeichert.
@@ -47,7 +47,9 @@ Geprüft wurden Anwendungscode, Styles, Asset-Imports, Build und Pages-Workflow:
 - Kein Spielkonto, eigenes Backend, Formularversand oder Übertragen des Spielstands.
 - Rundenzustand nur im Arbeitsspeicher, Reset bei Reload.
 - Keine Analyse, Werbung, fremden Schriftarten oder eingebetteten Dienste.
-- Keine vom Spiel gesetzten Cookies, Local-/Session-Storage- oder IndexedDB-Nutzung.
+- Keine vom Spiel gesetzten Cookies, Session-Storage- oder IndexedDB-Nutzung.
+- Nur die Sprachwahl wird unter `pixels-world.language` lokal gespeichert;
+  Spielstände bleiben flüchtig. Die Datenschutzerklärung beschreibt dies.
 - Externe Verweise sind normale Links; erst die Aktivierung öffnet GitHub oder
   die verlinkte Informationsseite. Keine Hintergrundabfrage dieser Seiten.
 - Rechtsseiten sind statisches HTML/CSS und laden keinen Spielcode.

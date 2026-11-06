@@ -32,14 +32,14 @@ Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nich
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
 Pixel möchte seinen Lieblingsball auf dem obersten Regal erreichen. Bleib dort kurz
 stehen, um mit ihm zu spielen: Das holt Sara vorzeitig nach Hause. Sonst kommt sie
-nach 60–105 Sekunden aktiver Spielzeit zurück und beendet die Chaosphase.
+nach einer zufällig gewählten aktiven Spielzeit zurück und beendet die Chaosphase.
 Der Ball ist auch ohne Schaden erreichbar; Chaos bleibt optional.
 Grobe Zeithinweise ersetzen einen genauen Countdown; bei Fokusverlust pausiert das Spiel.
 Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
 das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen
 Pfeiltastenfolge, Sara durch Schnurren und Anschmiegen zu versöhnen.
 Die Ergebnisansicht fasst Chaospunkte, Saras ursprüngliche Reaktion und den
-Versöhnungsausgang zusammen. Mit R beginnt die nächste Runde.
+Versöhnungsausgang zusammen. Mit **Neue Runde** beginnt das nächste Spiel.
 
 Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.
@@ -73,7 +73,8 @@ und Feature-Wünsche in einem neuen Tab. Für eigene Beiträge brauchst du ein G
 bei veröffentlichten Release-Builds die passenden Release-Notes in einem neuen
 Tab; Entwicklungs- und normale Vorschaubuilds zeigen die Version ohne Link. „Zum Spiel“ führt zurück zur Einführung.
 
-Mehr dazu: [Spielmechaniken und Punkte](docs/gameplay.md).
+Werte und Regeln stehen im [Content](src/content/README.md); technische Verträge
+in der [Architektur](docs/architecture/gameplay.md).
 
 ### Touch-Steuerung
 
@@ -83,19 +84,17 @@ funktionieren gleichzeitig, etwa rechts laufen und springen. Weiter startet
 die Runde, bestätigt Saras Texte und die
 Versöhnungsanleitung; die Pfeile spielen auch die Charmeoffensive. Während der
 laufenden Runde gibt es keinen Neustart-Button. Erst beim Ergebnis erscheint
-**Neue Runde**. Der Neustart wird erst am Ergebnis angeboten.
+**Neue Runde**.
 
 Ein Finger bleibt seiner Taste zugeordnet. Verlassen einer Taste, Abbruch,
 Fokus-/Sichtbarkeitsverlust und Rotation lösen gehaltene Eingaben. Browsergesten
 außerhalb der Buttons bleiben verfügbar. Tastatur und Touch können gemeinsam
 verwendet werden; entgegengesetzte Richtungen sind neutral.
 
-Die Eingabe ist in Chromium mit emuliertem Touch geprüft. Ein erster Praxistest auf iPhone/Safari war erfolgreich (#54). Eine vollständige
-Geräteabnahme steht noch aus. Auf kompakten Touch-Geräten bleiben HUD und Dialoge
-in CSS-Pixeln lesbar. Im Querformat liegt das Zimmer zwischen Richtungstasten links
-und Aktionstasten rechts. Der Titel steht über dem Steuerkreuz, kompakte
-Statusinfos über der Aktionstaste. Im Hochformat stehen die Buttons darunter. Die Einführung
-und längere Dialoge haben ein eigenes Scrollfeld; der komplette Raum bleibt sichtbar.
+Im Querformat liegen Steuerkreuz und Aktion seitlich neben dem Zimmer, im
+Hochformat darunter. Titel und kompakter Status bleiben außerhalb der Spielfläche;
+Einführung und längere Texte haben eigene Scrollfelder. Hinweise für echte
+Mobilgeräte stehen in [QA](docs/qa.md#manueller-spieltest).
 
 ## Lokal starten
 
@@ -109,7 +108,7 @@ npm run dev
 Öffne die ausgegebene lokale Adresse, üblicherweise `http://127.0.0.1:5173`.
 
 Für Build, Vorschau und die Arbeitsansicht der Animationen:
-[Lokal entwickeln](docs/development.md) und [Animationen vergleichen](docs/gameplay.md#animationen-direkt-vergleichen).
+[Lokal entwickeln](docs/development.md) einschließlich [Animationsvergleich](docs/development.md#animationen-vergleichen).
 
 ## Technik & Mitmachen
 
