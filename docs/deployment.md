@@ -36,10 +36,10 @@ Workflows über selbst erzeugte `release`-Ereignisse.
 
 - **Keine grüne Main-QA:** bestehenden Lauf abwarten oder Fehler beheben. Es wird
   keine Ersatz-QA im Releasejob gestartet.
-- **Kein Versions-Merge:** zuerst `prepare`, aktuellen Versions-PR prüfen/mergen,
+- **Kein Versions-Merge:** zuerst `prepare`, einen älteren unveröffentlichten Kandidaten kontrolliert ablösen lassen und den neuen Versions-PR prüfen/mergen,
   Main-QA abwarten und dann `publish`. Der frühere unklare Abbruch nach langer QA
   wird durch diese konkrete Fehlermeldung ersetzt.
-- **main weitergelaufen:** Release auf aktuellem Main neu vorbereiten und prüfen.
+- **main weitergelaufen:** Mit `prepare` auf aktuellem grünem Main neu vorbereiten. Der alte pending-Kandidat wird nur als unveröffentlicht abgelöst, wenn weder Tag noch Release existieren und sein Merge ein Vorfahr ist. Aktueller pending-Versions-Merge ergibt dagegen einen erklärten No-op mit PR-Nummer/Version und Hinweis auf `publish`. Mehrere Kandidaten oder vorhandene Tags/Releases benötigen Statusprüfung, keine automatische Änderung.
 - **Volle QA oder Deployment gescheitert:** Tag und GitHub Release können bereits
   existieren; der alte Pages-Stand bleibt erhalten. Fehlgeschlagene Rollout-Jobs
   desselben Laufs erneut starten. `publish` erzeugt kein zweites Release und löst
@@ -65,3 +65,28 @@ Start des nächsten Releases. Diese Änderung erzeugt selbst keinen Release.
 Details und Messgrenzen: [CI-Prüfstrategie](ci-strategy.md).
 Quellen: [Pages-Workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 und [Release Please](https://github.com/googleapis/release-please-action#outputs).
+
+## Ablösung unveröffentlichter Kandidaten (#128)
+
+Der reine Main-Gleichheitscheck und Release Pleases Sperre für gemergte pending-PRs
+konnten sich gegenseitig blockieren. Der prepare-Vorschritt löst dies für unser
+Root-Paket mit `v`-Tags ohne Komponentenpräfix: genau ein älterer pending-PR,
+Release-Please-Branch, gültige Manifestversion, Merge als Main-Vorfahr, keinerlei
+Tag oder Release dieser Version und weiterhin derselbe Main-SHA. Erst dann wird die
+Ablösung am alten PR dokumentiert und nur `autorelease: pending` entfernt. Kein
+`tagged`-Label, kein manueller Versionswechsel und keine Tag-/Release-Erstellung.
+Der neue Kandidat entsteht weiterhin über die gepinnte Release-Please-Action.
+
+Ein abgelöster Kandidat bleibt unveröffentlicht; Versionsnummern können dadurch
+übersprungen werden. Version und Changelog des neuen PRs prüfen. Scheitert Release
+Please nach der Ablösung, ist ein erneutes prepare möglich. Bleibt eine Mutation
+wegen API-Fehlern unvollständig, bleibt der Lauf fehlgeschlagen und Status/Kommentar
+sichtbar; es wird kein Erfolg vorgetäuscht.
+
+Trockenlauf ohne Metadatenänderung: `GITHUB_REPOSITORY=Skanky0815/pixels-world GITHUB_SHA=<aktueller-main-sha> bash .github/scripts/prepare-release-candidate.sh --dry-run`.
+Der Workflow prüft davor zusätzlich die erfolgreiche Main-QA. Nur nach Merge dieses
+Fixes prepare real erneut ausführen, den neuen Versions-PR reviewen/mergen und nach
+grüner Main-QA ausdrücklich publish starten. Die Automatisierung #127 bleibt Phase 2.5.
+
+Grundlage: [Release Pleases Kandidaten-Sperre](https://github.com/googleapis/release-please/blob/main/src/manifest.ts)
+und [Outputs der gepinnten Action](https://github.com/googleapis/release-please-action/blob/v5.0.0/src/index.ts).

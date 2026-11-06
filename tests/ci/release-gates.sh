@@ -11,6 +11,7 @@ set -euo pipefail
 case "$*" in
   *git/ref/heads/main*) printf '%s\n' "${MAIN_SHA:-$GITHUB_SHA}" ;;
   *actions/workflows/qa.yml/runs*) cat "$FIXTURE_DIR/runs.json" ;;
+  *pulls\?state=closed*) cat "$FIXTURE_DIR/pulls.json" ;;
   *commits/*/pulls*) cat "$FIXTURE_DIR/pulls.json" ;;
   *) exit 99 ;;
 esac
