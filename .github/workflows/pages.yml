@@ -19,12 +19,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  full-qa:
+    if: github.ref == 'refs/heads/main' && inputs.release_tag == ''
+    permissions:
+      contents: read
+    uses: ./.github/workflows/qa.yml
+    with:
+      full_round: true
+
   build:
-    if: github.ref == 'refs/heads/main'
+    needs: full-qa
+    # Release callers already passed full QA; manual deployments run it above.
+    if: >-
+      ${{ !cancelled() && github.ref == 'refs/heads/main' &&
+          (needs.full-qa.result == 'success' ||
+           (needs.full-qa.result == 'skipped' && inputs.release_tag != '')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    env:
-      E2E_FULL_ROUND: '1'
     permissions:
       contents: read
     steps:
@@ -39,34 +50,20 @@ jobs:
           RELEASE_TAG: ${{ inputs.release_tag }}
           RELEASE_SHA: ${{ inputs.release_sha }}
         run: bash .github/scripts/verify-release.sh
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      # Only artifacts from this workflow run and this exact SHA are accepted.
+      # Missing artifacts fail closed; no fallback rebuild or cross-run download.
+      - name: Produktionsbuild aus vollständiger QA übernehmen
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run qa
-      - name: Abhängigkeiten prüfen
-        uses: ./.github/actions/npm-audit
-      - run: npx playwright install --with-deps chromium
-      - name: Alle Browser-Szenarien und Pages-Produktionsbuild prüfen
-        run: npm run test:e2e
-      - name: Fehlerartefakte
-        if: failure()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: pages-test-results
-          path: |
-            playwright-report/
-            test-results/
-            test-reports/
-          retention-days: 14
-      # Playwright builds and tests dist with /pixels-world/. Publish those exact files.
+          name: qa-pages-dist-${{ github.sha }}
+          path: dist
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
 
   deploy:
     needs: build
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

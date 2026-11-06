@@ -84,7 +84,8 @@ gleich. Die Domain-Unit-Tests prüfen die echten Grenzen zusätzlich.
 Der Release-Workflow ruft die QA wiederverwendbar mit `full_round: true` auf. Sowohl
 `prepare` als auch `publish` warten auf diesen vollständigen erfolgreichen Check,
 bevor Release Please einen Versions-PR bzw. ein GitHub Release erstellen darf. Auch
-der manuelle/wiederverwendbare Pages-Build verwendet vollständige Produktionszeiten.
+ein manueller Pages-Lauf ruft diese vollständige QA auf. Beim Release-Rollout
+übernimmt Pages stattdessen das Artefakt der bereits erfolgreichen Release-QA.
 Ein Testfehler oder fehlender notwendiger Job wird dadurch vor der Veröffentlichung
 blockierend. Ein echter Release-/Pages-Rollout wird nur ausdrücklich gestartet.
 
@@ -127,12 +128,13 @@ und Image-Digest gemeinsam aktualisieren und beide Browser-Shards prüfen.
 keine eigene Image-Build-/Registry-Pipeline. Das Image muss weiterhin geladen werden;
 ein schnellerer Gesamtjob ist zu messen und wird nicht pauschal garantiert.
 
-Der Pages-Build verwendet vorerst weiterhin den GitHub-Host und seine bestehende
-Browserinstallation: Dort müssen auch `gh` und `jq` für die Release-Identitätsprüfung
-verfügbar sein. Diese Prüfung wird durch den QA-Containerwechsel nicht verändert.
-Der Release-Workflow führt die vollständige Browserprüfung über die wiederverwendbare
-QA vor Release Please aus. Der danach aufgerufene Pages-Build prüft den exakten
-Veröffentlichungsstand weiterhin selbst vollständig.
+Pages installiert keinen Browser mehr: Die vollständige Browserprüfung läuft im
+Playwright-Container der wiederverwendbaren QA. Shard 1 übergibt bei `full` den
+getesteten Produktionsbuild als `qa-pages-dist-<SHA>`; der Quality-Job und beide
+Shards müssen erfolgreich sein. Pages übernimmt nur dieses Artefakt aus demselben
+Workflow-Lauf, ohne Neubau. Der GitHub-Host stellt weiterhin `gh` und `jq` für die
+unveränderten Release-Identitätsprüfungen bereit. Details und Messwerte stehen in
+[der CI-Prüfstrategie](ci-strategy.md).
 
 Grundlage: [Playwright-Docker-Image](https://playwright.dev/docs/docker) und
 [Container-Jobs in der Playwright-CI-Anleitung](https://playwright.dev/docs/ci#via-containers).
