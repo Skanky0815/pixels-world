@@ -1,106 +1,82 @@
-# Veröffentlichung auf GitHub Pages
+# Release und GitHub Pages
 
 Spieladresse: [Pixel’s World](https://skanky0815.github.io/pixels-world/).
-Pages verwendet GitHub Actions als Quelle und die Umgebung `github-pages`.
+Die Quellen des Ablaufs sind [release.yml](../.github/workflows/release.yml),
+[pages.yml](../.github/workflows/pages.yml) und die Skripte unter
+[.github/scripts](../.github/scripts/). Kein unabhängiger Pages-Start und kein npm-Publish.
 
-## Einmalige Einrichtung
+## Einrichtung und Versionierung
 
-Unter Settings → Pages die Quelle GitHub Actions wählen; die Umgebung auf `main`
-beschränken und bei Bedarf eine Freigabe verlangen. Nur der Deploymentjob erhält
-`pages: write` und `id-token: write`. Der Releasejob besitzt die benötigten
-Release-/PR-Rechte und `actions: read` für die bestehende Main-QA. Kein neuer PAT.
+Pages verwendet GitHub Actions und die Umgebung `github-pages`; zugelassene
+Deployments auf `main` beschränken. Nur der Deploymentjob erhält Pages-/OIDC-Rechte.
+Der Releasejob braucht seine expliziten Release-/PR-Rechte und Lesezugriff auf
+Main-QA. GitHub Actions muss PRs erstellen dürfen. Kein zusätzlicher PAT nötig.
 
-## Veröffentlichung
+Release Please pflegt Paket-/Lockversion, `.release-please-manifest.json`,
+`CHANGELOG.md`, Tags und GitHub Releases. Versionen nicht einzeln von Hand erhöhen.
+Conventional Commits, insbesondere der Squash-Titel, steuern den Vorschlag.
+Strategie und Versionsregeln stehen in [release-please-config.json](../release-please-config.json).
+Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
 
-1. Lokal `npm run check:pr` ausführen, PR-Quality/Smoke und Review abschließen; nach Merge die Main-Quality-Prüfung ohne Browserwiederholung abwarten.
-2. **Spielrelease → main → prepare** erstellt den Versions-PR. Version und Changelog
-   prüfen, PR-QA bei automatisch mit `GITHUB_TOKEN` erstellten PRs nötigenfalls manuell
-   starten, reviewen und mergen. Die `autorelease`-Labels erhalten.
-3. Grüne Main-QA auf dem Versions-Merge abwarten. **Spielrelease → main → publish**
-   prüft exakt diese bereits vorhandene QA, den aktuellen Main-SHA und den
-   ausstehenden Versions-Merge; dann erstellt Release Please Tag und GitHub Release.
-4. Bei neuem Release ruft derselbe Workflow Pages auf: Release-Identität bestätigen,
-   vollständige gemeinsame QA mit Produktionszeiten einschließlich Audit und beiden
-   Browser-Shards ausführen, getestetes SHA-Artefakt übernehmen, erneut Release-Tag
-   und Commit bestätigen und deployen. Kein zweiter Build oder zweiter Testlauf.
-5. Öffentliche Spieladresse prüfen: Startbildschirm, Spiel, Assets und Rechtsseiten
-   erreichbar; Bewegung, Sprung, Schäden und Neustart funktionieren, kein Testobserver.
+## Bedienung
 
-Ein unabhängiger Pages-Start ohne Release ist nicht mehr vorgesehen. `prepare` und
-ein ergebnisloses `publish` veröffentlichen keine Website. Das direkte Aufrufen des
-wiederverwendbaren Pages-Workflows nach erfolgreicher Release-Aktion vermeidet einen
-zusätzlichen Event-Trigger: `GITHUB_TOKEN` startet nicht zuverlässig weitere
-Workflows über selbst erzeugte `release`-Ereignisse.
+1. Vor Code-/Tooling-PRs lokal `npm run check:pr`, PR-Checks und Review abschließen.
+   Nach Merge erfolgreiche Main-QA für genau den aktuellen Main-Commit abwarten.
+2. **Actions → Spielrelease → main → prepare** erstellt/aktualisiert den Versions-PR.
+   Version und Changelog prüfen. Mit `GITHUB_TOKEN` erstellte PRs starten nicht
+   automatisch weitere Workflows: QA nötigenfalls manuell auf dem Release-Branch
+   ausführen. Sara zuweisen, Rico zur Review anfragen und erst bei grünen Checks
+   mergen. `autorelease`-Labels erhalten.
+3. Auf dem gemergten Versions-PR grüne Main-QA abwarten. **Spielrelease → main →
+   publish** bestätigt Quell-Commit, Versions-Merge und vorhandene QA und erzeugt
+   Tag/Release. Normale Feature-/CI-Merges dürfen nicht veröffentlichen.
+4. Nur ein neu erstelltes Release startet im selben Lauf Pages: Release-Identität
+   prüfen, vollständige QA mit Produktionszeiten und Audit, getesteten Build aus
+   derselben Run-/SHA-Zuordnung übernehmen, Identität erneut prüfen und deployen.
+   Kein Neubau und keine zweite Suite im Pages-Job.
+5. Live Start/Spiel, Assets, Rechtsseiten, Sprachen und Mobile-Layout prüfen.
+   Kein E2E-Observer; verlinkte Version muss dem veröffentlichten Tag entsprechen.
 
-## Fehler und Wiederholung
+Dieser direkte Workflow-Aufruf berücksichtigt, dass von `GITHUB_TOKEN` erzeugte
+Release-Ereignisse keine weitere Pipeline zuverlässig anstoßen. Manuelle Diagnose-
+QA bleibt ohne Veröffentlichung möglich. QA-Profile und Reports: [QA](qa.md).
 
-- **Keine grüne Main-QA:** bestehenden Lauf abwarten oder Fehler beheben. Es wird
-  keine Ersatz-QA im Releasejob gestartet.
-- **Kein Versions-Merge:** zuerst `prepare`, einen älteren unveröffentlichten Kandidaten kontrolliert ablösen lassen und den neuen Versions-PR prüfen/mergen,
-  Main-QA abwarten und dann `publish`. Der frühere unklare Abbruch nach langer QA
-  wird durch diese konkrete Fehlermeldung ersetzt.
-- **main weitergelaufen:** Mit `prepare` auf aktuellem grünem Main neu vorbereiten. Der alte pending-Kandidat wird nur als unveröffentlicht abgelöst, wenn weder Tag noch Release existieren und sein Merge ein Vorfahr ist. Aktueller pending-Versions-Merge ergibt dagegen einen erklärten No-op mit PR-Nummer/Version und Hinweis auf `publish`. Mehrere Kandidaten oder vorhandene Tags/Releases benötigen Statusprüfung, keine automatische Änderung.
-- **Volle QA oder Deployment gescheitert:** Tag und GitHub Release können bereits
-  existieren; der alte Pages-Stand bleibt erhalten. Fehlgeschlagene Rollout-Jobs
-  desselben Laufs erneut starten. `publish` erzeugt kein zweites Release und löst
-  bei No-op kein neues Deployment aus.
-- **Build-Artefakt abgelaufen:** ein reiner Deployment-Retry reicht nicht; die QA
-  muss erneut einen geprüften Build liefern. QA-Artefakte bleiben einen Tag,
-  Fehler-/Testreports 14 Tage erhalten. Keine ungeprüften Ersatzbuilds hochladen.
+## Identität und Wiederanlauf
 
-Tag, Nicht-Draft-Veröffentlichung und Commit werden mehrfach durch
-`.github/scripts/verify-release.sh` bestätigt. Checkout und Artefakt sind an den
-Workflow-SHA gebunden. Ein inzwischen neuerer Main-Stand wird beim Rollout nicht
-statt des Release-Commits ausgeliefert. Die Pages-Concurrency serialisiert Rollouts.
+`verify-release.sh` bestätigt Tag, veröffentlichtes Nicht-Draft-Release und exakten
+Commit vor Vollprüfung, Artefaktübernahme und Deployment. Ein neuer Main-Stand darf
+nicht statt des Release-Commits ausgeliefert werden. Concurrency serialisiert
+Release/Rollout; notwendige Gates dürfen nicht übersprungen sein.
 
-## Bisherige Integration und aktuelle Grenze
+| Zustand                                                                 | Vorgehen                                                                                                                                                                 |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Main-QA fehlt/läuft/ist fehlgeschlagen                                  | Abwarten bzw. Fehler beheben; keine Ersatz-QA im Releasejob. Bei gefiltertem Docs-Merge QA manuell auf genau diesem Main starten.                                        |
+| Kein aktueller Versions-Merge                                           | `prepare`, Versions-PR prüfen/mergen und Main-QA abwarten. Normale Merges sind keine Veröffentlichung.                                                                   |
+| Main nach Versions-Merge weitergelaufen                                 | Neu auf aktuellem grünem Main vorbereiten; keinen alten Kandidaten ungeprüft veröffentlichen.                                                                            |
+| Mehrere pending-Kandidaten, Tag/Release vorhanden oder unklare Historie | Status untersuchen; keine automatische Bereinigung erzwingen.                                                                                                            |
+| Vollprüfung/Rollout fehlgeschlagen                                      | Tag/Release können existieren, der bisherige Pages-Stand bleibt. Fehlgeschlagene Jobs desselben Laufs erneut starten. Ein Release-No-op erzeugt keinen weiteren Rollout. |
+| QA-Artefakt abgelaufen                                                  | Erneut geprüften Build im selben Release-Ablauf liefern; keinen ungeprüften Ersatz hochladen. Aufbewahrung steht im Workflow.                                            |
 
-Der ursprüngliche [Pages-Lauf 41918859915](https://github.com/Skanky0815/pixels-world/actions/runs/41918859915)
-und der automatische [v0.1.1-Rollout 41945123257](https://github.com/Skanky0815/pixels-world/actions/runs/41945123257)
-wurden am öffentlichen Spiel abgenommen. Das belegt den damaligen Ablauf.
-Die neue Reihenfolge aus #122 wird lokal und im PR geprüft; ein vollständiger
-Publish-/Pages-Integrationstest folgt erst nach Review/Merge und ausdrücklichem
-Start des nächsten Releases. Diese Änderung erzeugt selbst keinen Release.
+`prepare-release-candidate.sh` darf einen alten unveröffentlichten Kandidaten nur
+bei eindeutigem Root-Paket/Tagformat, gültiger Manifestversion, Merge als Main-
+Vorfahr und Abwesenheit von Tag/Release ablösen. Es dokumentiert die Ablösung am
+alten PR und entfernt nur `autorelease: pending`. Der neue PR entsteht durch
+Release Please; kein manuelles `tagged`, keine manuelle Versionsänderung.
+Ein aktueller Kandidat ergibt einen erklärten No-op mit nächstem Schritt.
 
-Details und Messgrenzen: [CI-Prüfstrategie](ci-strategy.md).
-Quellen: [Pages-Workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
-und [Release Please](https://github.com/googleapis/release-please-action#outputs).
+```sh
+GITHUB_REPOSITORY=Skanky0815/pixels-world GITHUB_SHA=<aktueller-main-sha>   bash .github/scripts/prepare-release-candidate.sh --dry-run
+```
 
-## Ablösung unveröffentlichter Kandidaten (#128)
+Release- und Retry-Nachweise gehören in PR/Actions, nicht als zweite Statuschronik
+hier. Grundlagen: [Release Please](https://github.com/googleapis/release-please-action#outputs)
+und [Pages-Workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
-Der reine Main-Gleichheitscheck und Release Pleases Sperre für gemergte pending-PRs
-konnten sich gegenseitig blockieren. Der prepare-Vorschritt löst dies für unser
-Root-Paket mit `v`-Tags ohne Komponentenpräfix: genau ein älterer pending-PR,
-Release-Please-Branch, gültige Manifestversion, Merge als Main-Vorfahr, keinerlei
-Tag oder Release dieser Version und weiterhin derselbe Main-SHA. Erst dann wird die
-Ablösung am alten PR dokumentiert und nur `autorelease: pending` entfernt. Kein
-`tagged`-Label, kein manueller Versionswechsel und keine Tag-/Release-Erstellung.
-Der neue Kandidat entsteht weiterhin über die gepinnte Release-Please-Action.
+## Versionslink im Footer
 
-Ein abgelöster Kandidat bleibt unveröffentlicht; Versionsnummern können dadurch
-übersprungen werden. Version und Changelog des neuen PRs prüfen. Scheitert Release
-Please nach der Ablösung, ist ein erneutes prepare möglich. Bleibt eine Mutation
-wegen API-Fehlern unvollständig, bleibt der Lauf fehlgeschlagen und Status/Kommentar
-sichtbar; es wird kein Erfolg vorgetäuscht.
-
-Trockenlauf ohne Metadatenänderung: `GITHUB_REPOSITORY=Skanky0815/pixels-world GITHUB_SHA=<aktueller-main-sha> bash .github/scripts/prepare-release-candidate.sh --dry-run`.
-Der Workflow prüft davor zusätzlich die erfolgreiche Main-QA. Nur nach Merge dieses
-Fixes prepare real erneut ausführen, den neuen Versions-PR reviewen/mergen und nach
-grüner Main-QA ausdrücklich publish starten. Die Automatisierung #127 bleibt Phase 2.5.
-
-Grundlage: [Release Pleases Kandidaten-Sperre](https://github.com/googleapis/release-please/blob/main/src/manifest.ts)
-und [Outputs der gepinnten Action](https://github.com/googleapis/release-please-action/blob/v5.0.0/src/index.ts).
-
-### Versionslink im Spiel
-
-Nach der bestehenden Prüfung von Veröffentlichung, Tag und Commit reicht Pages
-den `release_tag` an die wiederverwendbare QA weiter. Deren Produktionsbuild
-erhält `PIXELS_RELEASE_TAG`; Vite vergleicht den Tag mit der Paketversion und
-bettet nur den exakt passenden GitHub-Release-Link ein. Der danach deployte
-Build ist weiterhin dasselbe getestete Artefakt, ohne Neubau.
-
-Ohne expliziten Release-Kontext wird nur die Versionsnummer angezeigt.
-Entwicklungs- und E2E-Builds verlinken auch bei gesetzter Variable keinen Release.
-Die Umgebungsvariable allein ersetzt keine Veröffentlichungsprüfung: diese
-bleibt im Pages-Identity-Gate. Die Release-Notes öffnen in einem neuen Tab,
-damit die laufende Runde erhalten bleibt.
+Nur nach verifizierter Release-Identität wird `release_tag` an QA weitergegeben.
+Vite erhält `PIXELS_RELEASE_TAG`, vergleicht ihn mit der Paketversion und bettet
+den exakten Release-Link ein. Das deployte Artefakt ist derselbe getestete Build.
+Ohne expliziten Kontext zeigen Entwicklungs-/Vorschaubuilds nur die Version.
+Die Variable allein ersetzt keine Veröffentlichungsprüfung; das Identity-Gate
+bleibt zuständig. Release-Notes öffnen separat, damit die Runde erhalten bleibt.
