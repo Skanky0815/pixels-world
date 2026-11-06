@@ -74,6 +74,10 @@ on:
         required: true
   workflow_call:
     inputs:
+      release_tag:
+        description: Verifizierter veröffentlichter Tag für den Pages-Build
+        type: string
+        default: ''
       full_round:
         description: Produktionszeiten im Heimkehr-Test verwenden
         type: boolean
@@ -84,6 +88,7 @@ on:
         default: '1'
 
 env:
+  PIXELS_RELEASE_TAG: ${{ inputs.release_tag || '' }}
   # Full reusable QA overrides event defaults; main pushes intentionally omit browsers.
   E2E_SCOPE: ${{ inputs.full_round && 'all' || github.event_name == 'pull_request' && 'smoke' || github.event_name == 'push' && 'none' || 'all' }}
   E2E_REPEATS: ${{ inputs.repetitions || '1' }}

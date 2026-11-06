@@ -68,7 +68,9 @@ Weglaufen oder Springen unterbricht die Bodenaktionen.
 Unter dem Spiel öffnet **Feedback & Ideen** die GitHub-Auswahl für Fehlerberichte
 und Feature-Wünsche in einem neuen Tab. Für eigene Beiträge brauchst du ein GitHub-Konto.
 [Impressum](impressum.html) und [Datenschutz](datenschutz.html) bleiben ebenfalls
-über den Footer erreichbar und öffnen im selben Tab. „Zum Spiel“ führt zurück zur Einführung.
+über den Footer erreichbar und öffnen im selben Tab. Die Spielversion verlinkt
+bei veröffentlichten Release-Builds die passenden Release-Notes in einem neuen
+Tab; Entwicklungs- und normale Vorschaubuilds zeigen die Version ohne Link. „Zum Spiel“ führt zurück zur Einführung.
 
 Mehr dazu: [Spielmechaniken und Punkte](docs/gameplay.md).
 

@@ -22,6 +22,16 @@ test('Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spie
 
     await expect(footer).toHaveText(`© ${year} Pixel's World · v${packageVersion}`);
     await expect(footer).toBeVisible();
+    const releaseTag = base.includes(':4175') && process.env.PIXELS_RELEASE_TAG;
+
+    if (releaseTag) {
+      await expect(footer.getByRole('link')).toHaveAttribute(
+        'href',
+        `https://github.com/Skanky0815/pixels-world/releases/tag/${encodeURIComponent(releaseTag)}`,
+      );
+      await expect(footer.getByRole('link')).toHaveAttribute('target', '_blank');
+      await expect(footer.getByRole('link')).toHaveAttribute('rel', 'noopener noreferrer');
+    } else await expect(footer.getByRole('link')).toHaveCount(0);
     const footerBox = await footer.boundingBox(),
       gameBox = await page.locator('#game').boundingBox();
 
