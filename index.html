@@ -1,34 +1,36 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#241f29" />
-    <title>Pixel's World · Living room prototype</title>
+    <title data-i18n="pixelSWorldLivingRoomPrototype">Pixel's World · Living room prototype</title>
   </head>
   <body>
     <main>
       <header>
         <div>
-          <p class="eyebrow">ONE ROOM. ONE CAT.</p>
-          <h1>Pixel’s World<span>01 / THE LIVING ROOM</span></h1>
+          <p class="eyebrow" data-i18n="oneRoomOneCat">ONE ROOM. ONE CAT.</p>
+          <h1>Pixel’s World<span data-i18n="theLivingRoom">01 / THE LIVING ROOM</span></h1>
         </div>
-        <span class="badge">PLAYABLE PROTOTYPE</span>
+        <span class="badge" data-i18n="playablePrototype">PLAYABLE PROTOTYPE</span>
       </header>
       <div id="play-area">
         <div
           id="game"
           role="region"
-          aria-label="Pixel's living room. Use arrow keys to move and climb, Space to jump, R to reset. Click the room to focus."
+          aria-label="Pixel's living room. Use arrow keys to move and climb, Space to jump. Click the room to focus."
+          data-i18n-label="pixelSLivingRoomUseArrow"
           tabindex="0"
         ></div>
       </div>
       <footer>
         <p class="keyboard-help">
-          <kbd>←</kbd> <kbd>→</kbd> Move <span>·</span> <kbd>Space</kbd> Jump <span>·</span>
-          <kbd>↑</kbd> <kbd>↓</kbd> Climb curtain <span>·</span> <kbd>R</kbd> Neustart
+          <kbd>←</kbd> <kbd>→</kbd><span data-i18n="move"> Move </span><span>·</span>
+          <kbd>Space</kbd><span data-i18n="jumpLabel"> Jump </span><span>·</span> <kbd>↑</kbd>
+          <kbd>↓</kbd><span data-i18n="climbCurtain"> Climb curtain </span>
         </p>
-        <p class="hint">A quiet afternoon. For now.</p>
+        <p class="hint" data-i18n="aQuietAfternoonForNow">A quiet afternoon. For now.</p>
         <div class="footer-meta">
           <p class="feedback-link">
             <a
@@ -36,12 +38,19 @@
               target="_blank"
               rel="noopener noreferrer"
               title="Öffnet GitHub in einem neuen Tab"
+              data-i18n-title="opensGithubInANewTab"
+              data-i18n="feedbackIdeas"
               >Feedback &amp; Ideen</a
             >
-            <a href="./impressum.html">Impressum</a>
-            <a href="./datenschutz.html">Datenschutz</a>
+            <a href="./impressum.html" data-i18n="legalNoticeGerman">Impressum</a>
+            <a href="./datenschutz.html" data-i18n="privacyGerman">Datenschutz</a>
           </p>
-          <p id="build-info" class="build-info" aria-label="Build-Version"></p>
+          <p
+            id="build-info"
+            class="build-info"
+            aria-label="Build-Version"
+            data-i18n-label="buildVersion"
+          ></p>
         </div>
       </footer>
     </main>

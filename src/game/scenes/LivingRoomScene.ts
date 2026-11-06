@@ -1,3 +1,4 @@
+import { onLanguageChange } from '../../i18n/locale';
 import { MobileReadout } from '../ui/MobileReadout';
 import { MainGoal } from '../domain/main-goal';
 import { GoalView } from '../ui/GoalView';
@@ -264,6 +265,9 @@ export class LivingRoomScene extends Phaser.Scene {
     this.goalView = new GoalView(this, this.room.goal);
     this.goalView.render(this.goal.snapshot(), this.started);
     this.syncActivity();
+    const unsubscribe = onLanguageChange(() => this.refreshLanguage());
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribe);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
   }
 
@@ -333,7 +337,9 @@ export class LivingRoomScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Nur Darstellungsdaten bestehender Ansichten; keine zweite Spielzustandsmaschine.
   private renderMobile() {
-    this.controls.setActionLabel(this.round.snapshot().phase === 'chaos' ? 'Sprung' : 'Weiter');
+    this.controls.setActionLabel(
+      this.started && this.round.snapshot().phase === 'chaos' ? 'Sprung' : 'Weiter',
+    );
     this.mobile.render({
       hud: this.hud.snapshot(),
       goal: this.goalView.snapshot().text,
@@ -344,6 +350,16 @@ export class LivingRoomScene extends Phaser.Scene {
       result: this.resultView.snapshot(),
       remaining: this.charm.snapshot().remainingMs / this.charm.snapshot().inputMs,
     });
+  }
+
+  private refreshLanguage() {
+    this.renderHud(this.pixel.nearCurtain);
+    this.sara.render(this.homecoming.snapshot(), this.returning.snapshot().stage === 'seated');
+    this.charmView.render(this.charm.snapshot());
+    this.renderResult();
+    this.goalView.render(this.goal.snapshot(), this.started);
+
+    this.renderMobile();
   }
 
   private tryStart(input: InputState) {

@@ -2,7 +2,7 @@
 
 Die Specs sind fachlich aufgeteilt: `movement`, `lifecycle`, `rendering`, `couch`, `curtain`, `plant`, `vases`, `content`, `hud`, `footer`, `round`, `pixel-return`, `reconciliation`, `start-screen`, `feedback`, `main-goal`, `legal` und `build-isolation`. `support.ts` enthält die gemeinsame Browsergesundheits-/Clock-Fixture und Eingabehelfer. Jede Spec bleibt unabhängig; alle verwenden echte Tastatureingaben und ausschließlich lesbare Snapshots.
 
-Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. PR-CI wählt mit `npm run test:e2e:smoke` vier `@smoke`-Szenarien: Produktionsisolation, Bewegung/Raumgrenzen, Sprung/Reset und Touch-Start/Mehrfinger-Sprung. Manuelle QA und Release-Rollout verteilen alle Szenarien auf vier Shards; Main-CI wiederholt keine Browsertests. Lokal prüft `npm run check:pr` vor dem PR die Projekt-QA und alle Szenarien. Die Suite umfasst 60 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
+Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. PR-CI wählt mit `npm run test:e2e:smoke` vier `@smoke`-Szenarien: Produktionsisolation, Bewegung/Raumgrenzen, Sprung/Reset und Touch-Start/Mehrfinger-Sprung. Manuelle QA und Release-Rollout verteilen alle Szenarien auf vier Shards; Main-CI wiederholt keine Browsertests. Lokal prüft `npm run check:pr` vor dem PR die Projekt-QA und alle Szenarien. Die Suite umfasst 63 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
 Headless-Chromium meldet Hintergrundseiten weiterhin als sichtbar. Der Visibility-Test
 simuliert deshalb ausschließlich `document.hidden` und das Browserereignis, ohne
 Spielzustand zu setzen; echte Tabwechsel gehören zusätzlich zum manuellen Spieltest.
@@ -14,7 +14,7 @@ E2E-Build `?round-profile=fast` auf. Die übrigen Szenarien behalten die normale
 Rundengrenzen. Die Testkonfiguration entsteht beim Build; im Produktionsbuild werden
 Einstieg und Query-Auswertung entfernt. Es gibt keine schreibbare Browser-Schnittstelle.
 
-`npm run test:e2e:full` startet alle 60 Szenarien mit echten Produktionszeiten; der
+`npm run test:e2e:full` startet alle 63 Szenarien mit echten Produktionszeiten; der
 identische Rundentest ist dann `@slow` markiert und dauert im Spiel 60–105 Sekunden.
 `npm run test:e2e:slow` wählt diese acht vollständigen Heimkehr-/Versöhnungstests. Beide Befehle setzen vor
 Test und Vite-Build `E2E_FULL_ROUND=1`. Die Skripte verwenden die Shell-Schreibweise
@@ -123,3 +123,6 @@ Sprachen bleiben #105.
 schmale Einführung und Rotation mit fortgesetzter Eingabe. Die vollständige
 Touch-Runde prüft auch die mobile Textansicht und ihren Eingabezeitbalken.
 Diese Szenarien laufen lokal/manuell/beim Release, ohne zusätzliche PR-Runner.
+
+`localization.spec.ts` ergänzt drei Sprachprüfungen inklusive einer englischen
+Touch-Runde. Die vier PR-Smoke-Szenarien und Runneranzahl bleiben unverändert.

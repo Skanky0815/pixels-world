@@ -1,5 +1,5 @@
+import { copy } from '../../i18n/locale.ts';
 import type { Decoration, RoomDefinition } from '../../game/content/definitions.ts';
-
 const FLOOR_Y = 468;
 const rect = (x: number, y: number, width: number, height: number, color: number): Decoration => ({
   kind: 'rect',
@@ -28,7 +28,7 @@ const decorations: readonly Decoration[] = [
   rect(322, 146, 28, 28, 0xd1a167),
   rect(245, 493, 430, 30, 0xbe906c),
   rect(255, 501, 410, 3, 0xddba8b),
-  { kind: 'text', x: 525, y: 336, text: 'SHELVES', size: 10, color: 0x725b46 },
+  { kind: 'text', x: 525, y: 336, text: copy('shelves'), size: 10, color: 0x725b46 },
 ];
 
 export const LIVING_ROOM = {
@@ -36,13 +36,13 @@ export const LIVING_ROOM = {
   goal: {
     id: 'favorite-ball',
     kind: 'toy',
-    label: 'Lieblingsball',
-    motivation: 'Pixel will spielen. Finde den Ball ganz oben rechts und bleib kurz dort.',
+    label: copy('favouriteBall'),
+    motivation: copy('pixelWantsToPlayFindThe'),
     surfaceId: 'upper-shelf',
     x: 866,
     dwellMs: 1200,
   },
-  caption: '01 / THE LIVING ROOM',
+  caption: copy('theLivingRoom'),
   width: 960,
   height: 540,
   hud: { climbHint: { x: 800, y: 90 } },

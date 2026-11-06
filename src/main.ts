@@ -1,3 +1,5 @@
+import './i18n/settings';
+import { translateExact, onLanguageChange } from './i18n/locale';
 import Phaser from 'phaser';
 import './style.css';
 import { OBJECTS } from './content/objects/catalog';
@@ -15,7 +17,15 @@ const room = resolveRoom(
 );
 const caption = document.querySelector('h1 span');
 
-if (caption) caption.textContent = room.definition.caption;
+if (caption) {
+  const refresh = () => {
+    caption.textContent = translateExact(room.definition.caption);
+  };
+
+  refresh();
+  onLanguageChange(refresh);
+}
+
 const gameHost = document.querySelector<HTMLElement>('#game');
 
 if (gameHost) {

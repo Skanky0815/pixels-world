@@ -177,7 +177,8 @@ test('Charme scheitert nach zwei Versuchen am selben Herz', { tag }, async ({ pa
   await test
     .info()
     .attach('versoehnung-gescheitert', { body: await page.screenshot(), contentType: 'image/png' });
-  await reset(page);
+  await page.getByRole('button', { name: 'Neue Runde', exact: true }).click();
+  await until(page, (s) => s.generation > failed.generation);
   expect((await state(page)).reconciliation).toMatchObject({ stage: 'waiting', attemptsLeft: 2 });
   await expectFreshRound(page);
 });
@@ -198,7 +199,7 @@ async function expectResult(page: Page, outcome: 'success' | 'failed') {
   });
   expect(result.summaryText).toContain(`Chaospunkte: ${current.chaos.score}`);
   expect(result.summaryText).toContain(outcome === 'success' ? 'Gelungen' : 'Gescheitert');
-  expect(result.hint).toBe('R: Neue Runde');
+  expect(result.hint).toBe('Neue Runde starten');
   expect(result.goalReached).toBe(current.round.endReason === 'goal');
   expect(result.summaryText).toContain('Hauptziel:');
   expect(result.quoteText).toBe(`Sara: „${result.closingLine}“`);

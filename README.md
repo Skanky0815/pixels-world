@@ -18,7 +18,9 @@ Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich gro�
 
 Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
 mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.
-Das Spiel läuft ohne Konto und ohne Backend.
+Das Spiel läuft ohne Konto und ohne Backend. Über die Sprachwahl im Kopfbereich
+spielst du auf Deutsch oder Englisch. Nur diese Einstellung bleibt lokal im
+Browser gespeichert; ein Sprachwechsel erhält die laufende Runde.
 Den aktuellen Versionsstand findest du unter [Releases](https://github.com/Skanky0815/pixels-world/releases).
 
 ## Spielidee
@@ -49,18 +51,17 @@ Die komplette Spielfläche passt sich dem Browserfenster an.
 | ← / →     | Laufen und in der Luft steuern                            |
 | Leertaste | Springen; am Vorhang abspringen; Heimkehr-Text bestätigen |
 | ↑ / ↓     | Vorhang greifen und hinauf-/hinabklettern                 |
-| R         | Gesamtes Zimmer samt Schäden und Punkten neu starten      |
 
 Während der Versöhnung: die jeweils angezeigte Pfeiltaste rechtzeitig neu drücken.
 Anleitung und Saras Sprüche kannst du in Ruhe lesen und mit Leertaste bestätigen.
 Je nach Chaos benötigt Sara ein, zwei oder drei Herzen.
 Eine erfolgreiche Folge füllt die Herzleiste; pro Herz hast du zwei Versuche. Danach kann die Versöhnung auch scheitern.
-R startet auch während dieser Phase neu.
+Am Ergebnis startet **Neue Runde** das nächste Spiel.
 
 Beim Laden erscheint die Einführung mit dem vorhandenen Spielbanner.
 Klicke bei Bedarf ins Zimmer und drücke Leertaste, um die erste Runde zu starten.
-Vorher bleiben Timer, Bewegung und Chaosaktionen angehalten. R startet nach dem
-Spielbeginn direkt eine neue Runde; Neuladen zeigt die Einführung erneut.
+Vorher bleiben Timer, Bewegung und Chaosaktionen angehalten. Am Ergebnis
+startet **Neue Runde** direkt das nächste Spiel; Neuladen zeigt die Einführung erneut.
 Beim Anspringen greift Pixel den Vorhang automatisch; ohne Klettereingabe rutscht er langsam ab.
 Am Sofa oder Katzengras kurz stehen bleiben: Pixel wird von selbst aktiv.
 Weglaufen oder Springen unterbricht die Bodenaktionen.
@@ -82,7 +83,7 @@ funktionieren gleichzeitig, etwa rechts laufen und springen. Weiter startet
 die Runde, bestätigt Saras Texte und die
 Versöhnungsanleitung; die Pfeile spielen auch die Charmeoffensive. Während der
 laufenden Runde gibt es keinen Neustart-Button. Erst beim Ergebnis erscheint
-**Neue Runde**. Der bestehende Tastaturkurzbefehl R bleibt verfügbar.
+**Neue Runde**. Der Neustart wird erst am Ergebnis angeboten.
 
 Ein Finger bleibt seiner Taste zugeordnet. Verlassen einer Taste, Abbruch,
 Fokus-/Sichtbarkeitsverlust und Rotation lösen gehaltene Eingaben. Browsergesten

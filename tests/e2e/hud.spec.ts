@@ -9,7 +9,7 @@ test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverände
 
   expect(idle).toEqual({
     roundText: 'Noch etwas Zeit',
-    statusText: 'PIXEL · HOME ALONE',
+    statusText: 'PIXEL · ALLEIN ZU HAUSE',
     scoreText: 'CHAOS: 0  ·  SARAS ÄRGER (VORSCHAU): Entspannt',
     climbHintText: '↑ KLETTERN\nLOSLASSEN: RUTSCHEN',
     climbHintAlpha: 0.65,

@@ -1,3 +1,4 @@
+import { t, translateExact, onLanguageChange } from '../../i18n/locale';
 import { PointerActions, type ControlAction } from './pointer-actions';
 
 /** Scene-owned DOM adapter; game objects never see DOM events or pointer identifiers. */
@@ -14,7 +15,10 @@ export class TouchControls {
     if (!host) throw new Error('Game host missing');
     this.host = host;
     this.root.className = 'touch-controls';
-    this.root.setAttribute('aria-label', 'Touch-Steuerung');
+    this.root.setAttribute('aria-label', t('touchControls'));
+    const unsubscribe = onLanguageChange(() => this.localize());
+
+    this.abort.signal.addEventListener('abort', unsubscribe, { once: true });
     this.root.innerHTML = markup();
     host.parentElement?.append(this.root);
     this.bindPointers();
@@ -136,7 +140,19 @@ export class TouchControls {
   setActionLabel(label: 'Sprung' | 'Weiter') {
     const button = this.root.querySelector<HTMLButtonElement>('[data-control="jump"]');
 
-    if (button && button.textContent !== label) button.textContent = label;
+    if (button && button.textContent !== translateExact(label))
+      button.textContent = translateExact(label);
+  }
+
+  private localize() {
+    this.root.setAttribute('aria-label', t('touchControls'));
+
+    for (const button of Array.from(this.root.querySelectorAll('button'))) {
+      button.textContent = translateExact(button.textContent ?? '');
+      const label = button.getAttribute('aria-label');
+
+      if (label) button.setAttribute('aria-label', translateExact(label));
+    }
   }
 
   showRestart(available: boolean) {
@@ -176,12 +192,12 @@ function inside(rect: DOMRect, x: number, y: number) {
 // eslint-disable-next-line max-lines-per-function -- Die sechs beschrifteten Touch-Ziele bleiben als deklarativer zugänglicher Aufbau gemeinsam lesbar.
 function markup() {
   return `<div class="touch-directions">
-    <button type="button" data-control="up" aria-label="Hoch" aria-pressed="false">↑</button>
-    <button type="button" data-control="left" aria-label="Links" aria-pressed="false">←</button>
-    <button type="button" data-control="down" aria-label="Runter" aria-pressed="false">↓</button>
-    <button type="button" data-control="right" aria-label="Rechts" aria-pressed="false">→</button>
+    <button type="button" data-control="up" aria-label="${t('up')}" aria-pressed="false">↑</button>
+    <button type="button" data-control="left" aria-label="${t('left')}" aria-pressed="false">←</button>
+    <button type="button" data-control="down" aria-label="${t('down')}" aria-pressed="false">↓</button>
+    <button type="button" data-control="right" aria-label="${t('right')}" aria-pressed="false">→</button>
   </div><div class="touch-actions">
-    <button type="button" data-control="jump" aria-pressed="false">Weiter</button>
-    <button type="button" data-control="reset" aria-pressed="false" hidden>Neue Runde</button>
+    <button type="button" data-control="jump" aria-pressed="false">${t('continueLabel')}</button>
+    <button type="button" data-control="reset" aria-pressed="false" hidden>${t('newRoundLabel')}</button>
   </div>`;
 }

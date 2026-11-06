@@ -1,9 +1,9 @@
+import { t } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import { ARROW_LABELS, CHARM_LINES } from '../../content/reconciliation';
 import type { ReconciliationSnapshot } from '../domain/reconciliation';
 import { homecomingPositions } from '../content/homecoming-layout';
-
 /** Reading and timed input are visually separate; only the current arrow needs attention. */
 export class ReconciliationView {
   private readonly removeCompactListener: () => void;
@@ -18,7 +18,6 @@ export class ReconciliationView {
   private readonly timeTrack: Phaser.GameObjects.Rectangle;
   private readonly heartLabel: Phaser.GameObjects.Text;
   private readonly hearts: Phaser.GameObjects.Rectangle;
-
   // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau trennt Lesetext, große Tastenkachel, zugehörige Zeit und Herzfortschritt räumlich.
   constructor(scene: Phaser.Scene, width: number, floorY: number) {
     this.root = scene.add.container(0, 0).setDepth(14).setVisible(false);
@@ -40,7 +39,6 @@ export class ReconciliationView {
     const heartTrack = scene.add.rectangle(60, 331, 200, 8, 0x66554e).setOrigin(0, 0.5);
 
     this.heartLabel = scene.add.text(60, 311, '', style(12));
-
     this.hearts = scene.add.rectangle(60, 331, 1, 8, 0xd99b9c).setOrigin(0, 0.5);
     this.affection = scene.add
       .text(homecomingPositions(width).pixelSeatX, floorY - 120, '', style(18))
@@ -121,63 +119,62 @@ function style(size: number) {
   return { fontFamily: 'monospace', fontSize: `${size}px`, color: '#fff1cf', lineSpacing: 8 };
 }
 
-// eslint-disable-next-line max-lines-per-function -- Die kurzen sichtbaren Texte bilden eine flache Auswahl aller Spiel- und Ergebniszustände.
 function charmText(s: ReconciliationSnapshot) {
-  if (s.stage === 'failed')
-    return 'VERSÖHNUNG GESCHEITERT\nSara: Heute hilft auch dein schönstes Schnurren nicht.\nR: Neue Runde';
+  if (s.stage === 'failed') return t('stillInTroubleSaraNotEven');
 
-  if (s.stage === 'complete')
-    return 'VERSÖHNT\nSara: Na komm her, du kleiner Chaoskater.\nR: Neue Runde';
+  if (s.stage === 'complete') return t('forgivenSaraComeHereYouLittle');
 
-  if (s.stage === 'finale') return 'VERSÖHNUNG GELUNGEN\nSara streichelt Pixel. Alles wieder gut.';
+  if (s.stage === 'finale') return t('allForgivenSaraPetsPixelPeace');
 
   if (s.stage === 'input')
-    return `PFEILTASTE DRÜCKEN\nTaste ${s.step + 1} von ${s.length} · Versuche: ${s.attemptsLeft}`;
+    return t('pressTheArrowStepOfAttempts', { v0: s.step + 1, v1: s.length, v2: s.attemptsLeft });
 
-  if (s.stage === 'cue') return 'BEREIT …\nGleich erscheint die nächste Pfeiltaste.';
+  if (s.stage === 'cue') return t('getReadyTheNextArrowIs');
 
   return readingText(s);
 }
 
 function readingText(s: ReconciliationSnapshot) {
-  if (s.stage === 'reading')
-    return 'PIXELS CHARME-OFFENSIVE\nDrücke die große Pfeiltaste. Zwei Versuche pro Herz.\nSara: Na, kannst du mich wieder um die Pfote wickeln?\n\nLEERTASTE: Ich bin bereit';
+  if (s.stage === 'reading') return t('pixelSCharmOffensivePressThe');
 
-  return `${feedbackText(s.feedback)} · Versuche übrig: ${s.attemptsLeft}\n${saraLine(s)}\n\nLEERTASTE: Weiter`;
+  return t('attemptsLeftSpaceContinue', {
+    v0: feedbackText(s.feedback),
+    v1: s.attemptsLeft,
+    v2: saraLine(s),
+  });
 }
 
 function feedbackText(feedback: ReconciliationSnapshot['feedback']) {
   return {
-    wrong: 'Falsche Taste. Kein Herz verloren.',
-    timeout: 'Zeit vorbei. Kein Herz verloren.',
-    sequence: 'Folge geschafft! Ein Herz mehr.',
+    wrong: t('wrongArrowNoHeartLost'),
+    timeout: t('timeSUpNoHeartLost'),
+    sequence: t('sequenceCompleteOneMoreHeart'),
     none: '',
-    correct: 'Richtig!',
+    correct: t('correct'),
   }[feedback];
 }
 
 function saraLine(s: ReconciliationSnapshot) {
-  if (s.feedback === 'wrong' || s.feedback === 'timeout')
-    return 'Sara: Ganz ruhig. Versuch es noch einmal.';
+  if (s.feedback === 'wrong' || s.feedback === 'timeout') return t('saraEasyNowGiveItAnother');
 
-  return `Sara: ${CHARM_LINES[s.level][s.successes % 2]}`;
+  return t('saraLabel046', { v0: CHARM_LINES[s.level][s.successes % 2] });
 }
 
 function affectionText(s: ReconciliationSnapshot) {
   if (s.stage === 'finale' || s.stage === 'complete')
-    return `${'♥ '.repeat(s.required).trim()}\nStreicheln`;
+    return t('pets', { v0: '♥ '.repeat(s.required).trim() });
 
-  if (s.feedback === 'sequence') return '♥ · Anschmiegen';
+  if (s.feedback === 'sequence') return t('nuzzle');
 
-  return s.feedback === 'correct' ? 'Prrrr …' : '';
+  return s.feedback === 'correct' ? t('purr') : '';
 }
 
 function isHint(line: string) {
-  return line.startsWith('LEERTASTE:') || line.startsWith('R:');
+  return line.startsWith(t('space')) || line.startsWith(t('rNewRound'));
 }
 
 function quotedLine(line: string | undefined) {
-  return line ? `Sara: „${line.slice('Sara: '.length)}“` : '';
+  return line ? t('saraLabel049', { v0: line.slice('Sara: '.length) }) : '';
 }
 
 function heartText(s: ReconciliationSnapshot) {

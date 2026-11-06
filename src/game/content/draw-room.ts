@@ -1,3 +1,4 @@
+import { translateExact, onLanguageChange } from '../../i18n/locale';
 import type Phaser from 'phaser';
 import type { RoomDefinition } from './definitions';
 import { ASSETS } from '../assets/definitions';
@@ -29,12 +30,16 @@ export function drawRoom(scene: Phaser.Scene, room: RoomDefinition) {
       const b = decoration.bounds;
 
       rect(b.x, b.y, b.width, b.height, decoration.color);
-    } else
-      scene.add.text(decoration.x, decoration.y, decoration.text, {
+    } else {
+      const text = scene.add.text(decoration.x, decoration.y, translateExact(decoration.text), {
         fontFamily: 'monospace',
         fontSize: `${decoration.size}px`,
         color: `#${decoration.color.toString(16).padStart(6, '0')}`,
       });
+      const unsubscribe = onLanguageChange(() => text.setText(translateExact(decoration.text)));
+
+      scene.events.once('shutdown', unsubscribe);
+    }
   }
 
   for (const platform of room.platforms) {

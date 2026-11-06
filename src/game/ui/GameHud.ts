@@ -1,27 +1,25 @@
+import { t, translateExact } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { HudState } from './hud-state';
-
 const ROUND_STATUS = {
-  time: 'Noch etwas Zeit',
-  soon: 'Sara könnte bald kommen',
-  imminent: 'Jeden Moment …',
-  home: 'Sara ist zu Hause! · R: Neue Runde',
+  time: t('someTimeLeft'),
+  soon: t('saraMightBeHomeSoon'),
+  imminent: t('anyMomentNow'),
+  home: t('saraIsHomeRNewRound'),
 } as const;
-
 const STATUS: Record<HudState['activity'], string> = {
-  idle: 'PIXEL · HOME ALONE',
-  climbing: 'PIXEL · CURTAIN CLIMBING',
-  sliding: 'PIXEL · VORHANG RUTSCHEN',
-  scratching: 'PIXEL · SOFA KRATZEN',
-  nibbling: 'PIXEL · KATZENGRAS KNABBERN',
-  wobbling: 'PIXEL · VORSICHT, DER TOPF WACKELT!',
+  idle: t('pixelHomeAlone'),
+  climbing: t('pixelClimbingTheCurtain'),
+  sliding: t('pixelSlidingDownTheCurtain'),
+  scratching: t('pixelScratchingTheSofa'),
+  nibbling: t('pixelNibblingCatGrass'),
+  wobbling: t('pixelCarefulThatPotIsWobbling'),
 };
-
 const HOME_STATUS = {
-  returning: 'Sara kommt herein … · R: Neue Runde',
-  reaction: 'Sara schaut sich um … · R: Neue Runde',
-  reconciliation: 'Versöhnung · Pfeiltasten laut Anzeige · R: Neue Runde',
+  returning: t('saraIsComingInRNew'),
+  reaction: t('saraIsLookingAroundRNew'),
+  reconciliation: t('makeAmendsFollowTheArrowsR'),
 };
 
 /** A scene-owned view; no input, physics, scoring or gameplay model references. */
@@ -35,17 +33,21 @@ export class GameHud {
   private readonly angerBar: Phaser.GameObjects.Graphics;
   private ratio = NaN;
   private color = NaN;
-
   // eslint-disable-next-line max-lines-per-function -- Die deklarative HUD-Hierarchie mit Positionen und Textstilen bleibt gemeinsam sichtbar.
   constructor(
     scene: Phaser.Scene,
-    layout: { readonly climbHint: { readonly x: number; readonly y: number } },
+    layout: {
+      readonly climbHint: {
+        readonly x: number;
+        readonly y: number;
+      };
+    },
   ) {
     this.root = scene.add.container(0, 0).setScrollFactor(0).setDepth(10);
     const textStyle = { fontFamily: 'monospace', fontSize: '12px', color: '#584637' };
 
     this.climbHint = scene.add
-      .text(layout.climbHint.x, layout.climbHint.y, '↑ KLETTERN\nLOSLASSEN: RUTSCHEN', {
+      .text(layout.climbHint.x, layout.climbHint.y, t('climbLetGoSlide'), {
         ...textStyle,
         color: '#fff1cf',
         backgroundColor: '#615047',
@@ -61,25 +63,28 @@ export class GameHud {
   }
 
   render(state: HudState) {
+    this.climbHint.setText(translateExact(t('climbLetGoSlide')));
     this.renderRound(state);
-    this.scoreText.setText(scoreCaption(state));
+    this.scoreText.setText(translateExact(scoreCaption(state)));
     this.climbHint.setAlpha(state.nearCurtain ? 1 : 0.65);
     this.climbHint.setVisible(state.round.phase === 'chaos');
     this.renderAnger(state);
   }
 
   showResult(outcome: 'success' | 'failed') {
-    this.roundText.setText('Runde beendet · R: Neue Runde');
+    this.roundText.setText(translateExact(t('roundOverRNewRound')));
     this.status.setText(
-      outcome === 'success' ? 'PIXEL · VERSÖHNT' : 'PIXEL · VERSÖHNUNG GESCHEITERT',
+      translateExact(outcome === 'success' ? t('pixelForgiven') : t('pixelStillInTrouble')),
     );
   }
 
   private renderRound(state: HudState) {
     this.status.setText(
-      state.round.phase === 'chaos' ? STATUS[state.activity] : 'PIXEL · SARA IST DA',
+      translateExact(state.round.phase === 'chaos' ? STATUS[state.activity] : t('pixelSaraIsHome')),
     );
-    this.roundText.setText(state.round.paused ? 'Pause · Runde angehalten' : roundStatus(state));
+    this.roundText.setText(
+      translateExact(state.round.paused ? t('pausedRoundOnHold') : roundStatus(state)),
+    );
   }
 
   private renderAnger(state: HudState) {
@@ -121,7 +126,7 @@ function roundStatus(state: HudState) {
 }
 
 function scoreCaption(state: HudState) {
-  const label = state.round.phase === 'chaos' ? 'SARAS ÄRGER (VORSCHAU)' : 'SARAS ÄRGER';
+  const label = state.round.phase === 'chaos' ? t('saraSMoodPreview') : t('saraSMood');
 
-  return `CHAOS: ${state.score}  ·  ${label}: ${state.anger.label}`;
+  return t('chaos', { v0: state.score, v1: label, v2: state.anger.label });
 }
