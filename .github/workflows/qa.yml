@@ -90,7 +90,8 @@ permissions:
 
 concurrency:
   group: qa-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Superseded PR/main runs may stop; manual and release gates must finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 
 jobs:
   quality:
@@ -179,6 +180,14 @@ jobs:
         run: |
           case "$E2E_REPEATS" in 1|2|3) ;; *) echo 'Ungültige Durchlaufzahl'; exit 1 ;; esac
           npm run test:e2e -- --repeat-each="$E2E_REPEATS" --shard="$SHARD/2"
+      - name: Geprüften Pages-Build bereitstellen
+        if: matrix.shard == 1 && env.E2E_FULL_ROUND == '1'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qa-pages-dist-${{ github.sha }}
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
       - name: Browser-Testzusammenfassung
         id: browser-summary
         if: ${{ always() && hashFiles('test-reports/playwright.xml') != '' }}
