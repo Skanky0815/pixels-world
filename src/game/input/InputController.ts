@@ -1,3 +1,4 @@
+import { TouchControls } from './TouchControls';
 import { DIRECTIONS } from '../../content/reconciliation';
 import Phaser from 'phaser';
 import { InputFrames, type InputState } from './input-state';
@@ -12,7 +13,7 @@ const BLOCKED_INPUT: InputState = Object.freeze({
   active: false,
 });
 
-/** Owns keyboard bindings and their lifecycle; consumers only receive InputState. */
+/** Owns keyboard and pointer bindings and their lifecycle; consumers only receive InputState. */
 export class InputController {
   private readonly keyboard: Phaser.Input.Keyboard.KeyboardPlugin;
   private readonly keys: Record<
@@ -21,6 +22,7 @@ export class InputController {
   >;
 
   private readonly frames = new InputFrames();
+  private readonly touch = new TouchControls();
 
   // eslint-disable-next-line max-lines-per-function -- Die sechs deklarativen Tastenbindungen bleiben gemeinsam neben der zugehörigen Blur-Anmeldung.
   constructor(private readonly scene: Phaser.Scene) {
@@ -40,7 +42,7 @@ export class InputController {
   }
 
   read(frame: number) {
-    if (document.activeElement?.closest('a, button, input, textarea, select')) {
+    if (this.focusBlocked()) {
       this.release();
 
       return BLOCKED_INPUT;
@@ -49,17 +51,37 @@ export class InputController {
     return this.frames.read(frame, () => this.readKeys());
   }
 
+  private focusBlocked() {
+    const focused = document.activeElement;
+
+    return (
+      !!focused?.closest('a, button, input, textarea, select') &&
+      !focused.closest('.touch-controls')
+    );
+  }
+
   // eslint-disable-next-line max-lines-per-function -- Ein deklarativer Snapshot konsumiert jede Tastenflanke genau einmal pro Frame.
   private readKeys() {
     const k = this.keys;
+    const touch = this.touch.read();
+    const held = (action: keyof typeof k) => k[action].isDown || touch.held.includes(action);
+    const space = this.readSpace();
 
     return {
-      horizontal: Number(k.right.isDown) - Number(k.left.isDown),
-      vertical: Number(k.down.isDown) - Number(k.up.isDown),
-      ...this.readSpace(),
-      arrows: Object.freeze(DIRECTIONS.filter((direction) => freshDown(k[direction]))),
-      resetPressed: Phaser.Input.Keyboard.JustDown(k.reset),
-      active: [k.left, k.right, k.up, k.down, k.jump].some((key) => key.isDown),
+      horizontal: Number(held('right')) - Number(held('left')),
+      vertical: Number(held('down')) - Number(held('up')),
+      jumpPressed: space.jumpPressed || touch.pressed.includes('jump'),
+      confirmPressed: space.confirmPressed || touch.pressed.includes('jump'),
+      arrows: Object.freeze(
+        DIRECTIONS.filter(
+          (direction) => freshDown(k[direction]) || touch.pressed.includes(direction),
+        ),
+      ),
+      resetPressed: Phaser.Input.Keyboard.JustDown(k.reset) || touch.pressed.includes('reset'),
+      active:
+        Object.values(k).some((key) => key.isDown) ||
+        touch.held.length > 0 ||
+        touch.pressed.length > 0,
     };
   }
 
@@ -71,10 +93,12 @@ export class InputController {
 
   release() {
     this.keyboard.resetKeys();
+    this.touch.clear();
     this.frames.clear();
   }
 
   destroy() {
+    this.touch.destroy();
     this.scene.game.events.off(Phaser.Core.Events.BLUR, this.release, this);
 
     for (const key of Object.values(this.keys)) {

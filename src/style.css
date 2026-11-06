@@ -222,3 +222,77 @@ kbd {
 .start-goal p {
   margin: 4px 0;
 }
+
+.touch-controls,
+.touch-prompt {
+  display: none;
+}
+@media (any-pointer: coarse) {
+  body {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .touch-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .touch-controls button {
+    min-width: 48px;
+    min-height: 48px;
+    border: 2px solid #a78d77;
+    border-radius: 8px;
+    background: #403a35;
+    color: #fff1cf;
+    font: inherit;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .touch-controls button[aria-pressed='true'] {
+    background: #765d43;
+    border-color: #edc37c;
+  }
+  .touch-controls button:focus-visible {
+    outline: 2px solid #edc37c;
+    outline-offset: 2px;
+  }
+  .touch-directions {
+    display: grid;
+    grid-template-columns: repeat(3, 48px);
+    gap: 4px;
+  }
+  .touch-directions [data-control='up'] {
+    grid-column: 2;
+  }
+  .touch-directions [data-control='left'] {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .touch-directions [data-control='down'] {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .touch-directions [data-control='right'] {
+    grid-column: 3;
+    grid-row: 2;
+  }
+  .touch-actions {
+    display: grid;
+    gap: 8px;
+    width: min(150px, 42%);
+  }
+  .touch-actions button {
+    padding: 8px;
+    font-size: 14px;
+  }
+  .touch-prompt {
+    display: block;
+  }
+  .keyboard-prompt,
+  .keyboard-help {
+    display: none;
+  }
+}

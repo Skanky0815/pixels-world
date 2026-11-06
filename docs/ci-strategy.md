@@ -3,7 +3,7 @@
 Der Ablauf hat vier Stufen:
 
 1. **PR:** Quality mit Formatierung, Lint, CI-Gate-/Hook-Tests, Unit-Tests, Typprüfung, Build, Audit
-   und drei Smoke-Szenarien auf einem Runner als Grundlage für die Review.
+   und vier Smoke-Szenarien auf einem Runner als Grundlage für die Review.
 2. **Merge:** Quality ohne erneute Browsertests auf dem tatsächlichen `main`-Commit. Ein
    Squash-/Merge-Commit kann vom PR-Stand abweichen.
 3. **Manueller Release:** bereits erfolgreiche Main-QA für genau diesen aktuellen
@@ -32,13 +32,13 @@ nötig. Manueller QA-Start bleibt zur Diagnose ohne Veröffentlichung verfügbar
 ## Lokale Verantwortung und Kosten (#126)
 
 Vor Erstellen/Aktualisieren eines Code-/Tooling-PRs führt `npm run check:pr` die
-vollständige Projekt-QA und alle 48 Browser-Szenarien lokal aus. Der native
+vollständige Projekt-QA und alle Browser-Szenarien lokal aus. Der native
 `pre-push`-Hook lässt sich mit `npm run hooks:install` ausdrücklich aktivieren;
 bestehende Hook-Konfigurationen werden nicht überschrieben. GitHub-API-Änderungen
 lösen ihn nicht aus: gleicher lokaler Prüfbefehl und tatsächlicher Nachweis im PR
 bleiben erforderlich. Details und Grenzen stehen in CONTRIBUTING.md.
 
-PRs verwenden nur einen Browser-Runner mit drei getaggten Smoke-Szenarien; Main
+PRs verwenden nur einen Browser-Runner mit vier getaggten Smoke-Szenarien; Main
 startet keinen Browser-Runner. Vollständige manuelle und Release-QA verwendet vier
 Shards. Der Sammelcheck behält seinen Namen und unterscheidet absichtlich geplantes
 Auslassen auf Main von fehlgeschlagenen/abgebrochenen/übersprungenen notwendigen
