@@ -1,8 +1,8 @@
 # Browser-Szenarien
 
-Die Specs sind fachlich aufgeteilt: `movement`, `lifecycle`, `rendering`, `couch`, `curtain`, `plant`, `vases`, `content`, `hud`, `footer`, `round`, `pixel-return`, `reconciliation`, `start-screen`, `feedback`, `main-goal` und `build-isolation`. `support.ts` enthält die gemeinsame Browsergesundheits-/Clock-Fixture und Eingabehelfer. Jede Spec bleibt unabhängig; alle verwenden echte Tastatureingaben und ausschließlich lesbare Snapshots.
+Die Specs sind fachlich aufgeteilt: `movement`, `lifecycle`, `rendering`, `couch`, `curtain`, `plant`, `vases`, `content`, `hud`, `footer`, `round`, `pixel-return`, `reconciliation`, `start-screen`, `feedback`, `main-goal`, `legal` und `build-isolation`. `support.ts` enthält die gemeinsame Browsergesundheits-/Clock-Fixture und Eingabehelfer. Jede Spec bleibt unabhängig; alle verwenden echte Tastatureingaben und ausschließlich lesbare Snapshots.
 
-Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. Playwright verteilt die Szenarien weiterhin automatisch auf zwei CI-Shards; die Dateien erzeugen keine zusätzlichen Jobs. Die Suite umfasst 45 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
+Gezielt starten: `npm run test:e2e -- tests/e2e/movement.spec.ts` oder `npm run test:e2e -- --grep 'Sofa:'`. Vollständige Suite: `npm run test:e2e`. Playwright verteilt die Szenarien weiterhin automatisch auf zwei CI-Shards; die Dateien erzeugen keine zusätzlichen Jobs. Die Suite umfasst 48 Szenarien einschließlich Rundenende, Fokus- und Visibility-Pause.
 Headless-Chromium meldet Hintergrundseiten weiterhin als sichtbar. Der Visibility-Test
 simuliert deshalb ausschließlich `document.hidden` und das Browserereignis, ohne
 Spielzustand zu setzen; echte Tabwechsel gehören zusätzlich zum manuellen Spieltest.
@@ -14,7 +14,7 @@ E2E-Build `?round-profile=fast` auf. Die übrigen Szenarien behalten die normale
 Rundengrenzen. Die Testkonfiguration entsteht beim Build; im Produktionsbuild werden
 Einstieg und Query-Auswertung entfernt. Es gibt keine schreibbare Browser-Schnittstelle.
 
-`npm run test:e2e:full` startet alle 45 Szenarien mit echten Produktionszeiten; der
+`npm run test:e2e:full` startet alle 48 Szenarien mit echten Produktionszeiten; der
 identische Rundentest ist dann `@slow` markiert und dauert im Spiel 60–105 Sekunden.
 `npm run test:e2e:slow` wählt diese sieben vollständigen Heimkehr-/Versöhnungstests. Beide Befehle setzen vor
 Test und Vite-Build `E2E_FULL_ROUND=1`. Die Skripte verwenden die Shell-Schreibweise
@@ -84,3 +84,10 @@ früher Heimkehrtrigger, Pause, Abbruch des Kontaktfortschritts, Rückweg zu Sar
 und Neustart. Der vorhandene Rundentest prüft weiterhin den Timer-Fallback
 mit nicht erreichtem Ziel. Die Deadline-/Ziel-Rennen sind exakt in Domain-Tests
 abgedeckt; kein schreibbarer Browserzustand wird ergänzt.
+
+`legal.spec.ts` prüft echte lokale Rechtsseiten im selben Tab mit Rückkehr zur Einführung, direkte Aufrufe
+im Root- und Pages-Unterpfad, schmale Darstellung und die Rücklinks. Zusätzlich
+beobachtet ein Produktionslauf externe HTTP-Anfragen, Cookies, Local Storage,
+Session Storage und IndexedDB. Rechtsseiten laden keinen Spielcode. Externe
+Rechts-/Hostingquellen werden in der Dokumentation verlinkt, nicht durch Tests
+abgerufen; die Suite veröffentlicht keine Kontaktanfragen oder Issues.
