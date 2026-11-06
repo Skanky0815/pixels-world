@@ -60,6 +60,12 @@ on:
       - '.githooks/**'
   workflow_dispatch:
     inputs:
+      scope:
+        description: Vollprüfung oder kurze Prüfung eines vorbereiteten Versions-PRs
+        type: choice
+        options: [all, smoke]
+        default: all
+        required: true
       repetitions:
         description: Browserdurchläufe pro Szenario (Stabilitätsprüfung)
         type: choice
@@ -90,7 +96,7 @@ on:
 env:
   PIXELS_RELEASE_TAG: ${{ inputs.release_tag || '' }}
   # Full reusable QA overrides event defaults; main pushes intentionally omit browsers.
-  E2E_SCOPE: ${{ inputs.full_round && 'all' || github.event_name == 'pull_request' && 'smoke' || github.event_name == 'push' && 'none' || 'all' }}
+  E2E_SCOPE: ${{ inputs.full_round && 'all' || github.event_name == 'pull_request' && 'smoke' || github.event_name == 'push' && 'none' || inputs.scope == 'smoke' && 'smoke' || 'all' }}
   E2E_REPEATS: ${{ inputs.repetitions || '1' }}
   E2E_FULL_ROUND: ${{ (inputs.full_round || inputs.round_mode == 'full') && '1' || '0' }}
 
@@ -164,8 +170,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: ${{ fromJSON(github.event_name == 'pull_request' && !inputs.full_round && '[1]' || '[1,2,3,4]') }}
-        total: ${{ fromJSON(github.event_name == 'pull_request' && !inputs.full_round && '[1]' || '[4]') }}
+        shard: ${{ fromJSON((github.event_name == 'pull_request' || inputs.scope == 'smoke') && !inputs.full_round && '[1]' || '[1,2,3,4]') }}
+        total: ${{ fromJSON((github.event_name == 'pull_request' || inputs.scope == 'smoke') && !inputs.full_round && '[1]' || '[4]') }}
         # Keep this version and the image digest aligned with package-lock.json.
         playwright: ['1.64.1']
     steps:

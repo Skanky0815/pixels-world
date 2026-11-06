@@ -72,12 +72,12 @@ gezieltem `touchEnd` frei.
 
 Maßgeblich ist [.github/workflows/qa.yml](../.github/workflows/qa.yml):
 
-| Anlass          | Umfang                                                    |
-| --------------- | --------------------------------------------------------- |
-| Pull Request    | Quality und getaggte `@smoke`-Auswahl                     |
-| Main-Push       | Quality; Browser bewusst nicht erneut geplant             |
-| Manuelle QA     | Vollständige Suite, wählbares Rundenprofil/Wiederholungen |
-| Release-Rollout | Vollständige Suite mit Produktionszeiten                  |
+| Anlass          | Umfang                                                           |
+| --------------- | ---------------------------------------------------------------- |
+| Pull Request    | Quality und getaggte `@smoke`-Auswahl                            |
+| Main-Push       | Quality; Browser bewusst nicht erneut geplant                    |
+| Manuelle QA     | Standardmäßig Vollprüfung; Smoke-Profil für Versions-PRs wählbar |
+| Release-Rollout | Vollständige Suite mit Produktionszeiten                         |
 
 Die lokale Vollprüfung trägt die breite PR-Abdeckung. Mehr Shards verkürzen
 Wartezeit, sparen aber nicht automatisch Runner-Minuten. Matrix, Worker,
@@ -154,3 +154,6 @@ Versionen und Findings nicht in Markdown spiegeln.
 
 Spielregeln und Parameter werden in Content/Domain gepflegt, nicht als zweite
 Zahlentabelle hier. Release-Identität und Wiederanlauf: [Deployment](deployment.md).
+Die CI-Gate-Tests simulieren auch QA-Ereignisse, veraltete Versuche, Main-Wechsel,
+mehrdeutige Kandidaten und vorhandene Tags/Release-Metadaten. Sie führen keine
+GitHub-Schreiboperationen oder echten Releases aus.

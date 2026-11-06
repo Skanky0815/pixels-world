@@ -32,6 +32,15 @@ for (const [event, profile, count, active] of [
   }
 }
 
+for (const full of [false, true]) {
+  const github = { event_name: 'workflow_dispatch' };
+  const inputs = { scope: 'smoke', full_round: full };
+
+  assert.equal(run(scope, github, inputs), full ? 'all' : 'smoke');
+  assert.deepEqual(run(shard, github, inputs), full ? [1, 2, 3, 4] : [1]);
+  assert.deepEqual(run(total, github, inputs), full ? [4] : [1]);
+}
+
 const gate = source
   .split('      - name: Qualität und geplanter Browserumfang müssen erfolgreich sein')[1]
   .split('        run: |\n')[1]
@@ -49,4 +58,6 @@ for (const profile of ['smoke', 'all', 'none']) {
     }
   }
 }
-log('QA-Umfang: 6 Event-/Profilfälle und 36 tatsächliche Sammel-Gate-Kombinationen bestanden.');
+log(
+  'QA-Umfang: Event-/Profilfälle inklusive vorbereiteter Versions-PRs und 36 tatsächliche Sammel-Gate-Kombinationen bestanden.',
+);
