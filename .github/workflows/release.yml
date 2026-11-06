@@ -39,8 +39,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_MODE: ${{ inputs.mode }}
         run: bash .github/scripts/verify-release-source.sh
+      - name: Ausstehenden Versions-Kandidaten auflösen
+        if: inputs.mode == 'prepare'
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/prepare-release-candidate.sh
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
+        if: inputs.mode == 'publish' || steps.candidate.outputs.prepare_needed == 'true'
         with:
           token: ${{ github.token }}
           target-branch: main
@@ -61,9 +68,18 @@ jobs:
           CREATED: ${{ steps.release.outputs.release_created }}
           TAG: ${{ steps.release.outputs.tag_name }}
           SHA: ${{ steps.release.outputs.sha }}
+          PR: ${{ steps.release.outputs.pr }}
         run: |
           echo "Release-Modus: $MODE · Release erstellt: ${CREATED:-false}" >> "$GITHUB_STEP_SUMMARY"
           echo "Tag: $TAG · Commit: $SHA" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$MODE" = prepare ]; then
+            if [ -n "$PR" ] && [ "$PR" != null ]; then
+              number=$(jq -er '.number' <<< "$PR")
+              echo "Versions-PR #$number vorbereitet/aktualisiert: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/pull/$number. QA, Review und Merge erforderlich; danach publish." >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo 'Kein neuer Versions-PR gemeldet. Kandidatenhinweis oben und Release-Please-Log prüfen (bereits aktuell oder keine releaserelevanten Änderungen).' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          fi
           if [ "$CREATED" != true ]; then
             echo 'Kein neues Release: kein automatischer Pages-Rollout.' >> "$GITHUB_STEP_SUMMARY"
           fi

@@ -16,7 +16,11 @@ Der Ablauf hat vier Stufen:
 Der Versions-PR-Prozess bleibt: `prepare` erstellt/aktualisiert den Release-Please-PR;
 dieser wird geprüft und gemerged. `publish` muss auf dem ausstehenden Versions-Merge
 starten. Normale Feature-/CI-Merges sind keine Versions-Merges. Beide Modi prüfen
-zunächst die vorhandene erfolgreiche Main-QA. Fehlende, laufende, abgebrochene oder
+zunächst die vorhandene erfolgreiche Main-QA. Bei älteren unveröffentlichten pending-Kandidaten löst prepare sie nach überprüfter
+Historie und Abwesenheit von Tag/Release nachvollziehbar ab, bevor Release Please
+einen aktuellen Versions-PR erzeugt (#128). Ein bereits aktueller Kandidat wird
+stattdessen als No-op mit PR/Version und Hinweis auf publish angezeigt.
+Fehlende, laufende, abgebrochene oder
 fehlgeschlagene QA sowie ein inzwischen anderer Main-Commit blockieren früh mit
 verständlicher Fehlermeldung. Der Releasejob benötigt dafür `actions: read`.
 
@@ -70,7 +74,9 @@ manuelle und aufgerufene Release-QA darf dies nicht. Kein notwendiger Job darf
 [Spielrelease 42176256152](https://github.com/Skanky0815/pixels-world/actions/runs/42176256152)
 bestand die gesamte vollständige QA und scheiterte danach am Versions-Merge-Gate:
 `46b8f78` war der CI-Fix #121, kein ausstehender Versions-Merge. Die Prüfung war
-sachlich richtig, aber zu spät und ohne hilfreiche Fehlermeldung. Sie läuft jetzt
+sachlich richtig, aber zu spät und ohne hilfreiche Fehlermeldung. Zugleich blockierte
+der alte unveröffentlichte pending-Kandidat neue prepare-Läufe; dieser zusätzliche
+Wiederanlauffall wird durch den kontrollierten Ablösepfad aus #128 abgedeckt. Sie läuft jetzt
 vor der Release-Aktion, ohne vorherige zusätzliche Vollprüfung.
 
 Der vorige Ablauf wiederholte schon vor #121 Installationen und komplette QA-Suites.
