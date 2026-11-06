@@ -21,6 +21,16 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
+    ...(process.env.E2E_SCOPE === 'smoke'
+      ? []
+      : [
+          {
+            command: 'npm run dev -- --port 4176 --strictPort',
+            url: 'http://127.0.0.1:4176/animation-compare.html',
+            reuseExistingServer: false,
+            timeout: 60_000,
+          },
+        ]),
     {
       command:
         'npm run build:e2e && npm exec vite preview -- --host 127.0.0.1 --port 4174 --strictPort --outDir dist-e2e',

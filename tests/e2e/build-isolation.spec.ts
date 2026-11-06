@@ -55,6 +55,8 @@ test(
         '/animation-compare.html',
         '/src/dev/animation-compare.ts',
         '/src/dev/sara-compare.ts',
+        '/src/dev/pixel-compare.ts',
+        '/src/dev/preview-playback.ts',
         '/src/dev/animation-compare.css',
         '/src/animation-compare.ts',
         '/src/animation-compare.css',

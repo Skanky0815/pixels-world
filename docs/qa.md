@@ -35,8 +35,9 @@ npm run test:e2e:report
 
 Auf Linux kann `npx playwright install --with-deps chromium` erforderlich sein.
 Playwright startet eigene Vorschauen auf 4174 (E2E) und 4175 (Produktion mit
-Pages-Unterpfad). Beide Ports müssen frei sein; fremde Server werden nicht
-übernommen. Der Dev-Server ist davon unabhängig.
+Pages-Unterpfad). Vollständige Läufe starten zusätzlich einen Dev-Server auf 4176
+für den Animationsvergleich; CI-Smoke lässt ihn aus. Diese Ports müssen frei sein;
+fremde Server werden nicht übernommen. Der persönliche Dev-Server bleibt unabhängig.
 
 ## Browser-Vertrag und Rundenprofile
 
