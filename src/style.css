@@ -185,13 +185,17 @@ kbd {
   }
 }
 
-.feedback-link {
+.footer-meta {
   flex-basis: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: baseline;
-  gap: 4px 12px;
+  gap: 2px 12px;
+}
+.footer-meta .build-info {
+  text-align: right;
+}
+.feedback-link {
   font-size: 12px;
 }
 .feedback-link a {
@@ -202,7 +206,8 @@ kbd {
   outline: 2px solid #edc37c;
   outline-offset: 4px;
 }
-.feedback-link small {
+#feedback-note {
+  grid-column: 1 / -1;
   font-size: 11px;
   color: #c1afa0;
 }
