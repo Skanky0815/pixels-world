@@ -115,6 +115,10 @@ export interface GameTestState {
     } | null;
   } | null;
   readonly couch: {
+    readonly texture: string;
+    readonly bodyWidth: number;
+    readonly bodyHeight: number;
+    readonly marks: readonly { readonly x: number; readonly y: number }[];
     readonly state: string;
     readonly damage: number;
     readonly events: number;

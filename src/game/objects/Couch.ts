@@ -1,5 +1,6 @@
+import { couchScratchPosition, couchScratchScale } from './couch-scratch-position';
 import type Phaser from 'phaser';
-import { PIXEL_ANIMATIONS } from '../actors/pixel-animations';
+import type { CouchAppearance } from '../assets/couch-appearance';
 import { DamageHistory } from '../domain/chaos-event';
 import { CouchScratching, type ScratchConfig } from '../interactions/couch-scratching';
 import {
@@ -17,6 +18,7 @@ export interface CouchConfig {
   readonly floorY: number;
   readonly reach: number;
   readonly rules: ScratchConfig;
+  readonly appearance?: CouchAppearance;
 }
 
 export class Couch implements Interactable, Destructible {
@@ -25,9 +27,8 @@ export class Couch implements Interactable, Destructible {
   readonly maximumScore: number;
   private readonly model: CouchScratching;
   private readonly history = new DamageHistory();
-  private readonly graphic: Phaser.GameObjects.Graphics;
-  private readonly marks: Phaser.GameObjects.Graphics;
-  private readonly paws: Phaser.GameObjects.Graphics;
+  private readonly graphic: Phaser.GameObjects.Image;
+  private readonly marks: Phaser.GameObjects.Container;
 
   private readonly config: CouchConfig;
 
@@ -39,24 +40,13 @@ export class Couch implements Interactable, Destructible {
     this.maximumScore = config.rules.maxDamage * config.rules.damageValue;
     const { x, y, width: w, height: h } = config.seat;
 
-    this.graphic = scene.add.graphics();
-    const rect = (dx: number, dy: number, width: number, height: number, color: number) =>
-      this.graphic.fillStyle(color).fillRect(x + dx, y + dy, width, height);
-
-    rect(10, -60, w - 22, 65, 0x687a63);
-    rect(18, -52, (w - 46) / 2, 46, 0x809077);
-    rect(w / 2 + 3, -52, (w - 46) / 2, 46, 0x809077);
-    rect(0, 0, w, h, 0x93a184);
-    rect(0, h, w, 32, 0x596d57);
-    rect(-8, -22, 24, 69, 0x72866b);
-    rect(w - 16, -22, 24, 69, 0x72866b);
-    rect(12, 60, 12, config.floorY - y - 60, 0x59443d);
-    rect(w - 24, 60, 12, config.floorY - y - 60, 0x59443d);
-    rect(38, -35, 47, 32, 0xd7ab71);
+    this.graphic = scene.add
+      .image(x - 8, y - 60, `couch-${config.appearance ?? 'cozy'}`)
+      .setOrigin(0, 0)
+      .setDisplaySize(w + 18, config.floorY - y + 60);
     this.platform = scene.add.rectangle(x + w / 2, y + h / 2, w, h, 0, 0);
     scene.physics.add.existing(this.platform, true);
-    this.marks = scene.add.graphics();
-    this.paws = scene.add.graphics();
+    this.marks = scene.add.container().setDepth(0.5);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die zusammengehörige Boden-/Sitzflächen- und Reichweitenprüfung bleibt als ein räumliches Prädikat sichtbar.
@@ -82,10 +72,7 @@ export class Couch implements Interactable, Destructible {
 
     if (event) this.drawDamage(context, event);
 
-    this.paws.clear();
     const scratching = this.model.snapshot().state === 'scratching';
-
-    if (scratching) this.drawPaws(context);
 
     return {
       action: scratching ? 'scratching' : 'idle',
@@ -94,45 +81,41 @@ export class Couch implements Interactable, Destructible {
     };
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Die begrenzten Koordinaten und drei zusammengehörigen Kratzlinien bleiben in einer Zeichenroutine.
   private drawDamage(context: InteractionContext, event: NonNullable<InteractionResult['event']>) {
-    const p = context.pixel,
-      s = this.config.seat;
+    const p = context.pixel;
+    const position = couchScratchPosition(this.config.seat, p.x, p.bottom, this.markPositions());
 
     this.history.record(event);
-    const x = Math.max(
-      s.x + 4,
-      Math.min(
-        p.x + (p.x > s.x + s.width / 2 ? -12 : 12) + (event.stage % 3) * 3,
-        s.x + s.width - 8,
-      ),
-    );
-    const y = p.bottom > s.y + s.height + 2 ? s.y + s.height + 10 : s.y - 39;
 
-    this.marks.lineStyle(2, 0xe3cba4);
-
-    for (let i = 0; i < 3; i++)
-      this.marks.lineBetween(x + i * 4, y, x + i * 4 - 4, y + 15 + event.stage);
+    if (position) this.addMark(position.x, position.y);
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Die gemeinsamen Posenparameter und beiden Pfotenlinien bleiben zusammen lesbar.
-  private drawPaws(context: InteractionContext) {
-    const p = context.pixel,
-      s = this.config.seat;
-    const scale = PIXEL_ANIMATIONS.scratch.scale;
-    const direction = p.x > s.x + s.width / 2 ? -1 : 1;
-    const lift = p.animationFrame % 2 === 0 ? 0 : 6;
-    const pawY = p.bottom - 16 * scale;
+  private addMark(x: number, y: number) {
+    this.marks.add(
+      this.graphic.scene.add
+        .image(x, y, 'couch-scratch')
+        .setOrigin(0.5, 0)
+        .setScale(couchScratchScale(this.config.seat.width)),
+    );
+  }
 
-    this.paws.lineStyle(3, 0xe3cba4);
+  private markPositions() {
+    return this.marks.list.map((mark) => {
+      const image = mark as Phaser.GameObjects.Image;
 
-    for (let i = 0; i < 2; i++)
-      this.paws.lineBetween(
-        p.x + direction * 9 * scale,
-        pawY - 4 + i * 4,
-        p.x + direction * 20 * scale,
-        pawY - (p.bottom > s.y + s.height + 2 ? 35 : 20) + lift + i * 4,
-      );
+      return { x: image.x, y: image.y };
+    });
+  }
+
+  private artSnapshot() {
+    const body = this.platform.body as Phaser.Physics.Arcade.StaticBody;
+
+    return {
+      texture: this.graphic.texture.key,
+      bodyWidth: body.width,
+      bodyHeight: body.height,
+      marks: this.markPositions(),
+    };
   }
 
   damageSnapshot() {
@@ -140,20 +123,18 @@ export class Couch implements Interactable, Destructible {
   }
 
   snapshot() {
-    return { ...this.model.snapshot(), ...this.damageSnapshot() };
+    return { ...this.model.snapshot(), ...this.damageSnapshot(), ...this.artSnapshot() };
   }
 
   reset() {
     this.model.reset();
     this.history.reset();
-    this.marks.clear();
-    this.paws.clear();
+    this.marks.removeAll(true);
   }
 
   destroy() {
     this.platform.destroy();
     this.graphic.destroy();
     this.marks.destroy();
-    this.paws.destroy();
   }
 }

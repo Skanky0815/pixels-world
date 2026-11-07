@@ -6,6 +6,7 @@ import { PLANT_NIBBLE } from '../../game/interactions/plant-nibbling.ts';
 const cozyCouch = {
   kind: 'couch',
   asset: 'couch-default',
+  appearance: 'cozy',
   capabilities: ['automatic', 'damage', 'platform'],
   geometry: { width: 254, height: 28, seatRise: 98 },
   reach: 20,
@@ -14,7 +15,7 @@ const cozyCouch = {
 
 export const OBJECTS = {
   'cozy-couch': cozyCouch,
-  'worn-couch': { ...cozyCouch, rules: { ...COUCH_SCRATCH, damageValue: 1 } },
+  'worn-couch': { ...cozyCouch, appearance: 'worn', rules: { ...COUCH_SCRATCH, damageValue: 1 } },
   'warm-curtain': {
     kind: 'curtain',
     asset: 'curtain-default',

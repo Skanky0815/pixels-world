@@ -1,3 +1,4 @@
+import type { CouchAppearance } from '../assets/couch-appearance.ts';
 import type { VaseAppearance } from '../assets/vase-appearance.ts';
 import type { GoalDefinition, ResolvedGoal } from '../domain/main-goal.ts';
 import type { AssetKey } from '../assets/definitions.ts';
@@ -18,6 +19,7 @@ export type ObjectDefinition =
   | (Base & {
       readonly kind: 'couch';
       readonly asset: 'couch-default';
+      readonly appearance?: CouchAppearance;
       readonly geometry: {
         readonly width: number;
         readonly height: number;

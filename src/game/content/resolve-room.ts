@@ -1,3 +1,4 @@
+import { isCouchAppearance } from '../assets/couch-appearance.ts';
 import { isVaseAppearance } from '../assets/vase-appearance.ts';
 import { ASSETS, type AssetKey } from '../assets/definitions.ts';
 import type { Bounds } from '../interactions/contracts.ts';
@@ -134,6 +135,9 @@ function validateGeometry(
 }
 
 function validateCouch(value: Extract<ObjectDefinition, { kind: 'couch' }>, path: string) {
+  if (value.appearance !== undefined && !isCouchAppearance(value.appearance))
+    fail(`${path}.appearance`, 'unknown couch appearance');
+
   number(value.geometry.seatRise, `${path}.geometry.seatRise`, 60);
 
   if (value.geometry.height + 32 > value.geometry.seatRise)
@@ -375,7 +379,7 @@ class RoomResolver {
       {
         x: seat.x - 8,
         y: seat.y - 60,
-        width: seat.width + 16,
+        width: seat.width + 18,
         height: d.geometry.seatRise + 60,
       },
       room,
@@ -387,7 +391,14 @@ class RoomResolver {
     return {
       ...base,
       kind: 'couch',
-      config: { id: instance.id, seat, floorY: support.y, reach: d.reach, rules: d.rules },
+      config: {
+        id: instance.id,
+        seat,
+        floorY: support.y,
+        reach: d.reach,
+        rules: d.rules,
+        appearance: d.appearance,
+      },
     };
   }
 
