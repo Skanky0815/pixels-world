@@ -133,6 +133,13 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
 
+- Feedback nach Kratzen, Rissen, Knabbern, Umkippen und Vasenbruch: angezeigte
+  Punkte stimmen, Meldungen bleiben kurz und verdoppeln keine Ereignisse. Pause
+  friert auch Hinweise ein; Reset entfernt alte. Phasen, falsche/richtige Pfeile,
+  Timeout und Herzfortschritt bleiben erkennbar. Desktop-Zimmerränder und mobile
+  Statuszeile überdecken keine zeitkritischen Inhalte. Mit reduzierter Bewegung
+  in System/Pause-Menü bleiben dieselben Hinweise statisch verfügbar.
+
 - Esc/Menü während Lauf, Heimkehr und zeitkritischer Versöhnung öffnen: Welt,
   Animationen und Fristen bleiben stehen. Tab-Wechsel und wiederholter Fokus
   heben die Menüpause nicht auf. Fortsetzen holt keine Zeit nach; gehaltene
@@ -162,7 +169,7 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   mehr Platz oder Hochformat verwenden. Emulation ist kein Hardware-Nachweis.
 - DE/EN in Einführung, Dialog, Versöhnung und Ergebnis wechseln: Runde bleibt
   erhalten. Auswahl wird beim Reload wiederhergestellt; gesperrter Speicher
-  verhindert das Spiel nicht. Sprache und Lautstärke, kein Spielstand, werden gespeichert.
+  verhindert das Spiel nicht. Sprache, Lautstärke und Bewegungseinstellung, kein Spielstand, werden gespeichert.
 - Produktions-/Pages-Build: eigene Ressourcen, kein Testobserver, erreichbare
   Rechtsseiten; verlinkte Spielversion passt zum Release. Entwicklung/Preview
   ohne Release-Kontext zeigen nur die Versionsnummer. Für die gezielte Prüfung

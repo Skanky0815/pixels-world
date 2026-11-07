@@ -11,12 +11,15 @@ interface Readout {
   readonly charm: ReturnType<ReconciliationView['readableText']>;
   readonly result: ResultViewSnapshot;
   readonly remaining: number;
+  readonly feedback: { readonly text: string; readonly tone: string };
 }
 /** CSS-pixel text from the scene-owned views, independent of room/canvas scaling. */
 export class MobileReadout {
   private readonly hud = document.createElement('section');
   private readonly goal = document.createElement('p');
   private readonly status = document.createElement('p');
+  private readonly score = document.createElement('span');
+  private readonly notice = document.createElement('span');
   private readonly panel = document.createElement('section');
   private readonly message = document.createElement('p');
   private readonly quote = document.createElement('p');
@@ -28,6 +31,8 @@ export class MobileReadout {
     this.hud.className = 'mobile-hud';
     this.hud.setAttribute('aria-label', t('gameStatus'));
     this.goal.className = 'mobile-goal';
+    this.status.setAttribute('role', 'status');
+    this.status.append(this.score, document.createTextNode('\n'), this.notice);
     this.hud.append(this.status, this.goal);
     this.panel.className = 'mobile-dialogue';
     this.panel.setAttribute('aria-label', t('gameDialogue'));
@@ -47,7 +52,9 @@ export class MobileReadout {
     this.hud.setAttribute('aria-label', t('gameStatus'));
     this.panel.setAttribute('aria-label', t('gameDialogue'));
     this.timer.setAttribute('aria-label', t('timeLeftForInput'));
-    setText(this.status, `${compactScore(state.hud.scoreText)}\n${state.hud.roundText}`);
+    setText(this.score, compactScore(state.hud.scoreText));
+    setText(this.notice, state.feedback.text || state.hud.roundText);
+    this.notice.dataset.feedback = state.feedback.tone;
     setText(this.goal, state.goal);
     const text = panelText(state);
 

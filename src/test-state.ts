@@ -1,3 +1,4 @@
+import type { GameFeedback } from './game/ui/GameFeedback';
 import type { MainGoal } from './game/domain/main-goal';
 import type { ResultViewSnapshot } from './game/ui/RoundResultView';
 import type { ReconciliationSnapshot } from './game/domain/reconciliation';
@@ -30,6 +31,7 @@ export interface GameTestState {
     readonly canvasTextVisible: boolean;
   };
   readonly active: boolean;
+  readonly feedback: ReturnType<GameFeedback['snapshot']>;
   readonly audio: {
     readonly master: number;
     readonly effects: number;

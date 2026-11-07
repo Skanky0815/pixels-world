@@ -1,3 +1,4 @@
+import { motionPreferences } from '../../settings/motion';
 import { t, onLanguageChange, type TextKey } from '../../i18n/locale';
 import { createLanguageSetting } from '../../i18n/language-setting';
 import { audioPreferences, type AudioLevels } from '../../settings/audio';
@@ -16,6 +17,7 @@ export class PauseMenu {
   private readonly unsubscribe: () => void;
   private readonly unsubscribeAudio: () => void;
   private readonly removeLanguage: () => void;
+  private readonly unsubscribeMotion: () => void;
 
   // eslint-disable-next-line max-lines-per-function -- Zugänglicher Dialog und sämtliche Ereignisse teilen eine szenengebundene Lebensdauer.
   constructor(private readonly actions: PauseActions) {
@@ -45,13 +47,23 @@ export class PauseMenu {
       options,
     );
     this.root.addEventListener('input', (event) => this.changeAudio(event), options);
+    this.element('[data-reduce-motion]').addEventListener(
+      'change',
+      (event) => {
+        if (event.target instanceof HTMLInputElement)
+          motionPreferences.setReduced(event.target.checked);
+      },
+      options,
+    );
     document.addEventListener('keydown', this.keyDown, options);
     this.root.addEventListener('keydown', this.menuKey, options);
     this.root.addEventListener('keyup', this.menuKey, options);
     this.unsubscribe = onLanguageChange(() => this.refresh());
     this.unsubscribeAudio = audioPreferences.subscribe(() => this.refreshAudio());
+    this.unsubscribeMotion = motionPreferences.subscribe(() => this.refreshMotion());
     this.refresh();
     this.refreshAudio();
+    this.refreshMotion();
   }
 
   get opened() {
@@ -93,6 +105,15 @@ export class PauseMenu {
       audioPreferences.update(input.dataset.audio as keyof AudioLevels, Number(input.value) / 100);
   }
 
+  private refreshMotion() {
+    const preference = motionPreferences.snapshot();
+    const input = this.element('[data-reduce-motion]') as HTMLInputElement;
+
+    input.checked = preference.reduced;
+    input.disabled = preference.system;
+    this.element('[data-system-motion]').hidden = !preference.system;
+  }
+
   private refreshAudio() {
     const levels = audioPreferences.snapshot();
 
@@ -126,6 +147,7 @@ export class PauseMenu {
     this.abort.abort();
     this.unsubscribe();
     this.unsubscribeAudio();
+    this.unsubscribeMotion();
     this.removeLanguage();
     this.root.close();
     this.root.remove();
@@ -143,6 +165,8 @@ function markup() {
       <label for="pause-effects-volume"><span data-menu-text="effectsVolume"></span><output data-audio-value="effects"></output>
         <input id="pause-effects-volume" type="range" data-audio="effects" min="0" max="100" step="1"></label>
     </section>
+    <section><label class="motion-setting"><input type="checkbox" data-reduce-motion><span data-menu-text="reduceMotion"></span></label>
+      <p data-system-motion data-menu-text="systemMotion" hidden></p></section>
     <div class="pause-actions"><button type="button" data-pause-resume></button>
       <button type="button" data-pause-restart data-menu-text="newRoundLabel"></button></div>`;
 }

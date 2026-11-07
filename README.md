@@ -19,7 +19,7 @@ Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich gro�
 Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
 mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.
 Das Spiel läuft ohne Konto und ohne Backend. Über die Sprachwahl im Pause-Menü
-spielst du auf Deutsch oder Englisch. Sprache und Lautstärke bleiben lokal im
+spielst du auf Deutsch oder Englisch. Sprache, Lautstärke und Bewegungseinstellung bleiben lokal im
 Browser gespeichert; ein Sprachwechsel erhält die laufende Runde.
 Den aktuellen Versionsstand findest du unter [Releases](https://github.com/Skanky0815/pixels-world/releases).
 
@@ -52,9 +52,15 @@ Tab-Wechsel setzt die manuelle Pause nicht außer Kraft.
 
 Im Menü wechselst du DE/EN und stellst Gesamtlautstärke und Soundeffekte ein.
 Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.
+**Bewegung reduzieren** hält die kurzen Rückmeldungen statisch; eine entsprechende
+Systemvorgabe wird immer respektiert.
 Das Spiel enthält aktuell noch keine Audio-Assets. **Neue Runde** setzt die
 laufende Runde zurück und ist während des Spiels nur über das Menü erreichbar;
 am Ergebnis bleibt der vorhandene Button verfügbar.
+
+Kurze Punktehinweise zeigen erfolgreiche Chaosaktionen, Phasenhinweise markieren
+Saras Heimkehr und den Wechsel zur Versöhnung. Richtige/falsche Pfeile und gewonnene
+Herzen erhalten eindeutige Rückmeldungen, ohne Spieltempo oder Eingabefristen zu ändern.
 
 ## Steuerung
 

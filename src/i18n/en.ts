@@ -1,6 +1,23 @@
 import type { de } from './de';
 
 export const en: Record<keyof typeof de, string> = {
+  feedbackStart: 'Go on, Pixel!',
+  feedbackReturn: 'Sara is here!',
+  feedbackReaction: 'Sara takes a look …',
+  feedbackCharm: 'Time for charm',
+  feedbackResultSuccess: 'All forgiven ♥',
+  feedbackResultFailed: 'Still in trouble',
+  feedbackScratch: '+{v0} · Scratching',
+  feedbackTear: '+{v0} · Tear',
+  feedbackNibble: '+{v0} · Nibbling',
+  feedbackTip: '+{v0} · Pot tipped',
+  feedbackBreak: '+{v0} · Vase broken',
+  feedbackHeart: 'One heart earned ♥',
+  feedbackCorrect: 'Correct!',
+  feedbackWrong: 'Wrong direction',
+  feedbackTimeout: 'Time’s up',
+  reduceMotion: 'Reduce motion',
+  systemMotion: 'Enabled by system preference',
   menu: 'Menu',
   pauseSettings: 'Pause & settings',
   resumeGame: 'Resume',
