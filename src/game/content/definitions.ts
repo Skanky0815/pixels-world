@@ -1,3 +1,4 @@
+import type { SpawnProfile } from './spawn-profile.ts';
 import type { ShelfStabilityConfig } from '../domain/shelf-stability.ts';
 import type { CouchAppearance } from '../assets/couch-appearance.ts';
 import type { VaseAppearance } from '../assets/vase-appearance.ts';
@@ -12,8 +13,9 @@ import type { CurtainConfig } from '../objects/Curtain.ts';
 import type { PlantObjectConfig } from '../objects/Plant.ts';
 import type { VaseConfig } from '../objects/Vase.ts';
 
-type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
+export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
 interface Base {
+  readonly spawn: SpawnProfile;
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =

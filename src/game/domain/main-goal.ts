@@ -1,7 +1,9 @@
+import type { FixedGoalSpawnProfile } from '../content/spawn-profile.ts';
 import type { Bounds } from '../interactions/contracts.ts';
 import type { RoundEndReason } from './round-controller.ts';
 
 export interface GoalDefinition {
+  readonly spawn: FixedGoalSpawnProfile;
   readonly id: string;
   readonly kind: 'toy';
   readonly label: string;

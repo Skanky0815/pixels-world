@@ -1,3 +1,4 @@
+import { validateObjectSpawn, validateGoalSpawn } from './spawn-profile.ts';
 import { shelfRules } from '../domain/shelf-stability.ts';
 import { isCouchAppearance } from '../assets/couch-appearance.ts';
 import { isVaseAppearance } from '../assets/vase-appearance.ts';
@@ -69,7 +70,11 @@ function validateObject(value: ObjectDefinition, path: string) {
   record(value, path);
   asset(value.asset, value.kind, `${path}.asset`);
   validateCapabilities(value, path);
+  validateObjectRules(value, path);
+  validateObjectSpawn(value, path);
+}
 
+function validateObjectRules(value: ObjectDefinition, path: string) {
   if (value.kind === 'vase') return validateVase(value, path);
   record(value.rules, `${path}.rules`);
 
@@ -507,6 +512,7 @@ class RoomResolver {
     this.unique(goal.id, `${path}.id`);
 
     if (goal.kind !== 'toy') fail(`${path}.kind`, 'unknown goal kind');
+    validateGoalSpawn(goal.spawn, `${path}.spawn`);
     id(goal.label, `${path}.label`);
     id(goal.motivation, `${path}.motivation`);
     number(goal.x, `${path}.x`);
