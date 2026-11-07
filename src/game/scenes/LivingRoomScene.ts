@@ -1,3 +1,4 @@
+import { GameFeedback } from '../ui/GameFeedback';
 import { PauseMenu } from '../ui/PauseMenu';
 import { GameAudio } from '../ui/GameAudio';
 import type { DebugScenario } from '../../dev/game-debug-model';
@@ -43,6 +44,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private mobile!: MobileReadout;
   private menu!: PauseMenu;
   private audio!: GameAudio;
+  private feedback!: GameFeedback;
   private goal!: MainGoal;
   private goalView!: GoalView;
   private started = false;
@@ -170,7 +172,7 @@ export class LivingRoomScene extends Phaser.Scene {
             forward: () => {
               if (this.canPlay() && this.round.advance(10_000, this.chaos.score))
                 this.startHomecoming();
-              this.renderHud(this.pixel.nearCurtain);
+              this.renderHud();
             },
             release: () => this.controls.release(),
 
@@ -180,6 +182,7 @@ export class LivingRoomScene extends Phaser.Scene {
               started: this.started,
               active: this.activity.active,
               audio: this.audio.snapshot(),
+              feedback: this.feedback.snapshot(),
               round: this.round.snapshot(),
               chaos: { score: this.chaos.score, anger: angerFor(this.chaos.score).id },
               homecoming: this.homecoming.snapshot(),
@@ -244,6 +247,7 @@ export class LivingRoomScene extends Phaser.Scene {
             sara: this.sara.snapshot(),
             active: this.activity.active,
             audio: this.audio.snapshot(),
+            feedback: this.feedback.snapshot(),
             chaos: {
               score: this.chaos.score,
               damagedObjects: this.chaos.count,
@@ -316,10 +320,11 @@ export class LivingRoomScene extends Phaser.Scene {
     const room = this.room.definition;
 
     this.mobile = new MobileReadout();
+    this.feedback = new GameFeedback(this);
     this.controls = new InputController(this);
     this.activity = new PlayActivity(() => this.syncActivity());
     this.audio = new GameAudio(this.sound);
-    this.hud = new GameHud(this, room.hud);
+    this.hud = new GameHud(this);
     this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
@@ -356,20 +361,11 @@ export class LivingRoomScene extends Phaser.Scene {
     this.mobile.destroy();
     this.menu.destroy();
     this.audio.destroy();
+    this.feedback.destroy();
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Der flache HUD-Vertrag zeigt Score, Runde und Aktion gemeinsam; sämtliche Regeln bleiben außerhalb der Ansicht.
-  private renderHud(nearCurtain: boolean) {
-    const maximumScore = this.destructibles.reduce((sum, object) => sum + object.maximumScore, 0);
-
-    this.hud.render({
-      round: { ...this.round.snapshot(), paused: !this.activity.active },
-      score: this.chaos.score,
-      anger: angerFor(this.chaos.score),
-      angerRatio: maximumScore > 0 ? this.chaos.score / maximumScore : 0,
-      activity: this.pixel.activity,
-      nearCurtain,
-    });
+  private renderHud() {
+    this.hud.render({ score: this.chaos.score });
   }
 
   private processDamage(event: ChaosEvent | undefined) {
@@ -407,6 +403,7 @@ export class LivingRoomScene extends Phaser.Scene {
     );
     this.mobile.render({
       hud: this.hud.snapshot(),
+      feedback: this.feedback.readable(),
       goal: this.goalView.snapshot().text,
       homecoming: this.homecoming.snapshot().stage,
       dialogue: this.sara.snapshot().dialogueText,
@@ -418,7 +415,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private refreshLanguage() {
-    this.renderHud(this.pixel.nearCurtain);
+    this.renderHud();
     this.sara.render(this.homecoming.snapshot(), this.returning.snapshot().stage === 'seated');
     this.charmView.render(this.charm.snapshot());
     this.renderResult();
@@ -451,7 +448,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.pixel.setPaused(!this.activity.active || !this.started);
     this.sara.setPaused(!this.activity.active);
     this.audio.setActive(this.activity.active && this.started);
-    this.renderHud(this.pixel.nearCurtain);
+    this.renderHud();
   }
 
   private setWorldActive(active: boolean) {
@@ -467,14 +464,26 @@ export class LivingRoomScene extends Phaser.Scene {
   private updateRound(input: InputState, delta: number) {
     const elapsed = this.activity.delta(delta);
 
-    if (elapsed <= 0) {
-      if (this.activity.active) this.controls.defer(input);
+    if (elapsed <= 0) return this.deferInput(input);
 
-      return;
-    }
+    if (input.confirmPressed && this.resultView.snapshot()) return this.scene.restart();
 
     if (this.canPlay()) this.playFrame(input, elapsed);
     else this.advanceHomecoming(input, elapsed);
+    this.presentFeedback(elapsed);
+  }
+
+  private deferInput(input: InputState) {
+    if (this.activity.active) this.controls.defer(input);
+  }
+
+  private presentFeedback(elapsed: number) {
+    this.feedback.advance(elapsed, {
+      started: this.started,
+      round: this.round.snapshot(),
+      charm: this.charm.snapshot(),
+      outcome: this.resultView.snapshot()?.outcome ?? null,
+    });
   }
 
   private playFrame(input: InputState, elapsed: number) {
@@ -488,7 +497,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.goalView.render(this.goal.snapshot(), true);
 
     if (this.round.advance(elapsed, this.chaos.score, true, reached)) this.startHomecoming();
-    else this.renderHud(this.pixel.nearCurtain);
+    else this.renderHud();
   }
 
   private startHomecoming() {
@@ -561,8 +570,6 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.resultView.render(result);
     this.controls.showRestart(result !== null);
-
-    if (result) this.hud.showResult(result.outcome);
   }
 
   private faceSara() {
@@ -582,7 +589,7 @@ export class LivingRoomScene extends Phaser.Scene {
     }
 
     this.sara.render(snapshot, this.returning.snapshot().stage === 'seated');
-    this.renderHud(this.pixel.nearCurtain);
+    this.renderHud();
   }
 
   private updateGameplay(input: InputState, time: number, delta: number) {

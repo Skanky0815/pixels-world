@@ -3,63 +3,108 @@ import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { RoundResult } from '../domain/round-result';
 export type ResultViewSnapshot = ReturnType<RoundResultView['snapshot']>;
-/** Persistent, keyboard-restartable summary; timing and round state remain in the scene. */
+/** Scene-owned result card; the outcome and all values remain domain decisions. */
 export class RoundResultView {
   private readonly removeCompactListener: () => void;
-  private readonly title: Phaser.GameObjects.Text;
   private readonly root: Phaser.GameObjects.Container;
-  private readonly summary: Phaser.GameObjects.Text;
+  private readonly dialogue: Phaser.GameObjects.Container;
+  private readonly title: Phaser.GameObjects.Text;
+  private readonly headline: Phaser.GameObjects.Text;
+  private readonly chaos: Phaser.GameObjects.Text;
+  private readonly reconciliation: Phaser.GameObjects.Text;
+  private readonly hearts: Phaser.GameObjects.Text;
+  private readonly goal: Phaser.GameObjects.Text;
   private readonly quote: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
   private result: RoundResult | null = null;
-  // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau der Ergebnisbox mit Titel, Zusammenfassung, Zitat und Neustarthinweis.
+  // eslint-disable-next-line max-lines-per-function -- Titel, hervorgehobener Ausgang und zwei Ergebnisspalten bilden eine gemeinsame deklarative Karte.
   constructor(scene: Phaser.Scene, width: number) {
     this.root = scene.add.container(0, 0).setDepth(16).setVisible(false);
     const panel = scene.add
-      .rectangle(width / 2, 235, width - 80, 218, 0x403a35, 1)
+      .rectangle(width / 2, 260, width - 80, 310, 0x403a35)
       .setStrokeStyle(2, 0xd4b488);
 
-    this.title = scene.add.text(60, 140, t('roundResult'), style(18));
-    this.summary = scene.add.text(60, 169, '', style(16));
-    this.quote = scene.add.text(60, 288, '', {
+    this.title = scene.add.text(width / 2, 122, '', style(12)).setOrigin(0.5, 0);
+    this.headline = scene.add.text(width / 2, 150, '', style(28)).setOrigin(0.5, 0);
+    this.chaos = scene.add.text(64, 215, '', { ...style(16), wordWrap: { width: width / 2 - 90 } });
+    this.reconciliation = scene.add.text(width / 2 + 20, 215, '', style(16));
+    this.hearts = scene.add
+      .text(width / 2 + 20, 262, '', {
+        ...style(32),
+        fontFamily: 'Arial, sans-serif',
+      })
+      .setOrigin(0, 0.5);
+    this.goal = scene.add.text(64, 315, '', style(13));
+    this.quote = scene.add.text(64, 344, '', {
       ...style(14),
       fontStyle: 'italic',
       color: '#e4c182',
-      wordWrap: { width: width - 120 },
+      wordWrap: { width: width - 128 },
     });
-    this.hint = scene.add.text(width - 60, 330, t('rNewRound'), style(14)).setOrigin(1, 1);
-    const dialogue = scene.add.container(0, 0, [
+    this.hint = scene.add.text(width - 60, 400, '', style(13)).setOrigin(1, 1);
+    this.dialogue = scene.add.container(0, 0, [
       panel,
       this.title,
-      this.summary,
+      this.headline,
+      this.chaos,
+      this.reconciliation,
+      this.hearts,
+      this.goal,
       this.quote,
       this.hint,
     ]);
-
-    this.removeCompactListener = compactVisibility(dialogue);
-    this.root.add(dialogue);
+    this.removeCompactListener = compactVisibility(this.dialogue);
+    this.root.add(this.dialogue);
   }
 
   render(result: RoundResult | null) {
-    this.title.setText(t('roundResult'));
-    this.hint.setText(t('rNewRound'));
     this.result = result;
     this.root.setVisible(result !== null);
 
-    if (!result) return;
-    this.summary.setText(summaryText(result));
-    this.quote.setText(t('saraLabel049', { v0: result.closingLine }));
+    if (result) this.renderText(result);
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Der flache Ergebnisvertrag enthält die skalare Sichtbarkeit beider Darstellungen ohne Engine-Referenzen.
+  // eslint-disable-next-line max-lines-per-function -- Beide Spalten und der Ausgang werden atomar in derselben Sprache aktualisiert.
+  private renderText(result: RoundResult) {
+    const success = result.outcome === 'success';
+
+    this.title.setText(t('roundResult'));
+    this.headline.setText(t(success ? 'resultFriendsAgain' : 'resultStillInTrouble'));
+    this.headline.setColor(success ? '#c8dfa0' : '#efb69d');
+    this.chaos.setText(t('resultChaosDetails', { v0: result.score, v1: result.reaction }));
+    this.reconciliation.setText(
+      t('resultReconciliation', { v0: t(success ? 'success' : 'failed') }),
+    );
+    this.hearts.setText('♥'.repeat(result.hearts) + '♡'.repeat(result.required - result.hearts));
+    this.hearts.setColor(success ? '#e7a6a6' : '#d4b488');
+    this.hearts.setPosition(
+      this.reconciliation.x + this.reconciliation.width + 16,
+      this.reconciliation.y + this.reconciliation.height - 10,
+    );
+    this.goal.setText(t('resultGoal', { v0: t(result.goalReached ? 'reached' : 'notReached') }));
+    this.quote.setText(t('saraLabel049', { v0: result.closingLine }));
+    this.hint.setText(t('spaceNewRound'));
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der skalare Vertrag teilt dieselben sichtbaren Texte mit der mobilen Karte und dem unveränderlichen Beobachter.
   snapshot() {
     if (!this.result) return null;
 
     return Object.freeze({
       ...this.result,
       visible: this.root.visible,
-      canvasTextVisible: this.root.visible && this.summary.parentContainer.visible,
-      summaryText: this.summary.text,
+      canvasTextVisible: this.root.visible && this.dialogue.visible,
+      headlineText: this.headline.text,
+      chaosText: this.chaos.text,
+      reconciliationText: this.reconciliation.text,
+      heartsText: this.hearts.text,
+      goalText: this.goal.text,
+      summaryText: [
+        this.chaos.text,
+        this.reconciliation.text,
+        this.hearts.text,
+        this.goal.text,
+      ].join('\n'),
       quoteText: this.quote.text,
       hint: this.hint.text,
     });
@@ -69,20 +114,6 @@ export class RoundResultView {
     this.removeCompactListener();
     this.root.destroy(true);
   }
-}
-
-// eslint-disable-next-line max-lines-per-function -- Die sechs Ergebniswerte werden gemeinsam an denselben Übersetzungsschlüssel gebunden.
-function summaryText(result: RoundResult) {
-  const outcome = result.outcome === 'success' ? t('success') : t('failed');
-
-  return t('chaosPointsSaraSReactionMaking', {
-    v0: result.score,
-    v1: result.reaction,
-    v2: outcome,
-    v3: result.hearts,
-    v4: result.required,
-    v5: result.goalReached ? t('reached') : t('notReached'),
-  });
 }
 
 function style(size: number) {

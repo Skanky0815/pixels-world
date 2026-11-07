@@ -45,7 +45,6 @@ export const LIVING_ROOM = {
   caption: copy('theLivingRoom'),
   width: 960,
   height: 540,
-  hud: { climbHint: { x: 800, y: 90 } },
   pixelAsset: 'pixel',
   spawn: { x: 110, surfaceId: 'floor' },
   wallColor: 0xcbb192,

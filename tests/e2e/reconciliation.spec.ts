@@ -103,7 +103,8 @@ test(
     await test
       .info()
       .attach('versoehnt', { body: await page.screenshot(), contentType: 'image/png' });
-    await reset(page);
+    await continueCharm(page);
+    await until(page, (s) => s.generation > complete.generation);
     expect((await state(page)).reconciliation.stage).toBe('waiting');
     await expectFreshRound(page);
   },
@@ -168,7 +169,6 @@ test('Charme scheitert nach zwei Versuchen am selben Herz', { tag }, async ({ pa
   await until(page, (s) => s.reconciliation.stage === 'failed', 100);
   const failed = await state(page);
 
-  await continueCharm(page);
   await page.clock.runFor(5000);
   expect((await state(page)).reconciliation).toEqual(failed.reconciliation);
   expect(failed.chaos).toEqual(frozen.chaos);
@@ -177,7 +177,7 @@ test('Charme scheitert nach zwei Versuchen am selben Herz', { tag }, async ({ pa
   await test
     .info()
     .attach('versoehnung-gescheitert', { body: await page.screenshot(), contentType: 'image/png' });
-  await page.getByRole('button', { name: 'Neue Runde', exact: true }).click();
+  await continueCharm(page);
   await until(page, (s) => s.generation > failed.generation);
   expect((await state(page)).reconciliation).toMatchObject({ stage: 'waiting', attemptsLeft: 2 });
   await expectFreshRound(page);
@@ -199,9 +199,13 @@ async function expectResult(page: Page, outcome: 'success' | 'failed') {
   });
   expect(result.summaryText).toContain(`Chaospunkte: ${current.chaos.score}`);
   expect(result.summaryText).toContain(outcome === 'success' ? 'Gelungen' : 'Gescheitert');
-  expect(result.hint).toBe('Neue Runde starten');
+  expect(result.hint).toBe('␣: Neue Runde starten');
   expect(result.goalReached).toBe(current.round.endReason === 'goal');
   expect(result.summaryText).toContain('Hauptziel:');
+  expect(result.headlineText).toBe(outcome === 'success' ? 'Wieder vertragen!' : 'Nicht versöhnt');
+  expect(result.heartsText).toBe(
+    '♥'.repeat(result.hearts) + '♡'.repeat(result.required - result.hearts),
+  );
   expect(result.quoteText).toBe(`Sara: „${result.closingLine}“`);
   expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.result))).toBe(true);
   await page.clock.runFor(3000);

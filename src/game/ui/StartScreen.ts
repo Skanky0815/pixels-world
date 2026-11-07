@@ -72,11 +72,11 @@ function introMarkup() {
     </aside>
     <dl>
       <div><dt>← →</dt><dd>${t('moveAndSteerInMidAir')}</dd></div>
-      <div><dt>${t('spaceLabel')}</dt><dd>${t('jumpAndLeapOffTheCurtain')}</dd></div>
+      <div><dt><span class="space-key" role="img" aria-label="${t('spaceLabel')}">␣</span></dt><dd>${t('jumpAndLeapOffTheCurtain')}</dd></div>
       <div><dt>↑ ↓</dt><dd>${t('climbTheCurtain')}</dd></div>
     </dl>
     <p>${t('makingAmendsPressTheBigArrow')}</p>
     <p class="touch-prompt">${t('theArrowsMovePixelAndGuide')}</p>
-  </div><p class="start-prompt"><span class="keyboard-prompt">${t('pressSpaceToStart')}</span>
+  </div><p class="start-prompt"><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('pressSpaceToStart').replace(t('spaceLabel'), '␣')}</span>
   <span class="touch-prompt">${t('tapContinueToStart')}</span></p>`;
 }

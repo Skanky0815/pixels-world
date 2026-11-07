@@ -1,3 +1,5 @@
+import type { GameHud } from './game/ui/GameHud';
+import type { GameFeedback } from './game/ui/GameFeedback';
 import type { MainGoal } from './game/domain/main-goal';
 import type { ResultViewSnapshot } from './game/ui/RoundResultView';
 import type { ReconciliationSnapshot } from './game/domain/reconciliation';
@@ -30,6 +32,7 @@ export interface GameTestState {
     readonly canvasTextVisible: boolean;
   };
   readonly active: boolean;
+  readonly feedback: ReturnType<GameFeedback['snapshot']>;
   readonly audio: {
     readonly master: number;
     readonly effects: number;
@@ -54,16 +57,7 @@ export interface GameTestState {
     readonly damagedObjects: number;
     readonly anger: string;
   };
-  readonly hud: {
-    readonly roundText: string;
-    readonly statusText: string;
-    readonly scoreText: string;
-    readonly climbHintText: string;
-    readonly climbHintAlpha: number;
-    readonly angerRatio: number;
-    readonly angerColor: number;
-    readonly elements: number;
-  };
+  readonly hud: ReturnType<GameHud['snapshot']>;
   readonly objects: ReadonlyArray<{
     readonly id: string;
     readonly kind: string;

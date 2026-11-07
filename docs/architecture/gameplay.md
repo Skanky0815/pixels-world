@@ -69,6 +69,13 @@ die Soundverwaltung. Die Aktivitätsgrenze pausiert/reaktiviert Audio selbst und
 ersetzt dafür Phasers unabhängige automatische Blur-Wiederaufnahme. Noch sind
 keine Audio-Assets eingebunden. Der E2E-Vertrag liest nur skalare Audiozustände.
 
+`FeedbackModel` ist ein passiver Darstellungsbeobachter. Bereits vergebene
+Schadensereignisse und Phasen-/Versöhnungssnapshots steuern begrenzte Hinweise.
+Die Darstellung hat eigene aktive Anzeigezeit und keine Rückwirkung auf
+Spielmodelle, Eingabefristen oder Kamera. System-/Menüvorgaben für reduzierte
+Bewegung kombinieren sich per Oder; die mobile Statuszeile verwendet dieselben
+Hinweise ohne zusätzliche Dialogüberlagerung.
+
 ## Objekte und Schadensvertrag
 
 Fähigkeiten werden kombiniert, nicht durch eine universelle Phaser-Basisklasse
@@ -145,7 +152,8 @@ Englisch fällt auf Deutsch zurück und wird in Entwicklung gemeldet.
 
 Sprachwechsel benachrichtigen Ansichten und rendern bestehende Snapshots erneut,
 ohne Timer, Physik oder Runde neu zu starten. `pixels-world.language` und die
-Audiopegel unter `pixels-world.audio` werden lokal gespeichert; kein Spielstand. Speicherfehler verhindern die Sitzung nicht.
+Audiopegel unter `pixels-world.audio` sowie der Bewegungswunsch unter
+`pixels-world.reduced-motion` werden lokal gespeichert; kein Spielstand. Speicherfehler verhindern die Sitzung nicht.
 Die Rechtsseiten sind statische deutsche HTML-Seiten ohne Spielcode. Eigennamen,
 Markenslogans, Tastensymbole und technische Meldungen brauchen keine zweite Fassung.
 Datenflüsse und Quellen: [rechtliche Dokumentation](../legal/phase2-review.md).

@@ -9,8 +9,12 @@ test('Sprachwahl: Einführung, Persistenz und laufende Runde ohne Reset', async 
 }) => {
   await loadIntro(page);
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+  await expect(page.locator('.start-copy')).toContainText('Finde seinen Lieblingsball');
+  await expect(page.locator('.start-copy')).not.toContainText('oben rechts');
   await changeLanguage(page, 'en');
   await expect(page.locator('.start-copy h2')).toHaveText('One room. One cat. Your chaos.');
+  await expect(page.locator('.start-copy')).toContainText('Find his favourite ball');
+  await expect(page.locator('.start-copy')).not.toContainText('top right');
   await loadIntro(page);
   await expect(page.locator('[data-language="en"]')).toHaveAttribute('aria-pressed', 'true');
   await start(page);
@@ -56,6 +60,11 @@ test.describe('Lokalisierte Touch-Runde', () => {
 
     await changeLanguage(page, 'en');
     await expect(page.locator('[data-control="jump"]')).toHaveText('Jump');
+    await expect(page.locator('.mobile-hud')).toContainText('CHAOS: 0');
+    await expect(page.locator('.mobile-hud')).not.toContainText(/MOOD|time|soon/i);
+    await expect(page.locator('.mobile-goal')).toHaveText(
+      'Pixel wants to play. Find his favourite ball and stay near it for a moment.',
+    );
     await useIdleFrames(page);
     await advanceRoundTo(page, (await state(page)).round.returnAtMs);
     await until(
@@ -93,6 +102,8 @@ test.describe('Lokalisierte Touch-Runde', () => {
 
     await until(page, (s) => s.reconciliation.stage === 'complete', 100);
     await expect(page.locator('.mobile-dialogue')).toContainText('ROUND RESULT');
+    await expect(page.locator('.result-headline')).toHaveText('Friends again!');
+    await expect(page.locator('.result-hearts')).toHaveAttribute('aria-label', '1 of 1 hearts');
     await expect(page.locator('[data-control="reset"]')).toHaveText('New round');
     expect((await state(page)).reconciliation.failures).toBe(0);
     await test.info().attach('english-mobile-result', {

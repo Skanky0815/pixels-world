@@ -1,3 +1,4 @@
+import { MobileResultCard } from './MobileResultCard';
 import { t } from '../../i18n/locale.ts';
 import type { GameHud } from './GameHud';
 import type { ReconciliationView } from './ReconciliationView';
@@ -11,14 +12,18 @@ interface Readout {
   readonly charm: ReturnType<ReconciliationView['readableText']>;
   readonly result: ResultViewSnapshot;
   readonly remaining: number;
+  readonly feedback: { readonly text: string; readonly tone: string };
 }
 /** CSS-pixel text from the scene-owned views, independent of room/canvas scaling. */
 export class MobileReadout {
   private readonly hud = document.createElement('section');
   private readonly goal = document.createElement('p');
   private readonly status = document.createElement('p');
+  private readonly score = document.createElement('span');
+  private readonly notice = document.createElement('span');
   private readonly panel = document.createElement('section');
   private readonly message = document.createElement('p');
+  private readonly resultCard = new MobileResultCard();
   private readonly quote = document.createElement('p');
   private readonly hint = document.createElement('p');
   private readonly key = document.createElement('p');
@@ -28,6 +33,8 @@ export class MobileReadout {
     this.hud.className = 'mobile-hud';
     this.hud.setAttribute('aria-label', t('gameStatus'));
     this.goal.className = 'mobile-goal';
+    this.status.setAttribute('role', 'status');
+    this.status.append(this.score, document.createTextNode('\n'), this.notice);
     this.hud.append(this.status, this.goal);
     this.panel.className = 'mobile-dialogue';
     this.panel.setAttribute('aria-label', t('gameDialogue'));
@@ -37,7 +44,14 @@ export class MobileReadout {
     this.hint.className = 'mobile-hint';
     this.timer.max = 1;
     this.timer.setAttribute('aria-label', t('timeLeftForInput'));
-    this.panel.append(this.message, this.quote, this.key, this.timer, this.hint);
+    this.panel.append(
+      this.message,
+      this.resultCard.root,
+      this.quote,
+      this.key,
+      this.timer,
+      this.hint,
+    );
     document.getElementById('play-area')?.prepend(this.hud);
     document.getElementById('game')?.append(this.panel);
   }
@@ -47,8 +61,11 @@ export class MobileReadout {
     this.hud.setAttribute('aria-label', t('gameStatus'));
     this.panel.setAttribute('aria-label', t('gameDialogue'));
     this.timer.setAttribute('aria-label', t('timeLeftForInput'));
-    setText(this.status, `${compactScore(state.hud.scoreText)}\n${state.hud.roundText}`);
+    setText(this.score, state.hud.scoreText);
+    setText(this.notice, state.feedback.text);
+    this.notice.dataset.feedback = state.feedback.tone;
     setText(this.goal, state.goal);
+    this.resultCard.render(state.result);
     const text = panelText(state);
 
     this.panel.hidden = !text.message;
@@ -74,7 +91,7 @@ function setText(node: HTMLElement, text: string) {
 function panelText(s: Readout) {
   if (s.result)
     return {
-      message: t('roundResultLabel', { v0: s.result.summaryText }),
+      message: t('roundResult'),
       quote: s.result.quoteText,
       hint: t('newRoundStartsTheNextGame'),
       key: '',
@@ -103,10 +120,4 @@ function panelText(s: Readout) {
 
 function touchHint(text: string) {
   return text.replace(t('space'), t('continue'));
-}
-
-function compactScore(text: string) {
-  return text
-    .replace(t('saraSMoodPreviewLabel'), t('mood'))
-    .replace(t('saraSMoodLabel'), t('mood'));
 }

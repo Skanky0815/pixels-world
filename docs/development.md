@@ -116,6 +116,26 @@ damit Phasers globale Tastensperre native Regler und Formularbedienung nicht st�
 Aktivitätsgrenze; Szenenabbau stoppt alte Sounds. Noch sind keine Audio-Assets
 eingebunden. E2E-Snapshots enthalten nur losgelöste Pegel/Statuswerte.
 
+## Visuelles Feedback abstimmen
+
+`src/content/feedback.ts` enthält die kurzen Anzeigezeiten, Ausblenddauer und
+Bewegungsdistanz. `FeedbackModel` beobachtet bereits vergebene Chaosereignisse und
+vorhandene Phasen-/Versöhnungssnapshots. Es vergibt weder Punkte noch verändert es
+Eingaben, Physik oder Domain-Zeit. Pro Kanal bleibt nur die jüngste Meldung; identische
+Schadensereignisse lösen keine zweite Meldung aus.
+
+`GameFeedback` zeigt am Desktop kompakte Hinweise in freien Zimmerrändern. Im
+Handheld ersetzt dieselbe Rückmeldung kurz die vorhandene Statuszeile, ohne
+neue Flächen über Dialog oder Pfeiltasten zu legen. Darstellung altert nur mit
+aktiver Zeit; Pause, Fokusverlust und Lesesprachwechsel erzeugen keine neuen
+Ereignisse. Reset entfernt Ansichten und Listener des vorherigen Durchlaufs.
+
+`MotionPreferences` kombiniert `prefers-reduced-motion` mit dem Wunsch aus dem
+Pause-Menü. `pixels-world.reduced-motion` speichert nur die lokale Auswahl.
+Reduzierte Bewegung bleibt sichtbar als statischer Text ohne Versatz/Ausblenden;
+eine Systemvorgabe kann im Spiel nicht aufgehoben werden. Audio-Cues warten auf
+passende Assets, die vorhandenen Lautstärkeeinstellungen bleiben unverändert.
+
 ## Lesbarer TypeScript-Code
 
 Prettier formatiert; ESLint mit typescript-eslint und gezielten Stylistic-Regeln

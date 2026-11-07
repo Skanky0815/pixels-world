@@ -452,7 +452,6 @@ class RoomResolver {
     const objects = room.objects.map((instance) => this.resolve(instance));
 
     this.validateMaximumScore(objects);
-    this.validateHud();
     const spawn = this.resolveSpawn();
 
     return { definition: room, spawn, objects, goal: this.resolveGoal() };
@@ -474,18 +473,6 @@ class RoomResolver {
       if (!Number.isSafeInteger(maximum))
         fail(`${root}.objects`, 'maximum score exceeds safe integer range');
     }
-  }
-
-  private validateHud() {
-    const { room, root } = this;
-
-    record(room.hud, `${root}.hud`);
-    record(room.hud.climbHint, `${root}.hud.climbHint`);
-    number(room.hud.climbHint.x, `${root}.hud.climbHint.x`);
-    number(room.hud.climbHint.y, `${root}.hud.climbHint.y`);
-
-    if (room.hud.climbHint.x > room.width || room.hud.climbHint.y > room.height)
-      fail(`${root}.hud.climbHint`, 'outside room viewport');
   }
 
   // eslint-disable-next-line max-lines-per-function -- Eindeutiges Ziel, erlaubter Typ, Zeit und Auflage werden gemeinsam vor dem Szenenstart geprüft.

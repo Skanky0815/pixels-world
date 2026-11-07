@@ -19,7 +19,7 @@ Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich gro�
 Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
 mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.
 Das Spiel läuft ohne Konto und ohne Backend. Über die Sprachwahl im Pause-Menü
-spielst du auf Deutsch oder Englisch. Sprache und Lautstärke bleiben lokal im
+spielst du auf Deutsch oder Englisch. Sprache, Lautstärke und Bewegungseinstellung bleiben lokal im
 Browser gespeichert; ein Sprachwechsel erhält die laufende Runde.
 Den aktuellen Versionsstand findest du unter [Releases](https://github.com/Skanky0815/pixels-world/releases).
 
@@ -30,33 +30,44 @@ Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimm
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
 
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
-Pixel möchte seinen Lieblingsball auf dem obersten Regal erreichen. Bleib dort kurz
+Pixel möchte seinen Lieblingsball finden. Bleib dort kurz
 stehen, um mit ihm zu spielen: Das holt Sara vorzeitig nach Hause. Sonst kommt sie
 nach einer zufällig gewählten aktiven Spielzeit zurück und beendet die Chaosphase.
 Der Ball ist auch ohne Schaden erreichbar; Chaos bleibt optional.
-Grobe Zeithinweise ersetzen einen genauen Countdown; bei Fokusverlust pausiert das Spiel.
+Im Spiel bleiben die Chaospunkte sichtbar; Saras Ärger zeigt erst die Ergebnisansicht.
+Bei Fokusverlust pausiert das Spiel.
 Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
 das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen
 Pfeiltastenfolge, Sara durch Schnurren und Anschmiegen zu versöhnen.
-Die Ergebnisansicht fasst Chaospunkte, Saras ursprüngliche Reaktion und den
-Versöhnungsausgang zusammen. Mit **Neue Runde** beginnt das nächste Spiel.
+Die Ergebnisansicht stellt Chaos und Versöhnung nebeneinander dar. Gefüllte und
+leere Herzen zeigen den Stand; eine große Überschrift hebt hervor, ob Pixel und Sara
+sich vertragen haben. Saras ursprüngliche Reaktion und ihr Abschlussspruch bleiben sichtbar. Mit **Neue Runde** oder **␣** beginnt am Ergebnis das nächste Spiel.
 
 Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.
 
 ## Pause und Einstellungen
 
-**Esc** oder **Menü** öffnet die Pause. Welt, Rundentimer, Versöhnungsfristen und
+**Esc** oder das **Zahnrad** öffnet die Pause. Welt, Rundentimer, Versöhnungsfristen und
 Animationen bleiben stehen. **Fortsetzen** bzw. Esc schließt das Menü; ein
 Tab-Wechsel setzt die manuelle Pause nicht außer Kraft.
 
 Im Menü wechselst du DE/EN und stellst Gesamtlautstärke und Soundeffekte ein.
 Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.
+**Bewegung reduzieren** hält die kurzen Rückmeldungen statisch; eine entsprechende
+Systemvorgabe wird immer respektiert.
 Das Spiel enthält aktuell noch keine Audio-Assets. **Neue Runde** setzt die
 laufende Runde zurück und ist während des Spiels nur über das Menü erreichbar;
 am Ergebnis bleibt der vorhandene Button verfügbar.
 
+Kurze Punkte- und Phasenhinweise teilen sich oben rechts einen festen Bereich.
+Punktehinweise zeigen erfolgreiche Chaosaktionen, Phasenhinweise markieren
+Saras Heimkehr und den Wechsel zur Versöhnung. Richtige/falsche Pfeile und gewonnene
+Herzen erhalten eindeutige Rückmeldungen, ohne Spieltempo oder Eingabefristen zu ändern.
+
 ## Steuerung
+
+Das Symbol **␣** in den Spielhinweisen steht für die Leertaste.
 
 | Taste     | Aktion                                                    |
 | --------- | --------------------------------------------------------- |

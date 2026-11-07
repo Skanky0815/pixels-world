@@ -10,7 +10,7 @@ export class GoalView {
   // eslint-disable-next-line max-lines-per-function -- Zielmarker und kurzer Hinweis werden gemeinsam aus derselben validierten Platzierung aufgebaut.
   constructor(scene: Phaser.Scene, goal: ResolvedGoal) {
     this.root = scene.add.container(0, 0).setDepth(9).setVisible(false);
-    this.caption = scene.add.text(26, 108, '', {
+    this.caption = scene.add.text(26, 48, '', {
       fontFamily: 'monospace',
       fontSize: '12px',
       color: '#fff1cf',

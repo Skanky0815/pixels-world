@@ -8,14 +8,7 @@ test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverände
   const idle = (await state(page)).hud;
 
   expect(idle).toEqual({
-    roundText: 'Noch etwas Zeit',
-    statusText: 'PIXEL · ALLEIN ZU HAUSE',
-    scoreText: 'CHAOS: 0  ·  SARAS ÄRGER (VORSCHAU): Entspannt',
-    climbHintText: '↑ KLETTERN\nLOSLASSEN: RUTSCHEN',
-    climbHintAlpha: 0.65,
-    angerRatio: 0,
-    angerColor: 0x718463,
-    elements: 5,
+    scoreText: 'CHAOS: 0',
   });
   expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.hud))).toBe(true);
 
@@ -24,9 +17,7 @@ test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverände
     await until(page, (s) => s.couch.damage === 1);
     const scratched = (await state(page)).hud;
 
-    expect(scratched.statusText).toBe('PIXEL · SOFA KRATZEN');
-    expect(scratched.scoreText).toBe('CHAOS: 3  ·  SARAS ÄRGER (VORSCHAU): Entspannt');
-    expect(scratched.angerRatio).toBeCloseTo(3 / 162);
+    expect(scratched.scoreText).toBe('CHAOS: 3');
     await reset(page);
     expect((await state(page)).hud).toEqual(idle);
   }

@@ -10,7 +10,11 @@ test('Einführung zeigt README-Banner; vor dem Start bleiben Uhr, Schäden und P
 
   await expect(intro).toBeVisible();
   await expect(intro.getByAltText('Pixel’s World')).toBeVisible();
-  await expect(intro).toContainText('Leertaste drücken, um zu starten');
+  await expect(intro.locator('.keyboard-prompt')).toHaveText('␣ drücken, um zu starten');
+  await expect(intro.locator('.keyboard-prompt')).toHaveAccessibleName(
+    'Leertaste drücken, um zu starten',
+  );
+  await expect(intro.getByRole('img', { name: 'Leertaste', exact: true })).toHaveText('␣');
   await expect(intro).toContainText('Charmeoffensive');
   await expect(intro.getByRole('complementary', { name: 'Dein Hauptziel' })).toContainText(
     'Lieblingsball',
@@ -33,7 +37,9 @@ test('Einführung zeigt README-Banner; vor dem Start bleiben Uhr, Schäden und P
   for (const key of ['ArrowRight', 'ArrowUp', 'r']) await page.keyboard.up(key);
   await expect
     .poll(() =>
-      intro.getByRole('img').evaluate((image) => (image as HTMLImageElement).naturalWidth),
+      intro
+        .getByRole('img', { name: 'Pixel’s World', exact: true })
+        .evaluate((image) => (image as HTMLImageElement).naturalWidth),
     )
     .toBe(2172);
   await test
