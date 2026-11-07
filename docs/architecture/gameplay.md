@@ -53,6 +53,13 @@ Objektinteraktion mit `LivingRoomScene`; Rundenuhr, Ziel und Heimkehr bleiben
 außerhalb dieses gemeinsamen Schritts. Der Playground besitzt seinen eigenen
 Score und entsorgt seine Ressourcen beim Szenenwechsel.
 
+Der DEV-Debugdialog erhält nur innerhalb der Dev-Build-Grenze einen
+szenengebundenen Port. Szenarien initialisieren frische Domain-Modelle mit
+validierten Werten und einer lokalen Zufallsquelle; Vorwärtsschritte benutzen
+`RoundController`, `HomecomingSequence` und `Reconciliation`. Der normale
+Startschritt ist für Einführung und Debug-Szenario derselbe. Die öffentlichen
+E2E-Snapshots bleiben lesend; es gibt keine globalen Debugsetter.
+
 ## Objekte und Schadensvertrag
 
 Fähigkeiten werden kombiniert, nicht durch eine universelle Phaser-Basisklasse

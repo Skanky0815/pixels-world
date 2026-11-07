@@ -1,3 +1,4 @@
+import type { DebugScenario } from '../../dev/game-debug-model';
 import { onLanguageChange } from '../../i18n/locale';
 import { MobileReadout } from '../ui/MobileReadout';
 import { MainGoal } from '../domain/main-goal';
@@ -54,6 +55,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private activity!: PlayActivity;
   private controls!: InputController;
   private generation = 0;
+  private random: (() => number) | undefined;
   private hud!: GameHud;
   private platforms!: Phaser.Physics.Arcade.StaticGroup;
   private readonly chaos = new ChaosScore();
@@ -83,7 +85,8 @@ export class LivingRoomScene extends Phaser.Scene {
     });
   }
 
-  create() {
+  // eslint-disable-next-line max-lines-per-function -- Raum, Figuren und szenengebundene Diagnose werden in fester Aufbaufolge initialisiert.
+  create(data: { debugScenario?: DebugScenario } = {}) {
     const generation = ++this.generation;
 
     this.initializeRound();
@@ -95,14 +98,17 @@ export class LivingRoomScene extends Phaser.Scene {
     this.configureCamera();
 
     this.installObservation(generation);
+
+    if (import.meta.env.DEV) this.installDebug(generation, data.debugScenario);
   }
 
   private initializeRound() {
     this.physics.disableUpdate();
     this.chaos.reset();
-    this.round = new RoundController(roundConfigForPage());
+    this.random = undefined;
+    this.round = new RoundController(roundConfigForPage(), this.random);
     this.homecoming = new HomecomingSequence();
-    this.charm = new Reconciliation();
+    this.charm = new Reconciliation(this.random);
     this.returnTime = 0;
     this.goal = new MainGoal(this.room.goal);
   }
@@ -111,6 +117,79 @@ export class LivingRoomScene extends Phaser.Scene {
     const { width, height } = this.room.definition;
 
     this.cameras.main.setBounds(0, 0, width, height);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige DEV-Port bleibt innerhalb der Build-Grenze; weder Aktionen noch Engine-Referenzen werden global exponiert.
+  private installDebug(generation: number, scenario?: DebugScenario) {
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line max-lines-per-function -- Asynchrone Installation prüft die Szenengeneration und bindet alle Debug-Ressourcen an deren Shutdown.
+      void import('../../dev/game-debug').then(({ installGameDebug }) => {
+        if (!this.scene.isActive() || this.generation !== generation) return;
+        const models = () => ({
+          round: this.round,
+          homecoming: this.homecoming,
+          charm: this.charm,
+        });
+        const destroy = installGameDebug(
+          this,
+          {
+            get round() {
+              return models().round;
+            },
+            get homecoming() {
+              return models().homecoming;
+            },
+            get charm() {
+              return models().charm;
+            },
+            configure: (config, random) => {
+              this.random = random;
+              this.round = new RoundController(
+                { minDurationMs: config.seconds * 1000, maxDurationMs: config.seconds * 1000 },
+                random,
+              );
+              this.charm = new Reconciliation(random);
+              this.chaos.award('dev-scenario', config.score);
+              this.startRound();
+            },
+            restart: (config) => this.scene.restart({ debugScenario: config }),
+            startHomecoming: () => {
+              if (this.round.advance(this.round.snapshot().returnAtMs, this.chaos.score))
+                this.startHomecoming();
+            },
+            sync: () => {
+              this.syncHomecoming();
+              this.charmView.render(this.charm.snapshot());
+              this.renderResult();
+              this.renderMobile();
+            },
+            forward: () => {
+              if (this.canPlay() && this.round.advance(10_000, this.chaos.score))
+                this.startHomecoming();
+              this.renderHud(this.pixel.nearCurtain);
+            },
+            release: () => this.controls.release(),
+
+            // eslint-disable-next-line max-lines-per-function -- Vollständiger losgelöster DEV-Diagnosevertrag ohne Engine-Referenzen.
+            read: () => ({
+              generation,
+              started: this.started,
+              active: this.activity.active,
+              round: this.round.snapshot(),
+              chaos: { score: this.chaos.score, anger: angerFor(this.chaos.score).id },
+              homecoming: this.homecoming.snapshot(),
+              reconciliation: this.charm.snapshot(),
+              pixelReturn: this.returning.snapshot(),
+              pixel: this.pixel.snapshot(),
+              blurListeners: this.game.events.listenerCount(Phaser.Core.Events.BLUR),
+            }),
+          },
+          scenario,
+        );
+
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, destroy);
+      });
+    }
   }
 
   // eslint-disable-next-line max-lines-per-function -- Import und vollständiger nur lesbarer Snapshot bleiben unter derselben E2E-Buildbedingung; Produktionsisolation geht vor künstlichem Aufteilen.
@@ -331,6 +410,10 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private tryStart(input: InputState) {
     if (!input.confirmPressed || !this.activity.active) return;
+    this.startRound();
+  }
+
+  private startRound() {
     this.started = true;
     this.startScreen.hide();
     this.goalView.render(this.goal.snapshot(), true);
@@ -390,7 +473,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (score === null) return;
     this.goal.finish(this.round.snapshot().endReason ?? 'timer');
     this.goalView.render(this.goal.snapshot(), true);
-    this.homecoming.start(score);
+    this.homecoming.start(score, this.random);
     this.beginPixelReturn();
     this.sara.render(this.homecoming.snapshot());
     this.syncActivity();

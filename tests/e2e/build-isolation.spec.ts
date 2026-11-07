@@ -30,6 +30,8 @@ test(
     await expect(page.locator('canvas')).toBeVisible();
     expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
     await expect(page.locator('.start-screen')).toBeVisible();
+    await page.keyboard.press('F2');
+    await expect(page.locator('.game-debug, .game-debug-toggle')).toHaveCount(0);
     await expect(page.getByAltText('Pixel’s World')).toBeVisible();
     // Also inspect delivered JS, so a delayed dynamic import cannot hide a leak.
     const scripts = await page
@@ -49,12 +51,17 @@ test(
       expect(source).not.toContain('__E2E_ROUND_CONFIG__');
       expect(source).not.toContain('Vergleichsansicht unvollständig');
       expect(source).not.toContain('InteractablePlayground');
+      expect(source).not.toContain('GameDebug');
+      expect(source).not.toContain('dev-scenario');
     }
 
     for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175/pixels-world']) {
       for (const path of [
         '/animation-compare.html',
         '/interactable-playground.html',
+        '/src/dev/game-debug.ts',
+        '/src/dev/game-debug.css',
+        '/src/dev/game-debug-model.ts',
         '/src/dev/interactable-playground.ts',
         '/src/dev/interactable-playground.css',
         '/src/dev/PlaygroundScene.ts',
