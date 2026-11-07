@@ -1,3 +1,4 @@
+import type { GoalView } from './game/ui/GoalView';
 import type { Difficulty } from './content/difficulty';
 import type { GameHud } from './game/ui/GameHud';
 import type { GameFeedback } from './game/ui/GameFeedback';
@@ -11,7 +12,7 @@ import type { PixelReturnSnapshot } from './game/domain/pixel-return';
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
   readonly goal: ReturnType<MainGoal['snapshot']>;
-  readonly goalView: { readonly text: string; readonly visible: boolean };
+  readonly goalView: ReturnType<GoalView['snapshot']>;
   readonly started: boolean;
   readonly difficulty: Difficulty;
   readonly intro: { readonly visible: boolean };

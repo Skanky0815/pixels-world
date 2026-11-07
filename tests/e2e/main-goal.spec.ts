@@ -21,6 +21,11 @@ for (const difficulty of DIFFICULTIES) {
 
       expect(onShelf.chaos.score).toBe(0);
       expect(onShelf.goal.status).toBe('active');
+      expect(onShelf.goalView).toMatchObject({
+        ballTexture: 'favorite-ball',
+        ballVisible: true,
+        markerVisible: true,
+      });
       expect(onShelf.round.phase).toBe('chaos');
       await test
         .info()
@@ -49,6 +54,7 @@ for (const difficulty of DIFFICULTIES) {
       expect(reached.round.finalChaosScore).toBe(0);
       expect(reached.homecoming.selection?.score).toBe(0);
       expect(reached.goalView.text).toContain('Ziel erreicht');
+      expect(reached.goalView).toMatchObject({ ballVisible: true, markerVisible: false });
       await until(
         page,
         (s) => s.pixelReturn.stage === 'seated' && s.homecoming.stage === 'dialogue',
@@ -59,6 +65,10 @@ for (const difficulty of DIFFICULTIES) {
         .attach('ziel-erreicht', { body: await page.screenshot(), contentType: 'image/png' });
       await reset(page);
       expect((await state(page)).goal).toMatchObject({ status: 'active', progress: 0 });
+      expect((await state(page)).goalView).toMatchObject({
+        ballVisible: true,
+        markerVisible: true,
+      });
       expect((await state(page)).round.endReason).toBeNull();
       expect((await state(page)).result).toBeNull();
     });

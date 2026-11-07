@@ -6,6 +6,7 @@ export const ASSETS = {
   'curtain-default': { kind: 'curtain', capabilities: ['climb', 'damage'] },
   'catgrass-default': { kind: 'plant', capabilities: ['automatic', 'damage'], width: 40, height: 60 },
   'vase-default': { kind: 'vase', capabilities: ['push', 'damage'], width: 18, height: 28 },
+  'favorite-ball': { kind: 'toy', width: 16, height: 16 },
   'wood-shelf': { kind: 'shelf', color: 0x70503e, edgeColor: 0xc49464, bracketColor: 0x87644a },
 } as const;
 export type AssetKey = keyof typeof ASSETS;
