@@ -18,7 +18,7 @@ test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Pr
   assert.deepEqual(room.spawn, { x: 110, bottom: 468 });
   assert.equal(room.definition.width, 960);
   assert.equal(room.definition.height, 540);
-  assert.equal(room.objects.length, 6);
+  assert.equal(room.objects.length, 5);
   const couch = room.objects.find((object) => object.kind === 'couch');
 
   assert.ok(couch);
@@ -29,7 +29,6 @@ test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Pr
       .filter((object) => object.kind === 'vase')
       .map((object) => [object.id, object.config.x, object.config.shelfY, object.config.points]),
     [
-      ['small-vase', 620, 304, 25],
       ['blue-vase', 710, 224, 35],
       ['heirloom-vase', 906, 154, 40],
     ],
@@ -65,14 +64,14 @@ test('Auflagehöhen folgen referenzierten Flächen einschließlich eines Sofas',
     {
       ...LIVING_ROOM,
       objects: LIVING_ROOM.objects.map((object) =>
-        object.id === 'small-vase'
+        object.id === 'blue-vase'
           ? { ...object, placement: { mode: 'surface', x: 300, surfaceId: 'couch' } }
           : object,
       ),
     },
     OBJECTS,
   );
-  const vase = room.objects.find((object) => object.id === 'small-vase');
+  const vase = room.objects.find((object) => object.id === 'blue-vase');
 
   assert.equal(vase?.kind, 'vase');
   assert.ok(vase?.kind === 'vase');
@@ -243,7 +242,7 @@ test('Sichere Einzelwerte dürfen gemeinsam keine unsichere Gesamtpunktzahl erge
     () =>
       bad(LIVING_ROOM, {
         ...OBJECTS,
-        'small-vase': { ...OBJECTS['small-vase'], points: Number.MAX_SAFE_INTEGER },
+        'blue-vase': { ...OBJECTS['blue-vase'], points: Number.MAX_SAFE_INTEGER },
       }),
     /maximum score/,
   );
