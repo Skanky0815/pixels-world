@@ -55,8 +55,9 @@ export class InputController {
     const focused = document.activeElement;
 
     return (
-      !!focused?.closest('a, button, input, textarea, select') &&
-      !focused.closest('.touch-controls')
+      !!document.querySelector('dialog[open]') ||
+      (!!focused?.closest('a, button, input, textarea, select') &&
+        !focused.closest('.touch-controls'))
     );
   }
 
@@ -89,6 +90,10 @@ export class InputController {
     const jumpPressed = Phaser.Input.Keyboard.JustDown(this.keys.jump);
 
     return { jumpPressed, confirmPressed: jumpPressed && !this.keys.jump.originalEvent?.repeat };
+  }
+
+  defer(input: InputState) {
+    this.frames.defer(input);
   }
 
   setActionLabel(label: 'Sprung' | 'Weiter') {

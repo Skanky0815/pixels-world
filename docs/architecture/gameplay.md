@@ -30,7 +30,8 @@ gehaltene Quelle. Native Wiederholung erzeugt keine neue Aktion. Pointer-Capture
 Verlassen/Cancel, Fokus, Sichtbarkeit und Resize räumen Eingaben auf. Spielobjekte
 lesen keine DOM-/Hardwareereignisse.
 
-`PlayActivity` liefert bereinigte aktive Zeit. Start/Resume holen keine
+`PlayActivity` kombiniert manuelle Menüpause, Fokus und Sichtbarkeit und liefert
+bereinigte aktive Zeit. Die manuelle Pause bleibt bei Tab-/Fokuswechsel erhalten. Start/Resume holen keine
 Hintergrundzeit nach. Die Szene aktualisiert die vom automatischen Update
 entkoppelte Arcade-Welt mit demselben Delta wie die Domain; Phasers `postUpdate`
 bleibt erhalten. Es entsteht keine zweite Loop.
@@ -59,6 +60,14 @@ validierten Werten und einer lokalen Zufallsquelle; Vorwärtsschritte benutzen
 `RoundController`, `HomecomingSequence` und `Reconciliation`. Der normale
 Startschritt ist für Einführung und Debug-Szenario derselbe. Die öffentlichen
 E2E-Snapshots bleiben lesend; es gibt keine globalen Debugsetter.
+
+`PauseMenu` besitzt seinen Dialog, den Menüknopf und alle Ereignisse pro Szene.
+Es verwendet den bestehenden Sprachwähler und `AudioPreferences`; ein Neustart
+entsorgt die alte Ansicht und startet mit frischem Aktivitätszustand. Sprache
+und Audiopegel bleiben erhalten. `GameAudio` überträgt Gesamt- × Effektpegel auf
+die Soundverwaltung. Die Aktivitätsgrenze pausiert/reaktiviert Audio selbst und
+ersetzt dafür Phasers unabhängige automatische Blur-Wiederaufnahme. Noch sind
+keine Audio-Assets eingebunden. Der E2E-Vertrag liest nur skalare Audiozustände.
 
 ## Objekte und Schadensvertrag
 
@@ -135,8 +144,8 @@ Spielentscheidungen hängen nicht von übersetzten Formulierungen ab. Fehlendes
 Englisch fällt auf Deutsch zurück und wird in Entwicklung gemeldet.
 
 Sprachwechsel benachrichtigen Ansichten und rendern bestehende Snapshots erneut,
-ohne Timer, Physik oder Runde neu zu starten. Nur `pixels-world.language` wird
-lokal gespeichert; kein Spielstand. Speicherfehler verhindern die Sitzung nicht.
+ohne Timer, Physik oder Runde neu zu starten. `pixels-world.language` und die
+Audiopegel unter `pixels-world.audio` werden lokal gespeichert; kein Spielstand. Speicherfehler verhindern die Sitzung nicht.
 Die Rechtsseiten sind statische deutsche HTML-Seiten ohne Spielcode. Eigennamen,
 Markenslogans, Tastensymbole und technische Meldungen brauchen keine zweite Fassung.
 Datenflüsse und Quellen: [rechtliche Dokumentation](../legal/phase2-review.md).

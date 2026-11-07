@@ -30,6 +30,12 @@ export interface GameTestState {
     readonly canvasTextVisible: boolean;
   };
   readonly active: boolean;
+  readonly audio: {
+    readonly master: number;
+    readonly effects: number;
+    readonly volume: number;
+    readonly paused: boolean;
+  };
   readonly ready: boolean;
   readonly generation: number;
   readonly blurListeners: number;

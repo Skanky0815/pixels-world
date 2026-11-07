@@ -133,6 +133,13 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
 
+- Esc/Menü während Lauf, Heimkehr und zeitkritischer Versöhnung öffnen: Welt,
+  Animationen und Fristen bleiben stehen. Tab-Wechsel und wiederholter Fokus
+  heben die Menüpause nicht auf. Fortsetzen holt keine Zeit nach; gehaltene
+  Tasten lösen weder Sprung noch Neustart aus. DE/EN und Lautstärken ändern,
+  neu laden und nach einem Menü-Neustart erneut prüfen. Mobile: Menüknopf,
+  Rotation und Scrollen im Dialog bleiben erreichbar.
+
 - Einführung lesen und scrollen; vor Start keine Bewegung/Timer. Startsignal wird
   verbraucht. Lauf, Luftsteuerung, Sofa/Regale und Raumgrenzen prüfen.
 - Vorhang greifen, hoch-/hinabklettern, rutschen, abspringen und wieder lösen.
@@ -155,7 +162,7 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   mehr Platz oder Hochformat verwenden. Emulation ist kein Hardware-Nachweis.
 - DE/EN in Einführung, Dialog, Versöhnung und Ergebnis wechseln: Runde bleibt
   erhalten. Auswahl wird beim Reload wiederhergestellt; gesperrter Speicher
-  verhindert das Spiel nicht. Nur die Sprache, kein Spielstand, wird gespeichert.
+  verhindert das Spiel nicht. Sprache und Lautstärke, kein Spielstand, werden gespeichert.
 - Produktions-/Pages-Build: eigene Ressourcen, kein Testobserver, erreichbare
   Rechtsseiten; verlinkte Spielversion passt zum Release. Entwicklung/Preview
   ohne Release-Kontext zeigen nur die Versionsnummer. Für die gezielte Prüfung

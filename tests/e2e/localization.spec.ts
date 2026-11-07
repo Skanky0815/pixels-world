@@ -1,3 +1,4 @@
+import { changeLanguage } from './pause-support';
 import { test, expect, loadIntro, start, state, until } from './support';
 import { startTouch } from './touch-support';
 import { advanceRoundTo, seedRoundRandom, useIdleFrames } from './round-clock';
@@ -8,14 +9,14 @@ test('Sprachwahl: Einführung, Persistenz und laufende Runde ohne Reset', async 
 }) => {
   await loadIntro(page);
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
-  await page.locator('[data-language="en"]').click();
+  await changeLanguage(page, 'en');
   await expect(page.locator('.start-copy h2')).toHaveText('One room. One cat. Your chaos.');
   await loadIntro(page);
   await expect(page.locator('[data-language="en"]')).toHaveAttribute('aria-pressed', 'true');
   await start(page);
   const before = await state(page);
 
-  await page.locator('[data-language="de"]').click();
+  await changeLanguage(page, 'de');
   expect((await state(page)).generation).toBe(before.generation);
   expect((await state(page)).round.returnAtMs).toBe(before.round.returnAtMs);
   expect((await state(page)).chaos.score).toBe(before.chaos.score);
@@ -36,7 +37,7 @@ test('Gesperrter Sprachspeicher verhindert weder Start noch Sprachwechsel', asyn
     };
   });
   await loadIntro(page);
-  await page.locator('[data-language="en"]').click();
+  await changeLanguage(page, 'en');
   await expect(page.locator('.start-copy h2')).toHaveText('One room. One cat. Your chaos.');
   await loadIntro(page);
   await expect(page.locator('[data-language="de"]')).toHaveAttribute('aria-pressed', 'true');
@@ -53,7 +54,7 @@ test.describe('Lokalisierte Touch-Runde', () => {
     await seedRoundRandom(page);
     const touch = await startTouch(page, '/?round-profile=fast');
 
-    await page.locator('[data-language="en"]').click();
+    await changeLanguage(page, 'en');
     await expect(page.locator('[data-control="jump"]')).toHaveText('Jump');
     await useIdleFrames(page);
     await advanceRoundTo(page, (await state(page)).round.returnAtMs);
@@ -64,8 +65,8 @@ test.describe('Lokalisierte Touch-Runde', () => {
     );
     const before = await state(page);
 
-    await page.locator('[data-language="de"]').click();
-    await page.locator('[data-language="en"]').click();
+    await changeLanguage(page, 'de');
+    await changeLanguage(page, 'en');
     expect((await state(page)).generation).toBe(before.generation);
     expect((await state(page)).homecoming.selection).toEqual(before.homecoming.selection);
     await expect(page.locator('.mobile-hint')).toContainText('Continue');
@@ -74,8 +75,8 @@ test.describe('Lokalisierte Touch-Runde', () => {
     await expect(page.locator('.mobile-dialogue')).toContainText('CHARM OFFENSIVE');
     const initial = (await state(page)).reconciliation;
 
-    await page.locator('[data-language="de"]').click();
-    await page.locator('[data-language="en"]').click();
+    await changeLanguage(page, 'de');
+    await changeLanguage(page, 'en');
     await touch.tap('jump');
 
     for (let heart = 0; heart < initial.required; heart++) {

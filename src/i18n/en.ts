@@ -1,6 +1,13 @@
 import type { de } from './de';
 
 export const en: Record<keyof typeof de, string> = {
+  menu: 'Menu',
+  pauseSettings: 'Pause & settings',
+  resumeGame: 'Resume',
+  closeSettings: 'Back',
+  audioSettings: 'Audio',
+  masterVolume: 'Master volume',
+  effectsVolume: 'Sound effects',
   correct: 'Correct!',
   nuzzle: '♥ · Nuzzle',
   purr: 'Purrr …',

@@ -57,3 +57,29 @@ test('Focus-/Lebenszyklus-Cleanup verwirft den alten Snapshot auch im selben Fra
   assert.equal(released.horizontal, 0);
   assert.notStrictEqual(released, held);
 });
+
+// eslint-disable-next-line max-lines-per-function -- Ein verworfener Resume-Frame darf Flanken erhalten, aber weder alte Bewegung noch wiederholte Eingaben erzeugen.
+test('Resume puffert frische Flanken genau einmal und übernimmt nur aktuelle Bewegung', () => {
+  const frames = new InputFrames();
+  const idle = {
+    horizontal: 0,
+    vertical: 0,
+    jumpPressed: false,
+    confirmPressed: false,
+    resetPressed: false,
+    arrows: [],
+    active: false,
+  };
+  const pending = { ...idle, horizontal: 1, jumpPressed: true, confirmPressed: true, active: true };
+
+  frames.defer(pending);
+  const resumed = frames.read(2, () => idle);
+
+  assert.equal(resumed.jumpPressed, true);
+  assert.equal(resumed.confirmPressed, true);
+  assert.equal(resumed.horizontal, 0);
+  assert.equal(frames.read(3, () => idle).jumpPressed, false);
+  frames.defer(pending);
+  frames.clear();
+  assert.equal(frames.read(4, () => idle).confirmPressed, false);
+});

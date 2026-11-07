@@ -48,8 +48,10 @@ Geprüft wurden Anwendungscode, Styles, Asset-Imports, Build und Pages-Workflow:
 - Rundenzustand nur im Arbeitsspeicher, Reset bei Reload.
 - Keine Analyse, Werbung, fremden Schriftarten oder eingebetteten Dienste.
 - Keine vom Spiel gesetzten Cookies, Session-Storage- oder IndexedDB-Nutzung.
-- Nur die Sprachwahl wird unter `pixels-world.language` lokal gespeichert;
-  Spielstände bleiben flüchtig. Die Datenschutzerklärung beschreibt dies.
+- Zum Phase-2-Review wurde nur die Sprachwahl unter `pixels-world.language`
+  gespeichert. Mit #107 kommen die Lautstärkepegel unter `pixels-world.audio`
+  hinzu. Spielstände bleiben flüchtig; die Datenschutzerklärung beschreibt beide
+  lokalen Einstellungen.
 - Externe Verweise sind normale Links; erst die Aktivierung öffnet GitHub oder
   die verlinkte Informationsseite. Keine Hintergrundabfrage dieser Seiten.
 - Rechtsseiten sind statisches HTML/CSS und laden keinen Spielcode.

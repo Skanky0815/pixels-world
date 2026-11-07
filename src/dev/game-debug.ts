@@ -60,6 +60,8 @@ export function installGameDebug(scene: Phaser.Scene, port: DebugPort, initial?:
     'keydown',
     (event) => {
       if (event.code !== 'F2' || event.repeat) return;
+
+      if (!root.open && document.querySelector('dialog[open]')) return;
       event.preventDefault();
       show();
     },

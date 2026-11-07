@@ -18,8 +18,8 @@ Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich gro�
 
 Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
 mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.
-Das Spiel läuft ohne Konto und ohne Backend. Über die Sprachwahl im Kopfbereich
-spielst du auf Deutsch oder Englisch. Nur diese Einstellung bleibt lokal im
+Das Spiel läuft ohne Konto und ohne Backend. Über die Sprachwahl im Pause-Menü
+spielst du auf Deutsch oder Englisch. Sprache und Lautstärke bleiben lokal im
 Browser gespeichert; ein Sprachwechsel erhält die laufende Runde.
 Den aktuellen Versionsstand findest du unter [Releases](https://github.com/Skanky0815/pixels-world/releases).
 
@@ -43,6 +43,18 @@ Versöhnungsausgang zusammen. Mit **Neue Runde** beginnt das nächste Spiel.
 
 Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.
+
+## Pause und Einstellungen
+
+**Esc** oder **Menü** öffnet die Pause. Welt, Rundentimer, Versöhnungsfristen und
+Animationen bleiben stehen. **Fortsetzen** bzw. Esc schließt das Menü; ein
+Tab-Wechsel setzt die manuelle Pause nicht außer Kraft.
+
+Im Menü wechselst du DE/EN und stellst Gesamtlautstärke und Soundeffekte ein.
+Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.
+Das Spiel enthält aktuell noch keine Audio-Assets. **Neue Runde** setzt die
+laufende Runde zurück und ist während des Spiels nur über das Menü erreichbar;
+am Ergebnis bleibt der vorhandene Button verfügbar.
 
 ## Steuerung
 

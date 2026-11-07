@@ -1,3 +1,5 @@
+import { PauseMenu } from '../ui/PauseMenu';
+import { GameAudio } from '../ui/GameAudio';
 import type { DebugScenario } from '../../dev/game-debug-model';
 import { onLanguageChange } from '../../i18n/locale';
 import { MobileReadout } from '../ui/MobileReadout';
@@ -39,6 +41,8 @@ import { PixelReturnController } from '../domain/pixel-return';
 
 export class LivingRoomScene extends Phaser.Scene {
   private mobile!: MobileReadout;
+  private menu!: PauseMenu;
+  private audio!: GameAudio;
   private goal!: MainGoal;
   private goalView!: GoalView;
   private started = false;
@@ -175,6 +179,7 @@ export class LivingRoomScene extends Phaser.Scene {
               generation,
               started: this.started,
               active: this.activity.active,
+              audio: this.audio.snapshot(),
               round: this.round.snapshot(),
               chaos: { score: this.chaos.score, anger: angerFor(this.chaos.score).id },
               homecoming: this.homecoming.snapshot(),
@@ -238,6 +243,7 @@ export class LivingRoomScene extends Phaser.Scene {
             pixelReturn: this.returning.snapshot(),
             sara: this.sara.snapshot(),
             active: this.activity.active,
+            audio: this.audio.snapshot(),
             chaos: {
               score: this.chaos.score,
               damagedObjects: this.chaos.count,
@@ -312,6 +318,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.mobile = new MobileReadout();
     this.controls = new InputController(this);
     this.activity = new PlayActivity(() => this.syncActivity());
+    this.audio = new GameAudio(this.sound);
     this.hud = new GameHud(this, room.hud);
     this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
@@ -319,6 +326,14 @@ export class LivingRoomScene extends Phaser.Scene {
     this.startScreen = new StartScreen(!this.started, this.room.goal);
     this.goalView = new GoalView(this, this.room.goal);
     this.goalView.render(this.goal.snapshot(), this.started);
+    this.menu = new PauseMenu({
+      pause: (paused) => {
+        this.controls.release();
+        this.activity.setPaused(paused);
+      },
+      restart: () => this.scene.restart(),
+      started: () => this.started,
+    });
     this.syncActivity();
     const unsubscribe = onLanguageChange(() => this.refreshLanguage());
 
@@ -339,6 +354,8 @@ export class LivingRoomScene extends Phaser.Scene {
     this.startScreen.destroy();
     this.goalView.destroy();
     this.mobile.destroy();
+    this.menu.destroy();
+    this.audio.destroy();
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der flache HUD-Vertrag zeigt Score, Runde und Aktion gemeinsam; sämtliche Regeln bleiben außerhalb der Ansicht.
@@ -364,6 +381,8 @@ export class LivingRoomScene extends Phaser.Scene {
   update(_time: number, delta: number) {
     if (!this.pixel) return;
     const input = this.controls.read(this.game.loop.frame);
+
+    if (this.menu.opened) return;
 
     if (!this.started) {
       this.tryStart(input);
@@ -431,6 +450,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.setWorldActive(active);
     this.pixel.setPaused(!this.activity.active || !this.started);
     this.sara.setPaused(!this.activity.active);
+    this.audio.setActive(this.activity.active && this.started);
     this.renderHud(this.pixel.nearCurtain);
   }
 
@@ -447,7 +467,11 @@ export class LivingRoomScene extends Phaser.Scene {
   private updateRound(input: InputState, delta: number) {
     const elapsed = this.activity.delta(delta);
 
-    if (elapsed <= 0) return;
+    if (elapsed <= 0) {
+      if (this.activity.active) this.controls.defer(input);
+
+      return;
+    }
 
     if (this.canPlay()) this.playFrame(input, elapsed);
     else this.advanceHomecoming(input, elapsed);
