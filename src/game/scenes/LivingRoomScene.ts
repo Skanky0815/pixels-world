@@ -358,7 +358,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
     this.startScreen = new StartScreen(!this.started, this.room.goal, () => this.menu.open());
-    this.goalView = new GoalView(this, this.room.goal);
+    this.goalView = new GoalView(this, this.room.goal, this.difficulty);
     this.goalView.render(this.goal.snapshot(), this.started);
     this.menu = new PauseMenu({
       pause: (paused) => {

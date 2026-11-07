@@ -24,9 +24,10 @@ for (const difficulty of DIFFICULTIES) {
       expect(onShelf.goalView).toMatchObject({
         ballTexture: 'favorite-ball',
         ballVisible: true,
-        markerVisible: true,
+        markerVisible: difficulty !== 'hard',
       });
       expect(onShelf.round.phase).toBe('chaos');
+      expect(onShelf.goalView.markerWidth).toBe({ easy: 36, normal: 22, hard: 0 }[difficulty]);
       await test
         .info()
         .attach('ziel-aktiv', { body: await page.screenshot(), contentType: 'image/png' });
@@ -67,7 +68,7 @@ for (const difficulty of DIFFICULTIES) {
       expect((await state(page)).goal).toMatchObject({ status: 'active', progress: 0 });
       expect((await state(page)).goalView).toMatchObject({
         ballVisible: true,
-        markerVisible: true,
+        markerVisible: difficulty !== 'hard',
       });
       expect((await state(page)).round.endReason).toBeNull();
       expect((await state(page)).result).toBeNull();
