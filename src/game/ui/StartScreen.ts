@@ -10,12 +10,17 @@ export class StartScreen {
   constructor(
     visible: boolean,
     private readonly goal: ResolvedGoal,
+    private readonly options: () => void,
   ) {
     const host = document.getElementById('game');
 
     if (!host) throw new Error('Game host missing');
     this.root = document.createElement('section');
     this.root.className = 'start-screen';
+    this.root.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('[data-start-options]'))
+        this.options();
+    });
     this.root.setAttribute('aria-label', t('gameIntroduction'));
     this.root.innerHTML = introMarkup();
     this.describeGoal(goal);
@@ -66,6 +71,6 @@ function introMarkup() {
       <div><dt><span class="space-key" role="img" aria-label="${t('spaceLabel')}">␣</span></dt><dd>${t('jumpAndLeapOffTheCurtain')}</dd></div>
       <div><dt>↑ ↓</dt><dd>${t('climbTheCurtain')}</dd></div>
     </dl>
-  </div><p class="start-prompt"><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
-  <span class="touch-prompt">${t('tapContinueToStart')}</span></p>`;
+  </div><p class="start-prompt"><button type="button" class="start-options" data-start-options>${t('gameOptions')}</button><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
+  <span class="touch-prompt">${t('startTouchShort')}</span></p>`;
 }

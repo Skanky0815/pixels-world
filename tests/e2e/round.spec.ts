@@ -132,7 +132,7 @@ test(
     expect(fresh.round.phase).toBe('chaos');
     expect(fresh.round.elapsedMs).toBeLessThan(500);
     expect(fresh.round.finalChaosScore).toBeNull();
-    expect(fresh.hud.scoreText).toBe('CHAOS: 0');
+    expect(fresh.hud.scoreText).toBe('CHAOS: 0 · Normal');
     expect(fresh.chaos.score).toBe(0);
     expect(fresh.homecoming.stage).toBe('waiting');
     expect(fresh.homecoming.selection).toBeNull();

@@ -71,6 +71,14 @@ Animationen bleiben stehen. **Fortsetzen** bzw. Esc schließt das Menü; ein
 Tab-Wechsel setzt die manuelle Pause nicht außer Kraft. **Beenden** führt zurück
 zur Landingpage; ein erneuter Spielaufruf zeigt wieder die kurze Einführung.
 
+Über **Optionen** in der Einführung oder das Pause-Menü wählst du **Leicht**,
+**Normal** oder **Schwer**. Normal erhält das bisherige Balancing. Die Auswahl
+gilt beim nächsten Rundenstart; eine laufende Runde und ihr Ergebnis bleiben
+unverändert. Der gespielte Grad steht im HUD und im Ergebnis.
+Zum Balancieren bearbeitest du [difficulty.json](src/content/difficulty.json);
+die [Felderklärung](docs/architecture/gameplay.md#balancing-per-json) beschreibt
+Zeitfaktoren, Herzen, Tastenfolgen und Vasenbelegung.
+
 Im Menü wechselst du DE/EN und stellst Gesamtlautstärke und Soundeffekte ein.
 Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.
 **Bewegung reduzieren** hält die kurzen Rückmeldungen statisch; eine entsprechende

@@ -82,7 +82,7 @@ test('Alle drei Vasen sind erreichbar und summieren Schaden über die Ärgerstuf
   await until(page, (s) => s.vases[2].state === 'broken');
   const complete = await state(page);
 
-  expect(complete.hud.scoreText).toBe(`CHAOS: ${complete.chaos.score}`);
+  expect(complete.hud.scoreText).toBe(`CHAOS: ${complete.chaos.score} · Normal`);
   expect(complete.chaos).toEqual({
     score: 100 + complete.curtain.damage * 4,
     damagedObjects: 3 + Number(complete.curtain.damage > 0),

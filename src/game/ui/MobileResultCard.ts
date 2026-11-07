@@ -36,6 +36,7 @@ export class MobileResultCard {
     this.chaos.textContent = result.chaosText;
     this.reconciliation.textContent = result.reconciliationText;
     this.hearts.textContent = result.heartsText;
+    this.hearts.dataset.count = String(result.required);
     this.hearts.setAttribute('role', 'img');
     this.hearts.setAttribute(
       'aria-label',

@@ -122,8 +122,12 @@ weder Engine-Objekte noch Mutatoren auf `window` oder dem Testobserver.
 Esc oder **Menü** öffnet den szenengebundenen Pausendialog, auch vor dem Start.
 Die Sprachwahl befindet sich ausschließlich dort. **Neue Runde** ist erst nach
 Rundenstart sichtbar; der Ergebnis-Button bleibt erhalten. Der Dialog verwendet
-den gemeinsamen DE-/EN-Katalog, speichert Sprache und Audiopegel lokal und bleibt
-bei blockiertem Browser-Speicher funktionsfähig.
+den gemeinsamen DE-/EN-Katalog, speichert Sprache, Audiopegel, Bewegungswunsch
+und Schwierigkeit lokal und bleibt
+bei blockiertem Browser-Speicher funktionsfähig. **Optionen** in der Einführung
+öffnet denselben Dialog. Die Schwierigkeit wird erst beim nächsten Rundenstart
+übernommen; Presets und Snapshot-Vertrag stehen in der
+[Gameplay-Architektur](architecture/gameplay.md#schwierigkeitsgrade).
 
 `PlayActivity` verknüpft Menüpause mit Fokus/Sichtbarkeit. Fortsetzen verwirft das
 erste Zeitdelta, während `InputFrames` eine dabei noch unbenutzte frische

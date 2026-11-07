@@ -1,3 +1,4 @@
+import type { Difficulty } from './content/difficulty';
 import type { GameHud } from './game/ui/GameHud';
 import type { GameFeedback } from './game/ui/GameFeedback';
 import type { MainGoal } from './game/domain/main-goal';
@@ -12,6 +13,7 @@ export interface GameTestState {
   readonly goal: ReturnType<MainGoal['snapshot']>;
   readonly goalView: { readonly text: string; readonly visible: boolean };
   readonly started: boolean;
+  readonly difficulty: Difficulty;
   readonly intro: { readonly visible: boolean };
   readonly result: ResultViewSnapshot;
   readonly charmDisplay: { readonly heartsText: string; readonly canvasTextVisible: boolean };

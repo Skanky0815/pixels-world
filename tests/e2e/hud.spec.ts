@@ -8,7 +8,7 @@ test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverände
   const idle = (await state(page)).hud;
 
   expect(idle).toEqual({
-    scoreText: 'CHAOS: 0',
+    scoreText: 'CHAOS: 0 · Normal',
   });
   expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.hud))).toBe(true);
 
@@ -17,7 +17,7 @@ test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverände
     await until(page, (s) => s.couch.damage === 1);
     const scratched = (await state(page)).hud;
 
-    expect(scratched.scoreText).toBe('CHAOS: 3');
+    expect(scratched.scoreText).toBe('CHAOS: 3 · Normal');
     await reset(page);
     expect((await state(page)).hud).toEqual(idle);
   }
