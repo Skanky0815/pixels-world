@@ -1,5 +1,55 @@
 # Changelog
 
+## [0.1.5](https://github.com/Skanky0815/pixels-world/compare/v0.1.4...v0.1.5) (2026-11-07)
+
+
+### Funktionen
+
+* **art:** add distinct vase sprites and matching shards ([7066a4f](https://github.com/Skanky0815/pixels-world/commit/7066a4f29c260a9aee9fd28be13c87744f0d7754))
+* **art:** add favorite fabric ball and separate goal marker ([b7a3932](https://github.com/Skanky0815/pixels-world/commit/b7a3932303ba06bd255d41c617e3f16e89c5b7a0))
+* **art:** add rust curtain and contact-based tear patches ([96612d2](https://github.com/Skanky0815/pixels-world/commit/96612d2390a41d79147489b9d8009cdcbc685aac))
+* **art:** add sofa variants and spaced scratch patches ([9078ec8](https://github.com/Skanky0815/pixels-world/commit/9078ec899c2e977de4099a8e7673c1c1b08919c1))
+* **art:** integrate modular living room scenery ([8d4f2d1](https://github.com/Skanky0815/pixels-world/commit/8d4f2d12fe66908539eee772138640d38ccc708d))
+* **art:** Katzengras mit Bissspur und verschütteter Erde ([#184](https://github.com/Skanky0815/pixels-world/issues/184)) ([830bcf3](https://github.com/Skanky0815/pixels-world/commit/830bcf39982ed634798ecbe8e5769961038aab70))
+* **art:** Lieblingsball mit getrenntem Zielmarker ([#187](https://github.com/Skanky0815/pixels-world/issues/187)) ([b7a3932](https://github.com/Skanky0815/pixels-world/commit/b7a3932303ba06bd255d41c617e3f16e89c5b7a0))
+* **art:** Modulares Wohnzimmer mit abgestimmten Spielankern ([#196](https://github.com/Skanky0815/pixels-world/issues/196)) ([8d4f2d1](https://github.com/Skanky0815/pixels-world/commit/8d4f2d12fe66908539eee772138640d38ccc708d))
+* **art:** Rostroter Vorhang mit kontaktbezogenen Rissen ([#181](https://github.com/Skanky0815/pixels-world/issues/181)) ([96612d2](https://github.com/Skanky0815/pixels-world/commit/96612d2390a41d79147489b9d8009cdcbc685aac))
+* **art:** Sofas mit Stoffvarianten und getrennten Kratzspuren ([#179](https://github.com/Skanky0815/pixels-world/issues/179)) ([9078ec8](https://github.com/Skanky0815/pixels-world/commit/9078ec899c2e977de4099a8e7673c1c1b08919c1))
+* **art:** Vasen und Scherben im Spielstil ([#177](https://github.com/Skanky0815/pixels-world/issues/177)) ([7066a4f](https://github.com/Skanky0815/pixels-world/commit/7066a4f29c260a9aee9fd28be13c87744f0d7754))
+* **content:** classify objects for spawn slots ([2b19851](https://github.com/Skanky0815/pixels-world/commit/2b1985198320e66e14e48dae4f5d83b8294edbe7))
+* **content:** Größenklassen und Spawn-Profile für Bestandsobjekte ([#192](https://github.com/Skanky0815/pixels-world/issues/192)) ([2b19851](https://github.com/Skanky0815/pixels-world/commit/2b1985198320e66e14e48dae4f5d83b8294edbe7))
+* **content:** populate shelf slots deterministically ([8a161a1](https://github.com/Skanky0815/pixels-world/commit/8a161a1b6abe78293e70fd6a97e006e3bf86bcf7))
+* **content:** Seedbasierte Regalbelegung in beiden Wohnzimmern ([#193](https://github.com/Skanky0815/pixels-world/issues/193)) ([8a161a1](https://github.com/Skanky0815/pixels-world/commit/8a161a1b6abe78293e70fd6a97e006e3bf86bcf7))
+* **dev:** add isolated interactable playground ([#152](https://github.com/Skanky0815/pixels-world/issues/152)) ([82e2b08](https://github.com/Skanky0815/pixels-world/commit/82e2b0829d8e2d85764dba483d00205b51a02071))
+* **dev:** add reproducible game phase debug scenarios ([853399c](https://github.com/Skanky0815/pixels-world/commit/853399c9fad4993d88f1c1b0fd8d5c430b5a5a95))
+* **dev:** add reproducible game phase debug scenarios ([#153](https://github.com/Skanky0815/pixels-world/issues/153)) ([853399c](https://github.com/Skanky0815/pixels-world/commit/853399c9fad4993d88f1c1b0fd8d5c430b5a5a95))
+* **dev:** consolidate animation previews per character ([dae12f1](https://github.com/Skanky0815/pixels-world/commit/dae12f1514ee8b0aee7a870f5a6feea14393a386))
+* **dev:** Einheitliche DEV-Seiten und kompakter Playground ([#178](https://github.com/Skanky0815/pixels-world/issues/178)) ([72d3075](https://github.com/Skanky0815/pixels-world/commit/72d30755a89da3acfd36f5c33beeaa24bebc6804))
+* **difficulty:** explain presets and vary hard shelves ([dd9639c](https://github.com/Skanky0815/pixels-world/commit/dd9639cacb3b030ac429d03d2c5dd958f2409214))
+* **difficulty:** Grade erklären und Regale auf Schwer variieren ([#195](https://github.com/Skanky0815/pixels-world/issues/195)) ([dd9639c](https://github.com/Skanky0815/pixels-world/commit/dd9639cacb3b030ac429d03d2c5dd958f2409214))
+* **gameplay:** add configurable difficulty and start options ([#162](https://github.com/Skanky0815/pixels-world/issues/162)) ([8a9d6cd](https://github.com/Skanky0815/pixels-world/commit/8a9d6cdc61d872e05e430490c4765ed8e38522c5)), closes [#157](https://github.com/Skanky0815/pixels-world/issues/157)
+* **gameplay:** vary goal hint by round difficulty ([8ac90da](https://github.com/Skanky0815/pixels-world/commit/8ac90da143274958aa2fe1a1e7206bd70e613891))
+* **gameplay:** Zielhinweis nach Schwierigkeitsgrad ([#189](https://github.com/Skanky0815/pixels-world/issues/189)) ([8ac90da](https://github.com/Skanky0815/pixels-world/commit/8ac90da143274958aa2fe1a1e7206bd70e613891))
+* **pwa:** add Pixel app icons, installation and offline play ([8cbb9f6](https://github.com/Skanky0815/pixels-world/commit/8cbb9f6c45f15f82e7eb0941bdeec0fb6daa1f2f))
+* **shelves:** add stability, collapse and modular wood art ([ef8388f](https://github.com/Skanky0815/pixels-world/commit/ef8388f62270fb666d1852f1dcdabf707d24fbe5))
+* **shelves:** Stabilität, Einsturz und modulare Regalgrafik ([#191](https://github.com/Skanky0815/pixels-world/issues/191)) ([ef8388f](https://github.com/Skanky0815/pixels-world/commit/ef8388f62270fb666d1852f1dcdabf707d24fbe5))
+* **ui:** add pause menu and persistent game settings ([#154](https://github.com/Skanky0815/pixels-world/issues/154)) ([ef5eee5](https://github.com/Skanky0815/pixels-world/commit/ef5eee5b2df70b706432458bc8f367550e07120f))
+* **ui:** add quit navigation and a walking Pixel pose ([bce341f](https://github.com/Skanky0815/pixels-world/commit/bce341fe59d08c8875a2716351771f50830493a2))
+* **ui:** add responsive landing page and streamline game introduction ([95720d7](https://github.com/Skanky0815/pixels-world/commit/95720d7e302c786298404f380593a337825ffc7f))
+* **ui:** add team portraits and shared site navigation ([#170](https://github.com/Skanky0815/pixels-world/issues/170)) ([92857d7](https://github.com/Skanky0815/pixels-world/commit/92857d7e583df760e981a68e0e93f55fa68bdb22)), closes [#169](https://github.com/Skanky0815/pixels-world/issues/169)
+* **ui:** polish gameplay feedback and round results ([#155](https://github.com/Skanky0815/pixels-world/issues/155)) ([90f6dc3](https://github.com/Skanky0815/pixels-world/commit/90f6dc3ec118a162d879c14a5b2f0a7c3f1a58cb)), closes [#109](https://github.com/Skanky0815/pixels-world/issues/109)
+
+
+### Fehlerkorrekturen
+
+* **ui:** place walking Pixel on the left facing into the page ([1c76127](https://github.com/Skanky0815/pixels-world/commit/1c761276b90eb8e1d525b13b8a8ef1fffe4180e6))
+
+
+### Dokumentation
+
+* consolidate durable project documentation ([c7e2e4d](https://github.com/Skanky0815/pixels-world/commit/c7e2e4d16b4ed731aa20373ddfe1e16263995fe4))
+* consolidate durable project documentation ([#149](https://github.com/Skanky0815/pixels-world/issues/149)) ([c7e2e4d](https://github.com/Skanky0815/pixels-world/commit/c7e2e4d16b4ed731aa20373ddfe1e16263995fe4))
+
 ## [0.1.4](https://github.com/Skanky0815/pixels-world/compare/v0.1.3...v0.1.4) (2026-11-06)
 
 
