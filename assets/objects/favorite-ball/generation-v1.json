@@ -1,0 +1,20 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "approval": "Rico approved the teal fabric ball at 16×16 in the actual room, with separate star/halo and persistent ball after reached/missed, on 2026-11-07.",
+  "source": "sources/ball-source-v1.png",
+  "prompt": "Use case: stylized-concept. Create ONE tiny favorite cat toy BALL sprite for Pixel’s World, a cozy warm autumn 2D pixel-art game. A single round soft fabric ball in muted dusty teal/turquoise (#638f8c), warm dark desaturated teal outline, restrained light teal highlight in upper left and darker lower right. Add ONE broad curved cream fabric seam/band crossing diagonally so this is clearly a playful soft toy, not a gemstone, vase, fruit or shiny marble. Strict final game canvas 16x16 logical pixels with ball diameter 14 pixels and one transparent pixel margin. Crisp square pixel clusters and stepped circular silhouette, no fine realistic fabric texture, no smooth gradients, no glow, no floor or cast shadow. Flat front/side view, complete single ball centered and fully visible. No string tail, feet, ears, face, text, star, marker, halo, pedestal or other objects. Return an enlarged nearest-neighbor-looking rendering of this tiny sprite, genuine fully transparent alpha exterior, clean hard edges, absolutely no black matte or colored haze outside the ball.",
+  "export": {
+    "command": "node tools/prepare-favorite-ball-assets.mjs",
+    "cell": [
+      16,
+      16
+    ],
+    "maximumFit": [
+      14,
+      14
+    ],
+    "boundsAlphaThreshold": 192,
+    "anchor": "centered in cell, runtime bottom center on goal.surfaceY",
+    "rgba": "preserve nearest-neighbor samples"
+  }
+}

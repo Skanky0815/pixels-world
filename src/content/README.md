@@ -104,3 +104,19 @@ bewahrt abgetastete RGBA-Werte. Beide Pflanzenzustände verwenden die Alpha-Boun
 (ab 192) und Abbildung der intakten Quelle; Zeilen 39–59 des freigegebenen Topfs
 werden identisch übernommen. So bleiben Topf und Drehpunkt beim Biss stabil.
 Nur die kleinen Export-PNGs werden im Spiel geladen.
+
+### Lieblingsball-Grafik
+
+`favorite-ball` im Asset-Register beschreibt die 16×16-Zelle. `preloadFavoriteBallArt`
+lädt das gemeinsame transparente PNG; `GoalView` setzt es mit dem unteren
+Mittelpunkt auf den aufgelösten Ziel-/Regalanker. Stern und Halo sind getrennte
+Hinweise für den aktiven Zustand. Nach erreicht/verpasst bleibt der Ball sichtbar;
+der Marker verschwindet, die bisherigen Texte bleiben erhalten. Vor Spielstart
+sind Ball und Marker ausgeblendet. Zielbereich, Aufenthaltszeit, Heimkehrtrigger,
+Physik und friedliche Erreichbarkeit ändern sich durch die Grafik nicht.
+
+Quelle und Imagegen-Prompt liegen unter `assets/objects/favorite-ball/`.
+`node tools/prepare-favorite-ball-assets.mjs` passt die Alpha-Bounds ab 192
+seitenverhältnistreu in maximal 14×14 Pixel ein und zentriert sie in 16×16.
+Nearest Neighbor bewahrt die abgetasteten RGBA-Werte; nur das kleine Export-PNG
+wird im Spiel geladen.

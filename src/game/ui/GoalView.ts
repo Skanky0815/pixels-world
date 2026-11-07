@@ -1,3 +1,4 @@
+import { FAVORITE_BALL_TEXTURE } from '../assets/favorite-ball-art';
 import { t, translateExact } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
@@ -6,6 +7,7 @@ export class GoalView {
   private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
   private readonly caption: Phaser.GameObjects.Text;
+  private readonly ball: Phaser.GameObjects.Image;
   private readonly marker: Phaser.GameObjects.Container;
   // eslint-disable-next-line max-lines-per-function -- Zielmarker und kurzer Hinweis werden gemeinsam aus derselben validierten Platzierung aufgebaut.
   constructor(scene: Phaser.Scene, goal: ResolvedGoal) {
@@ -18,13 +20,13 @@ export class GoalView {
       padding: { x: 6, y: 3 },
       wordWrap: { width: 670 },
     });
+    this.ball = scene.add.image(goal.x, goal.surfaceY, FAVORITE_BALL_TEXTURE).setOrigin(0.5, 1);
     this.marker = scene.add.container(goal.x, goal.surfaceY - 10);
     this.marker.add([
       scene.add.circle(0, 0, 11, 0xffe0a0, 0.35),
-      scene.add.circle(0, 1, 7, 0xe8ac74).setStrokeStyle(2, 0x705547),
       scene.add.text(0, -28, '★', { fontSize: '18px', color: '#584637' }).setOrigin(0.5),
     ]);
-    this.root.add([this.caption, this.marker]);
+    this.root.add([this.caption, this.marker, this.ball]);
     this.removeCompactListener = compactVisibility(this.caption);
   }
 
@@ -35,7 +37,13 @@ export class GoalView {
   }
 
   snapshot() {
-    return Object.freeze({ text: this.caption.text, visible: this.root.visible });
+    return Object.freeze({
+      text: this.caption.text,
+      visible: this.root.visible,
+      ballTexture: this.ball.texture.key,
+      ballVisible: this.root.visible && this.ball.visible,
+      markerVisible: this.root.visible && this.marker.visible,
+    });
   }
 
   destroy() {

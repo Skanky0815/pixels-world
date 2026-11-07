@@ -45,6 +45,11 @@ test(
     expect(finished.sara.visible).toBe(true);
     expect(finished.round.endReason).toBe('timer');
     expect(finished.goal.status).toBe('missed');
+    expect(finished.goalView).toMatchObject({
+      ballTexture: 'favorite-ball',
+      ballVisible: true,
+      markerVisible: false,
+    });
     expect(finished.sara.animationKey).toBe('sara-enter');
     expect(finished.sara.texture).toBe('sara');
     expect(SARA_CLIPS['sara-enter'].frames).toContain(finished.sara.frame);

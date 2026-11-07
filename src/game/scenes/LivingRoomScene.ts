@@ -1,3 +1,4 @@
+import { preloadFavoriteBallArt } from '../assets/favorite-ball-art';
 import { preloadCatgrassArt } from '../assets/catgrass-art';
 import { preloadCurtainArt } from '../assets/curtain-art';
 import { preloadCouchArt } from '../assets/couch-art';
@@ -94,6 +95,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
+    preloadFavoriteBallArt(this);
     this.preloadSprite(this.room.definition.pixelAsset);
     this.preloadSprite('sara');
   }
