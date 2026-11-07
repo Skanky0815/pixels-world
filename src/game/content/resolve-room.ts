@@ -1,3 +1,4 @@
+import { shelfRules } from '../domain/shelf-stability.ts';
 import { isCouchAppearance } from '../assets/couch-appearance.ts';
 import { isVaseAppearance } from '../assets/vase-appearance.ts';
 import { ASSETS, type AssetKey } from '../assets/definitions.ts';
@@ -233,6 +234,11 @@ class RoomResolver {
       bounds(platform.bounds, room, `${root}.platforms.${platform.id}.bounds`);
       asset(platform.asset, 'shelf', `${root}.platforms.${platform.id}.asset`);
 
+      if (platform.durability !== undefined) {
+        record(platform.durability, `${root}.platforms.${platform.id}.durability`);
+        shelfRules(platform.durability);
+      }
+
       if (
         platform.bounds.width < 40 ||
         platform.bounds.height < 4 ||
@@ -251,8 +257,9 @@ class RoomResolver {
       record(d, `${root}.decorations`);
       color(d.color, `${root}.decorations.color`);
 
-      if (d.kind === 'rect') bounds(d.bounds, room, `${root}.decorations.bounds`);
-      else if (d.kind === 'text') {
+      if (d.kind === 'rect') {
+        validateShelfDecoration(d, room, root);
+      } else if (d.kind === 'text') {
         number(d.x, `${root}.decorations.x`);
         number(d.y, `${root}.decorations.y`);
         integer(d.size, `${root}.decorations.size`, 1);
@@ -505,6 +512,10 @@ class RoomResolver {
     number(goal.x, `${path}.x`);
     number(goal.dwellMs, `${path}.dwellMs`, Number.EPSILON);
     const surface = this.surface(goal.surfaceId, `${path}.surfaceId`);
+    const platform = this.room.platforms.find((p) => p.id === goal.surfaceId);
+
+    if (platform?.durability && platform.durability.stability !== 'stable')
+      fail(`${path}.surfaceId`, 'goal shelf must remain stable');
 
     supportFits(goal.x - 10, 20, surface, path);
     const area = { x: goal.x - 10, y: surface.y - 20, width: 20, height: 20 };
@@ -532,4 +543,15 @@ class RoomResolver {
 /** Resolve and validate all data before creating any Phaser scene or object. */
 export function resolveRoom(room: RoomDefinition, catalog: ObjectCatalog): ResolvedRoom {
   return new RoomResolver(room, catalog).run();
+}
+
+function validateShelfDecoration(
+  d: Extract<RoomDefinition['decorations'][number], { kind: 'rect' }>,
+  room: RoomDefinition,
+  root: string,
+) {
+  bounds(d.bounds, room, `${root}.decorations.bounds`);
+
+  if (d.supportedBy !== undefined && !room.platforms.some((p) => p.id === d.supportedBy))
+    fail(`${root}.decorations.supportedBy`, 'unknown shelf');
 }

@@ -1,3 +1,5 @@
+import { preloadShelfArt } from '../game/assets/shelf-art';
+import type { Shelf } from '../game/objects/Shelf';
 import { preloadCatgrassArt } from '../game/assets/catgrass-art';
 import { preloadCurtainArt } from '../game/assets/curtain-art';
 import { preloadCouchArt } from '../game/assets/couch-art';
@@ -19,6 +21,7 @@ import { PlayActivity } from '../game/input/play-activity';
 import { playgroundRoom } from './playground-room';
 
 export class PlaygroundScene extends Phaser.Scene {
+  private shelves: Shelf[] = [];
   private variant = 'cozy-couch';
   private built!: ReturnType<typeof buildObjects>;
   private pixel!: Pixel;
@@ -46,6 +49,7 @@ export class PlaygroundScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Gemeinsame Objektbilder und Pixels Sprite-Sheet werden in einer Vorladephase registriert.
   preload() {
     preloadVaseArt(this);
+    preloadShelfArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
@@ -60,7 +64,9 @@ export class PlaygroundScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Ein gemeinsamer Aufbau besitzt reale Adapter, Steuerung und deren Lebensdauer; keine Runde oder persistente Ergebnisse.
   create() {
     const room = playgroundRoom(this.variant);
-    const { platforms, floor } = createRoomPhysics(this, room.definition);
+    const { platforms, floor, shelves } = createRoomPhysics(this, room.definition);
+
+    this.shelves = shelves;
 
     this.physics.disableUpdate();
     this.built = buildObjects(this, room);
@@ -103,8 +109,14 @@ export class PlaygroundScene extends Phaser.Scene {
     if (elapsed > 0) {
       this.elapsed += elapsed;
       this.physics.world.update(this.elapsed, elapsed);
-      advanceObjectInteractions(this.built, this.pixel, input, this.elapsed, elapsed, (event) =>
-        this.damage(event),
+      advanceObjectInteractions(
+        this.built,
+        this.pixel,
+        input,
+        this.elapsed,
+        elapsed,
+        (event) => this.damage(event),
+        this.shelves,
       );
     }
 
@@ -126,6 +138,7 @@ export class PlaygroundScene extends Phaser.Scene {
       events: [...this.eventsLog],
       object: this.built.entries[0].object.snapshot(),
       pixel: this.pixel.snapshot(),
+      shelves: this.shelves.map((shelf) => shelf.snapshot()),
       resources: {
         objects: this.built.entries.length,
         bodies: this.physics.world.bodies.size,

@@ -1,7 +1,6 @@
 import { translateExact, onLanguageChange } from '../../i18n/locale';
 import type Phaser from 'phaser';
 import type { RoomDefinition } from './definitions';
-import { ASSETS } from '../assets/definitions';
 
 /** Rendering primitives only; all layout, palette and placement comes from content. */
 // eslint-disable-next-line max-lines-per-function -- Die deklarative Zeichenreihenfolge Wand, Boden, Dekoration und Regal bestimmt die Überlagerung und bleibt gemeinsam lesbar.
@@ -26,6 +25,8 @@ export function drawRoom(scene: Phaser.Scene, room: RoomDefinition) {
     );
 
   for (const decoration of room.decorations) {
+    if (decoration.kind === 'rect' && decoration.supportedBy) continue;
+
     if (decoration.kind === 'rect') {
       const b = decoration.bounds;
 
@@ -40,15 +41,5 @@ export function drawRoom(scene: Phaser.Scene, room: RoomDefinition) {
 
       scene.events.once('shutdown', unsubscribe);
     }
-  }
-
-  for (const platform of room.platforms) {
-    const { x, y, width: w, height: h } = platform.bounds;
-    const asset = ASSETS[platform.asset];
-
-    rect(x, y, w, h, asset.color);
-    rect(x, y, w, 4, asset.edgeColor);
-    rect(x + 12, y + h, 8, 20, asset.bracketColor);
-    rect(x + w - 20, y + h, 8, 20, asset.bracketColor);
   }
 }

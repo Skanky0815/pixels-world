@@ -29,6 +29,7 @@ export function playgroundRoom(variant: string, catalog: ObjectCatalog = PLAYGRO
       ? [
           {
             id: 'lab-shelf',
+            durability: { stability: 'fragile' },
             bounds: { x: 290, y: 330, width: 220, height: 16 },
             asset: 'wood-shelf',
           },

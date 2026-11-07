@@ -1,3 +1,4 @@
+import type { ShelfStabilityConfig } from '../domain/shelf-stability.ts';
 import type { CouchAppearance } from '../assets/couch-appearance.ts';
 import type { VaseAppearance } from '../assets/vase-appearance.ts';
 import type { GoalDefinition, ResolvedGoal } from '../domain/main-goal.ts';
@@ -56,7 +57,12 @@ export interface ObjectInstance {
     | { readonly mode: 'area'; readonly x: number; readonly y: number };
 }
 export type Decoration =
-  | { readonly kind: 'rect'; readonly bounds: Bounds; readonly color: number }
+  | {
+      readonly kind: 'rect';
+      readonly bounds: Bounds;
+      readonly color: number;
+      readonly supportedBy?: string;
+    }
   | {
       readonly kind: 'text';
       readonly x: number;
@@ -91,6 +97,7 @@ export interface RoomDefinition {
     readonly id: string;
     readonly bounds: Bounds;
     readonly asset: 'wood-shelf';
+    readonly durability?: ShelfStabilityConfig;
   }[];
   readonly decorations: readonly Decoration[];
   readonly objects: readonly ObjectInstance[];

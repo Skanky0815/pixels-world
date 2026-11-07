@@ -393,3 +393,33 @@ async function tearSnapshot(page: Page) {
 
   return object;
 }
+
+// eslint-disable-next-line max-lines-per-function -- Drei echte Sprünge lassen das gemeinsam verwendete Regal einstürzen und lösen die bestehende Fall-/Bruchphysik der ruhenden Vase aus.
+test('Playground: Regal trägt eine ruhende Vase bis zum Einsturz', async ({ page }) => {
+  await loadPlayground(page, 'small-vase');
+  expect((await snapshot(page)).shelves[0]).toMatchObject({ landings: 0, enabled: true });
+
+  for (let landing = 1; landing <= 3; landing++) {
+    await page.keyboard.down('Space');
+    await untilPlayground(page, (s) => !s.pixel.grounded);
+    await page.keyboard.up('Space');
+    await untilPlayground(page, (s) => s.shelves[0].landings === landing);
+  }
+
+  expect((await snapshot(page)).shelves[0]).toMatchObject({
+    state: 'collapsed',
+    enabled: false,
+    boardHeight: 16,
+    debrisBoardHeight: 16,
+  });
+  await untilPlayground(
+    page,
+    (s) => s.object.state === 'broken' && s.pixel.grounded && s.pixel.bottom === 468,
+  );
+  expect((await snapshot(page)).score).toBe(37);
+  expect((await snapshot(page)).events.map((event) => event.kind)).toEqual([
+    'shelf-damage',
+    'collapse',
+    'break',
+  ]);
+});
