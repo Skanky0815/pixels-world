@@ -29,7 +29,8 @@ export default defineConfig(({ mode, command }) => ({
     rollupOptions: {
       // The comparison HTML is a dev-server page, never a release entry point.
       input: {
-        game: fileURLToPath(new URL('./index.html', import.meta.url)),
+        landing: fileURLToPath(new URL('./index.html', import.meta.url)),
+        game: fileURLToPath(new URL('./play.html', import.meta.url)),
         impressum: fileURLToPath(new URL('./impressum.html', import.meta.url)),
         datenschutz: fileURLToPath(new URL('./datenschutz.html', import.meta.url)),
       },

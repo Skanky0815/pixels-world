@@ -63,7 +63,7 @@ test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode d
       await page
         .getByRole('link', { name: 'Zum Spiel' })
         .evaluate((link) => (link as HTMLAnchorElement).href),
-    ).toBe(`${base}/`);
+    ).toBe(`${base}/play.html`);
     await test.info().attach('datenschutz-schmal', {
       body: await page.screenshot({ fullPage: true }),
       contentType: 'image/png',
@@ -82,7 +82,7 @@ test('Produktionsspiel lädt nur eigene Ressourcen und hinterlässt keine persis
 
     if (url.protocol.startsWith('http') && url.hostname !== '127.0.0.1') external.push(url.origin);
   });
-  await page.goto('http://127.0.0.1:4175/pixels-world/');
+  await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
   await page.clock.runFor(1000);
   await expect(page.locator('.start-screen')).toBeVisible();
   await page.locator('#game').focus();

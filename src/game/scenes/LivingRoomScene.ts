@@ -402,6 +402,7 @@ export class LivingRoomScene extends Phaser.Scene {
       this.started && this.round.snapshot().phase === 'chaos' ? 'Sprung' : 'Weiter',
     );
     this.mobile.render({
+      started: this.started,
       hud: this.hud.snapshot(),
       feedback: this.feedback.readable(),
       goal: this.goalView.snapshot().text,

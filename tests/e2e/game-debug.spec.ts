@@ -28,7 +28,7 @@ async function untilDebug(page: Page, check: (state: Snapshot) => boolean) {
 
 // eslint-disable-next-line max-lines-per-function -- Laden wartet auf die szenengebundene DEV-Installation, bevor der echte Tastatur-Shortcut ausgelöst wird.
 async function openDebug(page: Page) {
-  await page.goto('http://127.0.0.1:4176/');
+  await page.goto('http://127.0.0.1:4176/play.html');
   await expect
     .poll(
       async () => {

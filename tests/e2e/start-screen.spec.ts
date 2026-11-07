@@ -1,6 +1,6 @@
 import { test, expect, loadIntro, state, until, reset } from './support';
 
-test('Einführung zeigt README-Banner; vor dem Start bleiben Uhr, Schäden und Pixel stehen', async ({
+test('Kurze Einführung zeigt Ziel und Steuerung; vor dem Start bleiben Uhr, Schäden und Pixel stehen', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Zusammenhängendes Start-/Neustartszenario mit echten Tasten und vollständiger Zustandsprüfung.
 }) => {
@@ -9,17 +9,18 @@ test('Einführung zeigt README-Banner; vor dem Start bleiben Uhr, Schäden und P
   const intro = page.getByRole('region', { name: 'Spieleinführung' });
 
   await expect(intro).toBeVisible();
-  await expect(intro.getByAltText('Pixel’s World')).toBeVisible();
-  await expect(intro.locator('.keyboard-prompt')).toHaveText('␣ drücken, um zu starten');
+  await expect(intro.getByRole('heading', { name: 'Bereit, Pixel?' })).toBeVisible();
+  await expect(intro.locator('img')).toHaveCount(0);
+  await expect(intro.locator('.keyboard-prompt')).toHaveText('␣ Starten');
   await expect(intro.locator('.keyboard-prompt')).toHaveAccessibleName(
     'Leertaste drücken, um zu starten',
   );
   await expect(intro.getByRole('img', { name: 'Leertaste', exact: true })).toHaveText('␣');
-  await expect(intro).toContainText('Charmeoffensive');
+  await expect(intro).toContainText('Springen und vom Vorhang abspringen');
   await expect(intro.getByRole('complementary', { name: 'Dein Hauptziel' })).toContainText(
     'Lieblingsball',
   );
-  await expect(intro.locator('.start-goal-text')).toContainText('1,2 Sekunden');
+  await expect(intro.locator('.start-goal-text')).not.toContainText('Sekunden');
   await page.keyboard.down('ArrowRight');
   await page.keyboard.down('ArrowUp');
   await page.keyboard.down('r');
@@ -35,13 +36,6 @@ test('Einführung zeigt README-Banner; vor dem Start bleiben Uhr, Schäden und P
   expect(waiting.generation).toBe(before.generation);
 
   for (const key of ['ArrowRight', 'ArrowUp', 'r']) await page.keyboard.up(key);
-  await expect
-    .poll(() =>
-      intro
-        .getByRole('img', { name: 'Pixel’s World', exact: true })
-        .evaluate((image) => (image as HTMLImageElement).naturalWidth),
-    )
-    .toBe(2172);
   await test
     .info()
     .attach('startbildschirm', { body: await page.screenshot(), contentType: 'image/png' });
@@ -106,7 +100,7 @@ test('Schmale Einführung bleibt lesbar und hat einen sichtbaren Start-Hinweis',
   await page.locator('.start-copy').evaluate((element) => {
     element.scrollTop = element.scrollHeight;
   });
-  await expect(intro).toContainText('Texte liest du in Ruhe');
+  await expect(intro).toContainText('Lieblingsball');
   await test
     .info()
     .attach('startbildschirm-schmal', { body: await page.screenshot(), contentType: 'image/png' });

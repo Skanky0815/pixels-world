@@ -12,7 +12,7 @@ test('Sprachwahl: Einführung, Persistenz und laufende Runde ohne Reset', async 
   await expect(page.locator('.start-copy')).toContainText('Finde seinen Lieblingsball');
   await expect(page.locator('.start-copy')).not.toContainText('oben rechts');
   await changeLanguage(page, 'en');
-  await expect(page.locator('.start-copy h2')).toHaveText('One room. One cat. Your chaos.');
+  await expect(page.locator('.start-copy h2')).toHaveText('Ready, Pixel?');
   await expect(page.locator('.start-copy')).toContainText('Find his favourite ball');
   await expect(page.locator('.start-copy')).not.toContainText('top right');
   await loadIntro(page);
@@ -42,7 +42,7 @@ test('Gesperrter Sprachspeicher verhindert weder Start noch Sprachwechsel', asyn
   });
   await loadIntro(page);
   await changeLanguage(page, 'en');
-  await expect(page.locator('.start-copy h2')).toHaveText('One room. One cat. Your chaos.');
+  await expect(page.locator('.start-copy h2')).toHaveText('Ready, Pixel?');
   await loadIntro(page);
   await expect(page.locator('[data-language="de"]')).toHaveAttribute('aria-pressed', 'true');
 });

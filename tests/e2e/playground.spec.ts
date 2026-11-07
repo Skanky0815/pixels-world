@@ -12,7 +12,7 @@ for (const [name, path, ready] of [
   ['DEV · Playground', '/interactable-playground.html', 'data-playground-ready'],
 ]) {
   test(`Spiel-Footer öffnet ${name} im Dev-Modus`, async ({ page }) => {
-    await page.goto('http://127.0.0.1:4176/');
+    await page.goto('http://127.0.0.1:4176/play.html');
     const link = page.locator('#build-info').getByRole('link', { name });
 
     await expect(link).toHaveAttribute('href', path);

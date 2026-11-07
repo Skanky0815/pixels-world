@@ -4,6 +4,7 @@ import type { GameHud } from './GameHud';
 import type { ReconciliationView } from './ReconciliationView';
 import type { ResultViewSnapshot } from './RoundResultView';
 interface Readout {
+  readonly started: boolean;
   readonly hud: ReturnType<GameHud['snapshot']>;
   readonly goal: string;
   readonly homecoming: string;
@@ -31,6 +32,7 @@ export class MobileReadout {
   // eslint-disable-next-line max-lines-per-function -- Die rein lesende DOM-Ansicht bindet Textknoten und Lebensdauer gemeinsam an den Spielbereich.
   constructor() {
     this.hud.className = 'mobile-hud';
+    this.hud.hidden = true;
     this.hud.setAttribute('aria-label', t('gameStatus'));
     this.goal.className = 'mobile-goal';
     this.status.setAttribute('role', 'status');
@@ -59,6 +61,7 @@ export class MobileReadout {
   // eslint-disable-next-line max-lines-per-function -- Die zusammengehörigen Textknoten und die Zeitleiste werden in einem Renderdurchlauf synchronisiert.
   render(state: Readout) {
     this.hud.setAttribute('aria-label', t('gameStatus'));
+    this.hud.hidden = !state.started;
     this.panel.setAttribute('aria-label', t('gameDialogue'));
     this.timer.setAttribute('aria-label', t('timeLeftForInput'));
     setText(this.score, state.hud.scoreText);
