@@ -7,6 +7,7 @@ import { preloadCouchArt } from '../assets/couch-art';
 import { preloadVaseArt } from '../assets/vase-art';
 import { difficultyPreferences } from '../../settings/difficulty';
 import { difficultyRoom, difficultyTimer, type Difficulty } from '../../content/difficulty';
+import { populateSpawnSlots } from '../content/spawn-slots';
 import { resolveRoom } from '../content/resolve-room';
 import { OBJECTS } from '../../content/objects/catalog';
 import { GameFeedback } from '../ui/GameFeedback';
@@ -86,6 +87,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private destructibles: Destructible[] = [];
 
   private room: ResolvedRoom;
+  private readonly populationSeed = String(Phaser.Math.Between(0, 0x7fffffff));
   private difficulty: Difficulty = 'normal';
 
   constructor(private readonly baseRoom: ResolvedRoom) {
@@ -119,7 +121,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.difficulty = difficultyPreferences.snapshot();
     this.started = data.started ?? this.started;
-    this.room = resolveRoom(difficultyRoom(this.baseRoom.definition, this.difficulty), OBJECTS);
+    this.room = this.populateRoom();
 
     this.initializeRound();
     const floor = this.buildRoom();
@@ -132,6 +134,21 @@ export class LivingRoomScene extends Phaser.Scene {
     this.installObservation(generation);
 
     if (import.meta.env.DEV) this.installDebug(generation, data.debugScenario);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Raumseed, Schwierigkeit und isolierter Phaser-Zufall werden gemeinsam beim Rundenaufbau aufgelöst.
+  private populateRoom() {
+    const seed =
+      import.meta.env.DEV || import.meta.env.MODE === 'e2e'
+        ? (new URLSearchParams(location.search).get('room-seed') ?? this.populationSeed)
+        : this.populationSeed;
+    const random = new Phaser.Math.RandomDataGenerator([seed]);
+    const room = difficultyRoom(this.baseRoom.definition, this.difficulty);
+
+    return resolveRoom(
+      populateSpawnSlots(room, OBJECTS, this.difficulty, () => random.frac()),
+      OBJECTS,
+    );
   }
 
   private initializeRound() {

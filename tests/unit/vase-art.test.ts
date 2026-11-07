@@ -52,11 +52,11 @@ test('Grafikauswahl ist typisiert und alte farbbasierte Vasen bleiben kompatibel
       } as unknown as typeof OBJECTS),
     /appearance/,
   );
-  const catalog = { ...OBJECTS, 'small-vase': { ...OBJECTS['small-vase'], appearance: undefined } };
-  const legacy = resolveRoom(LIVING_ROOM, catalog).objects.find((o) => o.id === 'small-vase');
+  const catalog = { ...OBJECTS, 'blue-vase': { ...OBJECTS['blue-vase'], appearance: undefined } };
+  const legacy = resolveRoom(LIVING_ROOM, catalog).objects.find((o) => o.id === 'blue-vase');
 
   assert.ok(legacy?.kind === 'vase');
   assert.equal(legacy.config.appearance, undefined);
-  assert.equal(legacy.config.color, OBJECTS['small-vase'].color);
-  assert.equal(legacy.config.points, 25);
+  assert.equal(legacy.config.color, OBJECTS['blue-vase'].color);
+  assert.equal(legacy.config.points, 35);
 });

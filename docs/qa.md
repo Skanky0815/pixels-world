@@ -134,8 +134,10 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 ## Manueller Spieltest
 
 - Einführung → Optionen: Leicht/Normal/Schwer wählen, zurückkehren und starten.
-  Timer, Objektbelegung und Versöhnung gemeinsam prüfen; Normal behält das
-  bisherige Verhalten. In beiden Räumen muss der Ball ohne Schaden erreichbar
+  Timer, Objektbelegung und Versöhnung gemeinsam prüfen. Das untere Regal
+  belegt 1/2/3 Slots; Bücher und Vasen überlappen nicht. Gleicher Raumseed und
+  Grad reproduzieren die Belegung beim Neustart; während der Runde wird nicht
+  nachgefüllt. Beim Einsturz fallen alle noch aufliegenden Vasen selbständig. In beiden Räumen muss der Ball ohne Schaden erreichbar
   bleiben. Auswahl während einer Runde gilt erst für die nächste; das Ergebnis
   zeigt weiterhin den gespielten Grad und seine tatsächlichen Herzen. Auswahl
   nach Reload und bei gesperrtem Speicher auf Desktop und Touch prüfen.

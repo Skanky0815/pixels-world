@@ -203,6 +203,11 @@ entfernen oder hinzufügen, jeweils mit eindeutiger `id`, `variant`, `x` und
 `surfaceId` verweist auf die Regal-ID. Positionen liegen im 960 Pixel breiten Raum.
 Die vorhandene Content-Prüfung verlangt, dass die ganze Vase auf ihre Unterlage passt. Diese Belegung gilt auch für Cozy Remix;
 Ballroute und Erreichbarkeit nach Änderungen in beiden Räumen testen.
+Zusätzlich materialisiert `populateSpawnSlots` die optionalen lokalen Plätze eines
+Regals einmal vor dem Szenenaufbau. Dichte, Filter, Pool und Seed-Vertrag stehen
+in der [Content-Anleitung](../../src/content/README.md#zufällige-belegung-fester-regalplätze).
+Die erzeugten Instanzen verwenden dieselben Objektklassen und verlieren beim
+Herunterfallen jede Bindung an den ursprünglichen Platz.
 
 Zeitfaktoren müssen positiv und endlich sein. Fehlerhafte Profile werden beim
 Laden mit `difficulty.json` und dem betroffenen Feld gemeldet, statt ein

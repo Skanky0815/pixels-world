@@ -8,7 +8,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   await startDifficulty(page, 'hard');
   const active = await state(page);
 
-  expect(active.objects).toHaveLength(10);
+  expect(active.objects).toHaveLength(12);
   expect(active.goalView).toMatchObject({
     ballVisible: true,
     markerVisible: false,

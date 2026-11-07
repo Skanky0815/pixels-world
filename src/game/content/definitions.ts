@@ -1,3 +1,4 @@
+import type { SpawnSlot } from './spawn-slots.ts';
 import type { SpawnProfile } from './spawn-profile.ts';
 import type { ShelfStabilityConfig } from '../domain/shelf-stability.ts';
 import type { CouchAppearance } from '../assets/couch-appearance.ts';
@@ -100,6 +101,10 @@ export interface RoomDefinition {
     readonly bounds: Bounds;
     readonly asset: 'wood-shelf';
     readonly durability?: ShelfStabilityConfig;
+    readonly slots?: {
+      readonly count: Readonly<Record<'easy' | 'normal' | 'hard', number>>;
+      readonly entries: readonly SpawnSlot[];
+    };
   }[];
   readonly decorations: readonly Decoration[];
   readonly objects: readonly ObjectInstance[];

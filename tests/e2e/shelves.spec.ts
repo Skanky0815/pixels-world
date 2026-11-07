@@ -6,7 +6,7 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
   page,
   // eslint-disable-next-line max-lines-per-function -- Reale Sprünge prüfen Warnung, nur einmaligen Schaden, Pause, Einsturz, freien Fall und vollständigen Neustart.
 }, testInfo) => {
-  await start(page, '/?round-profile=fast');
+  await start(page, '/?room-seed=shelves-172');
   await firstVase(page);
   await until(page, (s) => s.vases[0].state === 'broken');
   await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 560);
@@ -27,7 +27,11 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
   await until(page, (s) => s.shelves[0].landings === 2);
   expect(await shelf()).toMatchObject({ state: 'damaged', events: 1, enabled: true });
   await until(page, (s) => Math.abs(s.shelves[0].angle) > 0.1);
-  const score = (await state(page)).chaos.score;
+  const beforeCollapse = await state(page);
+  const score = beforeCollapse.chaos.score;
+  const remainingVasePoints = beforeCollapse.vases
+    .filter((v) => v.id.startsWith('lower-shelf:') && v.state !== 'broken')
+    .reduce((sum, v) => sum + v.points, 0);
 
   await openPause(page);
   const paused = await shelf();
@@ -50,7 +54,10 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
     debrisBoardHeight: 16,
   });
   await until(page, (s) => s.pixel.grounded && s.pixel.bottom === 468);
-  expect((await state(page)).chaos.score).toBe(score + 10);
+  await until(page, (s) =>
+    s.vases.filter((v) => v.id.startsWith('lower-shelf:')).every((v) => v.state === 'broken'),
+  );
+  expect((await state(page)).chaos.score).toBe(score + 10 + remainingVasePoints);
   await testInfo.attach('regal-eingestürzt', {
     body: await page.screenshot(),
     contentType: 'image/png',

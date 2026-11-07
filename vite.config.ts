@@ -6,12 +6,15 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { pwaOptions } from './tools/pwa-config';
 import { OBJECTS } from './src/content/objects/catalog';
 import { ROOMS } from './src/content/rooms';
-import { resolveRoom } from './src/game/content/resolve-room';
+import { populateSpawnSlots } from './src/game/content/spawn-slots';
+import { DIFFICULTIES, difficultyRoom } from './src/content/difficulty';
 import { releaseUrl } from './tools/release-metadata';
 import { roundConfigForBuild } from './tools/e2e-timing';
 
 // Fail before bundling/serving when any registered content is invalid.
-for (const room of Object.values(ROOMS)) resolveRoom(room, OBJECTS);
+for (const room of Object.values(ROOMS))
+  for (const difficulty of DIFFICULTIES)
+    populateSpawnSlots(difficultyRoom(room, difficulty), OBJECTS, difficulty, () => 0.5);
 
 const { version } = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),

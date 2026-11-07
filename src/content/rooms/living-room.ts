@@ -1,3 +1,4 @@
+import { LOWER_SHELF_SLOTS } from './shelf-slots.ts';
 import { LIVING_ROOM_DENSITY } from '../difficulty.ts';
 import { copy } from '../../i18n/locale.ts';
 import type { Decoration, RoomDefinition } from '../../game/content/definitions.ts';
@@ -64,6 +65,7 @@ export const LIVING_ROOM = {
     {
       id: 'lower-shelf',
       durability: { stability: 'fragile' },
+      slots: LOWER_SHELF_SLOTS,
       bounds: { x: 518, y: 304, width: 146, height: 16 },
       asset: 'wood-shelf',
     },
@@ -89,11 +91,6 @@ export const LIVING_ROOM = {
     },
     { id: 'curtain', variant: 'warm-curtain', placement: { mode: 'area', x: 744, y: 112 } },
     { id: 'plant', variant: 'catgrass', placement: { mode: 'surface', x: 82, surfaceId: 'floor' } },
-    {
-      id: 'small-vase',
-      variant: 'small-vase',
-      placement: { mode: 'surface', x: 620, surfaceId: 'lower-shelf' },
-    },
     {
       id: 'blue-vase',
       variant: 'blue-vase',

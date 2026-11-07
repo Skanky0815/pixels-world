@@ -13,7 +13,7 @@ Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `pl
 
 `RoomDefinition` enthält logische Abmessungen, Boden, Spawn, Plattformen, Instanzen, HUD-Hinweisposition und statische Dekoration. Dekoration besteht nur aus Rechtecken und Texten. Kleine TypeScript-Helfer im Beispiel erzeugen daraus wiederholte statische Daten; es werden keine Gameplay-Callbacks gespeichert.
 
-## Spawn-Profile für spätere Slots
+## Spawn-Profile für Slots
 
 Jede Objektvorlage besitzt ein typisiertes `spawn`-Profil im bestehenden Katalog:
 `size` (`small`, `medium`, `large`), `category` und `random`. Zufallskandidaten
@@ -44,8 +44,8 @@ auf erhöhten Möbelplätzen aus. Auch eine passende Größenklasse allein erlau
 keine solche Platzierung. Weitere Auflagenunterstützung benötigt eine eigene
 Mechanikänderung.
 
-Diese Metadaten ändern die handgebaute Raumbelegung nicht. Das eigentliche
-Slot-System, Dichte und seedbasierte Auswahl folgen in #172.
+Die Metadaten dienen der unten beschriebenen Slotbelegung; ausdrücklich platzierte
+Rauminstanzen bleiben unabhängig von ihrer Zufallseignung erhalten.
 
 ## Vor dem Engine-Start validieren
 
@@ -55,7 +55,7 @@ Die Auflösung ändert keine Quelldaten und erzeugt noch keine Phaser-Objekte. [
 
 ## Vorschau und Assets
 
-Normaler Start bleibt das unveränderte Standardzimmer. Im Dev-/E2E-Betrieb zeigt `/?room=cozy-remix` die zweite Variante; die Produktion ignoriert diese Vorschauwahl. Weitere handgebaute Räume werden im Raumindex registriert. Es gibt keinen Editor und keine Zufallsgenerierung; #29 kann später denselben `RoomDefinition`-Vertrag liefern und anschließend validieren.
+Normaler Start verwendet das Standardzimmer mit der unten beschriebenen Slotbelegung. Im Dev-/E2E-Betrieb zeigt `/?room=cozy-remix` die zweite Variante; die Produktion ignoriert diese Vorschauwahl. Weitere handgebaute Räume werden im Raumindex registriert. Es gibt keinen Raumeditor; #29 kann später denselben `RoomDefinition`-Vertrag liefern und anschließend validieren. Zufall betrifft ausschließlich die ausdrücklich deklarierten Slots.
 
 Content verwendet nur Schlüssel aus [dem Asset-Katalog](../game/assets/definitions.ts). Prozedurale Platzhalter sind ihrem tatsächlichen Objekttyp zugeordnet. Das Pixel-Sheet wird über einen Vite-Asset-Import aufgelöst, ohne fest codierten Host oder Repository-Präfix. Die Asset-Auflösung muss auch mit `--base=/pixels-world/` funktionieren; siehe [QA](../../docs/qa.md). Der öffentliche Spielstand ist über [GitHub Pages](https://skanky0815.github.io/pixels-world/) erreichbar.
 
@@ -184,3 +184,33 @@ Spiel und Playground laden dieselben Regalmodule aus `assets/objects/shelves/`.
 fest und wiederholt die Mitte auch für nicht durch 16 teilbare Brettbreiten.
 Die Brettoberkante und Colliderhöhe stammen weiterhin aus den Raumdaten.
 Quellen, Imagegen-Prompts und Exportparameter liegen neben den PNGs.
+
+### Zufällige Belegung fester Regalplätze
+
+Plattformen können optional `slots` deklarieren. Jeder Eintrag besitzt eine lokale
+`x`-Position (Objektmittelpunkt relativ zur linken Brettkante), eine eindeutige
+`id`, `capacity`, `categories`, optionale `requiredCapabilities` und einen
+Varianten-`pool`. Die Auflage ist die Oberkante des Regals; sein Filter verwendet
+`support: 'raised'`. `count.easy/normal/hard` bestimmt die gewünschte Anzahl pro
+Träger. Fehlende geeignete Kandidaten oder belegte Plätze bleiben leer. Unbekannte
+Poolvarianten, doppelte IDs und ungültige Counts werden vor dem Aufbau abgewiesen.
+
+Beide Wohnzimmer verwenden auf dem unteren Regal drei Plätze rechts neben den
+Büchern: Leicht belegt einen, Normal zwei und Schwer drei. Die vorhandenen vier
+Vasenvarianten liefern die Auswahl. Die anderen Möbel, festen Vasen und das Ziel
+bleiben ausdrücklich platziert. Exakte Objektgrenzen werden zusätzlich zu den
+Metadaten gegen Brettkanten, feste Objekte, Ziel, Plattformen und unterstützte
+Dekoration geprüft; überlappende Kandidaten werden nicht erzeugt.
+
+`populateSpawnSlots` materialisiert einmal beim Rundenaufbau gewöhnliche
+`ObjectInstance`s. Danach steuern dieselben Vasen- und Regalmechaniken Anschubsen,
+Fall, Bruch und Einsturz; während der Runde wird nichts nachgefüllt. Räume ohne
+Slots behalten ihre feste Belegung. Die bestehende Schwierigkeit wird zuerst auf
+den Raum angewendet, danach erfolgt die Slotbelegung.
+
+Die Szene verwendet Phasers `RandomDataGenerator` mit einem eigenen Raumseed,
+unabhängig vom Rundentimer. Ein Neustart behält diesen Seed, sodass dieselbe
+Schwierigkeit dieselbe Belegung ergibt. Ein neuer Seitenaufruf erzeugt einen neuen
+Seed. Für reproduzierbare DEV-/E2E-Spieltests kann `?room-seed=beispiel` gesetzt
+werden; Produktionsbuilds ignorieren diesen Parameter. Gewichte und automatisches
+Nachfüllen gehören nicht zum Slotvertrag.

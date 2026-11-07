@@ -78,12 +78,15 @@ Tab-Wechsel setzt die manuelle Pause nicht außer Kraft. **Beenden** führt zur�
 zur Landingpage; ein erneuter Spielaufruf zeigt wieder die kurze Einführung.
 
 Über **Optionen** in der Einführung oder das Pause-Menü wählst du **Leicht**,
-**Normal** oder **Schwer**. Normal erhält das bisherige Balancing. Die Auswahl
+**Normal** oder **Schwer**. Normal verwendet das mittlere Balancing. Die Auswahl
 gilt beim nächsten Rundenstart; eine laufende Runde und ihr Ergebnis bleiben
 unverändert. Der gespielte Grad steht im HUD und im Ergebnis.
 Zum Balancieren bearbeitest du [difficulty.json](src/content/difficulty.json);
 die [Felderklärung](docs/architecture/gameplay.md#balancing-per-json) beschreibt
-Zeitfaktoren, Herzen, Tastenfolgen und Vasenbelegung.
+Zeitfaktoren, Herzen, Tastenfolgen und feste Vasenbelegung.
+Das untere Regal besitzt drei zufällig bestückte Plätze: Leicht belegt einen,
+Normal zwei und Schwer drei. Ein Neustart behält die Belegung bei gleichem Grad;
+ein neuer Seitenaufruf würfelt sie neu.
 
 Im Menü wechselst du DE/EN und stellst Gesamtlautstärke und Soundeffekte ein.
 Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.
