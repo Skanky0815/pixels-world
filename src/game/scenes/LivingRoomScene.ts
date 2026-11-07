@@ -13,19 +13,16 @@ import { spriteUrl } from '../assets/urls';
 import type { InputState } from '../input/input-state';
 import type { ResolvedRoom } from '../content/definitions';
 import { buildObjects } from '../content/build-objects';
-import { drawRoom } from '../content/draw-room';
+import {
+  createRoomPhysics,
+  connectObjectPhysics,
+  advanceObjectInteractions,
+} from '../content/object-playfield';
 import { Pixel } from '../actors/Pixel';
 import { InputController } from '../input/InputController';
 import { ChaosScore, angerFor } from '../domain/chaos';
 import type { ChaosEvent } from '../domain/chaos-event';
-import {
-  overlaps,
-  updateGroundInteractions,
-  type Destructible,
-  type Interactable,
-  type InteractionContext,
-  type ObjectLifecycle,
-} from '../interactions/contracts';
+import type { Destructible, ObjectLifecycle } from '../interactions/contracts';
 import { Vase } from '../objects/Vase';
 import { Couch } from '../objects/Couch';
 import { Curtain } from '../objects/Curtain';
@@ -66,8 +63,6 @@ export class LivingRoomScene extends Phaser.Scene {
   private built!: ReturnType<typeof buildObjects>;
   private vases: Vase[] = [];
   private objects: ObjectLifecycle[] = [];
-  private groundObjects: Interactable[] = [];
-  private climbables: Curtain[] = [];
   private destructibles: Destructible[] = [];
 
   constructor(private readonly room: ResolvedRoom) {
@@ -184,13 +179,9 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private buildRoom() {
-    const room = this.room.definition;
+    const { platforms, floor } = createRoomPhysics(this, this.room.definition);
 
-    drawRoom(this, room);
-    this.platforms = this.physics.add.staticGroup();
-    const floor = this.addPlatform(0, room.floor.y, room.width, room.height - room.floor.y);
-
-    for (const { bounds: b } of room.platforms) this.addPlatform(b.x, b.y, b.width, b.height);
+    this.platforms = platforms;
 
     return floor;
   }
@@ -203,11 +194,10 @@ export class LivingRoomScene extends Phaser.Scene {
     this.plants = this.built.plants;
     this.vases = this.built.vases;
 
-    for (const couch of this.couches) this.platforms.add(couch.platform);
     this.pixel = new Pixel(this, this.room.spawn);
-    this.physics.add.collider(this.pixel.collider, this.platforms);
-
-    for (const vase of this.vases) this.connectVase(vase, floor);
+    connectObjectPhysics(this, this.built, this.pixel, this.platforms, floor, (event) =>
+      this.processDamage(event),
+    );
     this.initializeReturn();
   }
 
@@ -229,21 +219,7 @@ export class LivingRoomScene extends Phaser.Scene {
     });
   }
 
-  private connectVase(vase: Vase, floor: Phaser.GameObjects.Rectangle) {
-    this.physics.add.collider(vase.collider, this.platforms, (_object, surface) => {
-      if (surface === floor) this.processDamage(vase.breakOnFloor());
-    });
-    this.physics.add.collider(this.pixel.collider, vase.collider, () => {
-      const body = vase.collider.body as Phaser.Physics.Arcade.Body;
-
-      if (body.touching.left || body.touching.right)
-        vase.push(this.pixel.x < vase.collider.x ? 1 : -1);
-    });
-  }
-
   private initializeInteractions() {
-    this.groundObjects = this.built.ground;
-    this.climbables = this.curtains;
     this.destructibles = this.built.entries.map((entry) => entry.object);
     this.objects = this.built.entries.map((entry) => entry.object);
 
@@ -284,15 +260,6 @@ export class LivingRoomScene extends Phaser.Scene {
     this.startScreen.destroy();
     this.goalView.destroy();
     this.mobile.destroy();
-  }
-
-  private addPlatform(x: number, y: number, width: number, height: number) {
-    const surface = this.add.rectangle(x + width / 2, y + height / 2, width, height, 0, 0);
-
-    this.physics.add.existing(surface, true);
-    this.platforms.add(surface);
-
-    return surface;
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der flache HUD-Vertrag zeigt Score, Runde und Aktion gemeinsam; sämtliche Regeln bleiben außerhalb der Ansicht.
@@ -511,31 +478,9 @@ export class LivingRoomScene extends Phaser.Scene {
     this.renderHud(this.pixel.nearCurtain);
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Die fachlich festgelegte Frame-Reihenfolge verwendet denselben Input und Snapshot; Bodenaktionen sind separat.
   private updateGameplay(input: InputState, time: number, delta: number) {
-    for (const vase of this.vases) vase.updateFall();
-    const before = this.pixel.snapshot();
-    const surface = this.climbables.find((object) => overlaps(before, object.climbArea));
-
-    this.pixel.move(input, time, delta, surface?.climbArea);
-    const context: InteractionContext = Object.freeze({
-      time,
-      delta,
-      input,
-      pixel: Object.freeze(this.pixel.snapshot()),
-    });
-
-    for (const object of this.climbables)
-      this.processDamage(object.updateClimb(context, object === surface && context.pixel.climbing));
-    this.updateGround(context, surface);
-  }
-
-  private updateGround(context: InteractionContext, surface: Curtain | undefined) {
-    const interaction = updateGroundInteractions(this.groundObjects, context);
-
-    this.processDamage(interaction.event);
-
-    if (interaction.faceX !== undefined) this.pixel.faceToward(interaction.faceX);
-    this.pixel.present(context.time, interaction.action, surface?.snapshot().state === 'sliding');
+    advanceObjectInteractions(this.built, this.pixel, input, time, delta, (event) =>
+      this.processDamage(event),
+    );
   }
 }

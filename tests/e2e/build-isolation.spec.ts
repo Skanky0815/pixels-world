@@ -48,11 +48,17 @@ test(
       expect(source).not.toContain('round-profile');
       expect(source).not.toContain('__E2E_ROUND_CONFIG__');
       expect(source).not.toContain('Vergleichsansicht unvollständig');
+      expect(source).not.toContain('InteractablePlayground');
     }
 
     for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175/pixels-world']) {
       for (const path of [
         '/animation-compare.html',
+        '/interactable-playground.html',
+        '/src/dev/interactable-playground.ts',
+        '/src/dev/interactable-playground.css',
+        '/src/dev/PlaygroundScene.ts',
+        '/src/dev/playground-room.ts',
         '/src/dev/animation-compare.ts',
         '/src/dev/sara-compare.ts',
         '/src/dev/pixel-compare.ts',

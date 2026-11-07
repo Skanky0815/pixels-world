@@ -33,7 +33,8 @@ freigeben, nicht pauschal alle Hosts erlauben.
 
 ## Animationen vergleichen
 
-Im Dev-Server `/animation-compare.html` öffnen. Pixel und Sara verwenden dort die
+Im Dev-Server `/animation-compare.html` öffnen oder im Spiel-Footer
+**DEV · Animationen** wählen. Pixel und Sara verwenden dort die
 Spiel-Assets und gemeinsamen Fußanker in genau einer Box je Figur. Jede Box bietet
 alle Animationen, Größenregler, eigene Pause und Einzelschritt. Ein Auswahlwechsel
 startet beim ersten Frame. Die oberen Tasten steuern beide gemeinsam; einzeln
@@ -44,6 +45,29 @@ ausgeschlossen; fehlende Dev-Seiten dürfen dort keinen SPA-Fallback erhalten.
 
 Asset-Verträge und reproduzierbare Exporte bleiben bei
 [Pixel](../assets/pixel/README.md) und [Sara](../assets/sara/README.md).
+
+## Einzelne Objekte ausprobieren
+
+Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.
+Auf der DEV-Seite führt ebenfalls **Playground** zu `/interactable-playground.html`.
+Die Auswahl stammt direkt aus dem Objektkatalog, einschließlich aller Varianten.
+Pixel lässt sich ohne Rundenstart normal steuern; Sofa/Pflanze reagieren nach
+kurzem Stillstand, der Vorhang beim Klettern/Rutschen und die Vase beim Schieben
+vom Testregal. Touch-Geräte erhalten dieselbe Eingabe wie im Spiel.
+
+Die Live-Diagnose zeigt Typ, Zustand, Chaos-Punkte und die letzten Chaos-Ereignisse.
+Die Detailansicht enthält losgelöste Objekt-/Pixelwerte und Ressourcenanzahlen.
+**Szene zurücksetzen**, Debug-R und Objektwechsel entsorgen den alten Durchlauf
+und setzen Pixel, Schaden und Punkte zurück. Fokusverlust pausiert die Szene.
+Es gibt keine Heimkehr, Rundenuhr oder gespeicherten Ergebnisse.
+
+`object-playfield.ts` verdrahtet Physik und Interaktionsschritte gemeinsam für
+Hauptspiel und Playground. Neue Katalogvarianten werden automatisch angeboten;
+neue Objekttypen brauchen ihren regulären Resolver/Adapter, keine separate
+Testmechanik. Die Testplatzierung folgt den bestehenden Fähigkeiten (Boden,
+Kletterfläche oder Schiebeobjekt auf einem Regal). Besondere neue Geometrien
+können eine Erweiterung dieser Platzierungsdaten erfordern.
+Playground-HTML und DEV-Module fehlen wie der Animationsvergleich in allen Builds.
 
 ## Lesbarer TypeScript-Code
 

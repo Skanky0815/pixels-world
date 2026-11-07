@@ -2,20 +2,20 @@
 
 ## Zuständigkeiten
 
-| Bereich                          | Verantwortung                                                       |
-| -------------------------------- | ------------------------------------------------------------------- |
-| `src/main.ts`                    | Bootstrap, Raumwahl und Phaser-Konfiguration                        |
-| `game/scenes/LivingRoomScene.ts` | Aufbau, Kollisionspaare, Frame-Reihenfolge und Lebenszyklus         |
-| `game/input/`                    | Tastatur/Pointer, eingefrorener Input-Snapshot und Browseraktivität |
-| `game/actors/`                   | Bewegung, Körper, sichtbare Figuren und Animationsauswahl           |
-| `game/objects/`                  | Konkrete Möbel/Objekte mit Geometrie und eigenen Modellen           |
-| `game/interactions/`             | Reine Handlungsmodelle und kleine Fähigkeitsverträge                |
-| `game/domain/`                   | Runde, Hauptziel, Heimkehr, Versöhnung, Ergebnis und Score          |
-| `game/ui/`                       | Darstellung aus lesbaren Daten, keine Punkte-/Timerentscheidungen   |
-| `game/content/`                  | Datenvertrag, Resolver, Validierung und Objektfabrik                |
-| `src/content/`                   | Typisierte Raum-, Objekt- und Dialoginhalte                         |
-| `src/i18n/`                      | Sprachkataloge, Formatierung und Spracheinstellung                  |
-| `src/dev/`                       | Ausschließlich lokale Arbeitswerkzeuge                              |
+| Bereich                          | Verantwortung                                                                      |
+| -------------------------------- | ---------------------------------------------------------------------------------- |
+| `src/main.ts`                    | Bootstrap, Raumwahl und Phaser-Konfiguration                                       |
+| `game/scenes/LivingRoomScene.ts` | Aufbau, Kollisionspaare, Frame-Reihenfolge und Lebenszyklus                        |
+| `game/input/`                    | Tastatur/Pointer, eingefrorener Input-Snapshot und Browseraktivität                |
+| `game/actors/`                   | Bewegung, Körper, sichtbare Figuren und Animationsauswahl                          |
+| `game/objects/`                  | Konkrete Möbel/Objekte mit Geometrie und eigenen Modellen                          |
+| `game/interactions/`             | Reine Handlungsmodelle und kleine Fähigkeitsverträge                               |
+| `game/domain/`                   | Runde, Hauptziel, Heimkehr, Versöhnung, Ergebnis und Score                         |
+| `game/ui/`                       | Darstellung aus lesbaren Daten, keine Punkte-/Timerentscheidungen                  |
+| `game/content/`                  | Datenvertrag, Resolver, Validierung, Objektfabrik und gemeinsame Szenenverdrahtung |
+| `src/content/`                   | Typisierte Raum-, Objekt- und Dialoginhalte                                        |
+| `src/i18n/`                      | Sprachkataloge, Formatierung und Spracheinstellung                                 |
+| `src/dev/`                       | Ausschließlich lokale Arbeitswerkzeuge                                             |
 
 Es bleibt ein frontend-only npm-/Vite-Projekt. Die Figurenanimation steuert weder
 Kollisionen noch Schadensregeln. Sichtbares Sprite und fester Physikkörper sind
@@ -46,6 +46,12 @@ entsorgt Adapter, Eingaben, Listener, Ansichten und Ressourcen. Asynchrone
 E2E-Observer-Installation prüft die Szenengeneration; alte Fortsetzungen dürfen
 keinen neuen Durchlauf verändern. Der Observer liefert ausschließlich eingefrorene
 Kopien, niemals Engine-Objekte oder Mutatoren, und fehlt im Produktionsbuild.
+
+Die DEV-Objektszene verwendet dieselben Adapter, Eingaben und Animationsdaten.
+`game/content/object-playfield.ts` teilt Raumkörper, Collider und die geordnete
+Objektinteraktion mit `LivingRoomScene`; Rundenuhr, Ziel und Heimkehr bleiben
+außerhalb dieses gemeinsamen Schritts. Der Playground besitzt seinen eigenen
+Score und entsorgt seine Ressourcen beim Szenenwechsel.
 
 ## Objekte und Schadensvertrag
 
