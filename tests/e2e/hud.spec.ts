@@ -9,9 +9,6 @@ test('HUD zeigt echten Spielzustand und bleibt bei wiederholtem Reset unverände
 
   expect(idle).toEqual({
     scoreText: 'CHAOS: 0',
-    climbHintText: '↑ KLETTERN\nLOSLASSEN: RUTSCHEN',
-    climbHintAlpha: 0.65,
-    elements: 2,
   });
   expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.hud))).toBe(true);
 

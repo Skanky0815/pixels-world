@@ -39,8 +39,9 @@ Bei Fokusverlust pausiert das Spiel.
 Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
 das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen
 Pfeiltastenfolge, Sara durch Schnurren und Anschmiegen zu versöhnen.
-Die Ergebnisansicht fasst Chaospunkte, Saras ursprüngliche Reaktion und den
-Versöhnungsausgang zusammen. Mit **Neue Runde** beginnt das nächste Spiel.
+Die Ergebnisansicht stellt Chaos und Versöhnung nebeneinander dar. Gefüllte und
+leere Herzen zeigen den Stand; eine große Überschrift hebt hervor, ob Pixel und Sara
+sich vertragen haben. Saras ursprüngliche Reaktion und ihr Abschlussspruch bleiben sichtbar. Mit **Neue Runde** beginnt das nächste Spiel.
 
 Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.

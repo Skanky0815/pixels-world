@@ -624,3 +624,46 @@ kbd {
     outline-offset: 2px;
   }
 }
+
+/* The result keeps both parts together and the outcome above them. */
+.mobile-result:not([hidden]) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px 14px;
+  white-space: pre-line;
+}
+.mobile-result .result-headline {
+  grid-column: 1 / -1;
+  font-size: clamp(22px, 5vw, 28px);
+  font-weight: bold;
+  line-height: 1.2;
+  color: #c8dfa0;
+}
+.mobile-result[data-outcome='failed'] .result-headline {
+  color: #efb69d;
+}
+.mobile-result .result-chaos,
+.mobile-result .result-charm {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #a78d77;
+  border-radius: 4px;
+}
+.mobile-result .result-hearts {
+  color: #e7a6a6;
+  font:
+    28px/1.2 Arial,
+    sans-serif;
+  letter-spacing: 3px;
+}
+.mobile-result .result-goal {
+  grid-column: 1 / -1;
+  color: #d4b488;
+  font-size: 12px;
+}
+@media (any-pointer: coarse) and (max-width: 1100px) {
+  .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
+    max-height: 100%;
+    bottom: 0;
+  }
+}

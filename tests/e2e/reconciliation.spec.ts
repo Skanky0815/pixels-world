@@ -202,6 +202,10 @@ async function expectResult(page: Page, outcome: 'success' | 'failed') {
   expect(result.hint).toBe('Neue Runde starten');
   expect(result.goalReached).toBe(current.round.endReason === 'goal');
   expect(result.summaryText).toContain('Hauptziel:');
+  expect(result.headlineText).toBe(outcome === 'success' ? 'Wieder vertragen!' : 'Nicht versöhnt');
+  expect(result.heartsText).toBe(
+    '♥'.repeat(result.hearts) + '♡'.repeat(result.required - result.hearts),
+  );
   expect(result.quoteText).toBe(`Sara: „${result.closingLine}“`);
   expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.result))).toBe(true);
   await page.clock.runFor(3000);

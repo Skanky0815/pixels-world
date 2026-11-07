@@ -70,7 +70,6 @@ export interface RoomDefinition {
   readonly pixelAsset: 'pixel';
   readonly spawn: { readonly x: number; readonly surfaceId: string };
   readonly wallColor: number;
-  readonly hud: { readonly climbHint: { readonly x: number; readonly y: number } };
   readonly floor: {
     readonly id: string;
     readonly y: number;

@@ -172,7 +172,7 @@ export class LivingRoomScene extends Phaser.Scene {
             forward: () => {
               if (this.canPlay() && this.round.advance(10_000, this.chaos.score))
                 this.startHomecoming();
-              this.renderHud(this.pixel.nearCurtain);
+              this.renderHud();
             },
             release: () => this.controls.release(),
 
@@ -324,7 +324,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.controls = new InputController(this);
     this.activity = new PlayActivity(() => this.syncActivity());
     this.audio = new GameAudio(this.sound);
-    this.hud = new GameHud(this, room.hud);
+    this.hud = new GameHud(this);
     this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
@@ -364,12 +364,8 @@ export class LivingRoomScene extends Phaser.Scene {
     this.feedback.destroy();
   }
 
-  private renderHud(nearCurtain: boolean) {
-    this.hud.render({
-      round: this.round.snapshot(),
-      score: this.chaos.score,
-      nearCurtain,
-    });
+  private renderHud() {
+    this.hud.render({ score: this.chaos.score });
   }
 
   private processDamage(event: ChaosEvent | undefined) {
@@ -419,7 +415,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private refreshLanguage() {
-    this.renderHud(this.pixel.nearCurtain);
+    this.renderHud();
     this.sara.render(this.homecoming.snapshot(), this.returning.snapshot().stage === 'seated');
     this.charmView.render(this.charm.snapshot());
     this.renderResult();
@@ -452,7 +448,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.pixel.setPaused(!this.activity.active || !this.started);
     this.sara.setPaused(!this.activity.active);
     this.audio.setActive(this.activity.active && this.started);
-    this.renderHud(this.pixel.nearCurtain);
+    this.renderHud();
   }
 
   private setWorldActive(active: boolean) {
@@ -499,7 +495,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.goalView.render(this.goal.snapshot(), true);
 
     if (this.round.advance(elapsed, this.chaos.score, true, reached)) this.startHomecoming();
-    else this.renderHud(this.pixel.nearCurtain);
+    else this.renderHud();
   }
 
   private startHomecoming() {
@@ -591,7 +587,7 @@ export class LivingRoomScene extends Phaser.Scene {
     }
 
     this.sara.render(snapshot, this.returning.snapshot().stage === 'seated');
-    this.renderHud(this.pixel.nearCurtain);
+    this.renderHud();
   }
 
   private updateGameplay(input: InputState, time: number, delta: number) {

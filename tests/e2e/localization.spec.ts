@@ -102,6 +102,8 @@ test.describe('Lokalisierte Touch-Runde', () => {
 
     await until(page, (s) => s.reconciliation.stage === 'complete', 100);
     await expect(page.locator('.mobile-dialogue')).toContainText('ROUND RESULT');
+    await expect(page.locator('.result-headline')).toHaveText('Friends again!');
+    await expect(page.locator('.result-hearts')).toHaveAttribute('aria-label', '1 of 1 hearts');
     await expect(page.locator('[data-control="reset"]')).toHaveText('New round');
     expect((await state(page)).reconciliation.failures).toBe(0);
     await test.info().attach('english-mobile-result', {

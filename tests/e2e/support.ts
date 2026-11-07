@@ -110,9 +110,6 @@ async function curtain(page: Page) {
   // Walk under the furniture, using only real input to reach the curtain.
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 790);
   await holdUntil(page, ['ArrowUp'], (s) => s.pixel.climbing && s.pixel.y < 350);
-  expect((await state(page)).hud).toMatchObject({
-    climbHintAlpha: 1,
-  });
 }
 
 async function framesPass(page: Page, count = 15) {

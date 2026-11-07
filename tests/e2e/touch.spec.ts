@@ -202,6 +202,13 @@ test(
     expect((await state(page)).reconciliation.failures).toBe(0);
     expect((await state(page)).result?.outcome).toBe('success');
     await expect(page.locator('.mobile-dialogue')).toContainText('RUNDENERGEBNIS');
+    await expect(page.locator('.result-headline')).toHaveText('Wieder vertragen!');
+    await expect(page.locator('.result-hearts')).toHaveText('♥');
+    await expect(page.locator('.result-hearts')).toHaveAttribute('aria-label', '1 von 1 Herzen');
+    await expectResultColumns(page);
+    expect(
+      await page.locator('.mobile-result').evaluate((el) => el.scrollWidth <= el.clientWidth),
+    ).toBe(true);
     await expect(page.getByRole('button', { name: 'Neue Runde' })).toBeVisible();
     await test.info().attach('mobiles-ergebnis', {
       body: await page.screenshot({ fullPage: true }),
@@ -226,3 +233,12 @@ test(
     expect((await state(page)).chaos.score).toBe(0);
   },
 );
+
+async function expectResultColumns(page: import('@playwright/test').Page) {
+  const chaos = await page.locator('.result-chaos').boundingBox();
+  const charm = await page.locator('.result-charm').boundingBox();
+
+  if (!chaos || !charm) throw new Error('Ergebnisspalten fehlen');
+  expect(chaos.x + chaos.width).toBeLessThanOrEqual(charm.x);
+  expect(chaos.y).toBe(charm.y);
+}
