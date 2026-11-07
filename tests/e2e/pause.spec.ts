@@ -91,8 +91,8 @@ test('Lautstärke bleibt gespeichert und Neue Runde ist ausschließlich im Menü
   await expect(
     page.locator(menu).getByRole('button', { name: 'Neue Runde', exact: true }),
   ).not.toBeVisible();
-  const master = page.locator('[data-audio=master]');
-  const effects = page.locator('[data-audio=effects]');
+  const master = page.getByRole('slider', { name: /Gesamtlautstärke/ });
+  const effects = page.getByRole('slider', { name: /Soundeffekte/ });
 
   await master.focus();
   await page.keyboard.press('Home');

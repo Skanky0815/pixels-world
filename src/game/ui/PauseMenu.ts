@@ -138,10 +138,10 @@ function markup() {
   return `<h2 data-menu-text="pauseSettings"></h2>
     <section><h3 data-menu-text="language"></h3><div data-pause-language></div></section>
     <section><h3 data-menu-text="audioSettings"></h3>
-      <label><span data-menu-text="masterVolume"></span><output data-audio-value="master"></output>
-        <input type="range" data-audio="master" min="0" max="100" step="1"></label>
-      <label><span data-menu-text="effectsVolume"></span><output data-audio-value="effects"></output>
-        <input type="range" data-audio="effects" min="0" max="100" step="1"></label>
+      <label for="pause-master-volume"><span data-menu-text="masterVolume"></span><output data-audio-value="master"></output>
+        <input id="pause-master-volume" type="range" data-audio="master" min="0" max="100" step="1"></label>
+      <label for="pause-effects-volume"><span data-menu-text="effectsVolume"></span><output data-audio-value="effects"></output>
+        <input id="pause-effects-volume" type="range" data-audio="effects" min="0" max="100" step="1"></label>
     </section>
     <div class="pause-actions"><button type="button" data-pause-resume></button>
       <button type="button" data-pause-restart data-menu-text="newRoundLabel"></button></div>`;
