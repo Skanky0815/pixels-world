@@ -9,6 +9,8 @@ test('Pause hält Welt und Timer an; Fokuswechsel und Menütasten setzen nicht f
   // eslint-disable-next-line max-lines-per-function -- Gehaltene Eingabe, Pause, Fokuswechsel und frisches Fortsetzen werden als zusammenhängender Nutzerablauf geprüft.
 }) => {
   await start(page);
+  await expect(page.getByRole('button', { name: 'Menü', exact: true })).toHaveText('');
+  await expect(page.locator('.pause-toggle svg')).toHaveAttribute('aria-hidden', 'true');
   await page.keyboard.down('ArrowRight');
   await until(page, (s) => s.pixel.x > 145);
   await page.keyboard.press('Escape');

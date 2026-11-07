@@ -1,15 +1,30 @@
 .pause-toggle {
+  position: relative;
+  isolation: isolate;
   flex-shrink: 0;
   min-height: 44px;
-  min-width: 54px;
-  padding: 6px 10px;
-  border: 1px solid #b79879;
-  border-radius: 6px;
-  background: #493a3d;
+  min-width: 44px;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border: 0;
+  background: transparent;
   color: #f2e4c9;
   font: inherit;
-  font-size: 12px;
   cursor: pointer;
+}
+.pause-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  z-index: -1;
+  border: 1px solid #7d6858;
+  border-radius: 3px;
+  background: #493a3d;
+}
+.pause-toggle svg {
+  width: 18px;
+  height: 18px;
 }
 .pause-menu {
   box-sizing: border-box;

@@ -466,6 +466,8 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (elapsed <= 0) return this.deferInput(input);
 
+    if (input.confirmPressed && this.resultView.snapshot()) return this.scene.restart();
+
     if (this.canPlay()) this.playFrame(input, elapsed);
     else this.advanceHomecoming(input, elapsed);
     this.presentFeedback(elapsed);

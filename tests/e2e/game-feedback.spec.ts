@@ -27,6 +27,7 @@ test('Punktefeedback zeigt echte Punkte, friert mit Pause ein und bleibt nach Re
   await expect(page.locator('.game-feedback-score')).toContainText(
     `+${OBJECTS['cozy-couch'].rules.damageValue}`,
   );
+  await expectFeedbackCorner(page);
   await testInfo.attach('desktop-score-feedback', {
     body: await page.screenshot(),
     contentType: 'image/png',
@@ -164,3 +165,12 @@ test.describe('Feedback im Handheld mit reduzierter Bewegung', () => {
     });
   });
 });
+
+async function expectFeedbackCorner(page: import('@playwright/test').Page) {
+  const score = await page.locator('.game-feedback-score').boundingBox();
+  const layer = await page.locator('.game-feedback-layer').boundingBox();
+
+  if (!score || !layer) throw new Error('Feedback fehlt');
+  expect(score.y).toBeLessThan(layer.y + layer.height * 0.2);
+  expect(score.x + score.width).toBeGreaterThan(layer.x + layer.width * 0.8);
+}

@@ -41,14 +41,14 @@ das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen
 Pfeiltastenfolge, Sara durch Schnurren und Anschmiegen zu versöhnen.
 Die Ergebnisansicht stellt Chaos und Versöhnung nebeneinander dar. Gefüllte und
 leere Herzen zeigen den Stand; eine große Überschrift hebt hervor, ob Pixel und Sara
-sich vertragen haben. Saras ursprüngliche Reaktion und ihr Abschlussspruch bleiben sichtbar. Mit **Neue Runde** beginnt das nächste Spiel.
+sich vertragen haben. Saras ursprüngliche Reaktion und ihr Abschlussspruch bleiben sichtbar. Mit **Neue Runde** oder **␣** beginnt am Ergebnis das nächste Spiel.
 
 Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.
 
 ## Pause und Einstellungen
 
-**Esc** oder **Menü** öffnet die Pause. Welt, Rundentimer, Versöhnungsfristen und
+**Esc** oder das **Zahnrad** öffnet die Pause. Welt, Rundentimer, Versöhnungsfristen und
 Animationen bleiben stehen. **Fortsetzen** bzw. Esc schließt das Menü; ein
 Tab-Wechsel setzt die manuelle Pause nicht außer Kraft.
 
@@ -60,11 +60,14 @@ Das Spiel enthält aktuell noch keine Audio-Assets. **Neue Runde** setzt die
 laufende Runde zurück und ist während des Spiels nur über das Menü erreichbar;
 am Ergebnis bleibt der vorhandene Button verfügbar.
 
-Kurze Punktehinweise zeigen erfolgreiche Chaosaktionen, Phasenhinweise markieren
+Kurze Punkte- und Phasenhinweise teilen sich oben rechts einen festen Bereich.
+Punktehinweise zeigen erfolgreiche Chaosaktionen, Phasenhinweise markieren
 Saras Heimkehr und den Wechsel zur Versöhnung. Richtige/falsche Pfeile und gewonnene
 Herzen erhalten eindeutige Rückmeldungen, ohne Spieltempo oder Eingabefristen zu ändern.
 
 ## Steuerung
+
+Das Symbol **␣** in den Spielhinweisen steht für die Leertaste.
 
 | Taste     | Aktion                                                    |
 | --------- | --------------------------------------------------------- |

@@ -94,7 +94,7 @@ test(
     expect(seated.pixel.bottom).toBeCloseTo(468, 0);
     expect(seated.pixel.animation).toBe('idle');
     expect(seated.pixel.flipX).toBe(false);
-    expect(seated.sara.dialogueText).toContain('LEERTASTE: Weiter');
+    expect(seated.sara.dialogueText).toContain('␣: Weiter');
     await page.clock.runFor(10_000);
     expect((await state(page)).homecoming).toEqual(seated.homecoming);
     await page.keyboard.down('Space');

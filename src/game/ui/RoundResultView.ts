@@ -28,10 +28,12 @@ export class RoundResultView {
     this.headline = scene.add.text(width / 2, 150, '', style(28)).setOrigin(0.5, 0);
     this.chaos = scene.add.text(64, 215, '', { ...style(16), wordWrap: { width: width / 2 - 90 } });
     this.reconciliation = scene.add.text(width / 2 + 20, 215, '', style(16));
-    this.hearts = scene.add.text(width / 2 + 20, 262, '', {
-      ...style(32),
-      fontFamily: 'Arial, sans-serif',
-    });
+    this.hearts = scene.add
+      .text(width / 2 + 20, 262, '', {
+        ...style(32),
+        fontFamily: 'Arial, sans-serif',
+      })
+      .setOrigin(0, 0.5);
     this.goal = scene.add.text(64, 315, '', style(13));
     this.quote = scene.add.text(64, 344, '', {
       ...style(14),
@@ -75,9 +77,13 @@ export class RoundResultView {
     );
     this.hearts.setText('♥'.repeat(result.hearts) + '♡'.repeat(result.required - result.hearts));
     this.hearts.setColor(success ? '#e7a6a6' : '#d4b488');
+    this.hearts.setPosition(
+      this.reconciliation.x + this.reconciliation.width + 16,
+      this.reconciliation.y + this.reconciliation.height - 10,
+    );
     this.goal.setText(t('resultGoal', { v0: t(result.goalReached ? 'reached' : 'notReached') }));
     this.quote.setText(t('saraLabel049', { v0: result.closingLine }));
-    this.hint.setText(t('rNewRound'));
+    this.hint.setText(t('spaceNewRound'));
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der skalare Vertrag teilt dieselben sichtbaren Texte mit der mobilen Karte und dem unveränderlichen Beobachter.

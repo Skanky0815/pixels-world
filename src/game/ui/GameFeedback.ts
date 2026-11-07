@@ -24,7 +24,7 @@ export class GameFeedback {
     this.root.className = 'game-feedback-layer';
     this.root.setAttribute('aria-live', 'polite');
 
-    for (const channel of ['score', 'phase', 'charm'] as const) {
+    for (const channel of ['phase', 'score', 'charm'] as const) {
       const node = document.createElement('p');
 
       node.className = `game-feedback-${channel}`;

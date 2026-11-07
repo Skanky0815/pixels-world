@@ -29,7 +29,9 @@ header {
 }
 .eyebrow {
   font-size: 10px;
-  letter-spacing: 3px;
+  letter-spacing: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
   color: #ceaa7b;
 }
 h1 {
@@ -90,6 +92,14 @@ kbd {
   padding: 3px 5px;
   border-radius: 3px;
   color: #f3e3c9;
+}
+.space-key {
+  display: inline-block;
+  min-width: 1.5em;
+  font-family: Arial, sans-serif;
+  font-size: 1em;
+  line-height: 1.2;
+  text-align: center;
 }
 .hint {
   color: #a78d77;
@@ -649,12 +659,25 @@ kbd {
   border: 1px solid #a78d77;
   border-radius: 4px;
 }
+.mobile-result .result-charm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mobile-result .result-reconciliation {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  font-size: 13px;
+}
 .mobile-result .result-hearts {
   color: #e7a6a6;
   font:
-    28px/1.2 Arial,
+    22px/1.2 Arial,
     sans-serif;
-  letter-spacing: 3px;
+  letter-spacing: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .mobile-result .result-goal {
   grid-column: 1 / -1;
