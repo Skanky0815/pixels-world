@@ -1,3 +1,7 @@
+import { difficultyPreferences } from '../../settings/difficulty';
+import { difficultyRoom, difficultyTimer, type Difficulty } from '../../content/difficulty';
+import { resolveRoom } from '../content/resolve-room';
+import { OBJECTS } from '../../content/objects/catalog';
 import { GameFeedback } from '../ui/GameFeedback';
 import { PauseMenu } from '../ui/PauseMenu';
 import { GameAudio } from '../ui/GameAudio';
@@ -31,7 +35,7 @@ import { Vase } from '../objects/Vase';
 import { Couch } from '../objects/Couch';
 import { Curtain } from '../objects/Curtain';
 import { Plant } from '../objects/Plant';
-import { RoundController } from '../domain/round-controller';
+import { ROUND_CONFIG, RoundController } from '../domain/round-controller';
 import { PlayActivity } from '../input/play-activity';
 import { GameHud } from '../ui/GameHud';
 import { HomecomingSequence } from '../domain/homecoming';
@@ -73,8 +77,12 @@ export class LivingRoomScene extends Phaser.Scene {
   private objects: ObjectLifecycle[] = [];
   private destructibles: Destructible[] = [];
 
-  constructor(private readonly room: ResolvedRoom) {
+  private room: ResolvedRoom;
+  private difficulty: Difficulty = 'normal';
+
+  constructor(private readonly baseRoom: ResolvedRoom) {
     super('LivingRoom');
+    this.room = baseRoom;
   }
 
   preload() {
@@ -92,8 +100,12 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   // eslint-disable-next-line max-lines-per-function -- Raum, Figuren und szenengebundene Diagnose werden in fester Aufbaufolge initialisiert.
-  create(data: { debugScenario?: DebugScenario } = {}) {
+  create(data: { debugScenario?: DebugScenario; started?: boolean } = {}) {
     const generation = ++this.generation;
+
+    this.difficulty = difficultyPreferences.snapshot();
+    this.started = data.started ?? this.started;
+    this.room = resolveRoom(difficultyRoom(this.baseRoom.definition, this.difficulty), OBJECTS);
 
     this.initializeRound();
     const floor = this.buildRoom();
@@ -112,11 +124,17 @@ export class LivingRoomScene extends Phaser.Scene {
     this.physics.disableUpdate();
     this.chaos.reset();
     this.random = undefined;
-    this.round = new RoundController(roundConfigForPage(), this.random);
+    this.round = this.createRound();
     this.homecoming = new HomecomingSequence();
     this.charm = new Reconciliation(this.random);
     this.returnTime = 0;
     this.goal = new MainGoal(this.room.goal);
+  }
+
+  private createRound() {
+    const config = difficultyTimer(roundConfigForPage() ?? ROUND_CONFIG, this.difficulty);
+
+    return new RoundController(config, this.random);
   }
 
   private configureCamera() {
@@ -212,6 +230,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
           return {
             ready: this.scene.isActive(),
+            difficulty: this.difficulty,
             scene: this.scene.key,
             frame: this.game.loop.frame,
             generation,
@@ -328,7 +347,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
-    this.startScreen = new StartScreen(!this.started, this.room.goal);
+    this.startScreen = new StartScreen(!this.started, this.room.goal, () => this.menu.open());
     this.goalView = new GoalView(this, this.room.goal);
     this.goalView.render(this.goal.snapshot(), this.started);
     this.menu = new PauseMenu({
@@ -336,8 +355,9 @@ export class LivingRoomScene extends Phaser.Scene {
         this.controls.release();
         this.activity.setPaused(paused);
       },
-      restart: () => this.scene.restart(),
+      restart: () => this.scene.restart({}),
       started: () => this.started,
+      difficulty: () => this.difficulty,
     });
     this.syncActivity();
     const unsubscribe = onLanguageChange(() => this.refreshLanguage());
@@ -365,7 +385,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private renderHud() {
-    this.hud.render({ score: this.chaos.score });
+    this.hud.render({ score: this.chaos.score, difficulty: this.difficulty });
   }
 
   private processDamage(event: ChaosEvent | undefined) {
@@ -387,7 +407,7 @@ export class LivingRoomScene extends Phaser.Scene {
     }
 
     if (input.resetPressed) {
-      this.scene.restart();
+      this.scene.restart({});
 
       return;
     }
@@ -427,6 +447,14 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private tryStart(input: InputState) {
     if (!input.confirmPressed || !this.activity.active) return;
+    const selected = difficultyPreferences.snapshot();
+
+    if (selected !== this.difficulty) {
+      this.scene.restart({ started: true });
+
+      return;
+    }
+
     this.startRound();
   }
 
@@ -467,7 +495,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (elapsed <= 0) return this.deferInput(input);
 
-    if (input.confirmPressed && this.resultView.snapshot()) return this.scene.restart();
+    if (input.confirmPressed && this.resultView.snapshot()) return this.scene.restart({});
 
     if (this.canPlay()) this.playFrame(input, elapsed);
     else this.advanceHomecoming(input, elapsed);
@@ -585,7 +613,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (snapshot.stage === 'complete') {
       this.round.startReconciliation();
-      this.charm.start(snapshot.selection?.score ?? 0);
+      this.charm.start(snapshot.selection?.score ?? 0, this.difficulty);
       this.charmView.render(this.charm.snapshot());
     }
 

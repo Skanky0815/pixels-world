@@ -1,3 +1,4 @@
+import { LIVING_ROOM_DENSITY } from '../difficulty.ts';
 import { copy } from '../../i18n/locale.ts';
 import type { Decoration, RoomDefinition } from '../../game/content/definitions.ts';
 const FLOOR_Y = 468;
@@ -33,6 +34,7 @@ const decorations: readonly Decoration[] = [
 
 export const LIVING_ROOM = {
   id: 'living-room',
+  difficultyObjects: LIVING_ROOM_DENSITY,
   goal: {
     id: 'favorite-ball',
     kind: 'toy',

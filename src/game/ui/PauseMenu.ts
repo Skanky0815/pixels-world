@@ -1,3 +1,5 @@
+import { difficultyPreferences } from '../../settings/difficulty';
+import { DIFFICULTY_LABELS, isDifficulty, type Difficulty } from '../../content/difficulty';
 import { motionPreferences } from '../../settings/motion';
 import { t, onLanguageChange, type TextKey } from '../../i18n/locale';
 import { createLanguageSetting } from '../../i18n/language-setting';
@@ -8,6 +10,7 @@ interface PauseActions {
   pause(paused: boolean): void;
   restart(): void;
   started(): boolean;
+  difficulty(): Difficulty;
 }
 
 export class PauseMenu {
@@ -17,6 +20,7 @@ export class PauseMenu {
   private readonly unsubscribe: () => void;
   private readonly unsubscribeAudio: () => void;
   private readonly removeLanguage: () => void;
+  private readonly unsubscribeDifficulty: () => void;
   private readonly unsubscribeMotion: () => void;
 
   // eslint-disable-next-line max-lines-per-function -- Zugänglicher Dialog und sämtliche Ereignisse teilen eine szenengebundene Lebensdauer.
@@ -47,6 +51,12 @@ export class PauseMenu {
       },
       options,
     );
+    this.element('[data-difficulty]').addEventListener(
+      'change',
+      () => this.changeDifficulty(),
+      options,
+    );
+    this.unsubscribeDifficulty = difficultyPreferences.subscribe(() => this.refreshDifficulty());
     this.root.addEventListener('input', (event) => this.changeAudio(event), options);
     this.element('[data-reduce-motion]').addEventListener(
       'change',
@@ -85,7 +95,7 @@ export class PauseMenu {
     else this.open();
   };
 
-  private open() {
+  open() {
     if (this.opened || document.querySelector('dialog[open]')) return;
     this.actions.pause(true);
     this.refresh();
@@ -124,11 +134,26 @@ export class PauseMenu {
     }
   }
 
+  private changeDifficulty() {
+    const select = this.element('[data-difficulty]') as HTMLSelectElement;
+
+    if (isDifficulty(select.value)) difficultyPreferences.set(select.value);
+  }
+
+  private refreshDifficulty() {
+    (this.element('[data-difficulty]') as HTMLSelectElement).value =
+      difficultyPreferences.snapshot();
+    this.element('[data-difficulty-current]').textContent = this.actions.started()
+      ? t('difficultyCurrent', { v0: t(DIFFICULTY_LABELS[this.actions.difficulty()]) })
+      : t('difficultyBeforeStart');
+  }
+
   private refreshToggle() {
     const label = t('menu');
 
     this.toggle.setAttribute('aria-label', label);
     this.toggle.title = label;
+    this.refreshDifficulty();
   }
 
   private refresh() {
@@ -151,11 +176,16 @@ export class PauseMenu {
     return element;
   }
 
-  destroy() {
-    this.abort.abort();
+  private removeSubscriptions() {
     this.unsubscribe();
     this.unsubscribeAudio();
     this.unsubscribeMotion();
+    this.unsubscribeDifficulty();
+  }
+
+  destroy() {
+    this.abort.abort();
+    this.removeSubscriptions();
     this.removeLanguage();
     this.root.close();
     this.root.remove();
@@ -166,6 +196,12 @@ export class PauseMenu {
 // eslint-disable-next-line max-lines-per-function -- Das kleine Menü bleibt mit zugehörigen Beschriftungen als ein deklarativer Aufbau lesbar.
 function markup() {
   return `<h2 data-menu-text="pauseSettings"></h2>
+    <section><label for="pause-difficulty"><span data-menu-text="difficultyLabel"></span></label>
+      <select id="pause-difficulty" data-difficulty>
+        <option value="easy" data-menu-text="difficultyEasy"></option>
+        <option value="normal" data-menu-text="difficultyNormal"></option>
+        <option value="hard" data-menu-text="difficultyHard"></option>
+      </select><p data-difficulty-current></p></section>
     <section><h3 data-menu-text="language"></h3><div data-pause-language></div></section>
     <section><h3 data-menu-text="audioSettings"></h3>
       <label for="pause-master-volume"><span data-menu-text="masterVolume"></span><output data-audio-value="master"></output>

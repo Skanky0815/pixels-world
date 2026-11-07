@@ -1,3 +1,4 @@
+import { difficultyCharm, type Difficulty } from '../../content/difficulty.ts';
 import { angerFor } from './chaos.ts';
 import { CHARM_PROFILES, CHARM_TIMING, DIRECTIONS } from '../../content/reconciliation.ts';
 import type { CharmProfile, Direction, ReconciliationLevel } from '../../content/reconciliation.ts';
@@ -11,6 +12,7 @@ export type ReconciliationSnapshot = ReturnType<Reconciliation['snapshot']>;
 export class Reconciliation {
   private stage: Stage = 'waiting';
   private level: ReconciliationLevel = 'calm';
+  private difficulty: Difficulty = 'normal';
   private profile: CharmProfile = CHARM_PROFILES.calm;
   private sequence: Direction[] = [];
   private index = 0;
@@ -25,10 +27,11 @@ export class Reconciliation {
     this.random = random;
   }
 
-  start(score: number) {
+  start(score: number, difficulty: Difficulty = 'normal') {
     if (this.stage !== 'waiting') return false;
     this.level = angerFor(score).id;
-    this.profile = CHARM_PROFILES[this.level];
+    this.difficulty = difficulty;
+    this.profile = difficultyCharm(difficulty, this.level);
     this.stage = 'reading';
 
     return true;
@@ -127,6 +130,7 @@ export class Reconciliation {
     return Object.freeze({
       stage: this.stage,
       level: this.level,
+      difficulty: this.difficulty,
       feedback: this.feedback,
       expected: this.stage === 'input' ? this.sequence[this.index] : null,
       step: this.index,

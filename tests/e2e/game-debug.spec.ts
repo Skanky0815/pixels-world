@@ -195,3 +195,67 @@ test.describe('Debug auf Touch-Geräten', () => {
     });
   });
 });
+
+for (const mobile of [false, true]) {
+  // eslint-disable-next-line max-lines-per-function -- Auswahl, fertiges Ergebnis und Neustart bleiben ein zusammenhängender echter Menüablauf.
+  test.describe(`Schwieriges Ergebnis ${mobile ? 'mobil' : 'Desktop'}`, () => {
+    test.use({
+      hasTouch: mobile,
+      isMobile: mobile,
+      viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 },
+    });
+    test('Vier Herzen bleiben dem gespielten Grad zugeordnet', async ({
+      page,
+      // eslint-disable-next-line max-lines-per-function -- Die echte DEV-Oberfläche spielt das schwerste Profil fertig; Menüwechsel dürfen dessen Ergebnis nicht verändern.
+    }, testInfo) => {
+      await openDebug(page);
+      await page.keyboard.press('F2');
+      await page.getByRole('button', { name: 'Optionen', exact: true }).click();
+      await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('hard');
+      await page.locator('[data-pause-resume]').click();
+      await page.keyboard.press('F2');
+      await launch(page, 'result-success', 60);
+      await untilDebug(page, (s) => s.reconciliation.stage === 'complete');
+      expect((await snapshot(page))?.reconciliation).toMatchObject({
+        difficulty: 'hard',
+        required: 4,
+        successes: 4,
+      });
+      await page.keyboard.press('F2');
+
+      if (mobile) {
+        await expect(page.locator('.mobile-result')).toBeVisible();
+        await expect(page.locator('.result-hearts')).toHaveText('♥♥♥♥');
+        await expect(page.locator('.result-goal')).toContainText('Schwer');
+        const fits = await page
+          .locator('.mobile-result')
+          .evaluate((el) => el.scrollWidth <= el.clientWidth);
+
+        expect(fits).toBe(true);
+      }
+
+      await testInfo.attach('schwer-vier-herzen', {
+        body: await page.screenshot(),
+        contentType: 'image/png',
+      });
+      await page.getByRole('button', { name: 'Menü', exact: true }).click();
+      await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
+      await page.locator('[data-pause-resume]').click();
+      await page.keyboard.press('F2');
+      expect((await snapshot(page))?.reconciliation).toMatchObject({
+        difficulty: 'hard',
+        required: 4,
+        successes: 4,
+      });
+      await page.keyboard.press('F2');
+
+      if (mobile) await expect(page.locator('.result-goal')).toContainText('Schwer');
+      await page.keyboard.down('Space');
+      await page.clock.runFor(96);
+      await page.keyboard.up('Space');
+      await page.keyboard.press('F2');
+      await untilDebug(page, (s) => s.round.phase === 'chaos');
+      expect((await snapshot(page))?.round.returnAtMs).toBeGreaterThanOrEqual(90_000);
+    });
+  });
+}

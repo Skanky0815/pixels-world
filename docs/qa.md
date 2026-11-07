@@ -133,6 +133,13 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
 
+- Einführung → Optionen: Leicht/Normal/Schwer wählen, zurückkehren und starten.
+  Timer, Objektbelegung und Versöhnung gemeinsam prüfen; Normal behält das
+  bisherige Verhalten. In beiden Räumen muss der Ball ohne Schaden erreichbar
+  bleiben. Auswahl während einer Runde gilt erst für die nächste; das Ergebnis
+  zeigt weiterhin den gespielten Grad und seine tatsächlichen Herzen. Auswahl
+  nach Reload und bei gesperrtem Speicher auf Desktop und Touch prüfen.
+
 - Feedback nach Kratzen, Rissen, Knabbern, Umkippen und Vasenbruch: angezeigte
   Punkte stimmen, Meldungen bleiben kurz und verdoppeln keine Ereignisse. Pause
   friert auch Hinweise ein; Reset entfernt alte. Phasen, falsche/richtige Pfeile,

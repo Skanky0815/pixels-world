@@ -1,3 +1,4 @@
+import { DIFFICULTY_LABELS } from '../../content/difficulty';
 import { t } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
@@ -81,7 +82,9 @@ export class RoundResultView {
       this.reconciliation.x + this.reconciliation.width + 16,
       this.reconciliation.y + this.reconciliation.height - 10,
     );
-    this.goal.setText(t('resultGoal', { v0: t(result.goalReached ? 'reached' : 'notReached') }));
+    this.goal.setText(
+      `${t('resultGoal', { v0: t(result.goalReached ? 'reached' : 'notReached') })} · ${t('difficultyLabel')}: ${t(DIFFICULTY_LABELS[result.difficulty])}`,
+    );
     this.quote.setText(t('saraLabel049', { v0: result.closingLine }));
     this.hint.setText(t('spaceNewRound'));
   }

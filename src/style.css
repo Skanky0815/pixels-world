@@ -662,6 +662,7 @@ kbd {
 }
 .mobile-result .result-charm {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
 }
@@ -690,4 +691,29 @@ kbd {
     max-height: 100%;
     bottom: 0;
   }
+}
+.start-prompt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.start-options {
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid #b79879;
+  border-radius: 4px;
+  background: none;
+  color: #fff1cf;
+  font: inherit;
+  cursor: pointer;
+}
+.start-options:focus-visible {
+  outline: 2px solid #edc37c;
+  outline-offset: 3px;
+}
+
+.mobile-result .result-hearts[data-count='4'] {
+  font-size: 18px;
 }

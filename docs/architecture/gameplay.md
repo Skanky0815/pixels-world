@@ -153,7 +153,26 @@ Englisch fällt auf Deutsch zurück und wird in Entwicklung gemeldet.
 Sprachwechsel benachrichtigen Ansichten und rendern bestehende Snapshots erneut,
 ohne Timer, Physik oder Runde neu zu starten. `pixels-world.language` und die
 Audiopegel unter `pixels-world.audio` sowie der Bewegungswunsch unter
-`pixels-world.reduced-motion` werden lokal gespeichert; kein Spielstand. Speicherfehler verhindern die Sitzung nicht.
+`pixels-world.reduced-motion` und die Schwierigkeit unter
+`pixels-world.difficulty` werden lokal gespeichert; kein Spielstand. Speicherfehler verhindern die Sitzung nicht.
 Die Rechtsseiten sind statische deutsche HTML-Seiten ohne Spielcode. Eigennamen,
 Markenslogans, Tastensymbole und technische Meldungen brauchen keine zweite Fassung.
 Datenflüsse und Quellen: [rechtliche Dokumentation](../legal/phase2-review.md).
+
+## Schwierigkeitsgrade
+
+`src/content/difficulty.ts` bündelt die vorläufigen Playtest-Presets. Normal
+verwendet unverändert die bisherigen Timer- und Charmeprofile. Leicht skaliert
+die Zeit auf 150 %, Schwer auf 75 %. Die Raumdefinition bietet optionale
+`difficultyObjects` mit auslassbaren IDs und zusätzlichen Platzierungen; Räume
+ohne diese Angaben behalten ihre Belegung. Ziel und Plattformen bleiben gleich.
+
+Beim Rundenstart wird die Auswahl aus `DifficultyPreferences` übernommen und
+der Raum neu aufgelöst. Die aktive Schwierigkeit bleibt bis zum Neustart fest,
+auch wenn im Menü bereits die nächste gewählt wird. Versöhnung kombiniert sie
+mit der weiterhin ausschließlich scoreabhängigen Ärgerstufe. Länge, Herzen und
+Eingabefrist stammen aus demselben Profil; zwei Versuche pro Herz und die
+bestehende Hilfe bleiben erhalten. Das unveränderliche Ergebnis übernimmt den
+gespielten Grad und die tatsächlich benötigten/verdienten Herzen aus dem
+Versöhnungsmodell. Die Werte sind bewusst zentral für weiteres Playtesting
+änderbar; sie sind kein abgeschlossenes Balancing.

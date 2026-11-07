@@ -22,6 +22,7 @@ export function roundResult(
 
   return Object.freeze({
     score: round.finalChaosScore,
+    difficulty: charm.difficulty,
     goalReached: round.endReason === 'goal',
     reaction: anger.label,
     closingLine: ROUND_ENDINGS[anger.id][outcome],

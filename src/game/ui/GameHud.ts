@@ -1,3 +1,4 @@
+import { DIFFICULTY_LABELS } from '../../content/difficulty';
 import { t } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
@@ -15,7 +16,9 @@ export class GameHud {
   }
 
   render(state: HudState) {
-    this.scoreText.setText(t('chaosPoints', { v0: state.score }));
+    this.scoreText.setText(
+      `${t('chaosPoints', { v0: state.score })} · ${t(DIFFICULTY_LABELS[state.difficulty])}`,
+    );
   }
 
   snapshot() {
