@@ -1,3 +1,4 @@
+import { preloadCurtainArt } from '../game/assets/curtain-art';
 import { preloadCouchArt } from '../game/assets/couch-art';
 import { preloadVaseArt } from '../game/assets/vase-art';
 import Phaser from 'phaser';
@@ -44,6 +45,7 @@ export class PlaygroundScene extends Phaser.Scene {
   preload() {
     preloadVaseArt(this);
     preloadCouchArt(this);
+    preloadCurtainArt(this);
     const asset = ASSETS.pixel;
 
     this.load.spritesheet('pixel', spriteUrl('pixel'), {

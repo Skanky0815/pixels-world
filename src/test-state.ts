@@ -89,6 +89,14 @@ export interface GameTestState {
     readonly points: number;
   }>;
   readonly curtain: {
+    readonly texture: string;
+    readonly area: {
+      readonly x: number;
+      readonly y: number;
+      readonly width: number;
+      readonly height: number;
+    };
+    readonly marks: readonly { readonly x: number; readonly y: number }[];
     readonly state: string;
     readonly damage: number;
     readonly events: number;

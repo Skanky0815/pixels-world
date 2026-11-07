@@ -74,3 +74,17 @@ werden auf den normalen Sofas zweifach gezeichnet und halten vier Spielpixel
 Abstand. Auf schmaleren eigenen Sofas bleiben sie einfach skaliert mit zwei
 Pixeln Abstand, damit sechs Kratzstellen weiterhin Platz finden. Reset und Szenenende entfernen diese
 Instanzen; Pixels Kratzpose benötigt keine zusätzlichen gezeichneten Pfoten.
+
+### Vorhang-Grafik
+
+Der bestehende `curtain-default` lädt im Spiel und Playground dieselbe rostrote
+Basis und einen separaten Risspatch über `preloadCurtainArt`. Kletterfläche und
+Schadensregeln bleiben im Content; Bild-Bounds ersetzen sie nicht. Neue Risse
+suchen den nächsten freien Platz nahe Pixels tatsächlichem Kontakt. Die Patches
+bleiben vollständig im Stoff, liegen hinter Pixel und werden beim Reset entfernt.
+
+Quellen und Imagegen-Prompts liegen unter `assets/objects/curtain/`.
+`node tools/prepare-curtain-assets.mjs` exportiert die freigegebene Basis in
+56×178 und den Risspatch in 12×20 Pixel. Die Alpha-Bounds ab 192 werden
+seitenverhältnistreu per Nearest Neighbor zentriert eingepasst; übernommene
+RGBA-Werte bleiben erhalten. Nur die Export-PNGs gelangen ins Laufzeitbundle.
