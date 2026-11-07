@@ -1,3 +1,5 @@
+import { preloadShelfArt } from '../assets/shelf-art';
+import type { Shelf } from '../objects/Shelf';
 import { preloadFavoriteBallArt } from '../assets/favorite-ball-art';
 import { preloadCatgrassArt } from '../assets/catgrass-art';
 import { preloadCurtainArt } from '../assets/curtain-art';
@@ -80,6 +82,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private built!: ReturnType<typeof buildObjects>;
   private vases: Vase[] = [];
   private objects: ObjectLifecycle[] = [];
+  private shelves: Shelf[] = [];
   private destructibles: Destructible[] = [];
 
   private room: ResolvedRoom;
@@ -92,6 +95,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
   preload() {
     preloadVaseArt(this);
+    preloadShelfArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
@@ -250,6 +254,7 @@ export class LivingRoomScene extends Phaser.Scene {
               width: this.room.definition.width,
               height: this.room.definition.height,
             },
+            shelves: this.shelves.map((shelf) => shelf.snapshot()),
             objects: this.built.entries.map((entry) => ({
               id: entry.object.id,
               kind: entry.definition.kind,
@@ -297,7 +302,9 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private buildRoom() {
-    const { platforms, floor } = createRoomPhysics(this, this.room.definition);
+    const { platforms, floor, shelves } = createRoomPhysics(this, this.room.definition);
+
+    this.shelves = shelves;
 
     this.platforms = platforms;
 
@@ -329,12 +336,16 @@ export class LivingRoomScene extends Phaser.Scene {
     );
   }
 
+  // Nur noch aktive Körper liefern die Plattformgeometrie für Pixels automatische Rückkehr.
   private returnPlatforms() {
-    return this.platforms.getChildren().map((platform) => {
-      const bounds = (platform as Phaser.GameObjects.Rectangle).getBounds();
+    return this.platforms
+      .getChildren()
+      .filter(activePlatform)
+      .map((platform) => {
+        const bounds = (platform as Phaser.GameObjects.Rectangle).getBounds();
 
-      return { left: bounds.left, right: bounds.right, top: bounds.top };
-    });
+        return { left: bounds.left, right: bounds.right, top: bounds.top };
+      });
   }
 
   private initializeInteractions() {
@@ -557,6 +568,7 @@ export class LivingRoomScene extends Phaser.Scene {
     for (const body of this.physics.world.bodies.entries)
       if (body !== pixelBody) body.enable = false;
     this.returnTime = this.round.snapshot().elapsedMs;
+    this.initializeReturn();
     this.returning.start();
   }
 
@@ -631,9 +643,23 @@ export class LivingRoomScene extends Phaser.Scene {
     this.renderHud();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der gemeinsame Frame-Schritt erhält seine expliziten Adapter, Eingaben und Schadensrückgabe.
   private updateGameplay(input: InputState, time: number, delta: number) {
-    advanceObjectInteractions(this.built, this.pixel, input, time, delta, (event) =>
-      this.processDamage(event),
+    advanceObjectInteractions(
+      this.built,
+      this.pixel,
+      input,
+      time,
+      delta,
+      (event) => this.processDamage(event),
+      this.shelves,
     );
   }
+}
+
+function activePlatform(platform: Phaser.GameObjects.GameObject) {
+  const body = (platform as Phaser.GameObjects.Rectangle)
+    .body as Phaser.Physics.Arcade.StaticBody | null;
+
+  return Boolean(body?.enable);
 }

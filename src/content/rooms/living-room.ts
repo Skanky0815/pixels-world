@@ -2,8 +2,9 @@ import { LIVING_ROOM_DENSITY } from '../difficulty.ts';
 import { copy } from '../../i18n/locale.ts';
 import type { Decoration, RoomDefinition } from '../../game/content/definitions.ts';
 const FLOOR_Y = 468;
-const rect = (x: number, y: number, width: number, height: number, color: number): Decoration => ({
-  kind: 'rect',
+
+const rect = (x: number, y: number, width: number, height: number, color: number) => ({
+  kind: 'rect' as const,
   bounds: { x, y, width, height },
   color,
 });
@@ -20,9 +21,9 @@ const decorations: readonly Decoration[] = [
   rect(777, 98, 8, 224, 0xe4d0ab),
   rect(708, 205, 148, 8, 0xe4d0ab),
   rect(730, 101, 140, 10, 0x59443d),
-  rect(536, 270, 12, 34, 0xa7614e),
-  rect(550, 278, 10, 26, 0x778775),
-  rect(562, 266, 12, 38, 0xc6a36e),
+  { ...rect(536, 270, 12, 34, 0xa7614e), supportedBy: 'lower-shelf' },
+  { ...rect(550, 278, 10, 26, 0x778775), supportedBy: 'lower-shelf' },
+  { ...rect(562, 266, 12, 38, 0xc6a36e), supportedBy: 'lower-shelf' },
   rect(282, 112, 108, 112, 0x795a43),
   rect(290, 120, 92, 96, 0xefe0ba),
   rect(302, 168, 68, 36, 0xa0a486),
@@ -59,9 +60,24 @@ export const LIVING_ROOM = {
     plankHeight: 24,
   },
   platforms: [
-    { id: 'lower-shelf', bounds: { x: 518, y: 304, width: 146, height: 16 }, asset: 'wood-shelf' },
-    { id: 'middle-shelf', bounds: { x: 648, y: 224, width: 96, height: 16 }, asset: 'wood-shelf' },
-    { id: 'upper-shelf', bounds: { x: 856, y: 154, width: 80, height: 16 }, asset: 'wood-shelf' },
+    {
+      id: 'lower-shelf',
+      durability: { stability: 'fragile' },
+      bounds: { x: 518, y: 304, width: 146, height: 16 },
+      asset: 'wood-shelf',
+    },
+    {
+      id: 'middle-shelf',
+      durability: { stability: 'normal' },
+      bounds: { x: 648, y: 224, width: 96, height: 16 },
+      asset: 'wood-shelf',
+    },
+    {
+      id: 'upper-shelf',
+      durability: { stability: 'stable' },
+      bounds: { x: 856, y: 154, width: 80, height: 16 },
+      asset: 'wood-shelf',
+    },
   ],
   decorations,
   objects: [

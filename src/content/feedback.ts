@@ -16,6 +16,8 @@ export const DAMAGE_FEEDBACK: Record<DamageKind, TextKey> = {
   nibble: 'feedbackNibble',
   tip: 'feedbackTip',
   break: 'feedbackBreak',
+  'shelf-damage': 'feedbackShelfDamage',
+  collapse: 'feedbackShelfCollapse',
 };
 export const PHASE_FEEDBACK: Record<RoundPhase | 'success' | 'failed', TextKey> = {
   chaos: 'feedbackStart',

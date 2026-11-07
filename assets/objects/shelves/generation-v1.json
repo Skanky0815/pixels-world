@@ -1,0 +1,44 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "export": {
+    "command": "node tools/prepare-shelf-assets.mjs",
+    "alphaBounds": 192,
+    "boardCanvas": [
+      48,
+      8
+    ],
+    "capsAndCenter": [
+      8,
+      8
+    ],
+    "centerSampleX": 24,
+    "bracket": [
+      4,
+      10
+    ],
+    "scale": 2,
+    "rgba": "nearest-neighbor samples preserved; board height normalized to collider height",
+    "breakCell": [
+      8,
+      8
+    ],
+    "debris": "same configured board thickness; mirrored splinter edge on each fracture"
+  },
+  "variants": [
+    {
+      "name": "board",
+      "source": "sources/board-source-v1.png",
+      "prompt": "Create ONE modular wooden wall-shelf BOARD sprite for Pixel’s World, cozy warm autumn 2D pixel-art side-view game. Only the horizontal wooden board, NO brackets, no objects or books. Warm aged medium oak, muted golden tan top edge, dark warm brown front lip and bottom edge, 3-4 broad pixel color clusters with restrained wood grain and one tiny knot. Exact flat orthographic front/side game elevation, long horizontal rectangle. Design in a 48x8 logical pixel canvas, entire silhouette fills width 48 and height8, straight level top edge across whole width. Outer left8 and right8 logical pixel sections form matching short wooden end caps; central32 pixels are clean repeatable wood-grain front face. No projecting front corners, perspective, isometric depth or angled ends. Every vertical cross-section should have same thickness. The game will use separate left8x8 and right8x8 sections and a repeatable central8x8 sample to support arbitrary shelf widths without stretching the caps. This is a tiny platform top, crisp chunky square pixels matching a muted olive cozy sofa and rust curtain. Return the single entire board enlarged with nearest-neighbor-looking pixel blocks, genuine transparent alpha exterior, no diffuse halo, black matte, floor shadow, text, watermark, surrounding room, extra pieces or UI. Keep broad readable details at original48x8 size."
+    },
+    {
+      "name": "bracket",
+      "source": "sources/bracket-source-v1.png",
+      "prompt": "Create ONE small WOODEN WALL SHELF BRACKET sprite for Pixel’s World, cozy warm autumn 2D pixel-art side-view game. This is a single supporting upright bracket below a horizontal shelf, NOT a shelf board, no room or objects. Muted warm medium oak brown #87644a, dark warm contour and restrained golden wood highlight, a simple 4-pixel-wide upright stem with slightly shaped lower end and a small readable metal nail head near its upper part. Design for exact tiny logical4x10 pixel bounding box, vertical and taller than wide, chunky stepped outline, 2-3 broad wood colors, absolutely no fine realistic texture or smooth gradient. Flat side/front view; will be placed under a shelf and displayed at2x for8x20 game pixels. Whole single bracket centered upright, enlarged in sharp square pixel blocks for inspection. Real transparent alpha around shape; no black matte, colored haze, glow, cast shadow, board, shelf, extra brackets, text, border, watermark or background."
+    },
+    {
+      "name": "break",
+      "source": "sources/break-source-v1.png",
+      "prompt": "Create ONE tiny BROKEN WOOD SHELF END sprite matching the warm medium-oak board in the reference. Only a short full-thickness horizontal wood fragment with a clearly ragged splintered fracture at its RIGHT edge. Design for an 8x8 logical pixel canvas displayed at2x: LEFT edge is flat vertical and full-height to join the existing shelf board texture seamlessly; top and bottom are level until the last3 logical columns, where several long irregular jagged wood splinters project right at different lengths, with transparent gaps between their tips. Exposed fracture is pale warm raw wood with dark cracks, outer front face warm reddish oak, thin golden top edge and dark brown bottom edge matching reference. Full board thickness spans the entire8 logical pixels, NOT a thin stick or pottery shard. Crisp very chunky square pixel clusters, broad flat warm brown/tan colors, no perspective, no brackets, nails, books, extra objects, text or labels. Return one enlarged complete8x8-style sprite on true transparent alpha background, particularly transparent cut-away areas along ragged right edge. No soft halo, black matte, cast shadow or glow."
+    }
+  ]
+}

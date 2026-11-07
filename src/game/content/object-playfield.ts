@@ -1,3 +1,4 @@
+import { Shelf } from '../objects/Shelf';
 import type Phaser from 'phaser';
 import type { Pixel } from '../actors/Pixel';
 import type { ChaosEvent } from '../domain/chaos-event';
@@ -29,10 +30,13 @@ export function createRoomPhysics(scene: Phaser.Scene, room: RoomDefinition) {
     room.height - room.floor.y,
   );
 
-  for (const { bounds: b } of room.platforms)
-    addPlatform(scene, platforms, b.x, b.y, b.width, b.height);
+  const shelves = room.platforms.map(
+    (definition) => new Shelf(scene, definition, room.floor.y, room.decorations),
+  );
 
-  return { platforms, floor };
+  for (const shelf of shelves) platforms.add(shelf.platform);
+
+  return { platforms, floor, shelves };
 }
 
 // eslint-disable-next-line max-lines-per-function -- Der vollständige Flächenvertrag bleibt neben seiner statischen Physikregistrierung sichtbar.
@@ -87,7 +91,10 @@ export function advanceObjectInteractions(
   time: number,
   delta: number,
   damage: Damage,
+  shelves: readonly Shelf[] = [],
 ) {
+  updateShelves(shelves, pixel, time, damage, objects.vases);
+
   for (const vase of objects.vases) vase.updateFall();
   const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));
 
@@ -107,4 +114,21 @@ export function advanceObjectInteractions(
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
+}
+
+// eslint-disable-next-line max-lines-per-function -- Der Einsturz gibt direkt aufliegende Vasen für ihre bestehende Fall-/Bruchphysik frei; keine künstlichen Zusatzschäden.
+function updateShelves(
+  shelves: readonly Shelf[],
+  pixel: Pixel,
+  time: number,
+  damage: Damage,
+  vases: readonly Vase[],
+) {
+  for (const shelf of shelves) {
+    const event = shelf.update(pixel.snapshot(), time);
+
+    damage(event);
+
+    if (event?.kind === 'collapse') for (const vase of vases) vase.releaseSupport(shelf.bounds);
+  }
 }

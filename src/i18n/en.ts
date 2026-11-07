@@ -81,6 +81,8 @@ export const en: Record<keyof typeof de, string> = {
   feedbackTear: '+{v0} · Tear',
   feedbackNibble: '+{v0} · Nibbling',
   feedbackTip: '+{v0} · Pot tipped',
+  feedbackShelfDamage: '+{v0} · Shelf damaged',
+  feedbackShelfCollapse: '+{v0} · Shelf collapsed',
   feedbackBreak: '+{v0} · Vase broken',
   feedbackHeart: 'One heart earned ♥',
   feedbackCorrect: 'Correct!',

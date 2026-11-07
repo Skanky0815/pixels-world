@@ -2,7 +2,7 @@ import { VASE_SHARD_FAMILY, type VaseAppearance } from '../assets/vase-appearanc
 import type Phaser from 'phaser';
 import { ASSETS } from '../assets/definitions';
 import { assertObjectId, chaosEvent, DamageHistory } from '../domain/chaos-event';
-import type { Destructible, ObjectLifecycle } from '../interactions/contracts';
+import type { Bounds, Destructible, ObjectLifecycle } from '../interactions/contracts';
 
 export type VaseState = 'resting' | 'moving' | 'falling' | 'broken';
 export interface VaseConfig {
@@ -55,6 +55,15 @@ export class Vase implements Destructible, ObjectLifecycle {
     this.collider.setImmovable(false);
     (this.collider.body as Phaser.Physics.Arcade.Body).setAllowGravity(true);
     this.collider.setVelocityX(direction * 170);
+  }
+
+  releaseSupport(shelf: Bounds) {
+    const body = this.collider.body as Phaser.Physics.Arcade.Body;
+
+    if (this.phase !== 'resting' || !onShelf(body, shelf)) return;
+    this.phase = 'moving';
+    this.collider.setImmovable(false);
+    body.setAllowGravity(true);
   }
 
   updateFall() {
@@ -161,4 +170,12 @@ function drawFallback(scene: Phaser.Scene) {
   g.fillStyle(0xd3d3d3).fillRect(5, 0, 8, 3).fillRect(12, 9, 3, 14);
   g.generateTexture('vase', ASSETS['vase-default'].width, ASSETS['vase-default'].height);
   g.destroy();
+}
+
+function onShelf(body: Phaser.Physics.Arcade.Body, shelf: Bounds) {
+  return (
+    Math.abs(body.bottom - shelf.y) <= 2 &&
+    body.right > shelf.x &&
+    body.left < shelf.x + shelf.width
+  );
 }

@@ -44,6 +44,14 @@ export function installTestObserver(read: () => GameTestState) {
               lastDamage: state.plant.lastDamage ? Object.freeze(state.plant.lastDamage) : null,
             })
           : null,
+        shelves: Object.freeze(
+          state.shelves.map((shelf) =>
+            Object.freeze({
+              ...shelf,
+              lastDamage: shelf.lastDamage ? Object.freeze(shelf.lastDamage) : null,
+            }),
+          ),
+        ),
         objects: Object.freeze(
           state.objects.map((object) =>
             Object.freeze({

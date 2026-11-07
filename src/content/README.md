@@ -120,3 +120,33 @@ Quelle und Imagegen-Prompt liegen unter `assets/objects/favorite-ball/`.
 seitenverhältnistreu in maximal 14×14 Pixel ein und zentriert sie in 16×16.
 Nearest Neighbor bewahrt die abgetasteten RGBA-Werte; nur das kleine Export-PNG
 wird im Spiel geladen.
+
+### Regale und Stabilität
+
+Alle Plattformen mit `asset: 'wood-shelf'` verwenden dieselbe `Shelf`-Klasse.
+`durability.stability` wählt pro Platzierung `fragile`, `normal` oder `stable`;
+ohne Angabe bleibt ein Regal dauerhaft stabil. Fragil warnt ab der ersten,
+beschädigt ab der zweiten und stürzt bei der dritten Landung ein. Normal nutzt
+2/4/5 Landungen. Optional überschreibt `durability.rules` die Felder `warningAt`,
+`damageAt`, `collapseAt`, `damageValue` und `collapseValue`. Die Schwellen müssen
+positiv und streng aufsteigend, Punkte nichtnegativ ganzzahlig sein. Stabile
+Regale akzeptieren keine Einsturzregeln; der Zielanker muss stabil bleiben.
+
+Nur eine neue Flugphase nach dem ersten Bodenkontakt mit anschließender Landung
+auf dem Regal zählt. Stehen, seitlicher Kontakt und das Einsetzen beim Start zählen
+nicht mehrfach. Warnung ist sichtbar als kurzer, gedämpfter Wackelimpuls nach jeder belastenden
+Landung (650 ms); anschließend steht das Regal wieder ruhig. Beschädigung bleibt
+zusätzlich als Riss sichtbar.
+Beschädigung und Einsturz vergeben ihre `ChaosEvent`s je einmal; Reset repariert
+Bild, Körper und Historie. Beim Einsturz fällt das Brett ohne Kollisionsfläche
+mit derselben Brettstärke und ausgefransten Bruchkanten auf den Boden. Direkt aufliegende Vasen wechseln in ihre bestehende Fallphysik.
+Rechteckdekorationen können sich über `supportedBy` einem Regal zuordnen; die
+Bücher bleiben dadurch beim Einsturz nicht in der Luft. Kettenreaktionen sind
+kein eigener Teil dieses Ablaufs.
+
+Spiel und Playground laden dieselben Regalmodule aus `assets/objects/shelves/`.
+`node tools/prepare-shelf-assets.mjs` exportiert zwei 8×8-Endstücke, eine wiederholte
+8×8-Mitte, einen 4×10-Träger und eine transparente 8×8-Bruchkante. Die Darstellung bei 2× hält Endstücke und Träger
+fest und wiederholt die Mitte auch für nicht durch 16 teilbare Brettbreiten.
+Die Brettoberkante und Colliderhöhe stammen weiterhin aus den Raumdaten.
+Quellen, Imagegen-Prompts und Exportparameter liegen neben den PNGs.

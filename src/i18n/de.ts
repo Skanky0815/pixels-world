@@ -78,6 +78,8 @@ export const de = {
   feedbackTear: '+{v0} · Riss',
   feedbackNibble: '+{v0} · Knabbern',
   feedbackTip: '+{v0} · Umgekippt',
+  feedbackShelfDamage: '+{v0} · Regal beschädigt',
+  feedbackShelfCollapse: '+{v0} · Regal eingestürzt',
   feedbackBreak: '+{v0} · Klirr!',
   feedbackHeart: 'Herz gewonnen ♥',
   feedbackCorrect: 'Richtig!',

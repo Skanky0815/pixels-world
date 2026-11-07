@@ -48,6 +48,8 @@ nötig; der normale DEV-Server richtet keinen Offline-Cache ein.
 Du spielst Pixel, einen neugierigen Tigerkater allein in Saras Wohnzimmer.
 Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimmer passt.
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
+Wiederholte Landungen lassen fragile und normale Regale erst wackeln, dann reißen
+und schließlich einstürzen. Das obere Zielregal bleibt stabil.
 
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
 Pixel möchte seinen Lieblingsball finden. Bleib dort kurz
