@@ -1,5 +1,24 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  teamRicoGithub: 'Rico on GitHub',
+  teamSaraGithub: 'Sara on GitHub',
+  teamNav: 'Meet the team',
+  teamEyebrow: 'MEET THE TEAM',
+  teamHeading: 'The minds behind the mess.',
+  teamTeaser: 'A human, an AI and a cat. What could possibly go wrong?',
+  teamRicoAlt: 'Pixel-art portrait of Rico with glasses and ash-blond hair',
+  teamSaraAlt: 'Pixel-art portrait of Sara with glasses and a ponytail',
+  teamPixelAlt: 'Pixel-art portrait of Pixel, the green-eyed tabby cat',
+  teamRicoRole: 'Founder & Developer',
+  teamRicoCopy:
+    'Turns a wild idea into a real browser game. Handles the code, the decisions and the patience required to work with Pixel.',
+  teamSaraRole: 'Game Design & Creative Chaos',
+  teamSaraCopy:
+    'Sara is an AI contributor for ideas, dialogue and concepts. Suggests creative detours and helps turn chaos into a playable game.',
+  teamPixelRole: 'Chief Destruction Officer',
+  teamPixelCopy:
+    'The cat who inspired it all. Stress-tests every piece of furniture and accepts no responsibility for the results.',
+
   installApp: 'Install app',
   installIphone:
     'On iPhone: In Safari, choose Share → Add to Home Screen and turn on Open as Web App.',

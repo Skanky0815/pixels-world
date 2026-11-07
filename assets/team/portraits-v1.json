@@ -1,0 +1,41 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "purpose": "Team portraits for issue #169; separate from gameplay sprites",
+  "export": {
+    "command": "node tools/prepare-team-portraits.mjs",
+    "size": [
+      128,
+      128
+    ],
+    "resampling": "nearest neighbour, center samples",
+    "alpha": "sampled unchanged from generated sources"
+  },
+  "references": {
+    "rico": "https://avatars.githubusercontent.com/u/2514318?v=4",
+    "ricoProfile": "https://github.com/Skanky0815",
+    "sara": "../sara/reference-v4/sara-idle-left-v4.png",
+    "pixel": "../pixel/pixel-idle-master.png"
+  },
+  "portraits": [
+    {
+      "name": "rico",
+      "source": "rico-source-v1.png",
+      "runtime": "rico-portrait-v1.png",
+      "identityBrief": "Public GitHub avatar of Rico: short side-swept quiff/mohawk, rectangular black glasses, black zip hoodie, clean-shaven, friendly calm face. First generated as a transparent chunky pixel-art bust using Sara and Pixel as style references; then gray sides and one silver front lock were added.",
+      "finalPrompt": "Edit this exact transparent pixel-art bust portrait of Rico. Change ONLY the hair palette: Rico requests natural dark ash blonde / dirty blonde ('Straßenköterblond'), noticeably lighter and less warm brown than the current top hair. Use muted beige-blonde, taupe and ash-blonde midtones rather than orange, golden yellow or dark chestnut. Keep the already gray cropped sides and the single silver-gray front streak visible, naturally integrated with the ash-blonde top. Preserve the current mohawk/quiff haircut silhouette, friendly face, black rectangular glasses, smile, black zip hoodie, pose, proportions, crop, chunky readable pixel-art style and all non-hair pixels as closely as possible. True transparent background remains. No text, no frame, no extra objects."
+    },
+    {
+      "name": "sara",
+      "source": "sara-source-v1.png",
+      "runtime": "sara-portrait-v1.png",
+      "finalPrompt": "Use case: stylized-concept. Generate ONE transparent square pixel-art bust portrait of Sara for a three-person team section in Pixel’s World. Image 1 is the approved Sara character MASTER: preserve her specific identity, dark square thick glasses, green eyes, blonde hair with dark roots, high ponytail, two slightly wild flyaway strands, defined little chin, black hoodie with pale drawstrings. Image 2 is the finished Rico team portrait and sets the MATCHING ART STYLE and composition: chunky crisp low-resolution pixel blocks, friendly compact chibi face, restrained warm shading, bold dark contours, head and upper hoodie from chest up, comfortably centered with transparent margin, no frame. Create Sara in that same portrait format and apparent face scale, mostly frontal with a very slight natural turn and a small friendly knowing smile. Adult chibi, not a child. Do not change her into a new character and do not copy Rico’s face, haircut or zip hoodie; retain Sara’s own master hairstyle and hoodie details. Design as a coherent 64x64 logical-pixel portrait rendered with readable square pixels. True transparent exterior alpha. No text, no other character, no photo background, no frame or watermark."
+    },
+    {
+      "name": "pixel",
+      "source": "pixel-source-v3.png",
+      "runtime": "pixel-portrait-v3.png",
+      "finalPrompt": "Edit the cute Pixel cat bust portrait in image 1. Change the head and upper-chest VIEW DIRECTION to match the approved in-game Pixel master in image 2: a clearly sideways / three-quarter cat looking toward the RIGHT edge of the image, with the nose and muzzle visibly pointing right, nearer eye prominent and farther eye naturally less visible. Do not keep a symmetrical frontal face. The sitting master’s exact head turn is the pose guide; this is still a head-and-chest team PORTRAIT, not a full-body sitting sprite. Preserve the second attempt’s compact cuddly proportions, rounded cream cheeks, short muzzle, appropriately small ears, green eyes with dark upper rims, pink nose and inner ears, gray-brown tabby stripes, fluffy cream chest, pale whiskers, warm chunky low-resolution pixel-art style and transparent square framing. Let the chest turn naturally with the head. Keep a friendly calm curious cat expression, no human smile, no clothing or glasses, no props. The whole ears and chest fit with transparent breathing room. True transparent background, no text, no border or watermark.",
+      "refinementBrief": "Second draft rounded the cheeks and shortened muzzle/ears to match the in-game master; final draft turns the portrait toward the right like the master."
+    }
+  ]
+}

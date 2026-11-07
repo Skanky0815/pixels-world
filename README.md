@@ -18,7 +18,9 @@ Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich gro�
 
 Die Startseite stellt Pixel, Sara und das Spiel vor. **Jetzt spielen** öffnet
 [das Spiel](https://skanky0815.github.io/pixels-world/play.html) mit seiner Einführung.
-Die Landingpage lädt keine Spielengine.
+Die Landingpage lädt keine Spielengine. Unter dem Spieleinstieg stellt „Über uns“
+Rico, Sara (KI-Mitwirkende) und Pixel vor. Die passenden Pixel-Art-Porträts
+basieren auf Ricos GitHub-Avatar und den bestätigten Figurenreferenzen.
 
 Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
 mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.

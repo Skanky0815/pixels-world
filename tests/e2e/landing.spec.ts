@@ -15,6 +15,9 @@ for (const width of [320, 390, 768, 1440]) {
       true,
     );
     await expectArtwork(page);
+    await expectTeam(page, width);
+    await page.getByRole('link', { name: 'Über uns', exact: true }).click();
+    await expect(page).toHaveURL(/#team$/);
     await expect(page.getByRole('link', { name: 'Impressum', exact: true })).toHaveAttribute(
       'href',
       './impressum.html',
@@ -35,6 +38,17 @@ test('Landingpage: DE/EN und Tastatur führen ohne Umweg ins Spiel', async ({ pa
   await page.goto('/');
   await page.getByRole('button', { name: 'English', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.getByRole('heading', { name: 'The minds behind the mess.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Meet the team', exact: true })).toHaveAttribute(
+    'href',
+    '#team',
+  );
+  await expect(page.locator('article', { has: page.locator('#team-sara') })).toContainText(
+    'AI contributor',
+  );
+  await expect(
+    page.getByRole('img', { name: 'Pixel-art portrait of Rico with glasses and ash-blond hair' }),
+  ).toBeVisible();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'One room. One cat. Your chaos.',
   );
@@ -79,6 +93,7 @@ test('Landingpage: Pages-Unterpfad lädt nur lokale Ressourcen und erhält die N
 
   await page.goto(base);
   await expectArtwork(page);
+  await expectTeam(page, 1280);
   expect(scripts.some((url) => /\/game-/.test(url))).toBe(false);
   expect(external).toEqual([]);
   await expect(page.locator('canvas')).toHaveCount(0);
@@ -137,4 +152,76 @@ async function expectArtwork(page: import('@playwright/test').Page) {
     await expect(image).toHaveAttribute('width', /^\d+$/);
     await expect(image).toHaveAttribute('height', /^\d+$/);
   }
+}
+
+// eslint-disable-next-line max-lines-per-function -- Inhalt, semantische Reihenfolge und responsiver Profilaufbau bilden denselben Landingpage-Vertrag.
+async function expectTeam(page: import('@playwright/test').Page, width: number) {
+  const team = page.getByRole('region', { name: 'Die Köpfe hinter dem Chaos.' });
+
+  await expect(team).toBeVisible();
+  await expect(team.locator('article')).toHaveCount(3);
+  await expect(team.locator('h3')).toHaveText(['Rico', 'Sara', 'Pixel']);
+  await expect(page.locator('.landing-header nav a')).toHaveText([
+    'Das Spiel',
+    'Über uns',
+    'GitHub ↗',
+  ]);
+  await expect(team.locator('article', { has: page.locator('#team-sara') })).toContainText(
+    'KI-Mitwirkende',
+  );
+  await expect(team.getByRole('img', { name: /Pixel-Art-Porträt von Rico/ })).toBeVisible();
+  await expect(team.getByRole('link', { name: 'Rico auf GitHub' })).toHaveAttribute(
+    'href',
+    'https://github.com/Skanky0815',
+  );
+  await expect(team.getByRole('link', { name: 'Sara auf GitHub' })).toHaveAttribute(
+    'href',
+    'https://github.com/Sara-Pixel42',
+  );
+  const positions = await team.locator('article').evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const portrait = node.querySelector('.team-portrait')!.getBoundingClientRect();
+      const identity = node.querySelector('.team-identity')!.getBoundingClientRect();
+
+      return {
+        beside: identity.left >= portrait.right,
+        aligned: Math.abs(identity.top - portrait.top) < 1,
+      };
+    }),
+  );
+
+  expect(positions.every((p) => p.beside && p.aligned)).toBe(true);
+
+  const boxes = await team.locator('article').evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const b = node.getBoundingClientRect();
+
+      return { x: b.x, y: b.y, width: b.width };
+    }),
+  );
+
+  expect(boxes.every((b) => b.x >= 0 && b.x + b.width <= width)).toBe(true);
+  expect(width <= 1000 ? boxes[1].y > boxes[0].y : boxes[1].x > boxes[0].x).toBe(true);
+  expect(
+    await page
+      .locator('.landing-team')
+      .evaluate(
+        (node) =>
+          !!(
+            node.compareDocumentPosition(document.querySelector('footer')!) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+          ),
+      ),
+  ).toBe(true);
+  expect(
+    await page
+      .locator('.landing-finale')
+      .evaluate(
+        (node) =>
+          !!(
+            node.compareDocumentPosition(document.querySelector('.landing-team')!) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+          ),
+      ),
+  ).toBe(true);
 }
