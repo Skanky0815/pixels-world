@@ -1,3 +1,5 @@
+import type { Difficulty } from '../../content/difficulty';
+import { createGoalMarker } from './goal-marker';
 import { FAVORITE_BALL_TEXTURE } from '../assets/favorite-ball-art';
 import { t, translateExact } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
@@ -10,7 +12,11 @@ export class GoalView {
   private readonly ball: Phaser.GameObjects.Image;
   private readonly marker: Phaser.GameObjects.Container;
   // eslint-disable-next-line max-lines-per-function -- Zielmarker und kurzer Hinweis werden gemeinsam aus derselben validierten Platzierung aufgebaut.
-  constructor(scene: Phaser.Scene, goal: ResolvedGoal) {
+  constructor(
+    scene: Phaser.Scene,
+    goal: ResolvedGoal,
+    private readonly difficulty: Difficulty,
+  ) {
     this.root = scene.add.container(0, 0).setDepth(9).setVisible(false);
     this.caption = scene.add.text(26, 48, '', {
       fontFamily: 'monospace',
@@ -21,18 +27,14 @@ export class GoalView {
       wordWrap: { width: 670 },
     });
     this.ball = scene.add.image(goal.x, goal.surfaceY, FAVORITE_BALL_TEXTURE).setOrigin(0.5, 1);
-    this.marker = scene.add.container(goal.x, goal.surfaceY - 10);
-    this.marker.add([
-      scene.add.circle(0, 0, 11, 0xffe0a0, 0.35),
-      scene.add.text(0, -28, '★', { fontSize: '18px', color: '#584637' }).setOrigin(0.5),
-    ]);
+    this.marker = createGoalMarker(scene, goal, difficulty);
     this.root.add([this.caption, this.marker, this.ball]);
     this.removeCompactListener = compactVisibility(this.caption);
   }
 
   render(goal: ReturnType<MainGoal['snapshot']>, started: boolean) {
     this.root.setVisible(started);
-    this.marker.setVisible(goal.status === 'active');
+    this.marker.setVisible(goal.status === 'active' && this.difficulty !== 'hard');
     this.caption.setText(translateExact(goalCaption(goal)));
   }
 
@@ -43,6 +45,7 @@ export class GoalView {
       ballTexture: this.ball.texture.key,
       ballVisible: this.root.visible && this.ball.visible,
       markerVisible: this.root.visible && this.marker.visible,
+      markerWidth: this.marker.getBounds().width,
     });
   }
 

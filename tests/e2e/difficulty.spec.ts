@@ -9,6 +9,11 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   const active = await state(page);
 
   expect(active.objects).toHaveLength(10);
+  expect(active.goalView).toMatchObject({
+    ballVisible: true,
+    markerVisible: false,
+    markerWidth: 0,
+  });
   expect(active.round.returnAtMs).toBeGreaterThanOrEqual(45_000);
   expect(active.round.returnAtMs).toBeLessThanOrEqual(78_750);
   expect(active.hud.scoreText).toContain('Schwer');
@@ -21,11 +26,13 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   expect((await state(page)).round).toEqual(paused.round);
   expect((await state(page)).objects).toEqual(paused.objects);
   expect((await state(page)).difficulty).toBe('hard');
+  expect((await state(page)).goalView).toEqual(paused.goalView);
   await page.locator('[data-pause-restart]').click();
   await until(page, (s) => s.started && s.difficulty === 'easy');
   const next = await state(page);
 
   expect(next.objects).toHaveLength(4);
+  expect(next.goalView).toMatchObject({ ballVisible: true, markerVisible: true, markerWidth: 36 });
   expect(next.round.returnAtMs).toBeGreaterThanOrEqual(90_000);
   expect(next.round.returnAtMs).toBeLessThanOrEqual(157_500);
   expect(next.hud.scoreText).toContain('Leicht');
@@ -116,3 +123,24 @@ for (const room of ['living-room', 'cozy-remix']) {
     });
   });
 }
+
+// eslint-disable-next-line max-lines-per-function -- Alle drei Grade werden über die sichtbare Optionswahl in derselben mobilen Darstellung gestartet.
+test.describe('Zielhinweis auf Touch-Geräten', () => {
+  test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+
+  for (const difficulty of ['easy', 'normal', 'hard'] as const) {
+    // eslint-disable-next-line max-lines-per-function -- Mobile Darstellung und sichtbarer Zustand werden gemeinsam geprüft und aufgenommen.
+    test(`Lieblingsball und ${difficulty}-Zielhinweis im Hochformat`, async ({ page }) => {
+      await startDifficulty(page, difficulty);
+      expect((await state(page)).goalView).toMatchObject({
+        ballVisible: true,
+        markerVisible: difficulty !== 'hard',
+        markerWidth: { easy: 36, normal: 22, hard: 0 }[difficulty],
+      });
+      await test.info().attach('zielhinweis-handheld', {
+        body: await page.screenshot(),
+        contentType: 'image/png',
+      });
+    });
+  }
+});

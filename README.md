@@ -53,7 +53,9 @@ Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospun
 Pixel möchte seinen Lieblingsball finden. Bleib dort kurz
 stehen, um mit ihm zu spielen: Das holt Sara vorzeitig nach Hause. Sonst kommt sie
 nach einer zufällig gewählten aktiven Spielzeit zurück und beendet die Chaosphase.
-Der Ball ist auch ohne Schaden erreichbar; Chaos bleibt optional.
+Der Ball ist auch ohne Schaden erreichbar; Chaos bleibt optional. Auf Leicht
+markieren ihn ein größerer heller Stern und ein deutlicher Halo. Normal zeigt
+einen dezenten Hinweis; auf Schwer bleibt nur der Ball ohne Zielmarker sichtbar.
 Im Spiel bleiben die Chaospunkte sichtbar; Saras Ärger zeigt erst die Ergebnisansicht.
 Bei Fokusverlust pausiert das Spiel.
 Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
