@@ -55,3 +55,22 @@ Alpha-Bounds ab 192 bestimmen den Ausschnitt, Nearest Neighbor erhält die
 abgetasteten RGBA-Werte. Vasen stehen unten mittig in 18×28-Zellen, Scherben
 zentriert in 8×8-Zellen. Die ursprünglichen Generierungsbilder bleiben erhalten
 und werden nicht als Laufzeitdateien importiert.
+
+### Sofa-Grafik
+
+Sofas wählen mit optionalem `appearance: 'cozy' | 'worn'` ihre Stoffvariante;
+ohne Angabe wird Cozy verwendet. Regeln und Sitzgeometrie bleiben davon unabhängig.
+Die gemeinsame Vorladung in Spiel und Playground lädt nur die kleinen PNGs aus
+`assets/objects/couch/`. Quellen und vollständige Imagegen-Prompts liegen dort
+in `sources/` und `generation-v1.json`.
+
+`node tools/prepare-couch-assets.mjs` exportiert die freigegebenen V3-Sofas in
+136×80 und den transparenten Kratzpatch in 14×16 Pixel. Der Nearest-Neighbor-Export
+erhält die ausgewählten RGBA-Werte; seine zweigeteilte Höhenabbildung setzt die
+Sitzkante auf Quellzeile 30. Das Bild wird an den vorhandenen Sitz-/Bodenanker
+angepasst, der Kollisionskörper bleibt unabhängig. Pro Schadensereignis entsteht
+ein Patch am nächsten freien Platz beim Boden- oder Sitzkontakt. Die 14×16-Quellpatches
+werden auf den normalen Sofas zweifach gezeichnet und halten vier Spielpixel
+Abstand. Auf schmaleren eigenen Sofas bleiben sie einfach skaliert mit zwei
+Pixeln Abstand, damit sechs Kratzstellen weiterhin Platz finden. Reset und Szenenende entfernen diese
+Instanzen; Pixels Kratzpose benötigt keine zusätzlichen gezeichneten Pfoten.

@@ -19,6 +19,7 @@ test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegung
     bodyHeight: 52,
   });
   expect(first.couch.events).toBe(1);
+  expect(first.couch.marks).toHaveLength(1);
   expect(first.chaos.score).toBe(3);
   expect(first.chaos.damagedObjects).toBe(1);
   expect(first.couch.lastDamage).toEqual({
@@ -63,7 +64,11 @@ test('Sofa: Springen unterbricht, erneutes Warten und Reset entfernen den Schade
   expect((await state(page)).couch.damage).toBe(1);
   await until(page, (s) => s.couch.damage === 2);
   await reset(page);
-  expect((await state(page)).couch).toEqual({
+  expect((await state(page)).couch).toMatchObject({
+    marks: [],
+    texture: 'couch-cozy',
+    bodyWidth: 254,
+    bodyHeight: 28,
     state: 'idle',
     damage: 0,
     events: 0,
@@ -89,6 +94,7 @@ test('Sofa: gedeckelter Schaden, keine Punkteflut und kein Kratzen außerhalb de
   const damaged = await state(page);
 
   expect(damaged.couch.damage).toBe(6);
+  expect(damaged.couch.marks).toHaveLength(6);
   expect(damaged.couch.events).toBe(6);
   expect(damaged.chaos.score).toBe(18);
   expect(damaged.chaos.damagedObjects).toBe(1);

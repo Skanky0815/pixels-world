@@ -80,31 +80,50 @@ async function walkTo(page: Page, x: number) {
   await untilPlayground(page, (s) => s.pixel.velocityX === 0);
 }
 
-test('Playground: echtes Sofa-Kratzen, Unterbrechung, Sprung und Reset', async ({
-  page,
-  // eslint-disable-next-line max-lines-per-function -- Ein realer Eingabeablauf prüft gemeinsame Spielmechanik und vollständigen Szenenreset.
-}) => {
-  await loadPlayground(page, 'cozy-couch');
-  await walkTo(page, 355);
-  await untilPlayground(page, (s) => s.events.some((event) => event.kind === 'scratch'));
-  expect((await snapshot(page)).pixel.animation).toBe('scratch');
-  await expect(page.locator('#playground-score')).toHaveText(
-    String(OBJECTS['cozy-couch'].rules.damageValue),
-  );
-  await page.keyboard.down('Space');
-  await untilPlayground(page, (s) => !s.pixel.grounded && s.pixel.velocityY < 0);
-  await page.keyboard.up('Space');
-  const generation = (await snapshot(page)).generation;
+for (const variant of ['cozy-couch', 'worn-couch'] as const) {
+  test(`Playground: ${variant} mit eigener Textur, Kratzspuren und Reset`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Ein realer Eingabeablauf prüft gemeinsame Spielmechanik und vollständigen Szenenreset.
+  }) => {
+    await loadPlayground(page, variant);
+    expect(await couchSnapshot(page)).toMatchObject({
+      texture: `couch-${OBJECTS[variant].appearance}`,
+      bodyWidth: 254,
+      bodyHeight: 28,
+      marks: [],
+    });
+    await walkTo(page, 355);
+    await untilPlayground(page, (s) => s.events.some((event) => event.kind === 'scratch'));
+    expect((await snapshot(page)).pixel.animation).toBe('scratch');
+    await expect(page.locator('#playground-score')).toHaveText(
+      String(OBJECTS[variant].rules.damageValue),
+    );
+    const first = await couchSnapshot(page);
 
-  await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
-  await untilPlayground(page, (s) => s.generation > generation);
-  expect(await snapshot(page)).toMatchObject({
-    score: 0,
-    events: [],
-    pixel: { x: 200 },
-    object: { state: 'idle' },
+    expect(first.marks).toHaveLength(1);
+    expect(first.marks[0].y).toBe(408);
+    await untilPlayground(page, (s) => 'damage' in s.object && s.object.damage === 6);
+    const complete = await couchSnapshot(page);
+
+    expect(complete.marks).toHaveLength(6);
+    const positions = complete.marks.map((mark) => mark.x).sort((a, b) => a - b);
+
+    expect(positions.slice(1).every((x, index) => x - positions[index] >= 32)).toBe(true);
+    await page.keyboard.down('Space');
+    await untilPlayground(page, (s) => !s.pixel.grounded && s.pixel.velocityY < 0);
+    await page.keyboard.up('Space');
+    const generation = (await snapshot(page)).generation;
+
+    await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
+    await untilPlayground(page, (s) => s.generation > generation);
+    expect(await snapshot(page)).toMatchObject({
+      score: 0,
+      events: [],
+      pixel: { x: 200 },
+      object: { state: 'idle', marks: [] },
+    });
   });
-});
+}
 
 test('Playground: Pflanze knabbern, wackeln und umkippen', async ({ page }) => {
   await loadPlayground(page, 'catgrass');
@@ -239,6 +258,28 @@ test.describe('Playground auf Touch-Geräten', () => {
       contentType: 'image/png',
     });
   });
+  test('Beide Sofa-Stoffe zeigen Kratzspuren nach Touch und räumen beim Reset auf', async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Zwei echte Touch-Durchläufe prüfen Grafik, Punkte und Patch-Lebensdauer beider Varianten.
+  }) => {
+    const touch = await TouchDriver.create(page);
+
+    for (const variant of ['cozy-couch', 'worn-couch'] as const) {
+      await loadPlayground(page, variant);
+      await touch.press('right');
+      await untilPlayground(page, (s) => s.pixel.x >= 355);
+      await touch.lift();
+      await untilPlayground(page, (s) => s.events.length === 1);
+      expect(await couchSnapshot(page)).toMatchObject({
+        texture: `couch-${OBJECTS[variant].appearance}`,
+      });
+      expect((await couchSnapshot(page)).marks).toHaveLength(1);
+      expect((await snapshot(page)).score).toBe(OBJECTS[variant].rules.damageValue);
+      await page.getByRole('button', { name: 'Szene zurücksetzen' }).tap();
+      await untilPlayground(page, (s) => s.events.length === 0);
+      expect((await couchSnapshot(page)).marks).toEqual([]);
+    }
+  });
 });
 
 // eslint-disable-next-line max-lines-per-function -- Desktop und schmales Layout werden an echten Elementgrenzen einschließlich langer Diagnosedaten geprüft.
@@ -263,4 +304,26 @@ test('Playground: kompakte Szene mit seitlicher Diagnose und mobilem Umbruch', a
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.locator('#playground-reset')).toBeVisible();
   await assertRoomDrawn(page);
+});
+
+async function couchSnapshot(page: Page) {
+  const object = (await snapshot(page)).object;
+
+  if (!('marks' in object)) throw new Error('Expected couch diagnostics');
+
+  return object;
+}
+
+// eslint-disable-next-line max-lines-per-function -- Reale Bewegung und Sprung erreichen die Sitzfläche, deren Kontaktpatch sich vom Bodenpatch unterscheiden muss.
+test('Playground: Kratzpatch folgt der Sitzfläche', async ({ page }) => {
+  await loadPlayground(page, 'cozy-couch');
+  await walkTo(page, 230);
+  await page.keyboard.down('ArrowRight');
+  await page.keyboard.down('Space');
+  await untilPlayground(page, (s) => s.pixel.x >= 395);
+  await page.keyboard.up('ArrowRight');
+  await page.keyboard.up('Space');
+  await untilPlayground(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 370) < 2);
+  await untilPlayground(page, (s) => 'damage' in s.object && s.object.damage === 1);
+  expect((await couchSnapshot(page)).marks[0].y).toBe(331);
 });

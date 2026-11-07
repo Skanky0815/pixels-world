@@ -1,0 +1,37 @@
+{
+  "tool": "built-in image_gen",
+  "approved": "Rico: V3 Mittelweg, nur Sofa; kein Sessel",
+  "sources": [
+    "sources/cozy-source-v3.png",
+    "sources/worn-source-v3.png",
+    "sources/scratch-source-v2.png"
+  ],
+  "outputs": ["couch-cozy.png", "couch-worn.png", "couch-scratch.png"],
+  "prompts": {
+    "style-probe-v1": {
+      "cozy": "Use case: stylized-concept. Asset type: transparent pixel-art game furniture source, Pixel's World 2D side-view cat game. Generate ONE intact cozy two-seat sofa only, no characters. Warm muted sage/olive green cloth, two back cushions, one subtle ochre throw pillow, chunky padded arms, short dark wooden feet. Orthographic straight-on side-scroller elevation, almost no top perspective, perfectly horizontal seat edge and floor baseline. Retro handcrafted pixel-art, crisp visible square pixel clusters, dark brown contours, restrained warm highlights and readable broad areas, no painterly blur, no antialiasing. Wide squat silhouette ratio 272:160, designed to export to a 136x80 logical-pixel cell at 2x game scale. Critical geometry: back top at cell y=0, seat top around y=30, front seat fascia y=30..60, feet end at y=79; arms must not hide the walkable central horizontal seat. Image includes full sofa, generous transparent margin, no cast shadow outside feet. Match cozy warm tan wooden-room palette. Intact upholstery: no tears, scratches, dust, cats, labels, lettering, diagrams or room background. Genuine transparent alpha background.",
+      "worn": "Use case: precise-object-edit. Edit the provided sofa into the Worn material variant for the same pixel-art game. Preserve EXACT outer silhouette, cushion positions, ochre pillow, wooden feet, straight-on viewpoint, framing, scale and all horizontal seat edges. Change only green cloth to a faded muted dusty teal/gray-sage weave with subtle lighter rubbed fabric on edges. Still intact and usable, no holes or cat scratches yet (game damage will be a separate overlay). Keep identical crisp pixel clusters and dark warm contours. Genuine transparent alpha background, no floor or shadows, no added objects or text.",
+      "scratch": "Use case: stylized-concept. Asset type: isolated transparent sprite overlay for scratch damage on olive/sage cloth sofa in a cozy retro pixel-art game. ONE small group of three narrow slightly diagonal parallel cat-claw tears, each about 2 logical pixels wide and 10 logical pixels tall, cream/tan exposed upholstery threads with dark warm brown slit interiors and a few tiny loose thread pixels. Rough but restrained. Crisp square pixel clusters, limited muted palette, designed to export to a tiny 14x16 logical pixel transparent tile and draw at 2x. No sofa, no cloth rectangle, no limbs, no cat, no claw objects, no text, no shadow, no background. Genuine transparent alpha everywhere outside the three tears and threads. The three short marks should feel like frayed fabric, not a logo, glowing slash, bloody wound or huge ripped hole.",
+      "scratchV2": "Edit this scratch overlay: remove ALL fuzzy gray/yellow/pink fabric haze and halo completely, leaving ONLY the three solid cream-and-brown pixel claw-tear lines and their few short square thread pixels. Everything surrounding or between the three distinct narrow lines must be fully transparent alpha, including the entire oval haze. Preserve the three lines' positions and crisp pixel art. No backdrop, no glow, no shadow, no texture cloud. Exactly three isolated thin pixel-art fabric tears on genuine transparency."
+    },
+    "style-probe-v3": {
+      "cozy": "Edit this pixel-art sofa with ONE geometric adjustment: extend the bottom upholstered plinth and both arm bottoms DOWNWARD by 45 source-image pixels, reducing the exposed wooden leg length by the same 45 pixels. The current image has a thin bottom plinth and about 160-pixel tall legs; the revised legs should be about 115 pixels tall, with a moderately thicker bottom upholstered panel. This is the middle ground between a bulky low couch and the current tall-legged sofa. Keep the top seat edge, seat cushions, backrest, pillow, overall width, floor baseline, colors, framing and crisp pixel art EXACTLY unchanged. No scratches, room, shadows or text. Genuine transparent background.",
+      "worn": "Edit image 1 in upholstery color ONLY to match the dusty faded gray-sage cloth in image 2. Preserve image 1's EXACT silhouette, moderately thick bottom upholstered panel, medium-short wooden legs, seat height, cushions, mustard pillow, width, floor baseline and framing. Image 2 is a color reference ONLY; do not copy its thinner bottom panel or taller legs. Keep wood and pillow colors unchanged. Crisp pixel art, no damage or added objects, genuine transparent background."
+    },
+    "style-probe-v2": {
+      "cozy": "Edit only the lower portion of this pixel-art sofa: make the upholstered front plinth below the seat cushions about HALF as tall, and shorten the bottoms of both upholstered arm blocks to match. Expose more transparent open space under the furniture and moderately longer slim wooden legs reaching the SAME original floor baseline. Keep the top edge of the seat cushions at EXACTLY the same height, and preserve the back cushions, mustard pillow, overall width, upper arms, palette, crisp pixel style and canvas framing. The result should feel lighter and less bulky below the seat, not perched on spindly stilts. No other changes, no room or shadow. Preserve genuine transparent background.",
+      "worn": "Edit image 1 ONLY in cloth color/material to match the faded dusty gray-sage upholstery in image 2. Image 1 is the exact geometry target: preserve its shortened lower upholstered plinth, exposed longer wooden legs, exact silhouette, seat height, upper cushions, mustard pillow, wood, framing and transparency. Image 2 is a COLOR REFERENCE ONLY; do not restore its tall bottom block or short feet. Crisp pixel art, subtle faded cloth, no scratches or holes, no backdrop. Genuine alpha."
+    }
+  },
+  "export": {
+    "command": "node tools/prepare-couch-assets.mjs",
+    "baseCell": [136, 80],
+    "patchCell": [14, 16],
+    "seatAnchor": [4, 30],
+    "sourceBounds": "alpha >= 192",
+    "sampling": "Nearest neighbor, source RGBA preserved; upper 53.5% of sofa bounds maps to rows0..29, lower46.5% to rows30..79",
+    "runtime": "Seat stays254x28, 98 above support. Display bounds adapt to existing content geometry; default image272x158 reaches support.",
+    "baseDisplayScale": 2,
+    "patchDisplayScale": "2 on default sofas (width >=188), otherwise1"
+  }
+}
