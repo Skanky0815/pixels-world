@@ -1,4 +1,4 @@
-import { test, expect, state, holdUntil, until, reset, couch, waitForGame } from './support';
+import { test, expect, state, until, reset, lowerShelf, waitForGame } from './support';
 import { startDifficulty } from './difficulty-support';
 
 for (const room of ['living-room', 'cozy-remix']) {
@@ -10,6 +10,12 @@ for (const room of ['living-room', 'cozy-remix']) {
       const slots = before.objects.filter((o) => o.id.startsWith('lower-shelf:'));
 
       expect(slots).toHaveLength({ easy: 1, normal: 2, hard: 3 }[difficulty]);
+      expect(before.objects.filter((o) => o.id.startsWith('middle-shelf:'))).toHaveLength(
+        difficulty === 'easy' ? 0 : 1,
+      );
+
+      if (difficulty !== 'easy')
+        expect(before.vases.find((v) => v.id === 'middle-shelf:middle-slot')?.x).toBe(646);
       expect(before.vases.every((v) => v.state === 'resting')).toBe(true);
       await reset(page);
       expect((await state(page)).objects).toEqual(before.objects);
@@ -27,11 +33,7 @@ test('Belegtes Slotregal stürzt ein; Vasen fallen selbständig, brechen einmal 
   // eslint-disable-next-line max-lines-per-function -- Zusammengehörige Validierung, Platzierung oder Testschritte bleiben als atomarer Ablauf lesbar.
 }, testInfo) => {
   await startDifficulty(page, 'hard', '/?room-seed=collapse-172');
-  await couch(page);
-  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 410);
-  await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 500);
-  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.velocityX <= 0);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 304) < 2);
+  await lowerShelf(page);
   const before = await state(page);
   const slots = before.vases.filter((v) => v.id.startsWith('lower-shelf:'));
 

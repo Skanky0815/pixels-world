@@ -1,12 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { ChaosScore, angerFor } from '../../src/game/domain/chaos.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
 import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-const VASES = resolveRoom(LIVING_ROOM, OBJECTS)
-  .objects.filter((object) => object.kind === 'vase')
-  .map((object) => ({ id: object.id, points: object.config.points }));
+const VASES = Object.entries(OBJECTS).flatMap(([id, object]) =>
+  object.kind === 'vase' ? [{ id, points: object.points }] : [],
+);
 
 test('Schaden zählt pro Objekt genau einmal, unterschiedliche Objekte summieren sich', () => {
   const score = new ChaosScore();

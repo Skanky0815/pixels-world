@@ -94,13 +94,26 @@ test('Leere Pools, Kategorien und fehlende Fähigkeiten bleiben leer; feste Obje
   );
 });
 
+// eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
 test('Exakte Geometrie verhindert Überlappungen mit Büchern, festen Objekten und anderen Slots', () => {
   const entries = LIVING_ROOM.platforms[0].slots.entries;
   const blocked = entries.map((s, i) => ({ ...s, x: [25, 104, 104][i] }));
-  const result = spawned(populate(withSlots(blocked), 'hard'));
+  const withBooks = {
+    ...withSlots(blocked),
+    decorations: [
+      ...LIVING_ROOM.decorations,
+      {
+        kind: 'rect' as const,
+        bounds: { x: 520, y: 270, width: 20, height: 34 },
+        color: 0xa7614e,
+        supportedBy: 'lower-shelf',
+      },
+    ],
+  };
+  const result = spawned(populate(withBooks, 'hard'));
 
   assert.equal(result.length, 1);
-  assert.equal(result[0].placement.x, 622);
+  assert.equal(result[0].placement.x, 606);
   const edge = entries.map((s) => ({ ...s, x: 1 }));
 
   assert.equal(spawned(populate(withSlots(edge), 'hard')).length, 0);

@@ -11,7 +11,7 @@ for (const difficulty of DIFFICULTIES) {
       await startDifficulty(page, difficulty, room === 'living-room' ? '/' : '/?room=cozy-remix');
       await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 800);
       await holdUntil(page, ['ArrowUp'], (s) => s.pixel.bottom <= 116);
-      await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
+      await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 835);
       await holdUntil(
         page,
         ['ArrowDown'],
@@ -42,9 +42,9 @@ for (const difficulty of DIFFICULTIES) {
         expect((await state(page)).goal).toEqual(paused.goal);
         expect((await state(page)).round).toEqual(paused.round);
         await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-        await page.keyboard.down('ArrowRight');
+        await page.keyboard.down('ArrowLeft');
         await until(page, (s) => s.goal.progress === 0);
-        await page.keyboard.up('ArrowRight');
+        await page.keyboard.up('ArrowLeft');
       }
 
       await until(page, (s) => s.goal.status === 'reached');

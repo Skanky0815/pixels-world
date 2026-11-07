@@ -1,0 +1,61 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "approvedReference": "sources/style-reference-v4.png",
+  "sources": {
+    "environment": "sources/environment-approved-v7.png",
+    "window": "sources/window-source-v7.png",
+    "door": "sources/door-source-v1.png",
+    "rug": "sources/rug-source-v1.png"
+  },
+  "prompts": {
+    "environment": "Generator: built-in image_gen\nUse case: precise-object-edit\nInput image 1 is the edit target: a flat side-view warm pixel-art room. Remove ONLY the entire small wooden-framed sage-glass window in the upper-right. Restore uninterrupted matching warm plaster wall where the window, frame and its shadows were. This will be the clean backdrop under a separate window sprite.\nKeep every other pixel and object as unchanged as possible: framed landscape picture, enlarged closed wood door with brass knob, ceiling trim, wainscot, baseboard, floorboards and woven runner. Keep exact same camera, proportions, positions, palette, textures and lighting. No books, shelves, furniture, curtains, people, cats, plants, vases, toys, text or watermark. Do not move or resize anything else.\n",
+    "window": "Generator: built-in image_gen\nUse case: background-extraction\nInput image 1 is a reference and extraction target. Isolate ONLY its small sage-glass wooden-framed window into a reusable 2D pixel-art game sprite on a genuinely TRANSPARENT background. Preserve the complete outer wooden frame, sill, both glass panes, horizontal sash and the pale clouds and green tree scenery seen through the glass. The glass and view inside must remain opaque. Match the exact warm wood color, shape, pixel detail and flat orthographic front view of this window. No perspective, no additions, no curtain, no wall, no door, no picture, no floor or other objects. Show one complete window centered, uncropped, with a small transparent margin. No checkerboard painted into the image, no text, no watermark.\n",
+    "door": "Use case: background-extraction. Input image 1 is the approved room reference. Isolate ONLY the enlarged CLOSED wooden door and its complete frame at the far right. Preserve the SAME warm brown/orange wood, beveled frame, two inset rectangular panels and round brass knob on the RIGHT side of the door, orthographic front elevation, pixel-art detail and proportions. One complete door with frame centered on genuinely transparent background, small transparent margin. The door interior and wood must be fully opaque. No wall, plaster, wainscot, floor, shadows stretching across the room, window, rug, text, characters, extra doors or props. Do not redesign it; this is an extraction for a 56x108 native-pixel game sprite displayed at 2x.\n",
+    "rug": "Use case: background-extraction. Input image 1 is the approved room reference. Isolate ONLY its low flat woven tan/rust runner rug near the bottom. Preserve the exact extremely WIDE AND THIN flat FRONT ELEVATION shape, tan woven middle, narrow rust-red bands near both ends and short pale fringe. Its visible aspect ratio is about 14:1 (430 wide by 30 tall game pixels). Do NOT turn it into a top-down rectangle or an angled perspective rug. One complete very wide thin runner strip, horizontally centered on genuinely transparent background with generous transparent space above/below. The weave and fringe must be opaque, only surrounding space transparent. No floorboards, room, furniture, characters, text or extra objects. Match the approved palette and chunky pixel detail. No shadow halo. Export will fit to a 215x15 native-pixel game sprite at 2x.\n"
+  },
+  "logicalRoom": [
+    960,
+    540
+  ],
+  "floorY": 468,
+  "scale": 2,
+  "alphaBoundsThreshold": 192,
+  "resampling": "nearest-neighbor; preserved sampled RGBA; no palette quantization",
+  "exports": {
+    "plaster": [
+      64,
+      64
+    ],
+    "panel": [
+      48,
+      64
+    ],
+    "floor": [
+      48,
+      12
+    ],
+    "ceiling": [
+      48,
+      7
+    ],
+    "window": [
+      56,
+      92
+    ],
+    "picture": [
+      54,
+      56
+    ],
+    "door": [
+      56,
+      108
+    ],
+    "rug": [
+      215,
+      15
+    ]
+  },
+  "reproduce": "node tools/prepare-room-assets.mjs",
+  "doorState": "closed",
+  "booksInScenery": false
+}

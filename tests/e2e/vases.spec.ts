@@ -20,8 +20,8 @@ test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', a
 
   expect(initial.chaos).toEqual({ score: 0, damagedObjects: 0, anger: 'calm' });
   expect(initial.vases.every((vase) => vase.state === 'resting')).toBe(true);
-  expect(initial.vases[0].x).toBeGreaterThan(580);
-  expect(initial.vases[0].x).toBeLessThan(660);
+  expect(initial.vases[0].x).toBeGreaterThan(560);
+  expect(initial.vases[0].x).toBeLessThan(650);
   expect(initial.vases[0]).toMatchObject({
     bodyWidth: 18,
     bodyHeight: 28,
@@ -71,17 +71,23 @@ test('Slotvasen und feste Vasen bleiben erreichbar und werten jeden Bruch einmal
   );
   await expectChaos(page);
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 800);
-  await holdUntil(page, ['ArrowUp'], (s) => s.pixel.bottom <= 195);
+  await holdUntil(page, ['ArrowUp'], (s) => s.pixel.bottom <= 116);
+  await holdUntil(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x <= 630);
+  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.velocityX >= 0);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 224) < 2);
   await holdUntil(
     page,
-    ['ArrowLeft'],
-    (s) => s.vases.find((v) => v.id === 'blue-vase')?.state !== 'resting',
+    ['ArrowRight'],
+    (s) => s.vases.find((v) => v.id === 'middle-shelf:middle-slot')?.state !== 'resting',
   );
-  await until(page, (s) => s.vases.find((v) => v.id === 'blue-vase')?.state === 'broken');
+  await until(
+    page,
+    (s) => s.vases.find((v) => v.id === 'middle-shelf:middle-slot')?.state === 'broken',
+  );
   await expectChaos(page);
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 800);
   await holdUntil(page, ['ArrowUp'], (s) => s.pixel.bottom <= 116);
-  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
+  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 835);
   await holdUntil(
     page,
     ['ArrowDown'],

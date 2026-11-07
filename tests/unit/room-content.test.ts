@@ -18,7 +18,7 @@ test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Pr
   assert.deepEqual(room.spawn, { x: 110, bottom: 468 });
   assert.equal(room.definition.width, 960);
   assert.equal(room.definition.height, 540);
-  assert.equal(room.objects.length, 5);
+  assert.equal(room.objects.length, 4);
   const couch = room.objects.find((object) => object.kind === 'couch');
 
   assert.ok(couch);
@@ -28,10 +28,7 @@ test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Pr
     room.objects
       .filter((object) => object.kind === 'vase')
       .map((object) => [object.id, object.config.x, object.config.shelfY, object.config.points]),
-    [
-      ['blue-vase', 710, 224, 35],
-      ['heirloom-vase', 906, 154, 40],
-    ],
+    [['heirloom-vase', 890, 154, 40]],
   );
   assert.equal(JSON.stringify(LIVING_ROOM), before, 'Resolver darf Quelldaten nicht ändern');
 });
@@ -64,14 +61,14 @@ test('Auflagehöhen folgen referenzierten Flächen einschließlich eines Sofas',
     {
       ...LIVING_ROOM,
       objects: LIVING_ROOM.objects.map((object) =>
-        object.id === 'blue-vase'
+        object.id === 'heirloom-vase'
           ? { ...object, placement: { mode: 'surface', x: 300, surfaceId: 'couch' } }
           : object,
       ),
     },
     OBJECTS,
   );
-  const vase = room.objects.find((object) => object.id === 'blue-vase');
+  const vase = room.objects.find((object) => object.id === 'heirloom-vase');
 
   assert.equal(vase?.kind, 'vase');
   assert.ok(vase?.kind === 'vase');
@@ -242,7 +239,7 @@ test('Sichere Einzelwerte dürfen gemeinsam keine unsichere Gesamtpunktzahl erge
     () =>
       bad(LIVING_ROOM, {
         ...OBJECTS,
-        'blue-vase': { ...OBJECTS['blue-vase'], points: Number.MAX_SAFE_INTEGER },
+        'heirloom-vase': { ...OBJECTS['heirloom-vase'], points: Number.MAX_SAFE_INTEGER },
       }),
     /maximum score/,
   );

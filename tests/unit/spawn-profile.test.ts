@@ -111,7 +111,7 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
   for (const room of [LIVING_ROOM, COZY_REMIX]) {
     const resolved = resolveRoom(room, OBJECTS);
 
-    assert.equal(resolved.goal.x, 866);
+    assert.equal(resolved.goal.x, 850);
     assert.equal(resolved.goal.surfaceY, 154);
     assert.equal(resolved.goal.dwellMs, 1200);
 

@@ -5,7 +5,7 @@ import {
   start,
   until,
   holdUntil,
-  couch,
+  lowerShelf,
   curtain,
   framesPass,
   reset,
@@ -31,11 +31,7 @@ test(
 
 test('Tastatursprünge landen auf Sofa und erstem Regal', async ({ page }) => {
   await start(page);
-  await couch(page);
-  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 410);
-  await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 500);
-  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.velocityX <= 0);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 304) < 2);
+  await lowerShelf(page);
   expect((await state(page)).pixel.x).toBeLessThan(664);
 });
 
@@ -99,18 +95,18 @@ test('Vorhang wird beim Anspringen ohne Hoch/Runter automatisch gegriffen', asyn
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Klettern kollidiert mit Regalunterseite und Boden', async ({ page }) => {
   await start(page);
-  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 680);
-  await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.climbing);
-  // On the left edge of the curtain, the second shelf extends overhead to x=744.
-  await holdUntil(page, ['ArrowUp'], (s) => s.pixel.top <= 242);
+  await curtain(page);
+  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 826);
+  // Die obere Plattform überragt den rechten Rand des versetzten Vorhangs.
+  await holdUntil(page, ['ArrowUp'], (s) => s.pixel.top <= 172);
   await page.keyboard.down('ArrowUp');
 
   try {
     await framesPass(page, 20);
     const blocked = await state(page);
 
-    expect(blocked.pixel.top).toBeGreaterThanOrEqual(239);
-    expect(blocked.pixel.top).toBeLessThan(243);
+    expect(blocked.pixel.top).toBeGreaterThanOrEqual(169);
+    expect(blocked.pixel.top).toBeLessThan(173);
     expect(blocked.pixel.climbing).toBe(true);
   } finally {
     await page.keyboard.up('ArrowUp');

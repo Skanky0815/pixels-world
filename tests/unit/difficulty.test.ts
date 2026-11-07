@@ -41,7 +41,7 @@ test('Normal erhält Balancing; alle Dichten erhalten Ziel, Plattformgeometrie u
     for (const difficulty of DIFFICULTIES) {
       const variant = difficultyRoom(room, difficulty);
       const resolved = resolveRoom(variant, OBJECTS);
-      const delta = difficulty === 'easy' ? -2 : difficulty === 'hard' ? 4 : 0;
+      const delta = difficulty === 'easy' ? -1 : difficulty === 'hard' ? 4 : 0;
 
       assert.equal(resolved.objects.length, room.objects.length + delta);
       assert.equal(variant.goal, room.goal);

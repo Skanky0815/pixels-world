@@ -1,3 +1,4 @@
+import { preloadRoomArt } from '../game/assets/room-art';
 import { preloadShelfArt } from '../game/assets/shelf-art';
 import type { Shelf } from '../game/objects/Shelf';
 import { preloadCatgrassArt } from '../game/assets/catgrass-art';
@@ -50,6 +51,7 @@ export class PlaygroundScene extends Phaser.Scene {
   preload() {
     preloadVaseArt(this);
     preloadShelfArt(this);
+    preloadRoomArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
