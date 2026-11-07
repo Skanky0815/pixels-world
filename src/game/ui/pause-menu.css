@@ -1,0 +1,74 @@
+.pause-toggle {
+  flex-shrink: 0;
+  min-height: 44px;
+  min-width: 54px;
+  padding: 6px 10px;
+  border: 1px solid #b79879;
+  border-radius: 6px;
+  background: #493a3d;
+  color: #f2e4c9;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.pause-menu {
+  box-sizing: border-box;
+  width: min(400px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  padding: 20px;
+  border: 2px solid #c49464;
+  border-radius: 10px;
+  background: #382f35;
+  color: #f2e4c9;
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+}
+.pause-menu::backdrop {
+  background: #201b20bb;
+}
+.pause-menu h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+}
+.pause-menu h3 {
+  font-size: 14px;
+  margin: 12px 0 4px;
+}
+.pause-menu label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px;
+  margin: 12px 0;
+}
+.pause-menu input {
+  width: 100%;
+  min-height: 32px;
+  grid-column: 1 / -1;
+  accent-color: #e4c182;
+}
+.pause-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+.pause-actions button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid #b79879;
+  border-radius: 6px;
+  background: #493a3d;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.pause-menu :focus-visible,
+.pause-toggle:focus-visible {
+  outline: 2px solid #edc37c;
+  outline-offset: 2px;
+}
+.pause-menu .language-setting {
+  justify-content: start;
+}

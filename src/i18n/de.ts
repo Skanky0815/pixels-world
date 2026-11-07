@@ -1,4 +1,11 @@
 export const de = {
+  menu: 'Menü',
+  pauseSettings: 'Pause & Einstellungen',
+  resumeGame: 'Fortsetzen',
+  closeSettings: 'Zurück',
+  audioSettings: 'Audio',
+  masterVolume: 'Gesamtlautstärke',
+  effectsVolume: 'Soundeffekte',
   correct: 'Richtig!',
   nuzzle: '♥ · Anschmiegen',
   purr: 'Prrrr …',

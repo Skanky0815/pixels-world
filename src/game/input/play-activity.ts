@@ -2,6 +2,7 @@
 export class PlayActivity {
   private focused = document.hasFocus();
   private discardDelta = true;
+  private paused = false;
   private readonly blur = () => this.setFocus(false);
   private readonly focus = () => this.setFocus(true);
   private readonly visibility = () => this.notify();
@@ -16,7 +17,13 @@ export class PlayActivity {
   }
 
   get active() {
-    return this.focused && !document.hidden;
+    return this.focused && !document.hidden && !this.paused;
+  }
+
+  setPaused(paused: boolean) {
+    if (this.paused === paused) return;
+    this.paused = paused;
+    this.notify();
   }
 
   delta(deltaMs: number) {

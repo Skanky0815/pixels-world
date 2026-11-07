@@ -75,3 +75,22 @@ test('Destroy entfernt sämtliche Lifecycle-Listener vor der nächsten Runde', (
   browserDocument.dispatchEvent(new Event('visibilitychange'));
   assert.equal(changes, 3);
 });
+
+// eslint-disable-next-line max-lines-per-function -- Manuelle Pause muss unabhängig von Fokus und Sichtbarkeit bleiben und beim Fortsetzen Hintergrundzeit verwerfen.
+test('Menüpause wird durch Fokus/Visibility nicht aufgehoben und umgeht keine Tab-Pause', () => {
+  const activity = new PlayActivity(() => {});
+
+  activity.setPaused(true);
+  browserWindow.dispatchEvent(new Event('focus'));
+  browserDocument.dispatchEvent(new Event('visibilitychange'));
+  assert.equal(activity.active, false);
+  assert.equal(activity.delta(50_000), 0);
+  browserWindow.dispatchEvent(new Event('blur'));
+  activity.setPaused(false);
+  assert.equal(activity.active, false);
+  browserWindow.dispatchEvent(new Event('focus'));
+  assert.equal(activity.active, true);
+  assert.equal(activity.delta(50_000), 0);
+  assert.equal(activity.delta(16), 16);
+  activity.destroy();
+});

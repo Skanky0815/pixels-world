@@ -97,6 +97,25 @@ Die DEV-Anbindung wird dynamisch und generationsgebunden installiert; ein
 Szenenwechsel entfernt Dialog, Tastenkürzel und Update-Listener. Sie exponiert
 weder Engine-Objekte noch Mutatoren auf `window` oder dem Testobserver.
 
+## Pause und Einstellungen
+
+Esc oder **Menü** öffnet den szenengebundenen Pausendialog, auch vor dem Start.
+Die Sprachwahl befindet sich ausschließlich dort. **Neue Runde** ist erst nach
+Rundenstart sichtbar; der Ergebnis-Button bleibt erhalten. Der Dialog verwendet
+den gemeinsamen DE-/EN-Katalog, speichert Sprache und Audiopegel lokal und bleibt
+bei blockiertem Browser-Speicher funktionsfähig.
+
+`PlayActivity` verknüpft Menüpause mit Fokus/Sichtbarkeit. Fortsetzen verwirft das
+erste Zeitdelta, während `InputFrames` eine dabei noch unbenutzte frische
+Eingabeflanke für den nächsten aktiven Frame bewahrt. Cleanup verwirft den Puffer;
+gehaltene Bewegung wird nicht wiederholt. Menütasten werden im Dialog behandelt,
+damit Phasers globale Tastensperre native Regler und Formularbedienung nicht stört.
+
+`AudioPreferences` speichert `master` und `effects` unter `pixels-world.audio`.
+`GameAudio` setzt Gesamt- × Effektpegel und übernimmt Pause/Resume von der
+Aktivitätsgrenze; Szenenabbau stoppt alte Sounds. Noch sind keine Audio-Assets
+eingebunden. E2E-Snapshots enthalten nur losgelöste Pegel/Statuswerte.
+
 ## Lesbarer TypeScript-Code
 
 Prettier formatiert; ESLint mit typescript-eslint und gezielten Stylistic-Regeln
