@@ -30,6 +30,13 @@ export default defineConfig({
             reuseExistingServer: false,
             timeout: 60_000,
           },
+          {
+            command:
+              'npm exec vite build -- --outDir dist-pwa-root && npm exec vite preview -- --host 127.0.0.1 --port 4177 --strictPort --outDir dist-pwa-root',
+            url: 'http://127.0.0.1:4177/',
+            reuseExistingServer: false,
+            timeout: 60_000,
+          },
         ]),
     {
       command:

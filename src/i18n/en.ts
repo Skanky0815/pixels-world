@@ -1,5 +1,13 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  installApp: 'Install app',
+  installIphone:
+    'On iPhone: In Safari, choose Share → Add to Home Screen and turn on Open as Web App.',
+  installBrowser:
+    'On desktop or Android: choose Install app in the browser menu or use the install icon in the address bar.',
+  installOffline:
+    'The published game works offline after its first complete load. Rounds in progress are not saved.',
+  closeInstall: 'Close',
   readyPixel: 'Ready, Pixel?',
   startShort: '␣ Start',
   landingPixelAlt: 'Pixel, the curious tabby cat',

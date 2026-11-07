@@ -9,6 +9,9 @@
       content="Ein Zimmer. Eine Katze. Dein Chaos. Entdecke Pixel’s World – ein gemütliches Katzenspiel direkt im Browser, mit Tastatur oder Touch."
     />
     <title data-i18n="landingTitle">Pixel’s World – Ein Zimmer. Eine Katze. Dein Chaos.</title>
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
   </head>
   <body class="landing-page">
     <a class="skip-link" href="#welcome" data-i18n="landingSkip">Zum Inhalt</a>
@@ -38,7 +41,12 @@
             Pixel ist allein zu Hause. Die Möbel stehen noch. Wie lange das so bleibt? Das liegt
             ganz bei dir.
           </p>
-          <a class="play-link" href="./play.html" data-i18n="landingPlay">Jetzt spielen →</a>
+          <div class="hero-actions">
+            <a class="play-link" href="./play.html" data-i18n="landingPlay">Jetzt spielen →</a>
+            <button id="install-app" class="install-link" type="button">
+              Als App installieren
+            </button>
+          </div>
           <p class="play-note" data-i18n="landingPlayNote">
             Direkt im Browser · ohne Konto · Tastatur & Touch
           </p>

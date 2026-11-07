@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/**'
       - 'assets/**'
+      - 'public/**'
       # Reference/source artwork and documentation are not runtime or test inputs.
       - '!assets/**/reference-*/**'
       - '!assets/**/*-source*.png'
@@ -34,6 +35,7 @@ on:
     paths:
       - 'src/**'
       - 'assets/**'
+      - 'public/**'
       # Reference/source artwork and documentation are not runtime or test inputs.
       - '!assets/**/reference-*/**'
       - '!assets/**/*-source*.png'
