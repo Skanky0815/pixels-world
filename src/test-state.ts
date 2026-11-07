@@ -109,6 +109,10 @@ export interface GameTestState {
     } | null;
   } | null;
   readonly plant: {
+    readonly texture: string;
+    readonly soilVisible: boolean;
+    readonly x: number;
+    readonly y: number;
     readonly state: string;
     readonly damage: number;
     readonly progress: number;

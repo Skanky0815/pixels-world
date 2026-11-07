@@ -11,6 +11,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   await until(page, (s) => s.plant.state === 'nibbling');
   const first = await state(page);
 
+  expect(first.plant).toMatchObject({ texture: 'catgrass-bitten', soilVisible: false });
   expect(first.pixel.animation).toBe('nibble');
   expect(first.pixel).toMatchObject({
     displayWidth: 80,
@@ -61,6 +62,8 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
     damage: 2,
     events: 2,
     angle: -80,
+    texture: 'catgrass-bitten',
+    soilVisible: true,
     lastDamage: { id: '["plant","tip",2]', objectId: 'plant', kind: 'tip', stage: 2, value: 10 },
   });
   expect(tipped.chaos).toEqual({ score: 12, damagedObjects: 1, anger: 'calm' });
@@ -77,7 +80,11 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
   expect((await state(page)).chaos.score).toBe(12);
   await reset(page);
   expect((await state(page)).plant).toEqual({
+    x: tipped.plant.x - 10,
+    y: tipped.plant.y + 17,
     state: 'idle',
+    texture: 'catgrass-intact',
+    soilVisible: false,
     damage: 0,
     progress: 0,
     angle: 0,

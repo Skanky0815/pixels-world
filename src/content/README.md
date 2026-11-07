@@ -88,3 +88,19 @@ Quellen und Imagegen-Prompts liegen unter `assets/objects/curtain/`.
 56×178 und den Risspatch in 12×20 Pixel. Die Alpha-Bounds ab 192 werden
 seitenverhältnistreu per Nearest Neighbor zentriert eingepasst; übernommene
 RGBA-Werte bleiben erhalten. Nur die Export-PNGs gelangen ins Laufzeitbundle.
+
+### Katzengras-Grafik
+
+Spiel und Playground laden über `preloadCatgrassArt` dieselben PNGs für intaktes
+und angebissenes Gras sowie die separate verschüttete Erde. Die Pflanze steht
+unten mittig in einer 40×60-Zelle. Bissspur, Warnwackeln und Kippen verwenden die
+bestehenden Domain-Zustände und Rotationen: −80° bei x+10/y−17 nach dem Umkippen.
+Interaktionsbereich, Bodenanker, Punkte und Physik bleiben unabhängig vom Bild.
+Die 80×10-Erde erscheint hinter Pixel und verschwindet beim Reset.
+
+Quellen und vollständige Imagegen-Prompts liegen unter `assets/objects/catgrass/`.
+`node tools/prepare-catgrass-assets.mjs` exportiert per Nearest Neighbor und
+bewahrt abgetastete RGBA-Werte. Beide Pflanzenzustände verwenden die Alpha-Bounds
+(ab 192) und Abbildung der intakten Quelle; Zeilen 39–59 des freigegebenen Topfs
+werden identisch übernommen. So bleiben Topf und Drehpunkt beim Biss stabil.
+Nur die kleinen Export-PNGs werden im Spiel geladen.

@@ -1,0 +1,37 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "approval": "Rico approved intact 40×60 proposal and −80° tipped room comparison in chat on 2026-11-07.",
+  "export": {
+    "command": "node tools/prepare-catgrass-assets.mjs",
+    "plantCell": [
+      40,
+      60
+    ],
+    "soilCell": [
+      80,
+      10
+    ],
+    "boundsAlphaThreshold": 192,
+    "anchor": "bottom center; both plant states use intact source bounds and identical pot rows 39–59",
+    "rgba": "preserve nearest-neighbor samples"
+  },
+  "variants": [
+    {
+      "name": "intact",
+      "source": "sources/intact-source-v1.png",
+      "prompt": "Use case: stylized-concept. Create ONE proposed intact cat-grass sprite for the cozy 2D pixel-art browser game Pixel’s World. Flat frontal side view, no perspective. Small warm muted terracotta flowerpot, broad lip, slightly tapered body and flat foot, dark earth visible inside rim; lush but legible tuft of long upright and gently splayed muted sage/olive green grass blades, asymmetrical organic tips. Cozy lived-in autumn palette, dark warm brown outline, 3 broad clay tones, 3 muted greens. STRICT tiny 40 wide by 60 tall logical pixel canvas, complete opaque sprite within 38 by 56 logical pixels, pot about 36 wide and 21 high, tuft about 33 high. Crisp square pixel clusters, simple stepped silhouettes, no smooth gradients, no hairline detailing. This is a visual proposal to be evaluated at actual room scale and rotated -80 degrees around its bottom-center pot anchor. Make the upright silhouette readable when tipped. Center bottom foot, generous transparent exterior. Return one single complete enlarged pixel sprite with true transparent background, no other objects, no floor shadow, no labels, no text, no border, no watermark."
+    },
+    {
+      "name": "bitten",
+      "source": "sources/bitten-source-v2.png",
+      "prompt": "Edit this approved intact catgrass sprite into its visibly NIBBLED state for Pixel’s World. Preserve canvas dimensions and placement exactly, preserve ALL terracotta pot pixels, soil in pot, bottom foot, palette and lighting. Change ONLY grass above the rim: the RIGHT HALF of the tuft has been chewed by a cat, with most right-hand blades shortened by roughly 40 percent and blunt uneven stepped bitten tips; keep tall left and central blades. The silhouette must clearly show one asymmetric bite gap even at final 40x60 game resolution. No teeth, cat, extra objects, fallen leaves or soil spill. Crisp square pixel clusters matching reference, muted olive greens. Whole single upright plant, exact original bottom-center anchor and same outline width for pot, transparent alpha exterior. No floor, cast shadow, text or labels.",
+      "initialSource": "sources/bitten-source-v1.png",
+      "alphaRepairPrompt": "BACKGROUND EXTRACTION / ALPHA REPAIR ONLY. The reference is a nibbled cat-grass pixel-art sprite. Remove ALL black/dark matte and ALL diffuse olive glow around and BETWEEN the actual individual grass blades. Exterior and all gaps between solid leaves must be genuine fully transparent alpha=0, clean hard pixel edges. Do not interpret the black area as part of the object. Preserve the actual plant: terracotta pot, dark brown soil INSIDE the pot, long left/central green grass blades and shorter nibbled right-hand grass. Keep the same 1024x1536 canvas, exact same object position and proportions, same bottom foot and same pot shape. Retain solid dark olive outline pixels directly touching actual leaves, but remove disconnected dark patches and all soft colored halos. No black background, no shadow, no blur, no glow, no new objects, no text. Return one precisely cut-out complete plant sprite with true transparency, also between blades."
+    },
+    {
+      "name": "soil",
+      "source": "sources/soil-source-v1.png",
+      "prompt": "Use case: stylized-concept. Create ONE small spilled potting-soil patch for Pixel’s World, a cozy side-view 2D pixel-art cat game. ONLY dark warm brown loose earth: low broad irregular mound with scattered separate crumbs extending left/right. Flat side view onto floor surface with very slight visible top; no isometric perspective. Dark cocoa brown #49352e and #59443d, restrained medium warm brown highlights; clearly darker than rust-colored wooden floor and tan rug. Design for a tiny 80x10 logical pixel transparent canvas, opaque mound no more than 6 logical pixels high, loose crumbs 1-3 logical pixels, horizontal asymmetric spread. Crisp chunky square pixels and few flat colors; no blur, glow, gradient, shadow, plants, pot, roots, insects, text or border. Return only this single complete horizontal patch enlarged for inspection with genuine transparent alpha and generous exterior margin."
+    }
+  ]
+}
