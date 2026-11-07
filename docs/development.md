@@ -17,6 +17,11 @@ Phaser ist lokal gebündelt; ein Hinweis zur Engine-Chunkgröße ist kein Messwe
 Laufzeitprobleme. Die Steuerung erklärt [README](../README.md#steuerung).
 Die versteckte Debug-Taste R startet nach Spielbeginn die Szene neu.
 
+Die öffentliche Startadresse lädt die Landingpage ohne Phaser. Das Spiel liegt unter
+`play.html`. Beide Einstiege funktionieren auch unter dem GitHub-Pages-Unterpfad;
+Vite bündelt sie als getrennte HTML-Einstiege. Die lokalen PNG-Aufnahmen in
+`assets/landing/` stammen aus dem bestehenden Spiel und benötigen keine externen Dienste.
+
 Für ein Handy im selben Netz:
 
 ```sh

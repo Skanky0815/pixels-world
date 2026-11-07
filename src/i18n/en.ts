@@ -1,6 +1,41 @@
 import type { de } from './de';
-
 export const en: Record<keyof typeof de, string> = {
+  readyPixel: 'Ready, Pixel?',
+  startShort: '␣ Start',
+  landingPixelAlt: 'Pixel, the curious tabby cat',
+  landingNap: 'Mischief is tiring.',
+  landingRestingPixelAlt: 'Pixel with his eyes closed',
+  landingTitle: 'Pixel’s World – One room. One cat. Your chaos.',
+  landingSkip: 'Skip to content',
+  landingAbout: 'The game',
+  landingHeading: 'One room. One cat. Your chaos.',
+  landingDescription:
+    'Pixel is home alone. The furniture is still standing. How long will that last? That’s up to you.',
+  landingPlay: 'Play now →',
+  landingPlayNote: 'In your browser · no account · keyboard & touch',
+  landingRoomAlt: 'Pixel explores Sara’s living room with a sofa, shelves and a curtain.',
+  landingRoomCaption: 'A quiet afternoon. For now.',
+  landingLoopEyebrow: 'SMALL CAT. BIG PLANS.',
+  landingLoopTitle: 'It all starts innocently.',
+  landingExploreTitle: 'Explore',
+  landingExplore:
+    'Jump on furniture, climb the curtain and look for Pixel’s favourite ball. The room is yours.',
+  landingChaosTitle: 'Make mischief',
+  landingChaos:
+    'A vase on the edge? A sofa to scratch? Discover what cats do best. How much chaos you cause is your choice.',
+  landingCharmTitle: 'Turn on the charm',
+  landingCharm:
+    'When Sara gets home, put on your sweetest face. Win her heart back with a short arrow-key sequence.',
+  landingSaraAlt: 'Sara is home and comments on the chaos while Pixel walks over to her.',
+  landingSaraCaption: 'Who could stay angry at that face? Right?',
+  landingCastEyebrow: 'PIXEL & SARA',
+  landingCastTitle: 'A great team. Mostly.',
+  landingPixel: 'Pixel is curious, playful and has his very own idea of tidiness.',
+  landingSara:
+    'Sara loves Pixel. And her furniture. Each round tells a little piece of their story.',
+  landingPrototype: 'A playable prototype that keeps growing. Your feedback helps shape it.',
+  landingReady: 'Ready for a little chaos?',
+
   feedbackStart: 'Go on, Pixel!',
   feedbackReturn: 'Sara is here!',
   feedbackReaction: 'Sara takes a look …',

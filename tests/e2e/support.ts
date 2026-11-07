@@ -51,9 +51,13 @@ async function state(page: Page): Promise<RoomTestState> {
   });
 }
 
-// eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 async function loadIntro(page: Page, path = '/') {
-  await page.goto(path);
+  await page.goto(path.replace(/^\/(?=\?|$)/, '/play.html'));
+  await waitForGame(page);
+}
+
+// eslint-disable-next-line max-lines-per-function -- Dieselbe schreibgeschützte Bereitschaftsgrenze gilt für direkte Spielaufrufe und Navigation aus der Landingpage.
+async function waitForGame(page: Page) {
   await expect
     .poll(
       async () => {
@@ -163,6 +167,7 @@ export {
   state,
   start,
   loadIntro,
+  waitForGame,
   until,
   holdUntil,
   couch,

@@ -2,65 +2,161 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#241f29" />
-    <title data-i18n="pixelSWorldLivingRoomPrototype">Pixel's World · Living room prototype</title>
+    <meta
+      name="description"
+      content="Ein Zimmer. Eine Katze. Dein Chaos. Entdecke Pixel’s World – ein gemütliches Katzenspiel direkt im Browser, mit Tastatur oder Touch."
+    />
+    <title data-i18n="landingTitle">Pixel’s World – Ein Zimmer. Eine Katze. Dein Chaos.</title>
   </head>
-  <body>
+  <body class="landing-page">
+    <a class="skip-link" href="#welcome" data-i18n="landingSkip">Zum Inhalt</a>
     <main>
-      <header>
-        <div>
-          <p class="eyebrow" data-i18n="oneRoomOneCat">ONE ROOM. ONE CAT.</p>
-          <h1>Pixel’s World<span data-i18n="theLivingRoom">01 / THE LIVING ROOM</span></h1>
-        </div>
-        <span class="badge" data-i18n="playablePrototype">PLAYABLE PROTOTYPE</span>
+      <header class="landing-header">
+        <a class="wordmark" href="./" aria-label="Pixel’s World"
+          >Pixel’s World<span aria-hidden="true">✦</span></a
+        >
+        <nav aria-label="Navigation">
+          <a href="#spielidee" data-i18n="landingAbout">Das Spiel</a>
+          <a
+            href="https://github.com/Skanky0815/pixels-world"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub ↗</a
+          >
+          <div id="landing-language"></div>
+        </nav>
       </header>
-      <div id="play-area">
-        <div
-          id="game"
-          role="region"
-          aria-label="Pixel's living room. Use arrow keys to move and climb, Space to jump. Click the room to focus."
-          data-i18n-label="pixelSLivingRoomUseArrow"
-          tabindex="0"
-        ></div>
-      </div>
-      <footer>
-        <p class="keyboard-help">
-          <kbd>←</kbd> <kbd>→</kbd><span data-i18n="move"> Move </span><span>·</span>
-          <kbd
-            class="space-key"
-            data-i18n-label="spaceLabel"
-            data-i18n-title="spaceLabel"
-            aria-label="Space"
-            title="Space"
-            >␣</kbd
-          ><span data-i18n="jumpLabel"> Jump </span><span>·</span> <kbd>↑</kbd> <kbd>↓</kbd
-          ><span data-i18n="climbCurtain"> Climb curtain </span>
-        </p>
-        <p class="hint" data-i18n="aQuietAfternoonForNow">A quiet afternoon. For now.</p>
-        <div class="footer-meta">
-          <p class="feedback-link">
-            <a
-              href="https://github.com/Skanky0815/pixels-world/issues/new/choose"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Öffnet GitHub in einem neuen Tab"
-              data-i18n-title="opensGithubInANewTab"
-              data-i18n="feedbackIdeas"
-              >Feedback &amp; Ideen</a
-            >
-            <a href="./impressum.html" data-i18n="legalNoticeGerman">Impressum</a>
-            <a href="./datenschutz.html" data-i18n="privacyGerman">Datenschutz</a>
+      <section class="landing-hero" id="welcome" aria-labelledby="landing-heading">
+        <div class="hero-copy">
+          <p class="eyebrow">ONE ROOM. ONE CAT.</p>
+          <h1 id="landing-heading" data-i18n="landingHeading">
+            Ein Zimmer. Eine Katze. Dein Chaos.
+          </h1>
+          <p class="hero-description" data-i18n="landingDescription">
+            Pixel ist allein zu Hause. Die Möbel stehen noch. Wie lange das so bleibt? Das liegt
+            ganz bei dir.
           </p>
-          <p
-            id="build-info"
-            class="build-info"
-            aria-label="Build-Version"
-            data-i18n-label="buildVersion"
-          ></p>
+          <a class="play-link" href="./play.html" data-i18n="landingPlay">Jetzt spielen →</a>
+          <p class="play-note" data-i18n="landingPlayNote">
+            Direkt im Browser · ohne Konto · Tastatur & Touch
+          </p>
         </div>
+        <figure class="hero-room">
+          <div class="image-label">
+            <span data-i18n="theLivingRoom">01 / DAS WOHNZIMMER</span
+            ><span aria-hidden="true">● ● ●</span>
+          </div>
+          <img
+            src="./assets/landing/living-room.png"
+            width="936"
+            height="527"
+            alt="Pixel erkundet Saras Wohnzimmer mit Sofa, Regalen und Vorhang."
+            data-i18n-label="landingRoomAlt"
+            fetchpriority="high"
+          />
+          <img
+            class="hero-pixel"
+            src="./assets/pixel/pixel-idle-master.png"
+            width="32"
+            height="32"
+            alt="Pixel, der neugierige Tigerkater"
+            data-i18n-label="landingPixelAlt"
+          />
+          <figcaption data-i18n="landingRoomCaption">Ein gemütlicher Nachmittag. Noch.</figcaption>
+        </figure>
+      </section>
+      <section class="landing-loop" id="spielidee" aria-labelledby="loop-heading">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="landingLoopEyebrow">KLEINE KATZE. GROSSE PLÄNE.</p>
+          <h2 id="loop-heading" data-i18n="landingLoopTitle">Ganz unschuldig anfangen.</h2>
+        </div>
+        <div class="loop-cards">
+          <article>
+            <span class="step-number" aria-hidden="true">01</span>
+            <h3 data-i18n="landingExploreTitle">Erkunden</h3>
+            <p data-i18n="landingExplore">
+              Spring auf Möbel, klettere am Vorhang und suche Pixels Lieblingsball. Das Zimmer
+              gehört dir.
+            </p>
+          </article>
+          <article>
+            <span class="step-number" aria-hidden="true">02</span>
+            <h3 data-i18n="landingChaosTitle">Unfug anstellen</h3>
+            <p data-i18n="landingChaos">
+              Eine Vase am Rand? Ein Sofa zum Kratzen? Entdecke die Katzenaktionen. Wie viel Chaos
+              entsteht, entscheidest du.
+            </p>
+          </article>
+          <article>
+            <span class="step-number" aria-hidden="true">03</span>
+            <h3 data-i18n="landingCharmTitle">Charme zeigen</h3>
+            <p data-i18n="landingCharm">
+              Wenn Sara heimkommt, ist dein liebster Blick gefragt. Gewinne mit einer kleinen
+              Pfeiltastenfolge ihr Herz zurück.
+            </p>
+          </article>
+        </div>
+      </section>
+      <section class="landing-cast" aria-labelledby="cast-heading">
+        <figure>
+          <img
+            src="./assets/landing/pixel-and-sara.png"
+            width="936"
+            height="527"
+            alt="Sara ist heimgekommen und kommentiert das Chaos; Pixel geht zu ihr."
+            data-i18n-label="landingSaraAlt"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption data-i18n="landingSaraCaption">
+            Für diesen Blick kann man doch nicht böse sein. Oder?
+          </figcaption>
+        </figure>
+        <div>
+          <p class="eyebrow" data-i18n="landingCastEyebrow">PIXEL & SARA</p>
+          <h2 id="cast-heading" data-i18n="landingCastTitle">Ein gutes Team. Meistens.</h2>
+          <p data-i18n="landingPixel">
+            Pixel ist neugierig, verspielt und hat seinen ganz eigenen Begriff von Ordnung.
+          </p>
+          <p data-i18n="landingSara">
+            Sara mag Pixel. Ihre Einrichtung allerdings auch. Jede Runde erzählt ein kleines Stück
+            von den beiden.
+          </p>
+          <p class="quiet-note" data-i18n="landingPrototype">
+            Ein spielbarer Prototyp, der weiterwächst. Dein Feedback hilft uns dabei.
+          </p>
+          <div class="cast-signoff">
+            <p data-i18n="landingNap">Chaos macht müde.</p>
+            <span
+              class="resting-pixel"
+              role="img"
+              aria-label="Pixel mit geschlossenen Augen"
+              data-i18n-label="landingRestingPixelAlt"
+            ></span>
+          </div>
+        </div>
+      </section>
+      <section class="landing-finale" aria-labelledby="finale-heading">
+        <p class="eyebrow">A QUIET AFTERNOON. FOR NOW.</p>
+        <h2 id="finale-heading" data-i18n="landingReady">Bereit für ein bisschen Chaos?</h2>
+        <a class="play-link" href="./play.html" data-i18n="landingPlay">Jetzt spielen →</a>
+      </section>
+      <footer class="landing-footer">
+        <div class="landing-links">
+          <a
+            href="https://github.com/Skanky0815/pixels-world/issues/new/choose"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="feedbackIdeas"
+            >Feedback & Ideen</a
+          ><a href="./impressum.html" data-i18n="legalNoticeGerman">Impressum</a
+          ><a href="./datenschutz.html" data-i18n="privacyGerman">Datenschutz</a>
+        </div>
+        <p class="build-info" id="build-info"></p>
       </footer>
     </main>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/landing.ts"></script>
   </body>
 </html>

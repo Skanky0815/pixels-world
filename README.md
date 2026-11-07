@@ -14,7 +14,11 @@ Eine gemütliche Pixel-Art-Sandbox über eine kleine Katze und ein ziemlich gro�
 
 ## Jetzt spielen
 
-**[Pixel’s World im Browser öffnen →](https://skanky0815.github.io/pixels-world/)**
+**[Pixel’s World entdecken →](https://skanky0815.github.io/pixels-world/)**
+
+Die Startseite stellt Pixel, Sara und das Spiel vor. **Jetzt spielen** öffnet
+[das Spiel](https://skanky0815.github.io/pixels-world/play.html) mit seiner Einführung.
+Die Landingpage lädt keine Spielengine.
 
 Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
 mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.
@@ -81,7 +85,8 @@ Je nach Chaos benötigt Sara ein, zwei oder drei Herzen.
 Eine erfolgreiche Folge füllt die Herzleiste; pro Herz hast du zwei Versuche. Danach kann die Versöhnung auch scheitern.
 Am Ergebnis startet **Neue Runde** das nächste Spiel.
 
-Beim Laden erscheint die Einführung mit dem vorhandenen Spielbanner.
+Beim Öffnen von `play.html` erscheint eine kurze Einführung mit Ziel und Steuerung.
+Die ausführliche Spielvorstellung steht auf der Landingpage.
 Klicke bei Bedarf ins Zimmer und drücke Leertaste, um die erste Runde zu starten.
 Vorher bleiben Timer, Bewegung und Chaosaktionen angehalten. Am Ergebnis
 startet **Neue Runde** direkt das nächste Spiel; Neuladen zeigt die Einführung erneut.
@@ -129,6 +134,7 @@ npm run dev
 ```
 
 Öffne die ausgegebene lokale Adresse, üblicherweise `http://127.0.0.1:5173`.
+Die Landingpage liegt unter `/`, das Spiel unter `/play.html`; DEV-Werkzeuge bleiben separat.
 
 Für Build, Vorschau und die Arbeitsansicht der Animationen:
 [Lokal entwickeln](docs/development.md) einschließlich [Animationsvergleich](docs/development.md#animationen-vergleichen).

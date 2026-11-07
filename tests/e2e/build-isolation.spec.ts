@@ -15,6 +15,8 @@ test(
     );
 
     await page.goto('http://127.0.0.1:4175/pixels-world/');
+    await expect(page.locator('canvas')).toHaveCount(0);
+    await page.getByRole('link', { name: 'Jetzt spielen →' }).first().click();
     await expect
       .poll(
         async () => {
@@ -32,7 +34,7 @@ test(
     await expect(page.locator('.start-screen')).toBeVisible();
     await page.keyboard.press('F2');
     await expect(page.locator('.game-debug, .game-debug-toggle')).toHaveCount(0);
-    await expect(page.getByAltText('Pixel’s World')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Bereit, Pixel?' })).toBeVisible();
     // Also inspect delivered JS, so a delayed dynamic import cannot hide a leak.
     const scripts = await page
       .locator('script[src]')

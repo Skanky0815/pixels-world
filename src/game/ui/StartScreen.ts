@@ -1,6 +1,5 @@
-import { t, onLanguageChange, currentLanguage } from '../../i18n/locale';
+import { t, onLanguageChange, translateExact } from '../../i18n/locale';
 import type { ResolvedGoal } from '../domain/main-goal';
-import bannerUrl from '../../../assets/banner.png?url';
 
 /** Responsive introduction only; gameplay and keyboard transitions remain scene-owned. */
 export class StartScreen {
@@ -27,14 +26,8 @@ export class StartScreen {
 
   private describeGoal(goal: ResolvedGoal) {
     const text = this.root.querySelector('.start-goal-text');
-    const seconds = (goal.dwellMs / 1000).toLocaleString(currentLanguage());
 
-    if (text)
-      text.textContent = t('secondsWithoutInput', {
-        v0: goal.label,
-        v1: goal.motivation,
-        v2: seconds,
-      });
+    if (text) text.textContent = translateExact(goal.motivation);
   }
 
   private refresh() {
@@ -63,20 +56,16 @@ export class StartScreen {
 // eslint-disable-next-line max-lines-per-function -- Die statische zugängliche Einführung bleibt als vollständiger HTML-Aufbau zusammen lesbar.
 function introMarkup() {
   return `<div class="start-copy">
-    <img src="${bannerUrl}" alt="Pixel’s World" width="2172" height="724" />
-    <h2>${t('oneRoomOneCatYourChaos')}</h2>
-    <p>${t('pixelIsHomeAloneWithA')}</p>
+    <h2>${t('readyPixel')}</h2>
     <aside class="start-goal" aria-label="${t('yourMainGoal')}">
       <strong>${t('yourMainGoal')}</strong>
       <p class="start-goal-text"></p>
     </aside>
-    <dl>
+    <dl class="start-controls">
       <div><dt>← →</dt><dd>${t('moveAndSteerInMidAir')}</dd></div>
       <div><dt><span class="space-key" role="img" aria-label="${t('spaceLabel')}">␣</span></dt><dd>${t('jumpAndLeapOffTheCurtain')}</dd></div>
       <div><dt>↑ ↓</dt><dd>${t('climbTheCurtain')}</dd></div>
     </dl>
-    <p>${t('makingAmendsPressTheBigArrow')}</p>
-    <p class="touch-prompt">${t('theArrowsMovePixelAndGuide')}</p>
-  </div><p class="start-prompt"><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('pressSpaceToStart').replace(t('spaceLabel'), '␣')}</span>
+  </div><p class="start-prompt"><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
   <span class="touch-prompt">${t('tapContinueToStart')}</span></p>`;
 }
