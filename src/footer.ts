@@ -22,3 +22,16 @@ if (version instanceof HTMLAnchorElement && __APP_RELEASE_URL__) {
 footer.append(version);
 
 export {};
+
+if (import.meta.env.DEV) {
+  for (const [label, href] of [
+    ['DEV · Animationen', '/animation-compare.html'],
+    ['DEV · Playground', '/interactable-playground.html'],
+  ]) {
+    const link = document.createElement('a');
+
+    link.href = href;
+    link.textContent = label;
+    footer.append(' · ', link);
+  }
+}

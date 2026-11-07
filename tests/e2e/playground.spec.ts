@@ -7,6 +7,20 @@ import type { PlaygroundScene } from '../../src/dev/PlaygroundScene';
 
 type Snapshot = ReturnType<PlaygroundScene['snapshot']>;
 
+for (const [name, path, ready] of [
+  ['DEV · Animationen', '/animation-compare.html', 'data-ready'],
+  ['DEV · Playground', '/interactable-playground.html', 'data-playground-ready'],
+]) {
+  test(`Spiel-Footer öffnet ${name} im Dev-Modus`, async ({ page }) => {
+    await page.goto('http://127.0.0.1:4176/');
+    const link = page.locator('#build-info').getByRole('link', { name });
+
+    await expect(link).toHaveAttribute('href', path);
+    await link.click();
+    await expect(page.locator('html')).toHaveAttribute(ready, 'true');
+  });
+}
+
 // eslint-disable-next-line max-lines-per-function -- Zwei Pixelproben aus der tatsächlichen Canvas-Aufnahme unterscheiden gezeichneten Boden und Wand nach Reset/Rotation.
 async function assertRoomDrawn(page: Page) {
   const canvas = page.locator('#game canvas');

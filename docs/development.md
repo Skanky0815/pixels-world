@@ -33,7 +33,8 @@ freigeben, nicht pauschal alle Hosts erlauben.
 
 ## Animationen vergleichen
 
-Im Dev-Server `/animation-compare.html` öffnen. Pixel und Sara verwenden dort die
+Im Dev-Server `/animation-compare.html` öffnen oder im Spiel-Footer
+**DEV · Animationen** wählen. Pixel und Sara verwenden dort die
 Spiel-Assets und gemeinsamen Fußanker in genau einer Box je Figur. Jede Box bietet
 alle Animationen, Größenregler, eigene Pause und Einzelschritt. Ein Auswahlwechsel
 startet beim ersten Frame. Die oberen Tasten steuern beide gemeinsam; einzeln
@@ -47,7 +48,8 @@ Asset-Verträge und reproduzierbare Exporte bleiben bei
 
 ## Einzelne Objekte ausprobieren
 
-Auf der DEV-Seite führt **Playground** zu `/interactable-playground.html`.
+Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.
+Auf der DEV-Seite führt ebenfalls **Playground** zu `/interactable-playground.html`.
 Die Auswahl stammt direkt aus dem Objektkatalog, einschließlich aller Varianten.
 Pixel lässt sich ohne Rundenstart normal steuern; Sofa/Pflanze reagieren nach
 kurzem Stillstand, der Vorhang beim Klettern/Rutschen und die Vase beim Schieben
