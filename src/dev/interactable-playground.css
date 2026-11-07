@@ -1,0 +1,60 @@
+#game {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 800 / 540;
+  overflow: hidden;
+  margin-top: 20px;
+}
+#game:focus-visible {
+  outline: 3px solid #e9be82;
+  outline-offset: 3px;
+}
+.playground-readout {
+  margin-top: 24px;
+}
+.playground-readout dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+}
+.playground-readout dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+#playground-diagnostics {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.touch-controls {
+  display: none;
+  justify-content: space-between;
+  gap: 16px;
+  touch-action: none;
+}
+.touch-directions {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(2, 44px);
+  gap: 6px;
+}
+.touch-directions [data-control='up'] {
+  grid-column: 2;
+}
+.touch-directions [data-control='left'] {
+  grid-column: 1;
+  grid-row: 2;
+}
+.touch-directions [data-control='down'] {
+  grid-column: 2;
+  grid-row: 2;
+}
+.touch-directions [data-control='right'] {
+  grid-column: 3;
+  grid-row: 2;
+}
+@media (any-pointer: coarse) {
+  .touch-controls {
+    display: flex;
+  }
+}

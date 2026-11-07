@@ -36,7 +36,7 @@ npm run test:e2e:report
 Auf Linux kann `npx playwright install --with-deps chromium` erforderlich sein.
 Playwright startet eigene Vorschauen auf 4174 (E2E) und 4175 (Produktion mit
 Pages-Unterpfad). Vollständige Läufe starten zusätzlich einen Dev-Server auf 4176
-für den Animationsvergleich; CI-Smoke lässt ihn aus. Diese Ports müssen frei sein;
+für Animationsvergleich und Objekt-Playground; CI-Smoke lässt ihn aus. Diese Ports müssen frei sein;
 fremde Server werden nicht übernommen. Der persönliche Dev-Server bleibt unabhängig.
 
 ## Browser-Vertrag und Rundenprofile
@@ -121,6 +121,11 @@ Advisory-Ausnahmen oder ungeprüften `audit fix --force`-Upgrades. Das vorhanden
 minimatch-Override ist eine kontrollierte transitive Entwicklungsabhängigkeit;
 bei Entfernung Aufrufer, Lint-Dateiauswahl und Audits erneut prüfen. Aktuelle
 Versionen und Findings nicht in Markdown spiegeln.
+
+Die DEV-Szenarien verwenden sichtbare, losgelöste DOM-Diagnosen und reguläre
+Eingaben. Sie prüfen Auswahl aller Katalogvarianten, reale Interaktionen, Reset
+und stabile Body-/Collider-/Listenerzahlen nach wiederholten Objektwechseln.
+Die Produktionsisolation umfasst beide DEV-Seiten und ihre Einstiegsmodule.
 
 ## Manueller Spieltest
 
