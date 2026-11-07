@@ -1,11 +1,4 @@
-main {
-  max-width: 1200px;
-  margin: 24px auto;
-}
 .playground-toolbar {
-  display: flex;
-  align-items: end;
-  gap: 12px;
   max-width: 800px;
 }
 .playground-toolbar label {
@@ -44,9 +37,6 @@ main {
   }
 }
 @media (max-width: 480px) {
-  main {
-    padding: 0 16px;
-  }
   .playground-toolbar {
     flex-wrap: wrap;
   }

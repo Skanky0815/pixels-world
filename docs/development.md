@@ -66,6 +66,10 @@ ausgeschlossen; fehlende Dev-Seiten dürfen dort keinen SPA-Fallback erhalten.
 Asset-Verträge und reproduzierbare Exporte bleiben bei
 [Pixel](../assets/pixel/README.md) und [Sara](../assets/sara/README.md).
 
+Beide DEV-Seiten nutzen `src/dev/dev-shell.css` für Seitenbreite, Navigation,
+Typografie und Bedienelemente. Die aktive Seite ist in der Navigation markiert;
+„Zum Spiel“ führt zurück. Seitenspezifische Layouts bleiben in eigenen Stylesheets.
+
 ## Einzelne Objekte ausprobieren
 
 Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.

@@ -1,3 +1,4 @@
+import './dev-shell.css';
 import './animation-compare.css';
 import { createPixelComparison } from './pixel-compare';
 import { createSaraComparison } from './sara-compare';
