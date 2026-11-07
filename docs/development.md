@@ -69,6 +69,34 @@ Kletterfläche oder Schiebeobjekt auf einem Regal). Besondere neue Geometrien
 können eine Erweiterung dieser Platzierungsdaten erfordern.
 Playground-HTML und DEV-Module fehlen wie der Animationsvergleich in allen Builds.
 
+## Spielphasen gezielt prüfen
+
+Im Dev-Spiel öffnet **F2** oder **Debug (F2)** im Footer den Entwicklerdialog.
+Er bleibt zunächst geschlossen und fehlt vollständig in Produktions- und
+E2E-Builds. F2 und der Schließen-Button schließen ihn wieder. Die Runde läuft
+während der Diagnose weiter; Formularfokus blockiert reguläre Spieltasten.
+Öffnen und Schließen lösen gehaltene Eingaben.
+
+Der Live-Zustand enthält Phase, Chaoswert/Ärgerstufe, Rundentimer, Saras Auswahl,
+Pixels Rückkehr und den Versöhnungsfortschritt. **Rundentimer +10 Sekunden** spult
+nur die Rundenuhr während der Chaosphase vor; ein Ablauf löst die normale
+Heimkehr genau einmal aus.
+
+**Szenario neu starten** setzt die aktuelle Runde mit gewähltem Chaoswert,
+Startzeit, Seed und Zielphase neu auf. Phasen und Timer rückwärts zu ändern
+beginnt bewusst einen frischen Durchlauf. Der Chaoswert ist synthetisch; die
+Gegenstände bleiben zunächst unbeschädigt. Heimkehr und Reaktion verwenden
+bestehende Übergänge. Für Versöhnung und Ergebnis geht Pixel zunächst selbst
+zu Sara; danach laufen Bestätigung und gegebenenfalls das echte Minispiel über
+seine vorhandenen APIs. Es gibt keine direkten Herz-/Ergebnissetter.
+
+Phasers vorhandener `RandomDataGenerator` steuert Saras Spruch und die
+Pfeilfolgen reproduzierbar, ohne den globalen Zufall zu überschreiben. Gleicher
+Seed, gleiches Szenario und gleiche Eingaben ergeben denselben Ablauf.
+Die DEV-Anbindung wird dynamisch und generationsgebunden installiert; ein
+Szenenwechsel entfernt Dialog, Tastenkürzel und Update-Listener. Sie exponiert
+weder Engine-Objekte noch Mutatoren auf `window` oder dem Testobserver.
+
 ## Lesbarer TypeScript-Code
 
 Prettier formatiert; ESLint mit typescript-eslint und gezielten Stylistic-Regeln

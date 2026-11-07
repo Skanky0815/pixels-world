@@ -125,7 +125,11 @@ Versionen und Findings nicht in Markdown spiegeln.
 Die DEV-Szenarien verwenden sichtbare, losgelöste DOM-Diagnosen und reguläre
 Eingaben. Sie prüfen Auswahl aller Katalogvarianten, reale Interaktionen, Reset
 und stabile Body-/Collider-/Listenerzahlen nach wiederholten Objektwechseln.
-Die Produktionsisolation umfasst beide DEV-Seiten und ihre Einstiegsmodule.
+Die Debug-Szenarien bedienen ausschließlich F2, Footer und Formular. Geprüft
+werden Phasen/Ergebnisse, Eingabefokus, Vorwärtsschritte, wiederholte Neustarts,
+Seed-Reproduzierbarkeit und die mobile Dialoggröße.
+Die Produktionsisolation umfasst beide DEV-Seiten, ihre Einstiegsmodule und die
+Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
 
