@@ -3,7 +3,8 @@ import { PNG } from 'pngjs';
 import { URL } from 'node:url';
 
 const root = new URL('../assets/objects/catgrass/', import.meta.url);
-const read = (name) => PNG.sync.read(readFileSync(new URL(`sources/${name}-source-v1.png`, root)));
+const read = (name, version = 'v1') =>
+  PNG.sync.read(readFileSync(new URL(`sources/${name}-source-${version}.png`, root)));
 
 function bounds(source) {
   let l = source.width,
@@ -42,7 +43,7 @@ function sample(source, box, target, width, height) {
 }
 
 const intactSource = read('intact'),
-  bittenSource = read('bitten');
+  bittenSource = read('bitten', 'v2');
 if (intactSource.width !== bittenSource.width || intactSource.height !== bittenSource.height)
   throw new Error('Catgrass state sources must share a canvas');
 const box = bounds(intactSource),
