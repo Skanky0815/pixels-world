@@ -30,11 +30,12 @@ Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimm
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
 
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
-Pixel möchte seinen Lieblingsball auf dem obersten Regal erreichen. Bleib dort kurz
+Pixel möchte seinen Lieblingsball finden. Bleib dort kurz
 stehen, um mit ihm zu spielen: Das holt Sara vorzeitig nach Hause. Sonst kommt sie
 nach einer zufällig gewählten aktiven Spielzeit zurück und beendet die Chaosphase.
 Der Ball ist auch ohne Schaden erreichbar; Chaos bleibt optional.
-Grobe Zeithinweise ersetzen einen genauen Countdown; bei Fokusverlust pausiert das Spiel.
+Im Spiel bleiben die Chaospunkte sichtbar; Saras Ärger zeigt erst die Ergebnisansicht.
+Bei Fokusverlust pausiert das Spiel.
 Sara tritt als animierte Chibi-Figur ein, reagiert auf den finalen Chaosstand und kommentiert
 das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen
 Pfeiltastenfolge, Sara durch Schnurren und Anschmiegen zu versöhnen.

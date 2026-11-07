@@ -111,7 +111,6 @@ async function curtain(page: Page) {
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 790);
   await holdUntil(page, ['ArrowUp'], (s) => s.pixel.climbing && s.pixel.y < 350);
   expect((await state(page)).hud).toMatchObject({
-    statusText: 'PIXEL · VORHANG KLETTERN',
     climbHintAlpha: 1,
   });
 }

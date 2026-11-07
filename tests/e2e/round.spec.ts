@@ -8,7 +8,7 @@ const fullRound = process.env.E2E_FULL_ROUND === '1';
 const timing = fullRound ? ROUND_CONFIG : FAST_ROUND_CONFIG;
 
 test(
-  'Grobe Zeithinweise führen zur einmaligen Heimkehr und einem eingefrorenen Chaosstand',
+  'Der Rundentimer führt ohne Zeithinweise zur einmaligen Heimkehr und friert Chaos ein',
   { tag: fullRound ? '@slow' : '@fast' },
   // eslint-disable-next-line max-lines-per-function -- Das vollständige Rundenszenario behält Vorbereitung, echte Eingaben und gemeinsame Zustandsprüfungen zusammen.
   async ({ page }) => {
@@ -20,12 +20,12 @@ test(
 
     expect(initial.round.returnAtMs).toBeGreaterThanOrEqual(timing.minDurationMs);
     expect(initial.round.returnAtMs).toBeLessThanOrEqual(timing.maxDurationMs);
-    expect(initial.hud.roundText).toBe('Noch etwas Zeit');
+    expect(initial.round.hint).toBe('time');
     await useIdleFrames(page);
     await advanceRoundTo(page, initial.round.returnAtMs * 0.61);
-    expect((await state(page)).hud.roundText).toBe('Sara könnte bald kommen');
+    expect((await state(page)).round.hint).toBe('soon');
     await advanceRoundTo(page, initial.round.returnAtMs * 0.86);
-    expect((await state(page)).hud.roundText).toBe('Jeden Moment …');
+    expect((await state(page)).round.hint).toBe('imminent');
     await advanceRoundTo(page, initial.round.returnAtMs);
     const finished = await state(page);
 
@@ -40,7 +40,6 @@ test(
     expect(finished.round.phase).toBe('returning');
     expect(finished.round.finalChaosScore).toBe(finished.chaos.score);
     expect(finished.chaos.score).toBeGreaterThan(0);
-    expect(finished.hud.roundText).toBe('Sara kommt herein …');
     expect(finished.homecoming.stage).toBe('entering');
     expect(finished.homecoming.selection?.score).toBe(finished.round.finalChaosScore);
     expect(finished.sara.visible).toBe(true);
@@ -133,7 +132,7 @@ test(
     expect(fresh.round.phase).toBe('chaos');
     expect(fresh.round.elapsedMs).toBeLessThan(500);
     expect(fresh.round.finalChaosScore).toBeNull();
-    expect(fresh.hud.roundText).toBe('Noch etwas Zeit');
+    expect(fresh.hud.scoreText).toBe('CHAOS: 0');
     expect(fresh.chaos.score).toBe(0);
     expect(fresh.homecoming.stage).toBe('waiting');
     expect(fresh.homecoming.selection).toBeNull();
@@ -153,7 +152,6 @@ test('Fokusverlust pausiert die Runde ohne Nachholen der Hintergrundzeit', async
   const paused = await state(page);
 
   expect(paused.active).toBe(false);
-  expect(paused.hud.roundText).toBe('Pause · Runde angehalten');
   await page.clock.runFor(20_000);
   const background = await state(page);
 

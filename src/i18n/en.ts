@@ -49,6 +49,7 @@ export const en: Record<keyof typeof de, string> = {
   pausedRoundOnHold: 'Paused · Round on hold',
   saraSMoodPreview: 'SARA’S MOOD (PREVIEW)',
   saraSMood: 'SARA’S MOOD',
+  chaosPoints: 'CHAOS: {v0}',
   chaos: 'CHAOS: {v0}  ·  {v1}: {v2}',
   goalReachedSaraIsComingHome: 'Goal reached: {v0} · Sara is coming home.',
   goalMissedSaraIsBack: 'Goal missed: {v0} · Sara is back.',
@@ -125,7 +126,7 @@ export const en: Record<keyof typeof de, string> = {
   angry: 'Angry',
   favouriteBall: 'favourite ball',
   pixelWantsToPlayFindThe:
-    'Pixel wants to play. Find the ball at the top right and stay there for a moment.',
+    'Pixel wants to play. Find his favourite ball and stay near it for a moment.',
   theLivingRoom: '01 / THE LIVING ROOM',
   aCozierCorner: '02 / A COZIER CORNER',
   shelves: 'SHELVES',

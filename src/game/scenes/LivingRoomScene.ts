@@ -364,16 +364,10 @@ export class LivingRoomScene extends Phaser.Scene {
     this.feedback.destroy();
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Der flache HUD-Vertrag zeigt Score, Runde und Aktion gemeinsam; sämtliche Regeln bleiben außerhalb der Ansicht.
   private renderHud(nearCurtain: boolean) {
-    const maximumScore = this.destructibles.reduce((sum, object) => sum + object.maximumScore, 0);
-
     this.hud.render({
-      round: { ...this.round.snapshot(), paused: !this.activity.active },
+      round: this.round.snapshot(),
       score: this.chaos.score,
-      anger: angerFor(this.chaos.score),
-      angerRatio: maximumScore > 0 ? this.chaos.score / maximumScore : 0,
-      activity: this.pixel.activity,
       nearCurtain,
     });
   }
@@ -578,8 +572,6 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.resultView.render(result);
     this.controls.showRestart(result !== null);
-
-    if (result) this.hud.showResult(result.outcome);
   }
 
   private faceSara() {

@@ -18,7 +18,6 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
     bodyWidth: 52,
     bodyHeight: 52,
   });
-  expect(first.hud.statusText).toBe('PIXEL · KATZENGRAS KNABBERN');
   expect(first.plant.lastDamage).toEqual({
     id: '["plant","nibble",1]',
     objectId: 'plant',
@@ -29,7 +28,6 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   expect(first.chaos).toEqual({ score: 2, damagedObjects: 1, anger: 'calm' });
   await until(page, (s) => s.pixel.animationFrame !== first.pixel.animationFrame);
   await until(page, (s) => s.plant.state === 'wobbling' && Math.abs(s.plant.angle) > 4);
-  expect((await state(page)).hud.statusText).toBe('PIXEL · VORSICHT, DER TOPF WACKELT!');
   const screenshot = testInfo.outputPath('plant-warning.png');
 
   await page.screenshot({ path: screenshot, fullPage: true });

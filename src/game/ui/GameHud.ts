@@ -2,37 +2,12 @@ import { t, translateExact } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { HudState } from './hud-state';
-const ROUND_STATUS = {
-  time: t('someTimeLeft'),
-  soon: t('saraMightBeHomeSoon'),
-  imminent: t('anyMomentNow'),
-  home: t('saraIsHomeRNewRound'),
-} as const;
-const STATUS: Record<HudState['activity'], string> = {
-  idle: t('pixelHomeAlone'),
-  climbing: t('pixelClimbingTheCurtain'),
-  sliding: t('pixelSlidingDownTheCurtain'),
-  scratching: t('pixelScratchingTheSofa'),
-  nibbling: t('pixelNibblingCatGrass'),
-  wobbling: t('pixelCarefulThatPotIsWobbling'),
-};
-const HOME_STATUS = {
-  returning: t('saraIsComingInRNew'),
-  reaction: t('saraIsLookingAroundRNew'),
-  reconciliation: t('makeAmendsFollowTheArrowsR'),
-};
-
 /** A scene-owned view; no input, physics, scoring or gameplay model references. */
 export class GameHud {
   private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
-  private readonly status: Phaser.GameObjects.Text;
   private readonly scoreText: Phaser.GameObjects.Text;
   private readonly climbHint: Phaser.GameObjects.Text;
-  private readonly roundText: Phaser.GameObjects.Text;
-  private readonly angerBar: Phaser.GameObjects.Graphics;
-  private ratio = NaN;
-  private color = NaN;
   // eslint-disable-next-line max-lines-per-function -- Die deklarative HUD-Hierarchie mit Positionen und Textstilen bleibt gemeinsam sichtbar.
   constructor(
     scene: Phaser.Scene,
@@ -54,61 +29,24 @@ export class GameHud {
       })
       .setPadding(7, 5)
       .setOrigin(0.5);
-    this.status = scene.add.text(26, 25, STATUS.idle, textStyle);
-    this.scoreText = scene.add.text(26, 48, '', textStyle);
-    this.roundText = scene.add.text(26, 88, '', textStyle);
-    this.angerBar = scene.add.graphics();
-    this.root.add([this.climbHint, this.status, this.scoreText, this.angerBar, this.roundText]);
+    this.scoreText = scene.add.text(26, 25, '', textStyle);
+    this.root.add([this.climbHint, this.scoreText]);
     this.removeCompactListener = compactVisibility(this.root);
   }
 
   render(state: HudState) {
     this.climbHint.setText(translateExact(t('climbLetGoSlide')));
-    this.renderRound(state);
-    this.scoreText.setText(translateExact(scoreCaption(state)));
+    this.scoreText.setText(t('chaosPoints', { v0: state.score }));
     this.climbHint.setAlpha(state.nearCurtain ? 1 : 0.65);
     this.climbHint.setVisible(state.round.phase === 'chaos');
-    this.renderAnger(state);
-  }
-
-  showResult(outcome: 'success' | 'failed') {
-    this.roundText.setText(translateExact(t('roundOverRNewRound')));
-    this.status.setText(
-      translateExact(outcome === 'success' ? t('pixelForgiven') : t('pixelStillInTrouble')),
-    );
-  }
-
-  private renderRound(state: HudState) {
-    this.status.setText(
-      translateExact(state.round.phase === 'chaos' ? STATUS[state.activity] : t('pixelSaraIsHome')),
-    );
-    this.roundText.setText(
-      translateExact(state.round.paused ? t('pausedRoundOnHold') : roundStatus(state)),
-    );
-  }
-
-  private renderAnger(state: HudState) {
-    const ratio = Math.max(0, Math.min(state.angerRatio, 1));
-
-    if (ratio !== this.ratio || state.anger.color !== this.color) {
-      this.ratio = ratio;
-      this.color = state.anger.color;
-      this.angerBar.clear().fillStyle(0x705547, 0.25).fillRect(26, 70, 160, 6);
-      this.angerBar.fillStyle(this.color).fillRect(26, 70, 160 * ratio, 6);
-    }
   }
 
   /** Detached scalar observation, also used by the read-only E2E observer. */
-  // eslint-disable-next-line max-lines-per-function -- Der flache nur lesbare HUD-Vertrag bleibt vollständig ausgeschrieben.
   snapshot() {
     return {
-      roundText: this.roundText.text,
-      statusText: this.status.text,
       scoreText: this.scoreText.text,
       climbHintText: this.climbHint.text,
       climbHintAlpha: this.climbHint.alpha,
-      angerRatio: this.ratio,
-      angerColor: this.color,
       elements: this.root.length,
     };
   }
@@ -117,16 +55,4 @@ export class GameHud {
     this.removeCompactListener();
     this.root.destroy(true);
   }
-}
-
-function roundStatus(state: HudState) {
-  return state.round.phase === 'chaos'
-    ? ROUND_STATUS[state.round.hint]
-    : HOME_STATUS[state.round.phase];
-}
-
-function scoreCaption(state: HudState) {
-  const label = state.round.phase === 'chaos' ? t('saraSMoodPreview') : t('saraSMood');
-
-  return t('chaos', { v0: state.score, v1: label, v2: state.anger.label });
 }

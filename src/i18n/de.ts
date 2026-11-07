@@ -47,6 +47,7 @@ export const de = {
   pausedRoundOnHold: 'Pause · Runde angehalten',
   saraSMoodPreview: 'SARAS ÄRGER (VORSCHAU)',
   saraSMood: 'SARAS ÄRGER',
+  chaosPoints: 'CHAOS: {v0}',
   chaos: 'CHAOS: {v0}  ·  {v1}: {v2}',
   goalReachedSaraIsComingHome: 'Ziel erreicht: {v0} · Sara kommt nach Hause.',
   goalMissedSaraIsBack: 'Ziel nicht erreicht: {v0} · Sara ist zurück.',
@@ -122,8 +123,7 @@ export const de = {
   annoyed: 'Genervt',
   angry: 'Wütend',
   favouriteBall: 'Lieblingsball',
-  pixelWantsToPlayFindThe:
-    'Pixel will spielen. Finde den Ball ganz oben rechts und bleib kurz dort.',
+  pixelWantsToPlayFindThe: 'Pixel will spielen. Finde seinen Lieblingsball und bleib kurz bei ihm.',
   theLivingRoom: '01 / DAS WOHNZIMMER',
   aCozierCorner: '02 / EINE GEMÜTLICHERE ECKE',
   shelves: 'REGALE',

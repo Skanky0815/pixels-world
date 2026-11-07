@@ -52,8 +52,8 @@ export class MobileReadout {
     this.hud.setAttribute('aria-label', t('gameStatus'));
     this.panel.setAttribute('aria-label', t('gameDialogue'));
     this.timer.setAttribute('aria-label', t('timeLeftForInput'));
-    setText(this.score, compactScore(state.hud.scoreText));
-    setText(this.notice, state.feedback.text || state.hud.roundText);
+    setText(this.score, state.hud.scoreText);
+    setText(this.notice, state.feedback.text);
     this.notice.dataset.feedback = state.feedback.tone;
     setText(this.goal, state.goal);
     const text = panelText(state);
@@ -110,10 +110,4 @@ function panelText(s: Readout) {
 
 function touchHint(text: string) {
   return text.replace(t('space'), t('continue'));
-}
-
-function compactScore(text: string) {
-  return text
-    .replace(t('saraSMoodPreviewLabel'), t('mood'))
-    .replace(t('saraSMoodLabel'), t('mood'));
 }
