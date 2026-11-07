@@ -137,20 +137,36 @@ test('Playground: Pflanze knabbern, wackeln und umkippen', async ({ page }) => {
   expect((await snapshot(page)).score).toBe(state.score);
 });
 
-test('Playground: Vorhang mit echter Kollision greifen und beim Rutschen beschädigen', async ({
+test('Playground: Vorhangtextur, acht getrennte Risse und Reset', async ({
   page,
-  // eslint-disable-next-line max-lines-per-function -- Greifen, Klettern und Rutschen werden ausschließlich mit regulären Pfeiltasten ausgelöst.
-}) => {
+  // eslint-disable-next-line max-lines-per-function -- Ein realer Kletter-/Rutschweg führt durch alle acht Schadensstufen und prüft Grafik sowie vollständigen Reset.
+}, testInfo) => {
   await loadPlayground(page, 'warm-curtain');
   await walkTo(page, 380);
-  await page.keyboard.down('ArrowUp');
-  await untilPlayground(page, (s) => s.pixel.climbing && s.pixel.y < 240);
-  await page.keyboard.up('ArrowUp');
-  await untilPlayground(page, (s) => s.events.some((event) => event.kind === 'tear'));
-  expect((await snapshot(page)).pixel.animation).toBe('slide');
-  await expect(page.locator('#playground-score')).toHaveText(
-    String(OBJECTS['warm-curtain'].rules.damageValue),
-  );
+  expect(await tearSnapshot(page)).toMatchObject({
+    texture: 'curtain-rust',
+    area: { width: 112, height: 356 },
+    marks: [],
+  });
+
+  for (let stage = 1; stage <= 8; stage++) {
+    await page.keyboard.down('ArrowUp');
+    await untilPlayground(page, (s) => s.pixel.climbing && s.pixel.y < 190);
+    await page.keyboard.up('ArrowUp');
+    await untilPlayground(page, (s) => 'damage' in s.object && s.object.damage === stage);
+    expect((await tearSnapshot(page)).marks).toHaveLength(stage);
+    expect((await snapshot(page)).score).toBe(stage * OBJECTS['warm-curtain'].rules.damageValue);
+  }
+
+  await testInfo.attach('acht-vorhangrisse', {
+    body: await page.locator('canvas').screenshot(),
+    contentType: 'image/png',
+  });
+  await page.clock.runFor(1000);
+  expect((await tearSnapshot(page)).marks).toHaveLength(8);
+  await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
+  await untilPlayground(page, (s) => s.events.length === 0);
+  expect((await tearSnapshot(page)).marks).toEqual([]);
 });
 
 for (const variant of ['small-vase', 'blue-vase', 'heirloom-vase', 'mellow-vase'] as const) {
@@ -280,6 +296,29 @@ test.describe('Playground auf Touch-Geräten', () => {
       expect((await couchSnapshot(page)).marks).toEqual([]);
     }
   });
+  test('Vorhang zeigt alle Risse mit Touch und entfernt sie beim Reset', async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Acht echte Touch-Abstiege prüfen dieselbe Grafik- und Schadensfolge ohne Testsetter.
+  }) => {
+    await loadPlayground(page, 'warm-curtain');
+    const touch = await TouchDriver.create(page);
+
+    await touch.press('right');
+    await untilPlayground(page, (s) => s.pixel.x >= 380);
+    await touch.lift();
+
+    for (let stage = 1; stage <= 8; stage++) {
+      await touch.press('up');
+      await untilPlayground(page, (s) => s.pixel.climbing && s.pixel.y < 190);
+      await touch.lift();
+      await untilPlayground(page, (s) => 'damage' in s.object && s.object.damage === stage);
+      expect((await tearSnapshot(page)).marks).toHaveLength(stage);
+    }
+
+    await page.getByRole('button', { name: 'Szene zurücksetzen' }).tap();
+    await untilPlayground(page, (s) => s.events.length === 0);
+    expect((await tearSnapshot(page)).marks).toEqual([]);
+  });
 });
 
 // eslint-disable-next-line max-lines-per-function -- Desktop und schmales Layout werden an echten Elementgrenzen einschließlich langer Diagnosedaten geprüft.
@@ -327,3 +366,11 @@ test('Playground: Kratzpatch folgt der Sitzfläche', async ({ page }) => {
   await untilPlayground(page, (s) => 'damage' in s.object && s.object.damage === 1);
   expect((await couchSnapshot(page)).marks[0].y).toBe(331);
 });
+
+async function tearSnapshot(page: Page) {
+  const object = (await snapshot(page)).object;
+
+  if (!('area' in object)) throw new Error('Expected curtain diagnostics');
+
+  return object;
+}

@@ -1,0 +1,19 @@
+{
+  "mode": "built-in image_gen",
+  "status": "Stilprobe von Rico freigegeben: Passt, so integrieren",
+  "sources": ["sources/curtain-source-v1.png", "sources/tear-source-v1.png"],
+  "prompts": {
+    "curtain": "Use case: stylized-concept. Asset type: ONE isolated transparent pixel-art curtain panel for a warm 2D side-scrolling cat game. A straight tall narrow rust-red / terracotta cloth curtain, width-to-height ratio exactly 56:178. Four or five broad soft vertical folds with warm muted peach-rust highlights and dark burnt-sienna valleys; a simple stitched header and straight weighted hem. Cozy lived-in room, not ornate or luxurious. Crisp dark-warm outlined square pixel clusters, intended logical size56x178 at2x game scale. Orthographic front elevation, rectangular climbable silhouette from top to bottom, no perspective, tiebacks, diagonal drape, gathered hourglass shape or separate panels. Entire panel visible. No curtain rod or metal fixtures (already in game), no window, room, cat, lettering, holes or scratches yet. No soft blur, gradients or fabric fuzz. Genuine transparent alpha outside cloth, no cast shadows. Restrained warm palette compatible with olive green sofa and honey oak floor.",
+    "tear": "Use case: stylized-concept. Asset type: ONE small isolated transparent pixel-art tear patch for a rust-red cloth curtain in a cozy 2D cat game. A narrow vertical jagged fabric split, dark warm brown interior, frayed terracotta-red edges with just a few pale tan broken threads crossing the opening. Tall slender ratio12:20, designed as12x20 logical pixels drawn2x. Crisp square pixel clusters, tiny restrained outline; short small angled notches, no long branching tears. Only the thin torn opening, its solid cloth rim and a handful of distinct thread pixels visible. Genuine alpha transparency everywhere else, no fabric rectangle, haze, glow, oval backdrop, scratch-mark logo, blood, claw, hand, animal or text. Warm muted rust/sienna palette, visible on a terracotta curtain without a bright white border."
+  },
+  "export": {
+    "baseCell": [56, 178],
+    "tearCell": [12, 20],
+    "displayScale": 2,
+    "bounds": "alpha>=192",
+    "sampling": "Aspect-preserving centered nearest-neighbor fit; sampled RGBA unchanged",
+    "command": "node tools/prepare-curtain-assets.mjs"
+  },
+  "scope": "Basis und separate Risspatches; Kletterfläche112x356 und Mechanik unverändert.",
+  "outputs": ["curtain-rust.png", "curtain-tear.png"]
+}

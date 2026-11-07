@@ -1,3 +1,4 @@
+import { curtainTearPosition, curtainTearSize } from './curtain-tear-position';
 import type Phaser from 'phaser';
 import { DamageHistory } from '../domain/chaos-event';
 import { CurtainSliding, type TearConfig } from '../interactions/curtain-sliding';
@@ -20,12 +21,12 @@ export class Curtain implements Climbable, Destructible {
   readonly maximumScore: number;
   private readonly model: CurtainSliding;
   private readonly history = new DamageHistory();
-  private readonly graphic: Phaser.GameObjects.Graphics;
-  private readonly marks: Phaser.GameObjects.Graphics;
+  private readonly graphic: Phaser.GameObjects.Image;
+  private readonly marks: Phaser.GameObjects.Container;
   private previousY: number | null = null;
   private previousSpeed = 0;
 
-  // eslint-disable-next-line max-lines-per-function -- Vorhangfläche, Falten und Umrandung werden aus derselben deklarativen Geometrie erzeugt.
+  // eslint-disable-next-line max-lines-per-function -- Modell, unveränderliche Kletterfläche und ihre zwei Grafiklayer werden gemeinsam initialisiert.
   constructor(scene: Phaser.Scene, config: CurtainConfig) {
     this.id = config.id;
     this.model = new CurtainSliding(config.rules, this.id);
@@ -33,18 +34,11 @@ export class Curtain implements Climbable, Destructible {
     this.maximumScore = config.rules.maxDamage * config.rules.damageValue;
     const a = this.climbArea;
 
-    this.graphic = scene.add.graphics();
-    this.graphic.fillStyle(0xa5654e).fillRect(a.x, a.y, a.width, a.height);
-
-    for (let x = a.x + 4; x < a.x + a.width; x += 18) {
-      this.graphic.fillStyle(0xbd8060).fillRect(x, a.y, Math.min(7, a.x + a.width - x), a.height);
-      this.graphic
-        .fillStyle(0x95553f)
-        .fillRect(x + 7, a.y, Math.max(0, Math.min(4, a.x + a.width - x - 7)), a.height);
-    }
-
-    this.graphic.lineStyle(2, 0xeac791, 0.9).strokeRect(a.x, a.y, a.width, a.height);
-    this.marks = scene.add.graphics();
+    this.graphic = scene.add
+      .image(a.x, a.y, 'curtain-rust')
+      .setOrigin(0, 0)
+      .setDisplaySize(a.width, a.height);
+    this.marks = scene.add.container().setDepth(0.5);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die kurze Folge aus Bewegungsmessung, Modellschritt, Historie und Rissdarstellung bleibt atomar.
@@ -56,7 +50,7 @@ export class Curtain implements Climbable, Destructible {
 
     if (event) {
       this.history.record(event);
-      this.drawDamage(context, event.stage);
+      this.drawDamage(context);
     }
 
     return event;
@@ -74,25 +68,30 @@ export class Curtain implements Climbable, Destructible {
     return movementMs;
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Koordinatenbegrenzung und der zusammenhängende Risspfad gehören zu einer Zeichenroutine.
-  private drawDamage(context: InteractionContext, stage: number) {
+  private drawDamage(context: InteractionContext) {
     const p = context.pixel;
+    const position = curtainTearPosition(this.climbArea, p.x, p.y, this.markPositions());
 
-    const a = this.climbArea,
-      side = p.x > a.x + a.width / 2 ? -1 : 1;
-    const x = Math.max(a.x + 8, Math.min(p.x + side * (44 + (stage % 3) * 4), a.x + a.width - 8));
-    const y = Math.max(a.y + 4, Math.min(p.y - 14, a.y + a.height - 38));
+    if (position) this.addMark(position.x, position.y);
+  }
 
-    this.marks.lineStyle(3, 0x59443d).beginPath();
-    this.marks
-      .moveTo(x, y)
-      .lineTo(x - 3, y + 8)
-      .lineTo(x + 2, y + 18)
-      .lineTo(x - 2, y + 30)
-      .strokePath();
-    this.marks.lineStyle(1, 0xeac791);
+  private addMark(x: number, y: number) {
+    const size = curtainTearSize(this.climbArea);
 
-    for (let i = 0; i < 4; i++) this.marks.lineBetween(x - 5, y + i * 7, x + 5, y + i * 7 + 2);
+    this.marks.add(
+      this.graphic.scene.add
+        .image(x, y, 'curtain-tear')
+        .setOrigin(0.5, 0)
+        .setDisplaySize(size.width, size.height),
+    );
+  }
+
+  private markPositions() {
+    return this.marks.list.map((mark) => {
+      const image = mark as Phaser.GameObjects.Image;
+
+      return { x: image.x, y: image.y };
+    });
   }
 
   damageSnapshot() {
@@ -100,7 +99,13 @@ export class Curtain implements Climbable, Destructible {
   }
 
   snapshot() {
-    return { ...this.model.snapshot(), ...this.damageSnapshot() };
+    return {
+      ...this.model.snapshot(),
+      ...this.damageSnapshot(),
+      texture: this.graphic.texture.key,
+      area: { ...this.climbArea },
+      marks: this.markPositions(),
+    };
   }
 
   reset() {
@@ -108,7 +113,7 @@ export class Curtain implements Climbable, Destructible {
     this.history.reset();
     this.previousY = null;
     this.previousSpeed = 0;
-    this.marks.clear();
+    this.marks.removeAll(true);
   }
 
   destroy() {

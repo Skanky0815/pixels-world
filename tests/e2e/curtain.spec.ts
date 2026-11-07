@@ -17,6 +17,9 @@ test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung sto
   expect(slipping.pixel.y).toBeLessThan(beginning.pixel.y + 20);
   expect(slipping.curtain.damage).toBe(0);
   await until(page, (s) => s.curtain.damage === 1);
+  expect((await state(page)).curtain.marks).toHaveLength(1);
+  expect((await state(page)).curtain.texture).toBe('curtain-rust');
+  expect((await state(page)).curtain.area).toMatchObject({ width: 112, height: 356 });
   expect((await state(page)).chaos).toEqual({ score: 4, damagedObjects: 1, anger: 'calm' });
   expect((await state(page)).curtain.lastDamage).toEqual({
     id: '["curtain","tear",1]',
@@ -70,7 +73,8 @@ test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren'
   expect((await state(page)).curtain.state).toBe('detached');
   await holdUntil(page, ['ArrowUp'], (s) => s.curtain.state === 'climbing' && s.pixel.y < 420);
   await reset(page);
-  expect((await state(page)).curtain).toEqual({
+  expect((await state(page)).curtain).toMatchObject({
+    marks: [],
     state: 'detached',
     damage: 0,
     events: 0,
