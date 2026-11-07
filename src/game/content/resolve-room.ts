@@ -163,6 +163,9 @@ function validateRoom(room: RoomDefinition) {
   id(room.caption, `${root}.caption`);
   asset(room.pixelAsset, 'sprite', `${root}.pixelAsset`);
   color(room.wallColor, `${root}.wallColor`);
+
+  if (room.environment !== undefined && room.environment !== 'cozy-room')
+    fail(`${root}.environment`, 'unknown environment');
   validateFloorAndLists(room, root);
 }
 
@@ -254,12 +257,19 @@ class RoomResolver {
     }
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Rechteck- und Textvalidierung bleiben als zwei direkt vergleichbare erlaubte Dekorationsformen zusammen.
+  // eslint-disable-next-line max-lines-per-function -- Bild-, Rechteck- und Textvalidierung bleiben als erlaubte Dekorationsformen zusammen.
   private validateDecorations() {
     const { room, root } = this;
 
     for (const d of room.decorations) {
       record(d, `${root}.decorations`);
+
+      if (d.kind === 'image') {
+        asset(d.asset, 'decoration', `${root}.decorations.asset`);
+        bounds(d.bounds, room, `${root}.decorations.bounds`);
+        continue;
+      }
+
       color(d.color, `${root}.decorations.color`);
 
       if (d.kind === 'rect') {

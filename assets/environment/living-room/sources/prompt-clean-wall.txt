@@ -1,0 +1,4 @@
+Generator: built-in image_gen
+Use case: precise-object-edit
+Input image 1 is the edit target: a flat side-view warm pixel-art room. Remove ONLY the entire small wooden-framed sage-glass window in the upper-right. Restore uninterrupted matching warm plaster wall where the window, frame and its shadows were. This will be the clean backdrop under a separate window sprite.
+Keep every other pixel and object as unchanged as possible: framed landscape picture, enlarged closed wood door with brass knob, ceiling trim, wainscot, baseboard, floorboards and woven runner. Keep exact same camera, proportions, positions, palette, textures and lighting. No books, shelves, furniture, curtains, people, cats, plants, vases, toys, text or watermark. Do not move or resize anything else.

@@ -23,12 +23,12 @@ export class SaraReturnView {
     private readonly layout: {
       readonly width: number;
       readonly floorY: number;
+      readonly backgroundDoor?: boolean;
     },
   ) {
     this.root = scene.add.container(0, 0).setDepth(12).setVisible(false);
-    const { width, floorY } = layout;
-    const door = scene.add.rectangle(width - 36, floorY - 72, 64, 144, 0x705547);
-    const knob = scene.add.circle(width - 57, floorY - 64, 4, 0xe4c182);
+    const { width } = layout;
+    const door = layout.backgroundDoor ? [] : fallbackDoor(scene, layout.width, layout.floorY);
 
     this.actor = this.buildActor();
     const panel = scene.add.rectangle(width / 2, 188, width - 80, 112, 0x403a35, 0.96);
@@ -49,7 +49,7 @@ export class SaraReturnView {
     const dialogue = scene.add.container(0, 0, [panel, this.message, this.quote, this.hint]);
 
     this.removeCompactListener = compactVisibility(dialogue);
-    this.root.add([door, knob, this.actor, dialogue]);
+    this.root.add([...door, this.actor, dialogue]);
   }
 
   private buildActor() {
@@ -148,4 +148,11 @@ function dialogueMessage(snapshot: HomecomingSnapshot, canContinue: boolean) {
   const cue = canContinue ? t('spaceContinue') : t('pixelIsComingOverToSara');
 
   return t('saraLabel', { v0: snapshot.selection?.dialogue ?? '', v1: cue });
+}
+
+function fallbackDoor(scene: Phaser.Scene, width: number, floorY: number) {
+  return [
+    scene.add.rectangle(width - 36, floorY - 72, 64, 144, 0x705547),
+    scene.add.circle(width - 57, floorY - 64, 4, 0xe4c182),
+  ];
 }

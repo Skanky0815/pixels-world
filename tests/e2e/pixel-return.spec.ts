@@ -1,4 +1,4 @@
-import { test, expect, state, start, until, couch, curtain, holdUntil, reset } from './support';
+import { test, expect, state, start, until, lowerShelf, curtain, reset } from './support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
 
 const fullRound = process.env.E2E_FULL_ROUND === '1';
@@ -14,12 +14,8 @@ for (const place of ['Regal', 'Vorhang'] as const) {
       await seedRoundRandom(page);
       await start(page, path);
 
-      if (place === 'Regal') {
-        await couch(page);
-        await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 410);
-        await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 555);
-        await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 304) < 2);
-      } else await curtain(page);
+      if (place === 'Regal') await lowerShelf(page);
+      else await curtain(page);
       expect((await state(page)).pixel.bottom).toBeLessThan(468);
       await useIdleFrames(page);
       await advanceRoundTo(page, (await state(page)).round.returnAtMs);

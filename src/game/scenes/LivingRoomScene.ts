@@ -1,3 +1,4 @@
+import { preloadRoomArt } from '../assets/room-art';
 import { preloadShelfArt } from '../assets/shelf-art';
 import type { Shelf } from '../objects/Shelf';
 import { preloadFavoriteBallArt } from '../assets/favorite-ball-art';
@@ -95,9 +96,11 @@ export class LivingRoomScene extends Phaser.Scene {
     this.room = baseRoom;
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
   preload() {
     preloadVaseArt(this);
     preloadShelfArt(this);
+    preloadRoomArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
@@ -382,7 +385,11 @@ export class LivingRoomScene extends Phaser.Scene {
     this.activity = new PlayActivity(() => this.syncActivity());
     this.audio = new GameAudio(this.sound);
     this.hud = new GameHud(this);
-    this.sara = new SaraReturnView(this, { width: room.width, floorY: room.floor.y });
+    this.sara = new SaraReturnView(this, {
+      width: room.width,
+      floorY: room.floor.y,
+      backgroundDoor: room.decorations.some((d) => d.kind === 'image' && d.asset === 'room-door'),
+    });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
     this.startScreen = new StartScreen(!this.started, this.room.goal, () => this.menu.open());

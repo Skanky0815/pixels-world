@@ -103,7 +103,7 @@ test('Zieldefinition ist konfigurierbar und auf eine reale Auflage im Raum begre
     const resolved = resolveRoom(room, OBJECTS);
 
     assert.equal(resolved.goal.surfaceY, 154);
-    assert.equal(resolved.goal.area.x, 856);
+    assert.equal(resolved.goal.area.x, 840);
   }
 
   for (const goal of [

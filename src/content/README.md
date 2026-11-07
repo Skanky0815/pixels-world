@@ -11,7 +11,7 @@ Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `pl
 - Sofa-Geometrie enthält Breite, Sitzdicke und Sitzhöhe über der Auflage. Rendering, Collider und Nähe verwenden daraus dieselbe Sitzfläche.
 - Der Spawn referenziert ebenfalls eine Auflage. Pixel muss mit der 52×52-Kollisionsfläche darauf Platz haben.
 
-`RoomDefinition` enthält logische Abmessungen, Boden, Spawn, Plattformen, Instanzen, HUD-Hinweisposition und statische Dekoration. Dekoration besteht nur aus Rechtecken und Texten. Kleine TypeScript-Helfer im Beispiel erzeugen daraus wiederholte statische Daten; es werden keine Gameplay-Callbacks gespeichert.
+`RoomDefinition` enthält logische Abmessungen, Boden, Spawn, Plattformen, Instanzen, HUD-Hinweisposition und statische Dekoration. Dekoration besteht aus Rechtecken, Texten und bekannten Bildmodulen (`kind: 'image'`, `asset`, `bounds`). Kleine TypeScript-Helfer im Beispiel erzeugen daraus wiederholte statische Daten; es werden keine Gameplay-Callbacks gespeichert.
 
 ## Spawn-Profile für Slots
 
@@ -195,9 +195,11 @@ Varianten-`pool`. Die Auflage ist die Oberkante des Regals; sein Filter verwende
 Träger. Fehlende geeignete Kandidaten oder belegte Plätze bleiben leer. Unbekannte
 Poolvarianten, doppelte IDs und ungültige Counts werden vor dem Aufbau abgewiesen.
 
-Beide Wohnzimmer verwenden auf dem unteren Regal drei Plätze rechts neben den
-Büchern: Leicht belegt einen, Normal zwei und Schwer drei. Die vorhandenen vier
-Vasenvarianten liefern die Auswahl. Die anderen Möbel, festen Vasen und das Ziel
+Beide Wohnzimmer verwenden auf dem unteren Regal drei lokale Plätze: Leicht belegt einen, Normal zwei und Schwer drei. Die vorhandenen vier
+Vasenvarianten liefern die Auswahl. Das mittlere Regal nutzt einen weiteren lokalen
+Slot mit demselben Pool: auf Leicht leer, auf Normal/Schwer belegt. Die Vase folgt
+beim Aufbau der Regalposition. Die Bücherdekoration entfällt zugunsten späterer
+eigenständiger Buchobjekte. Die anderen Möbel, festen Vasen und das Ziel
 bleiben ausdrücklich platziert. Exakte Objektgrenzen werden zusätzlich zu den
 Metadaten gegen Brettkanten, feste Objekte, Ziel, Plattformen und unterstützte
 Dekoration geprüft; überlappende Kandidaten werden nicht erzeugt.
@@ -214,3 +216,25 @@ Schwierigkeit dieselbe Belegung ergibt. Ein neuer Seitenaufruf erzeugt einen neu
 Seed. Für reproduzierbare DEV-/E2E-Spieltests kann `?room-seed=beispiel` gesetzt
 werden; Produktionsbuilds ignorieren diesen Parameter. Gewichte und automatisches
 Nachfüllen gehören nicht zum Slotvertrag.
+
+### Modulare Wohnzimmergrafik
+
+`environment: 'cozy-room'` zeichnet wiederholbare Module für Putzwand, Holzverkleidung,
+Dielen und Deckenleiste. Fenster, Bild, Teppich und geschlossene Tür sind getrennte
+Bilddekorationen mit eigenen `bounds`. Räume ohne Umgebungsthema behalten den
+bisherigen geometrischen Renderer. Spiel und DEV-Playground laden dasselbe Set.
+Eine vorhandene Türdekoration unterdrückt die alte Rechtecktür in Saras Heimkehr;
+Figurenmaßstab und Heimkehrbewegung bleiben erhalten.
+
+Die abgestimmten Hauptregale stehen bei x=502/584/840; der Vorhang beginnt bei x=728.
+Das Fenster bei x=682/y=126 (112×184) bleibt links sichtbar. Die Tür nutzt 112×216
+Spielpixel bei x=848/y=252 und endet am Boden y=468. Die mittlere Vase entsteht aus
+einem Slot bei lokal x=62; Ball und obere feste Vase behalten ihre getrennten Anker.
+Bücher werden weder in den Hintergrund noch als statische Dekoration eingebrannt.
+
+Quellen, vollständige Imagegen-Prompts und Rasterparameter stehen unter
+`assets/environment/living-room/`. `node tools/prepare-room-assets.mjs` exportiert
+Wand-/Bodenmodule und das Bild aus dem abgestimmten Quellenraster; Fenster, Tür und
+Teppich werden anhand ihrer Alpha-Bounds ab 192 eingepasst. Nearest Neighbor bewahrt
+abgetastete RGBA-Werte. Alle Laufzeitbilder verwenden den 2×-Maßstab; nur die kleinen
+Export-PNGs werden gebündelt. Die Bodenmodule respektieren das konfigurierte Dielenraster.

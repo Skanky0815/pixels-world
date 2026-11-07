@@ -4,7 +4,7 @@ import type { ShelfStabilityConfig, ShelfClass } from '../domain/shelf-stability
 import type { CouchAppearance } from '../assets/couch-appearance.ts';
 import type { VaseAppearance } from '../assets/vase-appearance.ts';
 import type { GoalDefinition, ResolvedGoal } from '../domain/main-goal.ts';
-import type { AssetKey } from '../assets/definitions.ts';
+import type { AssetKey, DecorationAssetKey } from '../assets/definitions.ts';
 import type { Bounds } from '../interactions/contracts.ts';
 import type { ScratchConfig } from '../interactions/couch-scratching.ts';
 import type { TearConfig } from '../interactions/curtain-sliding.ts';
@@ -60,6 +60,7 @@ export interface ObjectInstance {
     | { readonly mode: 'area'; readonly x: number; readonly y: number };
 }
 export type Decoration =
+  | { readonly kind: 'image'; readonly asset: DecorationAssetKey; readonly bounds: Bounds }
   | {
       readonly kind: 'rect';
       readonly bounds: Bounds;
@@ -75,6 +76,7 @@ export type Decoration =
       readonly color: number;
     };
 export interface RoomDefinition {
+  readonly environment?: 'cozy-room';
   readonly difficultyObjects?: {
     readonly easyOmit: readonly string[];
     readonly hardAdd: readonly ObjectInstance[];

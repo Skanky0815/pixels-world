@@ -67,7 +67,8 @@ Die Ergebnisansicht stellt Chaos und Versöhnung nebeneinander dar. Gefüllte un
 leere Herzen zeigen den Stand; eine große Überschrift hebt hervor, ob Pixel und Sara
 sich vertragen haben. Saras ursprüngliche Reaktion und ihr Abschlussspruch bleiben sichtbar. Mit **Neue Runde** oder **␣** beginnt am Ergebnis das nächste Spiel.
 
-Die warme, herbstliche Wohnung nutzt einfache Platzhaltergrafik sowie Pixels und Saras Sprite-Sheets.
+Die warme, herbstliche Wohnung nutzt modulare Pixelgrafiken für Wand, Holzverkleidung,
+Dielen, Fenster, Bild, Teppich und Tür sowie Pixels und Saras Sprite-Sheets.
 Die komplette Spielfläche passt sich dem Browserfenster an.
 
 ## Pause und Einstellungen
@@ -86,7 +87,7 @@ unverändert. Der gespielte Grad steht im HUD und im Ergebnis.
 Zum Balancieren bearbeitest du [difficulty.json](src/content/difficulty.json);
 die [Felderklärung](docs/architecture/gameplay.md#balancing-per-json) beschreibt
 Zeitfaktoren, Herzen, Tastenfolgen und feste Vasenbelegung.
-Das untere Regal besitzt drei zufällig bestückte Plätze: Leicht belegt einen,
+Das mittlere Regal hat einen Slot (auf Leicht leer), das untere drei zufällig bestückte Plätze: Leicht belegt einen,
 Normal zwei und Schwer drei. Ein Neustart behält die Belegung bei gleichem Grad;
 ein neuer Seitenaufruf würfelt sie neu. Auf Schwer ist das mittlere Regal fragil;
 die zusätzlichen Regale wechseln zwischen fragil und normal. Das Zielregal bleibt stabil.

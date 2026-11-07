@@ -12,3 +12,17 @@ export const LOWER_SHELF_SLOTS = {
     pool: ['small-vase', 'blue-vase', 'heirloom-vase', 'mellow-vase'],
   })),
 } satisfies NonNullable<RoomDefinition['platforms'][number]['slots']>;
+
+export const MIDDLE_SHELF_SLOTS = {
+  count: { easy: 0, normal: 1, hard: 1 },
+  entries: [
+    {
+      id: 'middle-slot',
+      x: 62,
+      capacity: 'small',
+      categories: ['decoration'],
+      requiredCapabilities: ['push', 'damage'],
+      pool: ['small-vase', 'blue-vase', 'heirloom-vase', 'mellow-vase'],
+    },
+  ],
+} satisfies NonNullable<RoomDefinition['platforms'][number]['slots']>;
