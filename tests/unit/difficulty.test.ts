@@ -27,7 +27,7 @@ const levels = [
 ] as const;
 
 // eslint-disable-next-line max-lines-per-function -- Bestehende Normalwerte und beide optionalen Raumvarianten werden direkt gegen ihre Ausgangsdaten geprüft.
-test('Normal erhält Balancing; alle Dichten erhalten Ziel, Plattformen und Pflichtobjekte', () => {
+test('Normal erhält Balancing; alle Dichten erhalten Ziel, Plattformgeometrie und Pflichtobjekte', () => {
   assert.deepEqual(difficultyTimer(ROUND_CONFIG, 'normal'), ROUND_CONFIG);
 
   for (const [, level] of levels)
@@ -45,7 +45,10 @@ test('Normal erhält Balancing; alle Dichten erhalten Ziel, Plattformen und Pfli
 
       assert.equal(resolved.objects.length, room.objects.length + delta);
       assert.equal(variant.goal, room.goal);
-      assert.deepEqual(variant.platforms.slice(0, room.platforms.length), room.platforms);
+      assert.deepEqual(
+        variant.platforms.slice(0, room.platforms.length).map((p) => [p.id, p.bounds, p.asset]),
+        room.platforms.map((p) => [p.id, p.bounds, p.asset]),
+      );
       assert.equal(
         variant.platforms.length,
         room.platforms.length + (difficulty === 'hard' ? 4 : 0),
@@ -242,4 +245,48 @@ test('Schwer verteilt verschiedenfarbige Vasen einzeln auf zusätzliche Regale',
       assert.ok(platform.bounds.width >= 100);
     }
   }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Beide Räume prüfen Gradzuordnung, Schutz des Ziels und unveränderte Quelldaten gemeinsam.
+test('Schwer variiert Regalstabilität; Leicht und Normal behalten die Raumprofile', () => {
+  for (const room of [LIVING_ROOM, COZY_REMIX]) {
+    const before = JSON.stringify(room);
+    const hard = difficultyRoom(room, 'hard');
+
+    assert.equal(
+      hard.platforms.find((p) => p.id === 'middle-shelf')?.durability?.stability,
+      'fragile',
+    );
+    assert.equal(
+      hard.platforms.find((p) => p.id === room.goal.surfaceId)?.durability?.stability,
+      'stable',
+    );
+    assert.deepEqual(
+      hard.platforms
+        .filter((p) => p.id.startsWith('difficulty-shelf-'))
+        .map((p) => p.durability?.stability),
+      ['fragile', 'normal', 'fragile', 'normal'],
+    );
+
+    for (const difficulty of ['easy', 'normal'] as const)
+      assert.deepEqual(difficultyRoom(room, difficulty).platforms, room.platforms);
+    assert.equal(JSON.stringify(room), before);
+  }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Unbekannte IDs und gefährdete Ziele müssen vor dem Szenenaufbau mit ihren unterschiedlichen Fehlern scheitern.
+test('Regal-Overrides weisen unbekannte IDs und instabile Zielauflagen zurück', () => {
+  const withOverride = (hardStability: Readonly<Record<string, 'fragile'>>) => ({
+    ...LIVING_ROOM,
+    difficultyObjects: { ...LIVING_ROOM.difficultyObjects, hardStability },
+  });
+
+  assert.throws(
+    () => difficultyRoom(withOverride({ missing: 'fragile' }), 'hard'),
+    /unknown shelf missing/,
+  );
+  assert.throws(
+    () => resolveRoom(difficultyRoom(withOverride({ 'upper-shelf': 'fragile' }), 'hard'), OBJECTS),
+    /goal shelf must remain stable/,
+  );
 });

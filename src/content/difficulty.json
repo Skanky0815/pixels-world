@@ -84,6 +84,13 @@
         "y": 90,
         "width": 120
       }
-    ]
+    ],
+    "hardStability": {
+      "middle-shelf": "fragile",
+      "difficulty-shelf-1": "fragile",
+      "difficulty-shelf-2": "normal",
+      "difficulty-shelf-3": "fragile",
+      "difficulty-shelf-4": "normal"
+    }
   }
 }

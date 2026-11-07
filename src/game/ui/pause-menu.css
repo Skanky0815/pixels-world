@@ -127,3 +127,9 @@
   line-height: 1.5;
   color: #d7c1a4;
 }
+
+.pause-menu .difficulty-help {
+  margin: 10px 0;
+  font-size: 13px;
+  line-height: 1.45;
+}

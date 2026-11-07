@@ -1,3 +1,4 @@
+import type { ShelfClass } from '../game/domain/shelf-stability.ts';
 import config from './difficulty.json' with { type: 'json' };
 import { CHARM_PROFILES } from './reconciliation.ts';
 import type { CharmProfile, ReconciliationLevel } from './reconciliation.ts';
@@ -74,8 +75,19 @@ export function difficultyCharm(difficulty: Difficulty, level: ReconciliationLev
   });
 }
 
+function difficultyShelfClass(value: string): ShelfClass {
+  if (value === 'fragile' || value === 'normal' || value === 'stable') return value;
+  throw new Error(`difficulty.json: unknown shelf stability ${value}`);
+}
+
 export const LIVING_ROOM_DENSITY = {
   easyOmit: config.livingRoom.easyOmit,
+  hardStability: Object.fromEntries(
+    Object.entries(config.livingRoom.hardStability).map(([id, value]) => [
+      id,
+      difficultyShelfClass(value),
+    ]),
+  ),
   hardPlatforms: config.livingRoom.hardPlatforms.map((shelf) => ({
     id: shelf.id,
     asset: 'wood-shelf' as const,
@@ -103,7 +115,18 @@ export function difficultyRoom(room: RoomDefinition, difficulty: Difficulty): Ro
 }
 
 function difficultyPlatforms(room: RoomDefinition, difficulty: Difficulty) {
-  return difficulty === 'hard'
-    ? [...room.platforms, ...(room.difficultyObjects?.hardPlatforms ?? [])]
-    : room.platforms;
+  return difficulty === 'hard' ? hardPlatforms(room) : room.platforms;
+}
+
+function hardPlatforms(room: RoomDefinition) {
+  const platforms = [...room.platforms, ...(room.difficultyObjects?.hardPlatforms ?? [])];
+  const overrides = room.difficultyObjects?.hardStability ?? {};
+
+  for (const id of Object.keys(overrides))
+    if (!platforms.some((p) => p.id === id))
+      throw new Error(`difficulty.json: unknown shelf ${id}`);
+
+  return platforms.map((p) =>
+    overrides[p.id] ? { ...p, durability: { stability: overrides[p.id] } } : p,
+  );
 }
