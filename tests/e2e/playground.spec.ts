@@ -125,16 +125,35 @@ for (const variant of ['cozy-couch', 'worn-couch'] as const) {
   });
 }
 
+// eslint-disable-next-line max-lines-per-function -- Reale Eingaben prüfen dieselben Zustandstexturen wie im Spiel und den vollständigen Reset.
 test('Playground: Pflanze knabbern, wackeln und umkippen', async ({ page }) => {
   await loadPlayground(page, 'catgrass');
+  expect((await snapshot(page)).object).toMatchObject({
+    texture: 'catgrass-intact',
+    soilVisible: false,
+  });
   await walkTo(page, 345);
+  await untilPlayground(page, (s) => s.object.state === 'nibbling');
+  expect((await snapshot(page)).object).toMatchObject({
+    texture: 'catgrass-bitten',
+    soilVisible: false,
+  });
   await untilPlayground(page, (s) => s.object.state === 'tipped');
   const state = await snapshot(page);
 
+  expect(state.object).toMatchObject({ texture: 'catgrass-bitten', soilVisible: true, angle: -80 });
   expect(state.events.map((event) => event.kind)).toEqual(['nibble', 'tip']);
   expect(state.score).toBe(OBJECTS.catgrass.rules.nibbleValue + OBJECTS.catgrass.rules.tipValue);
   await page.clock.runFor(2000);
   expect((await snapshot(page)).score).toBe(state.score);
+  await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
+  await untilPlayground(page, (s) => s.generation > state.generation);
+  expect((await snapshot(page)).object).toMatchObject({
+    texture: 'catgrass-intact',
+    soilVisible: false,
+    angle: 0,
+    damage: 0,
+  });
 });
 
 test('Playground: Vorhangtextur, acht getrennte Risse und Reset', async ({

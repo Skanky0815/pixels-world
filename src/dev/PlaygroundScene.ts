@@ -1,3 +1,4 @@
+import { preloadCatgrassArt } from '../game/assets/catgrass-art';
 import { preloadCurtainArt } from '../game/assets/curtain-art';
 import { preloadCouchArt } from '../game/assets/couch-art';
 import { preloadVaseArt } from '../game/assets/vase-art';
@@ -42,10 +43,12 @@ export class PlaygroundScene extends Phaser.Scene {
     this.generation++;
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Gemeinsame Objektbilder und Pixels Sprite-Sheet werden in einer Vorladephase registriert.
   preload() {
     preloadVaseArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
+    preloadCatgrassArt(this);
     const asset = ASSETS.pixel;
 
     this.load.spritesheet('pixel', spriteUrl('pixel'), {

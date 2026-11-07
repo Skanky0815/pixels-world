@@ -22,19 +22,23 @@ export class Plant implements Interactable, Destructible {
   readonly maximumScore: number;
   private readonly model: PlantNibbling;
   private readonly history = new DamageHistory();
-  private readonly graphic: Phaser.GameObjects.Graphics;
-  private readonly soil: Phaser.GameObjects.Graphics;
+  private readonly graphic: Phaser.GameObjects.Image;
+  private readonly soil: Phaser.GameObjects.Image;
 
   private readonly config: PlantObjectConfig;
 
+  // eslint-disable-next-line max-lines-per-function -- Modell und die beiden Bilder werden gemeinsam mit ihren unveränderlichen Bodenankern aufgebaut.
   constructor(scene: Phaser.Scene, config: PlantObjectConfig) {
     this.config = { ...config, reach: { ...config.reach }, rules: { ...config.rules } };
     this.id = config.id;
     this.model = new PlantNibbling(config.rules, this.id);
     this.maximumScore = config.rules.nibbleValue + config.rules.tipValue;
-    this.graphic = scene.add.graphics({ x: config.x, y: config.floorY });
-    this.soil = scene.add.graphics();
-    this.draw();
+    this.graphic = scene.add.image(config.x, config.floorY, 'catgrass-intact').setOrigin(0.5, 1);
+    this.soil = scene.add
+      .image(config.x - 8, config.floorY + 1, 'catgrass-soil')
+      .setOrigin(0.5, 1)
+      .setDepth(0.5)
+      .setVisible(false);
   }
 
   eligible(context: InteractionContext) {
@@ -77,10 +81,7 @@ export class Plant implements Interactable, Destructible {
     const c = this.config;
 
     this.graphic.setAngle(-80).setPosition(c.x + 10, c.floorY - 17);
-    this.soil.fillStyle(0x59443d);
-
-    for (let i = 0; i < 12; i++)
-      this.soil.fillRect(c.x - 46 + ((i * 13) % 74), c.floorY - 2 - (i % 3), 4 + (i % 3), 3);
+    this.soil.setVisible(true);
   }
 
   private animate(state: string, progress: number, nibbling: boolean, time: number) {
@@ -95,43 +96,35 @@ export class Plant implements Interactable, Destructible {
     this.graphic.setAngle(angle);
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Halme, Topf und Bissspur sind eine geordnete deklarative Zeichenfolge.
   private draw() {
-    const g = this.graphic.clear();
-    const bitten = this.model.snapshot().damage > 0;
-
-    g.lineStyle(3, 0x596d57);
-
-    for (let i = 0; i < 7; i++) {
-      const x = (i - 3) * 4;
-      const height = 22 + (i % 3) * 5 - (bitten && i > 3 ? 9 : 0);
-
-      g.lineBetween(x, -19, x + (i - 3) * 2, -19 - height);
-    }
-
-    g.fillStyle(0x718463);
-
-    for (let i = 0; i < 5; i++) g.fillRect((i - 2) * 6, -30 - (i % 2) * 9, 3, 12);
-    g.fillStyle(0xb47655).fillRect(-17, -20, 34, 20);
-    g.fillStyle(0xc98a64).fillRect(-20, -23, 40, 5);
-    g.fillStyle(0x59443d).fillRect(-15, -23, 30, 3);
-
-    if (bitten) g.fillStyle(0x91a07a).fillRect(8, -29, 5, 3);
+    this.graphic.setTexture(
+      this.model.snapshot().damage > 0 ? 'catgrass-bitten' : 'catgrass-intact',
+    );
   }
 
   damageSnapshot() {
     return this.history.snapshot();
   }
 
+  private artSnapshot() {
+    return {
+      angle: this.graphic.angle,
+      texture: this.graphic.texture.key,
+      soilVisible: this.soil.visible,
+      x: this.graphic.x,
+      y: this.graphic.y,
+    };
+  }
+
   snapshot() {
-    return { ...this.model.snapshot(), ...this.damageSnapshot(), angle: this.graphic.angle };
+    return { ...this.model.snapshot(), ...this.damageSnapshot(), ...this.artSnapshot() };
   }
 
   reset() {
     this.model.reset();
     this.history.reset();
     this.graphic.setAngle(0).setPosition(this.config.x, this.config.floorY);
-    this.soil.clear();
+    this.soil.setVisible(false);
     this.draw();
   }
 
