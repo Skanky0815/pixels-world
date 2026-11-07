@@ -20,6 +20,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   await openPause(page);
   await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
   await expect(page.locator('[data-difficulty-current]')).toContainText('Aktuelle Runde: Schwer');
+  await expect(page.locator('#difficulty-help')).toContainText('Mehr Zeit, weniger Chaosobjekte');
   const paused = await state(page);
 
   await page.clock.runFor(5000);
@@ -44,6 +45,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   await expect(page.getByLabel('Schwierigkeitsgrad', { exact: true })).toHaveValue('easy');
   await page.locator('[data-language="en"]').click();
   await expect(page.getByLabel('Difficulty', { exact: true })).toHaveValue('easy');
+  await expect(page.locator('#difficulty-help')).toContainText('More time, fewer objects');
   await expect(page.getByRole('option', { name: 'Hard', exact: true })).toHaveCount(1);
 });
 
@@ -82,6 +84,13 @@ for (const room of ['living-room', 'cozy-remix']) {
     // eslint-disable-next-line max-lines-per-function -- Die komplette Regaltreppe wird mit echten Sprüngen und Anschubsen bis zum Herunterwerfen jeder zusätzlichen Vase gespielt.
   }, testInfo) => {
     await startDifficulty(page, 'hard', `/?room=${room}`);
+    const shelves = (await state(page)).shelves;
+
+    expect(shelves.find((s) => s.id === 'middle-shelf')?.stability).toBe('fragile');
+    expect(shelves.find((s) => s.id === 'upper-shelf')?.stability).toBe('stable');
+    expect(
+      shelves.filter((s) => s.id.startsWith('difficulty-shelf-')).map((s) => s.stability),
+    ).toEqual(['fragile', 'normal', 'fragile', 'normal']);
     await page.screenshot({ path: testInfo.outputPath('regaltreppe-vorher.png') });
     await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 265);
     await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 370) < 2);

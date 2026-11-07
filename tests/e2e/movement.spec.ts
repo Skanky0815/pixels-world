@@ -33,7 +33,8 @@ test('Tastatursprünge landen auf Sofa und erstem Regal', async ({ page }) => {
   await start(page);
   await couch(page);
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 410);
-  await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 555);
+  await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 500);
+  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.velocityX <= 0);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 304) < 2);
   expect((await state(page)).pixel.x).toBeLessThan(664);
 });

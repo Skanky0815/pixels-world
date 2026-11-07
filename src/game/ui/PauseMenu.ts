@@ -6,6 +6,12 @@ import { createLanguageSetting } from '../../i18n/language-setting';
 import { audioPreferences, type AudioLevels } from '../../settings/audio';
 import './pause-menu.css';
 
+const DIFFICULTY_DESCRIPTIONS = {
+  easy: 'difficultyEasyDescription',
+  normal: 'difficultyNormalDescription',
+  hard: 'difficultyHardDescription',
+} as const satisfies Record<Difficulty, TextKey>;
+
 interface PauseActions {
   pause(paused: boolean): void;
   restart(): void;
@@ -141,8 +147,10 @@ export class PauseMenu {
   }
 
   private refreshDifficulty() {
-    (this.element('[data-difficulty]') as HTMLSelectElement).value =
-      difficultyPreferences.snapshot();
+    const difficulty = difficultyPreferences.snapshot();
+
+    (this.element('[data-difficulty]') as HTMLSelectElement).value = difficulty;
+    this.element('#difficulty-help').textContent = t(DIFFICULTY_DESCRIPTIONS[difficulty]);
     this.element('[data-difficulty-current]').textContent = this.actions.started()
       ? t('difficultyCurrent', { v0: t(DIFFICULTY_LABELS[this.actions.difficulty()]) })
       : t('difficultyBeforeStart');
@@ -197,11 +205,13 @@ export class PauseMenu {
 function markup() {
   return `<h2 data-menu-text="pauseSettings"></h2>
     <section><label for="pause-difficulty"><span data-menu-text="difficultyLabel"></span></label>
-      <select id="pause-difficulty" data-difficulty>
+      <select id="pause-difficulty" data-difficulty aria-describedby="difficulty-help difficulty-current">
         <option value="easy" data-menu-text="difficultyEasy"></option>
         <option value="normal" data-menu-text="difficultyNormal"></option>
         <option value="hard" data-menu-text="difficultyHard"></option>
-      </select><p data-difficulty-current></p></section>
+      </select>
+      <p id="difficulty-help" class="difficulty-help" aria-live="polite"></p>
+      <p id="difficulty-current" data-difficulty-current></p></section>
     <section><h3 data-menu-text="language"></h3><div data-pause-language></div></section>
     <section><h3 data-menu-text="audioSettings"></h3>
       <label for="pause-master-volume"><span data-menu-text="masterVolume"></span><output data-audio-value="master"></output>

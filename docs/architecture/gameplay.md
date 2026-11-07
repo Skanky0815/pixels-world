@@ -201,6 +201,12 @@ entfernen oder hinzufügen, jeweils mit eindeutiger `id`, `variant`, `x` und
 `surfaceId`. Varianten: `small-vase` (Terrakotta), `blue-vase` (Blau) oder
 `heirloom-vase` (Gold), mit den jeweiligen bestehenden Punktwerten.
 `surfaceId` verweist auf die Regal-ID. Positionen liegen im 960 Pixel breiten Raum.
+`livingRoom.hardStability` überschreibt die Stabilitätsklasse einzelner Regal-IDs
+auf Schwer (`fragile`, `normal`, `stable`). Aktuell wird das mittlere Regal fragil;
+die zusätzliche Treppe wechselt fragil/normal/fragil/normal. Fragile Regale stürzen
+nach drei, normale nach fünf Landungen ein. Leicht und Normal behalten ihre
+Raumkonfiguration. Unbekannte Regal-IDs und ein instabiles Zielregal werden vor
+dem Szenenaufbau abgewiesen.
 Die vorhandene Content-Prüfung verlangt, dass die ganze Vase auf ihre Unterlage passt. Diese Belegung gilt auch für Cozy Remix;
 Ballroute und Erreichbarkeit nach Änderungen in beiden Räumen testen.
 Zusätzlich materialisiert `populateSpawnSlots` die optionalen lokalen Plätze eines

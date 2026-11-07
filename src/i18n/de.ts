@@ -28,6 +28,11 @@ export const de = {
   difficultyEasy: 'Leicht',
   difficultyNormal: 'Normal',
   difficultyHard: 'Schwer',
+  difficultyEasyDescription:
+    'Mehr Zeit, weniger Chaosobjekte, leichtere Versöhnung und deutliche Zielhilfe.',
+  difficultyNormalDescription: 'Ausgewogenes Balancing mit dezenter Zielhilfe.',
+  difficultyHardDescription:
+    'Weniger Zeit, mehr Chaosobjekte, instabilere Regale, schwierigere Versöhnung und keine Zielmarkierung.',
   difficultyLabel: 'Schwierigkeitsgrad',
   difficultyCurrent: 'Aktuelle Runde: {v0}. Änderungen gelten ab der nächsten Runde.',
   difficultyBeforeStart: 'Die Auswahl gilt beim Spielstart.',

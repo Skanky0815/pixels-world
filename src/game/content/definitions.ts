@@ -1,6 +1,6 @@
 import type { SpawnSlot } from './spawn-slots.ts';
 import type { SpawnProfile } from './spawn-profile.ts';
-import type { ShelfStabilityConfig } from '../domain/shelf-stability.ts';
+import type { ShelfStabilityConfig, ShelfClass } from '../domain/shelf-stability.ts';
 import type { CouchAppearance } from '../assets/couch-appearance.ts';
 import type { VaseAppearance } from '../assets/vase-appearance.ts';
 import type { GoalDefinition, ResolvedGoal } from '../domain/main-goal.ts';
@@ -79,6 +79,7 @@ export interface RoomDefinition {
     readonly easyOmit: readonly string[];
     readonly hardAdd: readonly ObjectInstance[];
     readonly hardPlatforms?: RoomDefinition['platforms'];
+    readonly hardStability?: Readonly<Record<string, ShelfClass>>;
   };
   readonly goal: GoalDefinition;
   readonly id: string;

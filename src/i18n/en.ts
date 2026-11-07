@@ -30,6 +30,11 @@ export const en: Record<keyof typeof de, string> = {
   difficultyEasy: 'Easy',
   difficultyNormal: 'Normal',
   difficultyHard: 'Hard',
+  difficultyEasyDescription:
+    'More time, fewer objects to cause chaos, easier reconciliation and a clear goal hint.',
+  difficultyNormalDescription: 'Balanced gameplay with a subtle goal hint.',
+  difficultyHardDescription:
+    'Less time, more objects to cause chaos, less stable shelves, harder reconciliation and no goal marker.',
   difficultyLabel: 'Difficulty',
   difficultyCurrent: 'Current round: {v0}. Changes apply next round.',
   difficultyBeforeStart: 'Your choice applies when the game starts.',
