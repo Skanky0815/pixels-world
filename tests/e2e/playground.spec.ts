@@ -240,3 +240,27 @@ test.describe('Playground auf Touch-Geräten', () => {
     });
   });
 });
+
+// eslint-disable-next-line max-lines-per-function -- Desktop und schmales Layout werden an echten Elementgrenzen einschließlich langer Diagnosedaten geprüft.
+test('Playground: kompakte Szene mit seitlicher Diagnose und mobilem Umbruch', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await loadPlayground(page, 'small-vase');
+  await page.getByText('Objekt, Pixel und Ressourcen im Detail').click();
+  const scene = await page.locator('#game').boundingBox();
+  const panel = await page.locator('.playground-readout').boundingBox();
+  const select = await page.locator('#playground-object').boundingBox();
+  const reset = await page.locator('#playground-reset').boundingBox();
+
+  expect(scene!.width).toBe(800);
+  expect(panel!.x).toBeGreaterThan(scene!.x + scene!.width);
+  expect(Math.abs(select!.y - reset!.y)).toBeLessThan(2);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.runFor(100);
+  const mobileScene = await page.locator('#game').boundingBox();
+  const mobilePanel = await page.locator('.playground-readout').boundingBox();
+
+  expect(mobilePanel!.y).toBeGreaterThan(mobileScene!.y + mobileScene!.height);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await expect(page.locator('#playground-reset')).toBeVisible();
+  await assertRoomDrawn(page);
+});

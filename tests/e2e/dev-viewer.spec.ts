@@ -92,3 +92,31 @@ test('DEV-Vorschauen bleiben unabhängig und passen auf schmale Bildschirme', as
     contentType: 'image/png',
   });
 });
+
+// eslint-disable-next-line max-lines-per-function -- Beide DEV-Einstiege werden mit Desktop- und Mobilbreite über ihre sichtbare Navigation und Seitengrenzen verglichen.
+test('DEV-Seiten teilen Seitenrahmen und vollständige Navigation', async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const frames = [];
+
+    for (const path of ['animation-compare', 'interactable-playground']) {
+      await page.goto(`http://127.0.0.1:4176/${path}.html`);
+      const nav = page.getByRole('navigation', { name: 'DEV-Modus', exact: true });
+
+      await expect(nav.getByRole('link')).toHaveCount(3);
+      await expect(nav.locator('[aria-current=page]')).toHaveAttribute('href', `/${path}.html`);
+      await expect(nav.getByRole('link', { name: 'Zum Spiel', exact: true })).toHaveAttribute(
+        'href',
+        '/play.html',
+      );
+      await expect(page.locator('.eyebrow')).toHaveText('PIXEL’S WORLD · DEV-WERKZEUGE');
+      frames.push(await page.locator('main').boundingBox());
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+
+    expect(frames[0]!.x).toBe(frames[1]!.x);
+    expect(frames[0]!.width).toBe(frames[1]!.width);
+  }
+});

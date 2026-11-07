@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import './animation-compare.css';
+import './dev-shell.css';
 import './interactable-playground.css';
 import { PlaygroundScene } from './PlaygroundScene';
 import { PLAYGROUND_OBJECTS } from './playground-room';
