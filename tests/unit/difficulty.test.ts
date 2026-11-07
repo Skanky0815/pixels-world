@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   DIFFICULTIES,
+  DIFFICULTY_PRESETS,
+  validateDifficultyPresets,
   difficultyTimer,
   difficultyCharm,
   difficultyRoom,
@@ -39,11 +41,15 @@ test('Normal erhält Balancing; alle Dichten erhalten Ziel, Plattformen und Pfli
     for (const difficulty of DIFFICULTIES) {
       const variant = difficultyRoom(room, difficulty);
       const resolved = resolveRoom(variant, OBJECTS);
-      const delta = difficulty === 'easy' ? -2 : difficulty === 'hard' ? 6 : 0;
+      const delta = difficulty === 'easy' ? -2 : difficulty === 'hard' ? 4 : 0;
 
       assert.equal(resolved.objects.length, room.objects.length + delta);
       assert.equal(variant.goal, room.goal);
-      assert.equal(variant.platforms, room.platforms);
+      assert.deepEqual(variant.platforms.slice(0, room.platforms.length), room.platforms);
+      assert.equal(
+        variant.platforms.length,
+        room.platforms.length + (difficulty === 'hard' ? 4 : 0),
+      );
 
       for (const id of ['couch', 'curtain', 'plant'])
         assert.ok(variant.objects.some((o) => o.id === id));
@@ -190,4 +196,50 @@ test('Timer skalieren beide Grenzen einschließlich schneller Testprofile', () =
 
   assert.deepEqual(difficultyTimer(config, 'easy'), { minDurationMs: 1500, maxDurationMs: 3000 });
   assert.deepEqual(difficultyTimer(config, 'hard'), { minDurationMs: 750, maxDurationMs: 1500 });
+});
+
+// eslint-disable-next-line max-lines-per-function -- Typkorrekte, aber unspielbare JSON-Werte werden mit einem verständlichen Konfigurationspfad zurückgewiesen.
+test('JSON-Presets weisen ungültige Zeit-, Herz- und Sequenzwerte zurück', () => {
+  for (const patch of [
+    { timeScale: 0 },
+    { timeScale: NaN },
+    { inputScale: -1 },
+    { inputScale: 0.00001 },
+    { lengthDelta: -4 },
+    { lengthDelta: 0.5 },
+    { hearts: { calm: 0, annoyed: 2, angry: 3 } },
+    { hearts: { calm: 1, annoyed: 1.5, angry: 3 } },
+  ]) {
+    const presets = structuredClone(DIFFICULTY_PRESETS);
+
+    Object.assign(presets.easy, patch);
+    assert.throws(() => validateDifficultyPresets(presets), /difficulty.json: easy/);
+  }
+
+  const custom = structuredClone(DIFFICULTY_PRESETS);
+
+  custom.easy.timeScale = 2;
+  custom.easy.hearts.angry = 1;
+  assert.doesNotThrow(() => validateDifficultyPresets(custom));
+});
+
+// eslint-disable-next-line max-lines-per-function -- Zusätzliche Regale halten je eine Vase und mischen vorhandene Farben, ohne die bisherigen Plattformen zu ersetzen.
+test('Schwer verteilt verschiedenfarbige Vasen einzeln auf zusätzliche Regale', () => {
+  for (const room of [LIVING_ROOM, COZY_REMIX]) {
+    const definition = difficultyRoom(room, 'hard');
+    const resolved = resolveRoom(definition, OBJECTS);
+    const extras = resolved.objects.filter((o) => o.id.startsWith('difficulty-vase-'));
+
+    assert.equal(extras.length, 4);
+    assert.equal(new Set(extras.map((o) => o.kind === 'vase' && o.config.color)).size, 3);
+
+    for (const platform of definition.platforms.slice(room.platforms.length)) {
+      const occupants = definition.objects.filter(
+        (o) => o.placement.mode === 'surface' && o.placement.surfaceId === platform.id,
+      );
+
+      assert.equal(occupants.length, 1);
+      assert.ok(platform.bounds.width >= 100);
+    }
+  }
 });

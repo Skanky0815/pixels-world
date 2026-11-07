@@ -1,5 +1,5 @@
 import { TouchDriver } from './touch-support';
-import { test, expect, state, until, waitForGame, loadIntro } from './support';
+import { test, expect, state, until, waitForGame, loadIntro, holdUntil } from './support';
 import { startDifficulty } from './difficulty-support';
 import { openPause } from './pause-support';
 
@@ -8,7 +8,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   await startDifficulty(page, 'hard');
   const active = await state(page);
 
-  expect(active.objects).toHaveLength(12);
+  expect(active.objects).toHaveLength(10);
   expect(active.round.returnAtMs).toBeGreaterThanOrEqual(45_000);
   expect(active.round.returnAtMs).toBeLessThanOrEqual(78_750);
   expect(active.hud.scoreText).toContain('Schwer');
@@ -68,3 +68,51 @@ test.describe('Schwierigkeitswahl mit Touch', () => {
     expect((await state(page)).pixel.velocityY).toBe(0);
   });
 });
+
+for (const room of ['living-room', 'cozy-remix']) {
+  test(`Schwer: einzelne verschiedenfarbige Vasen auf der Regaltreppe im ${room}`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Die komplette Regaltreppe wird mit echten Sprüngen und Anschubsen bis zum Herunterwerfen jeder zusätzlichen Vase gespielt.
+  }, testInfo) => {
+    await startDifficulty(page, 'hard', `/?room=${room}`);
+    await page.screenshot({ path: testInfo.outputPath('regaltreppe-vorher.png') });
+    await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 265);
+    await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 370) < 2);
+    await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 195);
+    await holdUntil(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x <= 30);
+    await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 330) < 2);
+    await holdUntil(
+      page,
+      ['ArrowRight'],
+      (s) => s.vases.find((v) => v.id === 'difficulty-vase-1')?.state !== 'resting',
+    );
+    await until(page, (s) => s.vases.find((v) => v.id === 'difficulty-vase-1')?.state === 'broken');
+    await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 90);
+
+    for (const [id, landingX, y, edgeX] of [
+      ['difficulty-vase-2', 310, 250, 330],
+      ['difficulty-vase-3', 490, 170, 510],
+      ['difficulty-vase-4', 670, 90, 690],
+    ] as const) {
+      await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= landingX);
+      await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - y) < 2);
+      await holdUntil(
+        page,
+        ['ArrowLeft'],
+        (s) => s.vases.find((v) => v.id === id)?.state !== 'resting',
+      );
+      await until(page, (s) => (s.vases.find((v) => v.id === id)?.bottom ?? 0) > y + 8);
+      await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= edgeX);
+    }
+
+    expect(
+      (await state(page)).vases
+        .filter((v) => v.id.startsWith('difficulty-vase-'))
+        .every((v) => v.state !== 'resting'),
+    ).toBe(true);
+    await testInfo.attach('regaltreppe-gespielt', {
+      body: await page.screenshot(),
+      contentType: 'image/png',
+    });
+  });
+}

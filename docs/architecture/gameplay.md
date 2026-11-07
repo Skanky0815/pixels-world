@@ -161,11 +161,12 @@ Datenflüsse und Quellen: [rechtliche Dokumentation](../legal/phase2-review.md).
 
 ## Schwierigkeitsgrade
 
-`src/content/difficulty.ts` bündelt die vorläufigen Playtest-Presets. Normal
+[`src/content/difficulty.json`](../../src/content/difficulty.json) bündelt die
+vorläufigen Playtest-Presets. `difficulty.ts` liest und prüft sie. Normal
 verwendet unverändert die bisherigen Timer- und Charmeprofile. Leicht skaliert
 die Zeit auf 150 %, Schwer auf 75 %. Die Raumdefinition bietet optionale
 `difficultyObjects` mit auslassbaren IDs und zusätzlichen Platzierungen; Räume
-ohne diese Angaben behalten ihre Belegung. Ziel und Plattformen bleiben gleich.
+ohne diese Angaben behalten ihre Belegung. Ziel und bestehende Plattformen bleiben gleich; Schwer ergänzt separate Regale.
 
 Beim Rundenstart wird die Auswahl aus `DifficultyPreferences` übernommen und
 der Raum neu aufgelöst. Die aktive Schwierigkeit bleibt bis zum Neustart fest,
@@ -176,3 +177,36 @@ bestehende Hilfe bleiben erhalten. Das unveränderliche Ergebnis übernimmt den
 gespielten Grad und die tatsächlich benötigten/verdienten Herzen aus dem
 Versöhnungsmodell. Die Werte sind bewusst zentral für weiteres Playtesting
 änderbar; sie sind kein abgeschlossenes Balancing.
+
+### Balancing per JSON
+
+Im Dev-Modus die JSON-Datei speichern und die Spielseite neu laden; danach den
+gewünschten Grad wählen und eine neue Runde starten. Veröffentlichte Versionen
+übernehmen Änderungen beim nächsten Build/Release. Timer- und Versöhnungswerte bleiben zunächst
+identisch zu den bisherigen Presets.
+
+| Feld unter `presets.easy`, `.normal` oder `.hard` | Wirkung                                                                                                                                                        |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `timeScale`                                       | Faktor für beide Heimkehr-Timergrenzen. `1` = bisherige Zeit, `1.5` = 50 % mehr, `0.75` = 25 % weniger.                                                        |
+| `hearts.calm`, `.annoyed`, `.angry`               | Benötigte Herzen bei 0–24, 25–59 und mindestens 60 Chaospunkten. Positive ganze Zahlen.                                                                        |
+| `lengthDelta`                                     | Zusätzliche Pfeile je Folge gegenüber dem bisherigen Ärgerprofil; `-1` verkürzt um einen Pfeil. Die resultierende Länge muss eine positive ganze Zahl bleiben. |
+| `inputScale`                                      | Faktor für die Eingabefrist je Pfeil. `1.3` = 30 % mehr Zeit, `0.8` = 20 % weniger. Die bestehende Wiederholungshilfe bleibt erhalten.                         |
+
+Unter `livingRoom.easyOmit` stehen die Objekt-IDs, die auf Leicht fehlen.
+Nur optionale Vasen auslassen; Sofa, Vorhang und Pflanze erhalten.
+`livingRoom.hardPlatforms` ergänzt Regale für Schwer (`id`, `x`, `y`,
+`width`; Höhe 16 Pixel). Die Vasen stehen einzeln auf einer erreichbaren
+Regaltreppe. `livingRoom.hardAdd` enthält die zugehörigen Vasen: Einträge
+entfernen oder hinzufügen, jeweils mit eindeutiger `id`, `variant`, `x` und
+`surfaceId`. Varianten: `small-vase` (Terrakotta), `blue-vase` (Blau) oder
+`heirloom-vase` (Gold), mit den jeweiligen bestehenden Punktwerten.
+`surfaceId` verweist auf die Regal-ID. Positionen liegen im 960 Pixel breiten Raum.
+Die vorhandene Content-Prüfung verlangt, dass die ganze Vase auf ihre Unterlage passt. Diese Belegung gilt auch für Cozy Remix;
+Ballroute und Erreichbarkeit nach Änderungen in beiden Räumen testen.
+
+Zeitfaktoren müssen positiv und endlich sein. Fehlerhafte Profile werden beim
+Laden mit `difficulty.json` und dem betroffenen Feld gemeldet, statt ein
+unlösbares Minispiel zu starten. `npm run check:pr` prüft die eingecheckten
+Standardwerte und alle Spielabläufe. Nach eigenen Balancing-Änderungen erwartete
+Werte in Tests bewusst abgleichen; Normal bleibt die Referenz des bisherigen
+Balancings.

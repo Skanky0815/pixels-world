@@ -65,6 +65,7 @@ export interface RoomDefinition {
   readonly difficultyObjects?: {
     readonly easyOmit: readonly string[];
     readonly hardAdd: readonly ObjectInstance[];
+    readonly hardPlatforms?: RoomDefinition['platforms'];
   };
   readonly goal: GoalDefinition;
   readonly id: string;

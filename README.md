@@ -75,6 +75,9 @@ zur Landingpage; ein erneuter Spielaufruf zeigt wieder die kurze Einführung.
 **Normal** oder **Schwer**. Normal erhält das bisherige Balancing. Die Auswahl
 gilt beim nächsten Rundenstart; eine laufende Runde und ihr Ergebnis bleiben
 unverändert. Der gespielte Grad steht im HUD und im Ergebnis.
+Zum Balancieren bearbeitest du [difficulty.json](src/content/difficulty.json);
+die [Felderklärung](docs/architecture/gameplay.md#balancing-per-json) beschreibt
+Zeitfaktoren, Herzen, Tastenfolgen und Vasenbelegung.
 
 Im Menü wechselst du DE/EN und stellst Gesamtlautstärke und Soundeffekte ein.
 Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.

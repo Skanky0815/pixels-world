@@ -1,3 +1,4 @@
+import config from './difficulty.json' with { type: 'json' };
 import { CHARM_PROFILES } from './reconciliation.ts';
 import type { CharmProfile, ReconciliationLevel } from './reconciliation.ts';
 import type { RoomDefinition, ObjectInstance } from '../game/content/definitions.ts';
@@ -10,35 +11,44 @@ export const DIFFICULTY_LABELS = {
   normal: 'difficultyNormal',
   hard: 'difficultyHard',
 } as const;
-/** Provisional playtest presets. Normal deliberately reuses the established values. */
-export const DIFFICULTY_PRESETS = {
-  easy: { timeScale: 1.5, hearts: [1, 1, 2], lengthDelta: -1, inputScale: 1.3 },
-  normal: { timeScale: 1, hearts: [1, 2, 3], lengthDelta: 0, inputScale: 1 },
-  hard: { timeScale: 0.75, hearts: [2, 3, 4], lengthDelta: 1, inputScale: 0.8 },
-} as const;
+/** Provisional playtest values; edit difficulty.json and start a fresh round. */
+export const DIFFICULTY_PRESETS = config.presets;
 const LEVELS = ['calm', 'annoyed', 'angry'] as const;
-const EXTRA_VASES: readonly ObjectInstance[] = [
-  {
-    id: 'difficulty-lower-a',
-    variant: 'small-vase',
-    placement: { mode: 'surface', x: 535, surfaceId: 'lower-shelf' },
-  },
-  {
-    id: 'difficulty-lower-b',
-    variant: 'small-vase',
-    placement: { mode: 'surface', x: 565, surfaceId: 'lower-shelf' },
-  },
-  {
-    id: 'difficulty-middle',
-    variant: 'small-vase',
-    placement: { mode: 'surface', x: 670, surfaceId: 'middle-shelf' },
-  },
-  ...[875, 900, 930].map((x): ObjectInstance => ({
-    id: `difficulty-floor-${x}`,
-    variant: 'small-vase',
-    placement: { mode: 'surface', x, surfaceId: 'floor' },
-  })),
-];
+
+export function validateDifficultyPresets(presets: typeof DIFFICULTY_PRESETS) {
+  for (const difficulty of DIFFICULTIES) {
+    const preset = presets[difficulty];
+
+    positive(preset.timeScale, `${difficulty}.timeScale`);
+    positive(preset.inputScale, `${difficulty}.inputScale`);
+
+    for (const level of LEVELS) validateCharm(preset, level, difficulty);
+  }
+}
+
+function positive(value: number, path: string) {
+  if (!Number.isFinite(value) || value <= 0)
+    throw new Error(`difficulty.json: ${path} must be finite and positive`);
+}
+
+function integer(value: number, path: string) {
+  positive(value, path);
+
+  if (!Number.isSafeInteger(value)) throw new Error(`difficulty.json: ${path} must be an integer`);
+}
+
+type DifficultyPreset = typeof DIFFICULTY_PRESETS.normal;
+
+function validateCharm(preset: DifficultyPreset, level: ReconciliationLevel, path: string) {
+  const length = CHARM_PROFILES[level].length + preset.lengthDelta;
+  const inputMs = Math.round(CHARM_PROFILES[level].inputMs * preset.inputScale);
+
+  integer(preset.hearts[level], `${path}.hearts.${level}`);
+  integer(length, `${path}.lengthDelta + ${level} length`);
+  positive(inputMs, `${path}.${level} inputMs`);
+}
+
+validateDifficultyPresets(DIFFICULTY_PRESETS);
 
 export function isDifficulty(value: unknown): value is Difficulty {
   return DIFFICULTIES.some((level) => level === value);
@@ -59,14 +69,23 @@ export function difficultyCharm(difficulty: Difficulty, level: ReconciliationLev
 
   return Object.freeze({
     length: normal.length + preset.lengthDelta,
-    sequences: preset.hearts[LEVELS.indexOf(level)],
+    sequences: preset.hearts[level],
     inputMs: Math.round(normal.inputMs * preset.inputScale),
   });
 }
 
 export const LIVING_ROOM_DENSITY = {
-  easyOmit: ['blue-vase', 'heirloom-vase'],
-  hardAdd: EXTRA_VASES,
+  easyOmit: config.livingRoom.easyOmit,
+  hardPlatforms: config.livingRoom.hardPlatforms.map((shelf) => ({
+    id: shelf.id,
+    asset: 'wood-shelf' as const,
+    bounds: { x: shelf.x, y: shelf.y, width: shelf.width, height: 16 },
+  })),
+  hardAdd: config.livingRoom.hardAdd.map((vase): ObjectInstance => ({
+    id: vase.id,
+    variant: vase.variant,
+    placement: { mode: 'surface', x: vase.x, surfaceId: vase.surfaceId },
+  })),
 } as const;
 
 export function difficultyRoom(room: RoomDefinition, difficulty: Difficulty): RoomDefinition {
@@ -78,5 +97,13 @@ export function difficultyRoom(room: RoomDefinition, difficulty: Difficulty): Ro
       ? room.objects.filter((object) => !density.easyOmit.includes(object.id))
       : [...room.objects, ...density.hardAdd];
 
-  return { ...room, objects };
+  const platforms = difficultyPlatforms(room, difficulty);
+
+  return { ...room, objects, platforms };
+}
+
+function difficultyPlatforms(room: RoomDefinition, difficulty: Difficulty) {
+  return difficulty === 'hard'
+    ? [...room.platforms, ...(room.difficultyObjects?.hardPlatforms ?? [])]
+    : room.platforms;
 }
