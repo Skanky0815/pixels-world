@@ -259,6 +259,7 @@ body.landing-page {
   margin-bottom: 26px;
 }
 .landing-footer {
+  border-top: 1px solid #685044;
   align-items: center;
   margin: 0;
   padding: 28px 0;
@@ -380,6 +381,7 @@ body.landing-page {
 
 /* Matching portrait frames keep the landing artwork separate from game sprites. */
 .landing-team {
+  margin-top: 48px;
   padding: 62px 0;
   border-top: 1px solid #685044;
 }
@@ -441,6 +443,7 @@ body.landing-page {
 }
 @media (max-width: 680px) {
   .landing-team {
+    margin-top: 32px;
     padding: 40px 0;
   }
   .team-cards {
