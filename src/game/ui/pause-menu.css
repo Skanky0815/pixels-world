@@ -69,7 +69,12 @@
   gap: 8px;
   margin-top: 20px;
 }
-.pause-actions button {
+.pause-actions button:not([hidden]),
+.pause-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   min-height: 44px;
   padding: 8px 14px;
   border: 1px solid #b79879;

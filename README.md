@@ -54,7 +54,8 @@ Die komplette Spielfläche passt sich dem Browserfenster an.
 
 **Esc** oder das **Zahnrad** öffnet die Pause. Welt, Rundentimer, Versöhnungsfristen und
 Animationen bleiben stehen. **Fortsetzen** bzw. Esc schließt das Menü; ein
-Tab-Wechsel setzt die manuelle Pause nicht außer Kraft.
+Tab-Wechsel setzt die manuelle Pause nicht außer Kraft. **Beenden** führt zurück
+zur Landingpage; ein erneuter Spielaufruf zeigt wieder die kurze Einführung.
 
 Im Menü wechselst du DE/EN und stellst Gesamtlautstärke und Soundeffekte ein.
 Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.
