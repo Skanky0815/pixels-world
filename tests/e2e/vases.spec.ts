@@ -21,6 +21,12 @@ test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', a
   expect(initial.chaos).toEqual({ score: 0, damagedObjects: 0, anger: 'calm' });
   expect(initial.vases.every((vase) => vase.state === 'resting')).toBe(true);
   expect(initial.vases[0].x).toBeCloseTo(620, 0);
+  expect(initial.vases[0]).toMatchObject({
+    texture: 'vase-terracotta',
+    bodyWidth: 18,
+    bodyHeight: 28,
+    shards: 0,
+  });
   await firstVase(page);
   const pushed = await state(page);
 
@@ -30,6 +36,7 @@ test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', a
   expect((await state(page)).chaos.score).toBe(0);
   await until(page, (s) => s.vases[0].state === 'broken');
   expect((await state(page)).chaos).toEqual({ score: 25, damagedObjects: 1, anger: 'annoyed' });
+  expect((await state(page)).vases[0].shards).toBe(7);
   const screenshot = testInfo.outputPath('chaos.png');
 
   await page.screenshot({ path: screenshot, fullPage: true });
@@ -42,6 +49,7 @@ test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', a
   expect(restarted.chaos).toEqual({ score: 0, damagedObjects: 0, anger: 'calm' });
   expect(restarted.vases.every((vase) => vase.state === 'resting')).toBe(true);
   expect(restarted.vases[0].x).toBeCloseTo(620, 0);
+  expect(restarted.vases.every((v) => v.shards === 0)).toBe(true);
   // The same object may score again in a new run, but not twice in one run.
   await firstVase(page);
   await until(page, (s) => s.vases[0].state === 'broken');

@@ -1,3 +1,4 @@
+import { isVaseAppearance } from '../assets/vase-appearance.ts';
 import { ASSETS, type AssetKey } from '../assets/definitions.ts';
 import type { Bounds } from '../interactions/contracts.ts';
 import type {
@@ -93,6 +94,9 @@ function validateCapabilities(value: ObjectDefinition, path: string) {
 function validateVase(value: Extract<ObjectDefinition, { kind: 'vase' }>, path: string) {
   integer(value.points, `${path}.points`);
   color(value.color, `${path}.color`);
+
+  if (value.appearance !== undefined && !isVaseAppearance(value.appearance))
+    fail(`${path}.appearance`, 'unknown vase appearance');
 }
 
 // eslint-disable-next-line max-lines-per-function -- Zeitparameter, Punktwerte und Reichweite bilden gemeinsam den Pflanzenvertrag.
@@ -441,6 +445,7 @@ class RoomResolver {
         shelfY: support.y,
         points: d.points,
         color: d.color,
+        appearance: d.appearance,
         floorY: room.floor.y,
         roomWidth: room.width,
       },

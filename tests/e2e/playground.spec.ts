@@ -134,29 +134,40 @@ test('Playground: Vorhang mit echter Kollision greifen und beim Rutschen beschä
   );
 });
 
-// eslint-disable-next-line max-lines-per-function -- Bodenbruch und sofortiger Reset prüfen auch das Aufräumen der laufenden Splitter-Tweens.
-test('Playground: Vase vom echten Regal schieben und am Boden zerbrechen', async ({ page }) => {
-  await loadPlayground(page, 'small-vase');
-  await page.keyboard.down('ArrowRight');
-  await untilPlayground(page, (s) => s.object.state === 'broken');
-  await page.keyboard.up('ArrowRight');
-  const state = await snapshot(page);
+for (const variant of ['small-vase', 'blue-vase', 'heirloom-vase', 'mellow-vase'] as const) {
+  test(`Playground: ${variant} vom Regal schieben, eigene Textur und Scherben zurücksetzen`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Reale Auswahl, Bruch und Reset prüfen Textur, Physik und Splitter-Lebensdauer gemeinsam.
+  }) => {
+    await loadPlayground(page, variant);
+    expect((await snapshot(page)).object).toMatchObject({
+      texture: `vase-${OBJECTS[variant].appearance}`,
+      bodyWidth: 18,
+      bodyHeight: 28,
+      shards: 0,
+    });
+    await page.keyboard.down('ArrowRight');
+    await untilPlayground(page, (s) => s.object.state === 'broken');
+    await page.keyboard.up('ArrowRight');
+    const state = await snapshot(page);
 
-  expect(state.events).toHaveLength(1);
-  expect(state.events[0]).toMatchObject({ kind: 'break', value: OBJECTS['small-vase'].points });
-  expect(state.score).toBe(OBJECTS['small-vase'].points);
-  await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
-  await untilPlayground(page, (s) => s.generation > state.generation && s.pixel.grounded);
-  expect(await snapshot(page)).toMatchObject({
-    score: 0,
-    events: [],
-    object: { state: 'resting' },
+    expect(state.object).toMatchObject({ shards: 7 });
+    expect(state.events).toHaveLength(1);
+    expect(state.events[0]).toMatchObject({ kind: 'break', value: OBJECTS[variant].points });
+    expect(state.score).toBe(OBJECTS[variant].points);
+    await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
+    await untilPlayground(page, (s) => s.generation > state.generation && s.pixel.grounded);
+    expect(await snapshot(page)).toMatchObject({
+      score: 0,
+      events: [],
+      object: { state: 'resting', shards: 0 },
+    });
+    await page.keyboard.down('ArrowRight');
+    await untilPlayground(page, (s) => s.object.state === 'broken');
+    await page.keyboard.up('ArrowRight');
+    expect((await snapshot(page)).events).toHaveLength(1);
   });
-  await page.keyboard.down('ArrowRight');
-  await untilPlayground(page, (s) => s.object.state === 'broken');
-  await page.keyboard.up('ArrowRight');
-  expect((await snapshot(page)).events).toHaveLength(1);
-});
+}
 
 test('Playground: alle Varianten und wiederholte Wechsel behalten stabile Ressourcen', async ({
   page,

@@ -37,3 +37,21 @@ kein zusätzlicher Chaosobjekt-Typ oder Punktelieferant. Der erste akzeptierte
 Rundenabschluss (Ziel oder Deadline) führt in den vorhandenen Heimkehrablauf.
 Die aktuelle Platzierung am oberen Regal ist in beiden Räumen schadenfrei
 per Tastatur erreichbar; neue Platzierungen benötigen denselben Spieltest.
+
+## Vasen-Grafikvarianten
+
+Das bekannte Asset `vase-default` behält seinen 18×28-Geometrie- und
+Fähigkeitsvertrag. Die optionale `appearance` wählt `terracotta`, `blue`, `gold`
+oder `mellow` aus dem festen Grafikregister; Mellow hat eine eigene Form.
+Mit `appearance` stammen Farben und Scherben aus den PNGs. Ohne diese Angabe
+bleibt die prozedurale, mit `color` eingefärbte Darstellung für bestehenden
+Content erhalten. Punkte, Physik, Auflageanker und Instanz-IDs sind unabhängig
+davon. Die gemeinsame Preload-Funktion lädt dieselben Texturen im Spiel und
+im DEV-Playground; URLs werden für den Pages-Unterpfad von Vite aufgelöst.
+
+`assets/objects/vases/generation-v1.json` dokumentiert Quellen und Prompts.
+`node tools/prepare-vase-assets.mjs` erzeugt die kleinen Exporte reproduzierbar:
+Alpha-Bounds ab 192 bestimmen den Ausschnitt, Nearest Neighbor erhält die
+abgetasteten RGBA-Werte. Vasen stehen unten mittig in 18×28-Zellen, Scherben
+zentriert in 8×8-Zellen. Die ursprünglichen Generierungsbilder bleiben erhalten
+und werden nicht als Laufzeitdateien importiert.
