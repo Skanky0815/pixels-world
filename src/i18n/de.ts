@@ -1,4 +1,12 @@
 export const de = {
+  installApp: 'Als App installieren',
+  installIphone:
+    'Am iPhone: In Safari „Teilen“ → „Zum Home-Bildschirm“ wählen und „Als Web-App öffnen“ einschalten.',
+  installBrowser:
+    'Am Computer oder Android: Im Browsermenü „App installieren“ oder das Installationssymbol in der Adressleiste wählen.',
+  installOffline:
+    'Die veröffentlichte Spielversion ist nach dem ersten vollständigen Laden auch offline verfügbar. Laufende Runden werden nicht gespeichert.',
+  closeInstall: 'Schließen',
   readyPixel: 'Bereit, Pixel?',
   startShort: '␣ Starten',
   landingPixelAlt: 'Pixel, der neugierige Tigerkater',

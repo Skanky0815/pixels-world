@@ -9,6 +9,7 @@ export default tseslint.config(
       'dist/**',
       'node_modules/**',
       'dist-e2e/**',
+      'dist-pwa-root/**',
       'playwright-report/**',
       'test-results/**',
     ],

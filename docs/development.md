@@ -36,6 +36,21 @@ freigeben, nicht pauschal alle Hosts erlauben.
 `/?room=cozy-remix` wählt nur im Dev-/E2E-Betrieb eine Inhaltsvariante.
 [Raum- und Objektinhalte](../src/content/README.md) erklären den Datenvertrag.
 
+## App-Icons und Offline-Vorschau
+
+`node tools/prepare-app-icons.mjs` erzeugt die Icons reproduzierbar aus Pixels
+bestätigtem Idle-Master. Der Ausschnitt zeigt seinen Kopf; das maskierbare Icon
+hält die Figur im sicheren zentralen Bereich. Die Dateien stehen unter
+`public/icons/` und werden lokal ausgeliefert.
+
+`vite-plugin-pwa` erzeugt Manifest und Workbox-Service-Worker beim Produktionsbuild.
+Die relative App-ID, Startadresse und Scope unterstützen den Pages-Unterpfad.
+Die Registrierung erfolgt ausschließlich auf der veröffentlichten Spielseite,
+nicht auf der Landingpage und nicht im E2E-/DEV-Spiel. Es gibt keinen allgemeinen
+Navigations-Fallback: fehlende DEV-Seiten bleiben auch mit Service Worker 404.
+Updates warten bis zum Schließen der alten Spiel-Tabs, statt aktive Runden neu zu laden.
+Für Offline-Prüfungen `npm run build` und `npm run preview` verwenden.
+
 ## Animationen vergleichen
 
 Im Dev-Server `/animation-compare.html` öffnen oder im Spiel-Footer

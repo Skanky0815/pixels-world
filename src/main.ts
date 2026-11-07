@@ -47,3 +47,6 @@ new Phaser.Game({
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 1000 }, debug: false } },
   scene: new LivingRoomScene(room),
 });
+
+if (import.meta.env.PROD && import.meta.env.MODE !== 'e2e')
+  void import('./pwa/register').then(({ registerOfflineGame }) => registerOfflineGame());

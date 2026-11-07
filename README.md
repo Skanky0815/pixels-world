@@ -27,6 +27,20 @@ spielst du auf Deutsch oder Englisch. Sprache, Lautstärke und Bewegungseinstell
 Browser gespeichert; ein Sprachwechsel erhält die laufende Runde.
 Den aktuellen Versionsstand findest du unter [Releases](https://github.com/Skanky0815/pixels-world/releases).
 
+## Als App nutzen
+
+**Als App installieren** auf der Landingpage öffnet den Installationsdialog des
+Browsers oder zeigt die passenden Schritte. Auf dem iPhone in Safari über
+**Teilen → Zum Home-Bildschirm** hinzufügen und **Als Web-App öffnen** aktivieren.
+Die App startet direkt mit der kurzen Spieleinführung.
+
+Nach dem ersten vollständigen Laden der veröffentlichten Spielseite sind Spiel und
+Landingpage offline verfügbar. Laufende Runden werden nicht gespeichert. Updates
+unterbrechen keine Runde; schließe alle Pixel’s-World-Tabs und App-Fenster und öffne die App neu, um eine
+bereitstehende neue Version zu verwenden. Die Offline-Dateien lassen sich über die
+Website-Daten des Browsers löschen. Für Service Worker sind HTTPS oder localhost
+nötig; der normale DEV-Server richtet keinen Offline-Cache ein.
+
 ## Spielidee
 
 Du spielst Pixel, einen neugierigen Tigerkater allein in Saras Wohnzimmer.

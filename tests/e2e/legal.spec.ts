@@ -71,7 +71,7 @@ test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode d
   }
 });
 
-test('Produktionsspiel lädt nur eigene Ressourcen und hinterlässt keine persistente Speicherung', async ({
+test('Produktionsspiel lädt nur eigene Ressourcen und speichert keine Spielstände', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Dokumentnavigation, Datenschutzbeobachtung und vollständige Browser-Assertions bleiben gemeinsam nachvollziehbar.
 }) => {
