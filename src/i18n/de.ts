@@ -1,4 +1,22 @@
 export const de = {
+  teamRicoGithub: 'Rico auf GitHub',
+  teamSaraGithub: 'Sara auf GitHub',
+  teamNav: 'Über uns',
+  teamEyebrow: 'ÜBER UNS',
+  teamHeading: 'Die Köpfe hinter dem Chaos.',
+  teamTeaser: 'Ein Mensch, eine KI und eine Katze. Was soll da schon schiefgehen?',
+  teamRicoAlt: 'Pixel-Art-Porträt von Rico mit Brille und aschblondem Haar',
+  teamSaraAlt: 'Pixel-Art-Porträt von Sara mit Brille und Pferdeschwanz',
+  teamPixelAlt: 'Pixel-Art-Porträt von Pixel, dem getigerten Kater mit grünen Augen',
+  teamRicoRole: 'Gründer & Entwickler',
+  teamRicoCopy:
+    'Macht aus einer verrückten Idee ein echtes Browser-Spiel. Kümmert sich um Code, Entscheidungen und die nötige Geduld mit Pixel.',
+  teamSaraRole: 'Game Design & Creative Chaos',
+  teamSaraCopy:
+    'Sara ist eine KI-Mitwirkende für Ideen, Dialoge und Konzeption. Liefert kreative Umwege und hilft, das Chaos spielbar zu machen.',
+  teamPixelRole: 'Chief Destruction Officer',
+  teamPixelCopy:
+    'Die Katze hinter der Idee. Testet jedes Möbelstück auf Belastbarkeit und übernimmt keine Verantwortung für die Ergebnisse.',
   installApp: 'Als App installieren',
   installIphone:
     'Am iPhone: In Safari „Teilen“ → „Zum Home-Bildschirm“ wählen und „Als Web-App öffnen“ einschalten.',

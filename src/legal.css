@@ -1,19 +1,11 @@
-@import './style.css';
+@import './landing.css';
 
-body.legal-page {
-  display: block;
+.legal-content {
+  padding: 62px 0;
 }
-.legal-page main {
-  margin: 0 auto;
-}
-.legal-page header {
-  display: block;
-}
-.legal-page nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  margin: 0 0 24px;
+.legal-content h1 {
+  font-size: clamp(32px, 4vw, 48px);
+  margin: 0 0 32px;
 }
 .legal-page article {
   padding: clamp(16px, 3vw, 32px);
@@ -22,22 +14,24 @@ body.legal-page {
   line-height: 1.65;
   overflow-wrap: anywhere;
 }
-.legal-page h2 {
+.legal-page article h2 {
   font-size: 1.2rem;
   margin: 1.5em 0 0.5em;
   color: #e4c182;
+  letter-spacing: normal;
 }
-.legal-page h2:first-child {
+.legal-page article h2:first-child {
   margin-top: 0;
 }
 .legal-page address {
   font-style: normal;
 }
-.legal-page a {
+.legal-page article a {
   color: #e4c182;
   text-underline-offset: 3px;
 }
-.legal-page a:focus-visible {
-  outline: 2px solid #edc37c;
-  outline-offset: 4px;
+@media (max-width: 680px) {
+  .legal-content {
+    padding: 40px 0;
+  }
 }

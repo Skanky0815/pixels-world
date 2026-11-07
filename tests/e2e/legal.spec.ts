@@ -21,14 +21,11 @@ test('Rechtsseiten öffnen aus Einführung und Spiel im selben Tab', async ({
         page.getByRole('link', { name: 'rico-schulz@web.de', exact: true }),
       ).toHaveAttribute('href', 'mailto:rico-schulz@web.de');
       await expect(page.locator('canvas, script')).toHaveCount(0);
-      await page.getByRole('link', { name: 'Zum Spiel' }).click();
-      await expect
-        .poll(async () => {
-          await page.clock.runFor(32);
-
-          return page.locator('.start-screen:visible').count();
-        })
-        .toBe(1);
+      await expect(page.locator('a[href$="play.html"]')).toHaveCount(0);
+      await page.getByRole('link', { name: 'Pixel’s World', exact: true }).click();
+      await expect(page).toHaveURL('http://127.0.0.1:4174/');
+      await expect(page.locator('h1')).toHaveText('Ein Zimmer. Eine Katze. Dein Chaos.');
+      await expect(page.locator('canvas')).toHaveCount(0);
     }
   }
 });
@@ -61,9 +58,9 @@ test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode d
     );
     expect(
       await page
-        .getByRole('link', { name: 'Zum Spiel' })
+        .getByRole('link', { name: 'Das Spiel', exact: true })
         .evaluate((link) => (link as HTMLAnchorElement).href),
-    ).toBe(`${base}/play.html`);
+    ).toBe(`${base}/#spielidee`);
     await test.info().attach('datenschutz-schmal', {
       body: await page.screenshot({ fullPage: true }),
       contentType: 'image/png',

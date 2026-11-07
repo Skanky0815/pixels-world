@@ -10,32 +10,57 @@
     <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
   </head>
-  <body class="legal-page">
+  <body class="landing-page legal-page">
+    <a class="skip-link" href="#legal-content">Zum Inhalt</a>
     <main>
-      <header>
-        <p class="eyebrow">PIXEL’S WORLD</p>
-        <h1>Impressum</h1>
+      <header class="landing-header">
+        <a class="wordmark" href="./" aria-label="Pixel’s World"
+          >Pixel’s World<span aria-hidden="true">✦</span></a
+        >
+        <nav aria-label="Navigation">
+          <a href="./#spielidee">Das Spiel</a>
+          <a href="./#team">Über uns</a>
+          <a
+            href="https://github.com/Skanky0815/pixels-world"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub ↗</a
+          >
+        </nav>
       </header>
-      <nav aria-label="Seitennavigation">
-        <a href="./play.html">Zum Spiel</a>
-        <a href="./datenschutz.html">Datenschutz</a>
-      </nav>
-      <article aria-label="Anbieterkennzeichnung">
-        <h2>Anbieter und Kontakt</h2>
-        <address>
-          Rico Schulz<br />
-          Poschingerstraße 44<br />
-          12157 Berlin<br />
-          Deutschland
-        </address>
-        <p>E-Mail: <a href="mailto:rico-schulz@web.de">rico-schulz@web.de</a></p>
-        <p>Dieses Impressum gilt für das Browser-Spiel Pixel’s World.</p>
-        <h2>Hinweise zu Inhalten und Links</h2>
-        <p>
-          Für Hinweise auf fehlerhafte Inhalte oder mögliche Rechtsverletzungen ist die oben
-          genannte Kontaktadresse erreichbar. Externe Links führen zu Angeboten anderer Betreiber.
-        </p>
-      </article>
+      <section class="legal-content" id="legal-content" aria-labelledby="legal-heading">
+        <p class="eyebrow">PIXEL’S WORLD</p>
+        <h1 id="legal-heading">Impressum</h1>
+        <article aria-label="Anbieterkennzeichnung">
+          <h2>Anbieter und Kontakt</h2>
+          <address>
+            Rico Schulz<br />
+            Poschingerstraße 44<br />
+            12157 Berlin<br />
+            Deutschland
+          </address>
+          <p>E-Mail: <a href="mailto:rico-schulz@web.de">rico-schulz@web.de</a></p>
+          <p>Dieses Impressum gilt für das Browser-Spiel Pixel’s World.</p>
+          <h2>Hinweise zu Inhalten und Links</h2>
+          <p>
+            Für Hinweise auf fehlerhafte Inhalte oder mögliche Rechtsverletzungen ist die oben
+            genannte Kontaktadresse erreichbar. Externe Links führen zu Angeboten anderer Betreiber.
+          </p>
+        </article>
+      </section>
+      <footer class="landing-footer">
+        <div class="landing-links">
+          <a
+            href="https://github.com/Skanky0815/pixels-world/issues/new/choose"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Feedback &amp; Ideen</a
+          >
+          <a href="./impressum.html">Impressum</a>
+          <a href="./datenschutz.html">Datenschutz</a>
+        </div>
+        <p>Pixel’s World</p>
+      </footer>
     </main>
   </body>
 </html>
