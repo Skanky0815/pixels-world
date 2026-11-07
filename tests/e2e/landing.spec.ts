@@ -1,3 +1,4 @@
+import { openPause } from './pause-support';
 import { test, expect, until, waitForGame } from './support';
 
 for (const width of [320, 390, 768, 1440]) {
@@ -54,6 +55,12 @@ test('Landingpage: DE/EN und Tastatur führen ohne Umweg ins Spiel', async ({ pa
   await page.keyboard.down('Space');
   await until(page, (s) => s.started);
   await page.keyboard.up('Space');
+  await openPause(page);
+  await page.getByRole('link', { name: 'Quit game', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL('http://127.0.0.1:4174/');
+  await expect(page.locator('h1')).toHaveText('One room. One cat. Your chaos.');
+  await expect(page.locator('canvas')).toHaveCount(0);
 });
 
 test('Landingpage: Pages-Unterpfad lädt nur lokale Ressourcen und erhält die Navigation', async ({
@@ -95,6 +102,10 @@ test('Landingpage: Pages-Unterpfad lädt nur lokale Ressourcen und erhält die N
       return page.locator('.start-screen:visible').count();
     })
     .toBe(1);
+  await page.getByRole('button', { name: 'Menü', exact: true }).click();
+  await page.getByRole('link', { name: 'Beenden', exact: true }).click();
+  await expect(page).toHaveURL(base);
+  await expect(page.locator('canvas')).toHaveCount(0);
 });
 
 // eslint-disable-next-line max-lines-per-function -- Die Gerätegruppe bindet denselben vollständigen Einstieg an echte Touch-Eingaben.

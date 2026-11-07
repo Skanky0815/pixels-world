@@ -241,14 +241,13 @@ body.landing-page {
   color: #d8af79 !important;
   font-style: italic !important;
 }
-.resting-pixel {
+.walking-pixel {
   display: block;
   flex-shrink: 0;
   width: 128px;
   height: 128px;
-  background: url('../assets/pixel/pixel-sheet.png') 50% 0 / 500% 500% no-repeat;
+  background: url('../assets/pixel/pixel-sheet.png') 0 25% / 500% 500% no-repeat;
   image-rendering: pixelated;
-  transform: scaleX(-1);
 }
 .landing-finale {
   text-align: center;

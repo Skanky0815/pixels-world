@@ -176,7 +176,8 @@ function markup() {
     <section><label class="motion-setting"><input type="checkbox" data-reduce-motion><span data-menu-text="reduceMotion"></span></label>
       <p data-system-motion data-menu-text="systemMotion" hidden></p></section>
     <div class="pause-actions"><button type="button" data-pause-resume></button>
-      <button type="button" data-pause-restart data-menu-text="newRoundLabel"></button></div>`;
+      <button type="button" data-pause-restart data-menu-text="newRoundLabel"></button>
+      <a href="./" data-menu-text="quitGame"></a></div>`;
 }
 
 function menuIcon() {
