@@ -39,6 +39,7 @@ export const LIVING_ROOM = {
   goal: {
     id: 'favorite-ball',
     kind: 'toy',
+    spawn: { size: 'small', category: 'toy', random: false, reason: 'main-goal' },
     label: copy('favouriteBall'),
     motivation: copy('pixelWantsToPlayFindThe'),
     surfaceId: 'upper-shelf',

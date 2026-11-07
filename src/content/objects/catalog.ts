@@ -5,6 +5,7 @@ import { PLANT_NIBBLE } from '../../game/interactions/plant-nibbling.ts';
 
 const cozyCouch = {
   kind: 'couch',
+  spawn: { size: 'large', category: 'furniture', random: false, reason: 'room-fixture' },
   asset: 'couch-default',
   appearance: 'cozy',
   capabilities: ['automatic', 'damage', 'platform'],
@@ -18,6 +19,7 @@ export const OBJECTS = {
   'worn-couch': { ...cozyCouch, appearance: 'worn', rules: { ...COUCH_SCRATCH, damageValue: 1 } },
   'warm-curtain': {
     kind: 'curtain',
+    spawn: { size: 'large', category: 'furniture', random: false, reason: 'room-fixture' },
     asset: 'curtain-default',
     capabilities: ['climb', 'damage'],
     geometry: { width: 112, height: 356 },
@@ -25,6 +27,7 @@ export const OBJECTS = {
   },
   catgrass: {
     kind: 'plant',
+    spawn: { size: 'medium', category: 'plant', random: true, support: 'floor' },
     asset: 'catgrass-default',
     capabilities: ['automatic', 'damage'],
     reach: { left: -38, right: 22 },
@@ -32,6 +35,7 @@ export const OBJECTS = {
   },
   'small-vase': {
     kind: 'vase',
+    spawn: { size: 'small', category: 'decoration', random: true, support: 'any-surface' },
     asset: 'vase-default',
     appearance: 'terracotta',
     capabilities: ['push', 'damage'],
@@ -40,6 +44,7 @@ export const OBJECTS = {
   },
   'blue-vase': {
     kind: 'vase',
+    spawn: { size: 'small', category: 'decoration', random: true, support: 'any-surface' },
     asset: 'vase-default',
     appearance: 'blue',
     capabilities: ['push', 'damage'],
@@ -48,6 +53,7 @@ export const OBJECTS = {
   },
   'heirloom-vase': {
     kind: 'vase',
+    spawn: { size: 'small', category: 'decoration', random: true, support: 'any-surface' },
     asset: 'vase-default',
     appearance: 'gold',
     capabilities: ['push', 'damage'],
@@ -56,6 +62,7 @@ export const OBJECTS = {
   },
   'mellow-vase': {
     kind: 'vase',
+    spawn: { size: 'small', category: 'decoration', random: true, support: 'any-surface' },
     asset: 'vase-default',
     appearance: 'mellow',
     capabilities: ['push', 'damage'],

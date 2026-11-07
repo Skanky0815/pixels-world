@@ -13,6 +13,40 @@ Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `pl
 
 `RoomDefinition` enthält logische Abmessungen, Boden, Spawn, Plattformen, Instanzen, HUD-Hinweisposition und statische Dekoration. Dekoration besteht nur aus Rechtecken und Texten. Kleine TypeScript-Helfer im Beispiel erzeugen daraus wiederholte statische Daten; es werden keine Gameplay-Callbacks gespeichert.
 
+## Spawn-Profile für spätere Slots
+
+Jede Objektvorlage besitzt ein typisiertes `spawn`-Profil im bestehenden Katalog:
+`size` (`small`, `medium`, `large`), `category` und `random`. Zufallskandidaten
+nennen ihre zulässige Auflage (`support: 'floor' | 'any-surface'`). Feste
+Raumausstattung verwendet `random: false` mit `reason: 'room-fixture'`.
+`goal.spawn` schützt das separate Hauptziel ausdrücklich mit `reason: 'main-goal'`;
+es wird nicht in den gewöhnlichen Objektkatalog verschoben. Figuren und
+Plattformen sind ebenfalls keine Zufallskandidaten.
+
+Die Größenklassen aus [spawn-profile.ts](../game/content/spawn-profile.ts) sind
+konservative Auswahlklassen: bis 32×32 Spielpixel `small`, bis 96×96 `medium`,
+darüber `large`. Die Prüfung nutzt vorhandene Asset-/Objektmaße; bei Sofas Breite
+und Sitzhöhe. Diese Klassen verändern keine Grafik oder Kollisionsfläche und
+ersetzen keine exakte Geometrie-/Überlappungsprüfung. Kategorie und vorhandene
+`capabilities` bleiben unabhängig: benötigte Fähigkeiten eines Filters müssen
+alle vorliegen, Kategorien sind erlaubte Alternativen.
+
+`filterSpawnCandidates` liefert passende Katalogschlüssel in stabiler Reihenfolge;
+`fitsSpawnSlot` prüft Größenkapazität, Kategorie, Auflage und optional
+`requiredCapabilities`. Ein leerer Kategoriefilter erlaubt keine Kandidaten.
+Profile, Größen und Filter werden vor Verwendung validiert. Die bestehende
+Raumvalidierung erkennt fehlende Metadaten, unpassende Kategorien/Größen und
+verbotene Zufallsplatzierung struktureller Objekte oder des Hauptziels.
+
+Katzengras ist aktuell nur für Bodenplätze geeignet: seine stehende Interaktion,
+Kippbewegung und Erde benötigen einen festen Bodenanker. Der Filter schließt es
+auf erhöhten Möbelplätzen aus. Auch eine passende Größenklasse allein erlaubt
+keine solche Platzierung. Weitere Auflagenunterstützung benötigt eine eigene
+Mechanikänderung.
+
+Diese Metadaten ändern die handgebaute Raumbelegung nicht. Das eigentliche
+Slot-System, Dichte und seedbasierte Auswahl folgen in #172.
+
 ## Vor dem Engine-Start validieren
 
 [resolveRoom](../game/content/resolve-room.ts) prüft alle Objektvorlagen und den gewählten Raum, bevor `Phaser.Game` erzeugt wird. Zusätzlich validiert die Vite-Konfiguration beim Build-/Dev-Start alle registrierten Räume, sodass Fehler schon dort scheitern. Geprüft werden Shape-Grundlagen, endliche Zahlen, sichere nicht negative Punktwerte, positive Intervalle, zulässige Geometrie/Farben, bekannte und passende Assets/Fähigkeiten, eindeutige IDs über Objekte und Flächen hinweg, Referenzen, Auflagegrenzen, Raumgrenzen, Spawn und zyklische Auflagen. Auch die insgesamt mögliche Punktzahl muss eine sichere Ganzzahl bleiben. Fehlermeldungen nennen den logischen Datenpfad, z. B. `rooms.living-room.objects.small-vase.placement.surfaceId`.
