@@ -1,3 +1,4 @@
+import { preloadVaseArt } from '../game/assets/vase-art';
 import Phaser from 'phaser';
 import { ASSETS } from '../game/assets/definitions';
 import { spriteUrl } from '../game/assets/urls';
@@ -40,6 +41,7 @@ export class PlaygroundScene extends Phaser.Scene {
   }
 
   preload() {
+    preloadVaseArt(this);
     const asset = ASSETS.pixel;
 
     this.load.spritesheet('pixel', spriteUrl('pixel'), {

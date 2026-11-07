@@ -32,6 +32,7 @@ export const OBJECTS = {
   'small-vase': {
     kind: 'vase',
     asset: 'vase-default',
+    appearance: 'terracotta',
     capabilities: ['push', 'damage'],
     points: 25,
     color: 0xc5875f,
@@ -39,6 +40,7 @@ export const OBJECTS = {
   'blue-vase': {
     kind: 'vase',
     asset: 'vase-default',
+    appearance: 'blue',
     capabilities: ['push', 'damage'],
     points: 35,
     color: 0x638c97,
@@ -46,6 +48,7 @@ export const OBJECTS = {
   'heirloom-vase': {
     kind: 'vase',
     asset: 'vase-default',
+    appearance: 'gold',
     capabilities: ['push', 'damage'],
     points: 40,
     color: 0xc5ae70,
@@ -53,6 +56,7 @@ export const OBJECTS = {
   'mellow-vase': {
     kind: 'vase',
     asset: 'vase-default',
+    appearance: 'mellow',
     capabilities: ['push', 'damage'],
     points: 15,
     color: 0xc5875f,

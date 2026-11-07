@@ -1,3 +1,4 @@
+import { preloadVaseArt } from '../assets/vase-art';
 import { difficultyPreferences } from '../../settings/difficulty';
 import { difficultyRoom, difficultyTimer, type Difficulty } from '../../content/difficulty';
 import { resolveRoom } from '../content/resolve-room';
@@ -86,6 +87,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   preload() {
+    preloadVaseArt(this);
     this.preloadSprite(this.room.definition.pixelAsset);
     this.preloadSprite('sara');
   }

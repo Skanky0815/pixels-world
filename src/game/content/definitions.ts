@@ -1,3 +1,4 @@
+import type { VaseAppearance } from '../assets/vase-appearance.ts';
 import type { GoalDefinition, ResolvedGoal } from '../domain/main-goal.ts';
 import type { AssetKey } from '../assets/definitions.ts';
 import type { Bounds } from '../interactions/contracts.ts';
@@ -40,6 +41,7 @@ export type ObjectDefinition =
   | (Base & {
       readonly kind: 'vase';
       readonly asset: 'vase-default';
+      readonly appearance?: VaseAppearance;
       readonly points: number;
       readonly color: number;
     });

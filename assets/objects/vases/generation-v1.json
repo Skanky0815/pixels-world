@@ -1,0 +1,76 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "references": [
+    "assets/landing/living-room.png",
+    "assets/pixel/pixel-idle-master.png",
+    "assets/sara/reference-v4/sara-idle-left-v4.png"
+  ],
+  "approval": "Terracotta/blue/gold style and 18x28 scale approved; Mellow explicitly requested with its own silhouette",
+  "export": {
+    "command": "node tools/prepare-vase-assets.mjs",
+    "boundsAlphaThreshold": 192,
+    "rgba": "preserve nearest-neighbour samples",
+    "intactCell": [
+      18,
+      28
+    ],
+    "intactMaxFit": [
+      16,
+      26
+    ],
+    "intactAnchor": "bottom center",
+    "shardCell": [
+      8,
+      8
+    ],
+    "shardMaxFit": [
+      6,
+      4
+    ],
+    "shardAnchor": "center"
+  },
+  "variants": [
+    {
+      "name": "terracotta",
+      "source": "sources/terracotta-source-v1.png",
+      "output": "vase-terracotta-intact.png",
+      "prompt": "Use case: stylized-concept. Create ONE small terracotta ceramic vase as a low-resolution 2D side-view game sprite for Pixel’s World. Image 1 is the existing living-room screenshot and gives the muted warm palette and simple cozy furniture style ONLY. Image 2 is the approved Pixel cat master and gives the chunky game-pixel style and relative readability ONLY. Do not include the room, shelves, cat or any other object. The sole subject is an intact friendly pear-shaped terracotta vase: rounded broad belly, short narrow neck, a slightly flared lip, stable small flat base. Warm muted clay orange like #c5875f, a darker warm brown contour, two or three simple blocky shading tones and one restrained cream band near the neck. No face, eyes, flowers, lettering, handles, perspective, photorealistic shine or cast shadow. Design STRICTLY as a tiny 18-pixel-wide by 28-pixel-tall logical game cell, with the opaque vase contained within about 14–16 by 26 logical pixels and a one-pixel transparent breathing margin. Keep shapes and decoration large enough to read at that exact small size; no fine ornament or smooth gradients. Crisp square pixel blocks, flat side/front view, centered upright with a flat horizontal foot, transparent exterior alpha. Return only the single complete vase, generously enlarged with nearest-neighbor-looking blocks for inspection, no frame or text."
+    },
+    {
+      "name": "blue",
+      "source": "sources/blue-source-v1.png",
+      "output": "vase-blue-intact.png",
+      "prompt": "Create ONE intact blue ceramic vase sprite for the same Pixel’s World vase family as reference image 1. Match its cozy muted palette, chunky stepped outline, flat side/front view and tiny-game-object readability, but give this blue variant a DISTINCT slender bottle silhouette: taller narrow neck, modest rounded shoulders, gently tapering body and a small flat foot. Main glaze muted blue-gray around #638c97, dark desaturated blue-brown outline, one light blue block highlight and one narrow cream decorative band near the shoulder. No flowers, face, handles, writing, objects, environment or floor shadow. STRICT tiny 18x28 logical-pixel cell, opaque shape contained within approximately 12–14x26 logical pixels, all details readable at original tiny size. Use only a few broad FLAT pixel-color clusters, avoid smooth gradients or photographic texture. Whole single vase upright, centered with transparent space around it, visually sized to the terracotta reference. Return a generously enlarged crisp square-pixel version of this one sprite for inspection. True transparent alpha background, no border, text or watermark."
+    },
+    {
+      "name": "gold",
+      "source": "sources/gold-source-v1.png",
+      "output": "vase-gold-intact.png",
+      "prompt": "Create ONE intact golden heirloom ceramic vase sprite for the same Pixel’s World family as the two reference vases. Match the cozy muted colors and crisp chunky stepped pixel outline, but use a DISTINCT elegant urn silhouette: flared open-looking lip, medium short narrow neck, broad rounded shoulders, a subtly pinched waist above a small flared pedestal foot. Muted antique ochre/gold around #c5ae70, warm dark brown contour, a simple cream-and-brown geometric band on the belly with at most one tiny central diamond motif. Ceramic heirloom, not a shiny trophy; no handles, flowers, text, face, jewelry or extra objects. Strictly designed for an 18x28 logical-pixel game cell, with the whole vase inside about 16x26 logical pixels and transparent breathing margin. Use only a few broad flat color clusters; tiny ornament must still read at actual game size. No realistic texture or smooth gradient, no isometric perspective or floor shadow. Upright flat side/front view with horizontal foot, centered, entire vase visible. Return only this single vase, enlarged in crisp square-pixel steps for inspection, with genuine transparent alpha background, no border, watermark or labels."
+    },
+    {
+      "name": "mellow",
+      "source": "sources/mellow-source-v2.png",
+      "output": "vase-mellow-intact.png",
+      "prompt": "Refine ONLY the proportions of this mellow terracotta game vase. Keep its broad round bowl belly, very short neck, small wide rim, cream shoulder band, warm clay colors and stepped pixel style. It is currently too flat/wide for the shared game cell. Make the body taller and a little narrower so the entire opaque silhouette has width-to-height ratio approximately 16:22 (about 0.73), i.e. clearly TALLER THAN WIDE, while still squat compared with the reference family's long-necked vases. Preserve the distinctive almost neckless rounded jar shape; do not turn it into a tall-necked bottle. This is a tiny 18x28 logical-pixel sprite, opaque figure about 16x22 logical pixels. Keep flat horizontal foot, single complete vase, frontal side view, no other objects, no flowers, no handles, no text, no shadow. True transparent exterior alpha and generous margin remain. No realistic texture or smooth gradient; use readable broad pixel-color blocks."
+    },
+    {
+      "name": "terracotta-shard",
+      "source": "sources/terracotta-shard-source-v1.png",
+      "output": "vase-terracotta-shard.png",
+      "prompt": "Create ONE tiny irregular pottery SHARD sprite from the terracotta vase shown in the reference. This is one broken curved ceramic fragment, NOT a whole vase and not a pile. Its outside glaze is the same muted terracotta/clay orange, with one small cream-band remnant and a darker chipped edge. Flat 2D side/top game icon with a jagged stepped triangular/trapezoid silhouette, just 6x4 logical pixels inside an 8x8 transparent cell. Only a few large flat pixel-color clusters, chunky readable at tiny size, no realistic texture or smooth gradient. The fragment will be copied, rotated and scattered by existing game code. Enlarge the tiny pixel design for inspection, centered, fully visible with true transparent background. No shadow, background, text, border or extra pieces."
+    },
+    {
+      "name": "blue-shard",
+      "source": "sources/blue-shard-source-v1.png",
+      "output": "vase-blue-shard.png",
+      "prompt": "Create ONE tiny irregular broken ceramic shard sprite from the blue vase in image 1, matching the terracotta shard style in image 2. Use muted blue-gray glaze like #638c97, a dark desaturated edge, a small pale-blue/cream accent and chipped corners. A single jagged flat fragment, not a vase, not a pile; distinctly nonrectangular stepped pixel silhouette. Design as just 6x4 logical pixels inside an 8x8 transparent game cell, very few broad flat colors, no gradient, photo texture, lettering or shadow. Enlarge its crisp square pixels for inspection. Entire single shard centered on true transparent background with generous empty margin; no border or watermark."
+    },
+    {
+      "name": "gold-shard",
+      "source": "sources/gold-shard-source-v1.png",
+      "output": "vase-gold-shard.png",
+      "prompt": "Create ONE tiny irregular broken ceramic shard sprite from the golden heirloom vase in image 1, matching the terracotta shard style in image 2. Use muted antique ochre/gold like #c5ae70, a warm dark brown chipped edge and a little remnant of the cream-and-brown decorative band. A single jagged curved ceramic fragment, not a trophy, not a whole vase, not a pile. Distinctly nonrectangular stepped pixel silhouette. Design as just 6x4 logical pixels inside an 8x8 transparent game cell, very few broad flat colors, no gradient, photo texture, lettering or shadow. Enlarge its crisp square pixels for inspection. Entire single shard centered on true transparent background with generous empty margin; no border or watermark."
+    }
+  ]
+}

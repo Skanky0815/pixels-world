@@ -76,6 +76,10 @@ export interface GameTestState {
   }>;
   readonly vases: ReadonlyArray<{
     readonly id: string;
+    readonly texture: string;
+    readonly bodyWidth: number;
+    readonly bodyHeight: number;
+    readonly shards: number;
     readonly x: number;
     readonly y: number;
     readonly bottom: number;

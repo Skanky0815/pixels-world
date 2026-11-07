@@ -1,3 +1,4 @@
+import { VASE_SHARD_FAMILY, type VaseAppearance } from '../assets/vase-appearance';
 import type Phaser from 'phaser';
 import { ASSETS } from '../assets/definitions';
 import { assertObjectId, chaosEvent, DamageHistory } from '../domain/chaos-event';
@@ -10,6 +11,7 @@ export interface VaseConfig {
   readonly shelfY: number;
   readonly points: number;
   readonly color: number;
+  readonly appearance?: VaseAppearance;
   readonly floorY: number;
   readonly roomWidth: number;
 }
@@ -37,18 +39,11 @@ export class Vase implements Destructible, ObjectLifecycle {
     this.id = config.id;
     this.maximumScore = config.points;
 
-    if (!scene.textures.exists('vase')) {
-      const g = scene.make.graphics({ x: 0, y: 0 });
-
-      g.fillStyle(0xffffff).fillRect(5, 0, 8, 8).fillRect(2, 8, 14, 16).fillRect(4, 24, 10, 4);
-      g.fillStyle(0xd3d3d3).fillRect(5, 0, 8, 3).fillRect(12, 9, 3, 14);
-      g.generateTexture('vase', ASSETS['vase-default'].width, ASSETS['vase-default'].height);
-      g.destroy();
-    }
+    this.prepareFallback();
 
     this.collider = scene.physics.add
-      .image(config.x, config.shelfY - 14, 'vase')
-      .setTint(config.color)
+      .image(config.x, config.shelfY - 14, config.appearance ? `vase-${config.appearance}` : 'vase')
+      .setTint(config.appearance ? 0xffffff : config.color)
       .setDepth(2);
     this.shards = scene.add.container(0, 0).setDepth(2);
     this.reset();
@@ -88,13 +83,7 @@ export class Vase implements Destructible, ObjectLifecycle {
   // eslint-disable-next-line max-lines-per-function -- Jeder Splitter wird in einer Schleife mit seinem ausgeschriebenen Tween-Vertrag erzeugt.
   private scatterShards() {
     for (let i = 0; i < 7; i++) {
-      const shard = this.scene.add.rectangle(
-        this.collider.x,
-        this.config.floorY - 3,
-        4 + (i % 3),
-        3,
-        this.config.color,
-      );
+      const shard = this.createShard(i);
 
       this.shards.add(shard);
       this.scene.tweens.add({
@@ -107,6 +96,22 @@ export class Vase implements Destructible, ObjectLifecycle {
     }
   }
 
+  private prepareFallback() {
+    if (!this.config.appearance && !this.scene.textures.exists('vase')) drawFallback(this.scene);
+  }
+
+  private createShard(index: number) {
+    const appearance = this.config.appearance;
+    const x = this.collider.x,
+      y = this.config.floorY - 3;
+
+    return appearance
+      ? this.scene.add
+          .image(x, y, `vase-shard-${VASE_SHARD_FAMILY[appearance]}`)
+          .setScale(0.8 + (index % 3) * 0.1)
+      : this.scene.add.rectangle(x, y, 4 + (index % 3), 3, this.config.color);
+  }
+
   damageSnapshot() {
     return this.history.snapshot();
   }
@@ -117,6 +122,10 @@ export class Vase implements Destructible, ObjectLifecycle {
 
     return {
       id: this.id,
+      texture: this.collider.texture.key,
+      bodyWidth: body.width,
+      bodyHeight: body.height,
+      shards: this.shards.length,
       x: this.collider.x,
       y: this.collider.y,
       bottom: body.bottom,
@@ -142,4 +151,14 @@ export class Vase implements Destructible, ObjectLifecycle {
     this.collider.destroy();
     this.shards.destroy(true);
   }
+}
+
+/** Existing color-only content retains the original procedural appearance. */
+function drawFallback(scene: Phaser.Scene) {
+  const g = scene.make.graphics({ x: 0, y: 0 });
+
+  g.fillStyle(0xffffff).fillRect(5, 0, 8, 8).fillRect(2, 8, 14, 16).fillRect(4, 24, 10, 4);
+  g.fillStyle(0xd3d3d3).fillRect(5, 0, 8, 3).fillRect(12, 9, 3, 14);
+  g.generateTexture('vase', ASSETS['vase-default'].width, ASSETS['vase-default'].height);
+  g.destroy();
 }
