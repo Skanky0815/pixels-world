@@ -1,16 +1,75 @@
+main {
+  max-width: 1200px;
+  margin: 24px auto;
+}
+.playground-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  max-width: 800px;
+}
+.playground-toolbar label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  gap: 6px;
+}
+.playground-toolbar select {
+  margin: 0;
+}
+.playground-toolbar button {
+  flex-shrink: 0;
+}
+.playground-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 800px) minmax(260px, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+.playground-stage {
+  min-width: 0;
+}
+#playground-events {
+  max-height: 160px;
+  overflow-y: auto;
+  padding-left: 24px;
+}
+#playground-diagnostics {
+  max-height: 360px;
+  overflow-y: auto;
+}
+@media (max-width: 1120px) {
+  .playground-workspace {
+    grid-template-columns: minmax(0, 800px);
+  }
+}
+@media (max-width: 480px) {
+  main {
+    padding: 0 16px;
+  }
+  .playground-toolbar {
+    flex-wrap: wrap;
+  }
+  .playground-toolbar label {
+    flex-basis: 100%;
+  }
+}
 #game {
   position: relative;
   width: 100%;
   aspect-ratio: 800 / 540;
   overflow: hidden;
-  margin-top: 20px;
 }
 #game:focus-visible {
   outline: 3px solid #e9be82;
   outline-offset: 3px;
 }
 .playground-readout {
-  margin-top: 24px;
+  min-width: 0;
+  padding: 16px;
+  background: #382f35;
+  border: 1px solid #69534b;
+  border-radius: 8px;
 }
 .playground-readout dl {
   display: grid;

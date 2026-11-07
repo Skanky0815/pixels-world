@@ -70,6 +70,9 @@ Asset-Verträge und reproduzierbare Exporte bleiben bei
 
 Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.
 Auf der DEV-Seite führt ebenfalls **Playground** zu `/interactable-playground.html`.
+Objektauswahl und Reset bilden eine kompakte Toolbar. Auf breiten Bildschirmen
+steht die Live-Diagnose neben der höchstens 800 Pixel breiten Testszene; auf
+schmalen Geräten darunter. Die Spielwelt und Physik bleiben dabei unverändert.
 Die Auswahl stammt direkt aus dem Objektkatalog, einschließlich aller Varianten.
 Pixel lässt sich ohne Rundenstart normal steuern; Sofa/Pflanze reagieren nach
 kurzem Stillstand, der Vorhang beim Klettern/Rutschen und die Vase beim Schieben

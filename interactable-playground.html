@@ -18,41 +18,47 @@
         <a href="/play.html">Zum Spiel</a>
       </nav>
       <p>Ein Objekt, echte Spielmechanik – ohne Runde, Heimkehr oder gespeicherte Ergebnisse.</p>
-      <label for="playground-object">Objekt / Variante aus dem Spielkatalog</label>
-      <select id="playground-object" disabled></select>
-      <button id="playground-reset" disabled>Szene zurücksetzen</button>
+      <div class="playground-toolbar">
+        <label for="playground-object"
+          >Objekt / Variante aus dem Spielkatalog
+          <select id="playground-object" disabled></select>
+        </label>
+        <button id="playground-reset" disabled>Szene zurücksetzen</button>
+      </div>
       <p id="playground-help">
         Ins Zimmer klicken, dann ← / → zum Laufen, Leertaste zum Springen und ↑ / ↓ am Vorhang. Bei
         Sofa und Pflanze kurz stehen bleiben; Vasen vom Regal schieben. Reset setzt auch Pixel und
         alle Chaos-Punkte zurück.
       </p>
-      <section class="playground-stage" aria-label="Isolierte Testszene">
-        <div
-          id="game"
-          tabindex="0"
-          role="group"
-          aria-label="Playground steuern"
-          aria-describedby="playground-help"
-        ></div>
-      </section>
-      <section class="playground-readout" aria-label="Objektdiagnose">
-        <h2>Live-Diagnose</h2>
-        <dl>
-          <dt>Typ / Variante</dt>
-          <dd><output id="playground-kind">Lädt …</output></dd>
-          <dt>Zustand</dt>
-          <dd><output id="playground-state">Lädt …</output></dd>
-          <dt>Chaos-Punkte</dt>
-          <dd><output id="playground-score">0</output></dd>
-        </dl>
-        <h3>Chaos-Ereignisse · zuletzt ausgelöst</h3>
-        <p id="playground-empty">Noch keine Ereignisse.</p>
-        <ol id="playground-events"></ol>
-        <details>
-          <summary>Objekt, Pixel und Ressourcen im Detail</summary>
-          <pre id="playground-diagnostics"></pre>
-        </details>
-      </section>
+      <div class="playground-workspace">
+        <section class="playground-stage" aria-label="Isolierte Testszene">
+          <div
+            id="game"
+            tabindex="0"
+            role="group"
+            aria-label="Playground steuern"
+            aria-describedby="playground-help"
+          ></div>
+        </section>
+        <section class="playground-readout" aria-label="Objektdiagnose">
+          <h2>Live-Diagnose</h2>
+          <dl>
+            <dt>Typ / Variante</dt>
+            <dd><output id="playground-kind">Lädt …</output></dd>
+            <dt>Zustand</dt>
+            <dd><output id="playground-state">Lädt …</output></dd>
+            <dt>Chaos-Punkte</dt>
+            <dd><output id="playground-score">0</output></dd>
+          </dl>
+          <h3>Chaos-Ereignisse · zuletzt ausgelöst</h3>
+          <p id="playground-empty">Noch keine Ereignisse.</p>
+          <ol id="playground-events"></ol>
+          <details>
+            <summary>Objekt, Pixel und Ressourcen im Detail</summary>
+            <pre id="playground-diagnostics"></pre>
+          </details>
+        </section>
+      </div>
     </main>
     <script type="module" src="/src/dev/interactable-playground.ts"></script>
   </body>
