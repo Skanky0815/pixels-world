@@ -9,7 +9,9 @@ test('Pause hält Welt und Timer an; Fokuswechsel und Menütasten setzen nicht f
   // eslint-disable-next-line max-lines-per-function -- Gehaltene Eingabe, Pause, Fokuswechsel und frisches Fortsetzen werden als zusammenhängender Nutzerablauf geprüft.
 }) => {
   await start(page);
-  await expect(page.getByRole('button', { name: 'Menü', exact: true })).toHaveText('');
+  await expect(
+    page.locator('main > header').getByRole('button', { name: 'Optionen', exact: true }),
+  ).toHaveText('');
   await expect(page.locator('.pause-toggle svg')).toHaveAttribute('aria-hidden', 'true');
   await page.keyboard.down('ArrowRight');
   await until(page, (s) => s.pixel.x > 145);
@@ -78,7 +80,7 @@ test('Pause schützt die Versöhnungsfrist und erhält Sprachwechsel ohne Neusta
   await expect(page.getByRole('dialog', { name: 'Pause & settings' })).toBeVisible();
   expect((await state(page)).reconciliation).toEqual(paused.reconciliation);
   expect((await state(page)).generation).toBe(paused.generation);
-  await page.getByRole('button', { name: 'Resume', exact: true }).click();
+  await page.getByRole('button', { name: 'Close options', exact: true }).click();
   await until(page, (s) => s.reconciliation.remainingMs < paused.reconciliation.remainingMs, 100);
   expect((await state(page)).reconciliation.failures).toBe(0);
 });
@@ -134,7 +136,10 @@ test.describe('Pause auf Touch-Geräten', () => {
     // eslint-disable-next-line max-lines-per-function -- Menüknopf, Rotation und mobile Sprachwahl bleiben Teil desselben Touch-Ablaufs.
   }, testInfo) => {
     await start(page);
-    await page.getByRole('button', { name: 'Menü', exact: true }).tap();
+    await page
+      .locator('main > header')
+      .getByRole('button', { name: 'Optionen', exact: true })
+      .tap();
     await expect(page.locator(menu)).toBeVisible();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator(menu).getByRole('button', { name: 'English', exact: true }).tap();
@@ -145,7 +150,7 @@ test.describe('Pause auf Touch-Geräten', () => {
       body: await page.locator(menu).screenshot(),
       contentType: 'image/png',
     });
-    await page.getByRole('button', { name: 'Resume', exact: true }).tap();
+    await page.getByRole('button', { name: 'Close options', exact: true }).tap();
     await expect(page.locator(menu)).not.toBeVisible();
     expect((await state(page)).active).toBe(true);
   });

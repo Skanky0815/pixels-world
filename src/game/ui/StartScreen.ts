@@ -1,3 +1,4 @@
+import { actionButton } from './game-action';
 import { t, onLanguageChange, translateExact } from '../../i18n/locale';
 import type { ResolvedGoal } from '../domain/main-goal';
 
@@ -11,6 +12,7 @@ export class StartScreen {
     visible: boolean,
     private readonly goal: ResolvedGoal,
     private readonly options: () => void,
+    private readonly album: () => void,
   ) {
     const host = document.getElementById('game');
 
@@ -20,6 +22,9 @@ export class StartScreen {
     this.root.addEventListener('click', (event) => {
       if (event.target instanceof Element && event.target.closest('[data-start-options]'))
         this.options();
+
+      if (event.target instanceof Element && event.target.closest('[data-start-album]'))
+        this.album();
     });
     this.root.setAttribute('aria-label', t('gameIntroduction'));
     this.root.innerHTML = introMarkup();
@@ -71,6 +76,6 @@ function introMarkup() {
       <div><dt><span class="space-key" role="img" aria-label="${t('spaceLabel')}">␣</span></dt><dd>${t('jumpAndLeapOffTheCurtain')}</dd></div>
       <div><dt>↑ ↓</dt><dd>${t('climbTheCurtain')}</dd></div>
     </dl>
-  </div><p class="start-prompt"><button type="button" class="start-options" data-start-options>${t('gameOptions')}</button><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
+  </div><p class="start-prompt"><span class="game-menu-actions">${actionButton('album', 'data-start-album')}${actionButton('options', 'data-start-options')}</span><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
   <span class="touch-prompt">${t('startTouchShort')}</span></p>`;
 }

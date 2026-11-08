@@ -1,3 +1,4 @@
+import { closeButtonMarkup, configureCloseButton } from '../ui/button';
 import { onLanguageChange, t, type TextKey } from '../i18n/locale';
 import './install.css';
 
@@ -15,6 +16,10 @@ export class InstallApp {
     this.dialog.className = 'install-dialog';
     this.dialog.innerHTML = markup();
     document.body.append(this.dialog);
+    this.dialog.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('[data-install-close]'))
+        this.dialog.close();
+    });
     this.button.hidden = matchMedia('(display-mode: standalone)').matches;
     this.button.addEventListener('click', () => void this.install().catch(() => this.help()));
     window.addEventListener('beforeinstallprompt', (event) => {
@@ -45,15 +50,22 @@ export class InstallApp {
   private refresh() {
     this.button.textContent = t('installApp');
     this.dialog.setAttribute('aria-label', t('installApp'));
+    this.refreshClose();
 
     for (const node of Array.from(this.dialog.querySelectorAll<HTMLElement>('[data-install-text]')))
       node.textContent = t(node.dataset.installText as TextKey);
   }
+
+  private refreshClose() {
+    const button = this.dialog.querySelector<HTMLButtonElement>('[data-install-close]');
+
+    if (button) configureCloseButton(button, t('closeInstall'));
+  }
 }
 
 function markup() {
-  return `<h2 data-install-text="installApp"></h2>
+  return `<header class="popup-heading">${closeButtonMarkup(t('closeInstall'), 'data-install-close')}<h2 data-install-text="installApp"></h2></header>
     <p data-install-text="installIphone"></p><p data-install-text="installBrowser"></p>
     <p data-install-text="installOffline"></p>
-    <form method="dialog"><button data-install-text="closeInstall"></button></form>`;
+    `;
 }

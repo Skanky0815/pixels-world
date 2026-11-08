@@ -97,8 +97,9 @@ body.landing-page {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 50px;
-  padding: 12px 22px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 22px;
   border: 2px solid #e4c182;
   box-shadow: 4px 4px 0 #171418;
   background: #e4c182;
@@ -222,6 +223,7 @@ body.landing-page {
 .landing-cast figure {
   border: 1px solid #685044;
   background: #403a35;
+  box-shadow: 6px 6px 0 #19151a;
 }
 .landing-cast p + p {
   margin-top: 18px !important;
@@ -511,5 +513,45 @@ body.landing-page {
 @media (max-width: 1000px) {
   .team-cards {
     grid-template-columns: 1fr;
+  }
+}
+
+.landing-album {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 40px;
+  align-items: center;
+  padding: 12px 0 74px;
+}
+.landing-album > div {
+  min-width: 0;
+}
+.landing-album .eyebrow {
+  white-space: normal;
+}
+.landing-album p:not(.eyebrow) {
+  color: #cdbca9;
+  font:
+    16px/1.75 system-ui,
+    sans-serif;
+  margin: 0 0 20px;
+}
+.landing-album .album-storage-note {
+  font-size: 13px;
+  color: #b6a195;
+}
+.landing-page .landing-album img {
+  aspect-ratio: auto;
+}
+.landing-album figure {
+  border: 1px solid #685044;
+  background: #403239;
+  box-shadow: 6px 6px 0 #19151a;
+}
+@media (max-width: 900px) {
+  .landing-album {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding-bottom: 48px;
   }
 }

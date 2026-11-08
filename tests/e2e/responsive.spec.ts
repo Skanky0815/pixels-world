@@ -28,7 +28,7 @@ for (const viewport of [
     expect(
       Math.max(room.y + room.height, left.y + left.height, right.y + right.height),
     ).toBeLessThanOrEqual(viewport.height);
-    const title = await page.locator('header').boundingBox();
+    const title = await page.locator('main > header').boundingBox();
     const info = await page.locator('.mobile-hud').boundingBox();
 
     expect(title!.x + title!.width).toBeLessThanOrEqual(room.x);

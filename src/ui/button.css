@@ -1,0 +1,61 @@
+.ui-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 14px;
+  border: 1px solid #b79879;
+  border-radius: 4px;
+  background: #493a3d;
+  color: #f3e3c9;
+  font: inherit;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ui-button--icon {
+  width: 44px;
+  padding: 0;
+}
+.ui-button--icon svg {
+  width: 18px;
+  height: 18px;
+}
+.ui-button[hidden] {
+  display: none;
+}
+.ui-button:focus-visible {
+  outline: 2px solid #edc37c;
+  outline-offset: 3px;
+}
+.ui-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+dialog .popup-heading {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 0;
+}
+dialog .popup-heading > div,
+dialog .popup-heading h2 {
+  min-width: 0;
+  margin: 0;
+}
+.ui-button[data-popup-close] {
+  align-self: flex-start;
+  order: 2;
+  margin-left: auto;
+  font-size: 28px;
+  line-height: 1;
+}

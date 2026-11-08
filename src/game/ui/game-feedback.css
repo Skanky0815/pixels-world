@@ -16,7 +16,7 @@
   padding: 5px 8px;
   border: 1px solid #e4c182;
   border-radius: 5px;
-  background: #403a35;
+  background: var(--popup-background);
   color: #fff1cf;
   font:
     12px/1.3 system-ui,

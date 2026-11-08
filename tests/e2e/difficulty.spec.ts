@@ -41,7 +41,10 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   await waitForGame(page);
   expect((await state(page)).difficulty).toBe('easy');
   expect((await state(page)).started).toBe(false);
-  await page.getByRole('button', { name: 'Optionen', exact: true }).click();
+  await page
+    .locator('.start-screen')
+    .getByRole('button', { name: 'Optionen', exact: true })
+    .click();
   await expect(page.getByLabel('Schwierigkeitsgrad', { exact: true })).toHaveValue('easy');
   await page.locator('[data-language="en"]').click();
   await expect(page.getByLabel('Difficulty', { exact: true })).toHaveValue('easy');
@@ -57,7 +60,10 @@ test.describe('Schwierigkeitswahl mit Touch', () => {
     // eslint-disable-next-line max-lines-per-function -- Native Optionen und der reale Weiter-Button starten dieselbe gewählte Runde ohne Tastatur.
   }, testInfo) => {
     await loadIntro(page);
-    await page.getByRole('button', { name: 'Optionen', exact: true }).tap();
+    await page
+      .locator('.start-screen')
+      .getByRole('button', { name: 'Optionen', exact: true })
+      .tap();
     await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
     const bounds = await page.locator('.pause-menu').boundingBox();
 

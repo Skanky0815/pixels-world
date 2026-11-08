@@ -1,37 +1,25 @@
 import { t, onLanguageChange } from './i18n/locale';
+import { buildInfoMarkup } from './footer-content';
 const footer = document.querySelector('#build-info');
 
 if (!footer) throw new Error('Build footer missing');
-footer.append(`© ${new Date().getFullYear()} Pixel's World · `);
-const version = document.createElement(__APP_RELEASE_URL__ ? 'a' : 'span');
 
-version.textContent = `v${__APP_VERSION__}`;
+const refresh = () => {
+  footer.innerHTML = buildInfoMarkup({
+    year: new Date().getFullYear(),
+    version: __APP_VERSION__,
+    releaseUrl: __APP_RELEASE_URL__,
+    releaseTitle: t('releaseNotesForVNewTab', { v0: __APP_VERSION__ }),
+    dev: import.meta.env.DEV,
+  });
+  refreshDisclosure();
+};
 
-if (version instanceof HTMLAnchorElement && __APP_RELEASE_URL__) {
-  version.href = __APP_RELEASE_URL__;
-  version.target = '_blank';
-  version.rel = 'noopener noreferrer';
-  const refresh = () => {
-    version.title = t('releaseNotesForVNewTab', { v0: __APP_VERSION__ });
-  };
+function refreshDisclosure() {
+  const disclosure = document.querySelector('.ai-disclosure');
 
-  refresh();
-  onLanguageChange(refresh);
+  if (disclosure) disclosure.textContent = t('aiDisclosure');
 }
 
-footer.append(version);
-
-export {};
-
-if (import.meta.env.DEV) {
-  for (const [label, href] of [
-    ['DEV · Animationen', '/animation-compare.html'],
-    ['DEV · Playground', '/interactable-playground.html'],
-  ]) {
-    const link = document.createElement('a');
-
-    link.href = href;
-    link.textContent = label;
-    footer.append(' · ', link);
-  }
-}
+refresh();
+onLanguageChange(refresh);

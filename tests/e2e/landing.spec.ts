@@ -10,10 +10,14 @@ for (const width of [320, 390, 768, 1440]) {
       'Ein Zimmer. Eine Katze. Dein Chaos.',
     );
     await expect(page.locator('canvas, .start-screen, .pause-menu')).toHaveCount(0);
-    await expect(page.locator('.play-link')).toHaveCount(2);
+    await expect(page.locator('.play-link')).toHaveCount(3);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
+    await expect(page.locator('.landing-album')).toContainText(
+      'Was noch unentdeckt ist, bleibt ein Geheimnis.',
+    );
+    await expect(page.locator('.landing-album .play-link')).toHaveAttribute('href', './play.html');
     await expectArtwork(page);
     await expectTeam(page, width);
     await page.getByRole('link', { name: 'Über uns', exact: true }).click();
@@ -38,6 +42,10 @@ test('Landingpage: DE/EN und Tastatur führen ohne Umweg ins Spiel', async ({ pa
   await page.goto('/');
   await page.getByRole('button', { name: 'English', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('.ai-disclosure')).toContainText('created with AI');
+  await expect(page.locator('.landing-album')).toContainText(
+    'Anything you haven’t discovered stays a secret.',
+  );
   await expect(page.getByRole('heading', { name: 'The minds behind the mess.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Meet the team', exact: true })).toHaveAttribute(
     'href',
@@ -117,7 +125,7 @@ test('Landingpage: Pages-Unterpfad lädt nur lokale Ressourcen und erhält die N
       return page.locator('.start-screen:visible').count();
     })
     .toBe(1);
-  await page.getByRole('button', { name: 'Menü', exact: true }).click();
+  await page.locator('.pause-toggle').click();
   await page.getByRole('link', { name: 'Beenden', exact: true }).click();
   await expect(page).toHaveURL(base);
   await expect(page.locator('canvas')).toHaveCount(0);

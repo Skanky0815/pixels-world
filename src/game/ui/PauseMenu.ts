@@ -1,3 +1,4 @@
+import { closeButtonMarkup, configureCloseButton } from '../../ui/button';
 import { difficultyPreferences } from '../../settings/difficulty';
 import { DIFFICULTY_LABELS, isDifficulty, type Difficulty } from '../../content/difficulty';
 import { motionPreferences } from '../../settings/motion';
@@ -5,6 +6,8 @@ import { t, onLanguageChange, type TextKey } from '../../i18n/locale';
 import { createLanguageSetting } from '../../i18n/language-setting';
 import { audioPreferences, type AudioLevels } from '../../settings/audio';
 import './pause-menu.css';
+import { AlbumView } from './AlbumView';
+import { actionButton, configureAction } from './game-action';
 
 const DIFFICULTY_DESCRIPTIONS = {
   easy: 'difficultyEasyDescription',
@@ -20,8 +23,11 @@ interface PauseActions {
 }
 
 export class PauseMenu {
+  private readonly album: AlbumView;
   private readonly root = document.createElement('dialog');
   private readonly toggle = document.createElement('button');
+  private readonly albumToggle = document.createElement('button');
+  private readonly headerActions = document.createElement('div');
   private readonly abort = new AbortController();
   private readonly unsubscribe: () => void;
   private readonly unsubscribeAudio: () => void;
@@ -31,17 +37,27 @@ export class PauseMenu {
 
   // eslint-disable-next-line max-lines-per-function -- Zugänglicher Dialog und sämtliche Ereignisse teilen eine szenengebundene Lebensdauer.
   constructor(private readonly actions: PauseActions) {
+    this.album = new AlbumView(() => {
+      if (!this.root.open) this.actions.pause(false);
+      const target = this.root.open
+        ? this.element('[data-pause-album]')
+        : document.getElementById('game');
+
+      target?.focus({ preventScroll: true });
+    });
     this.root.className = 'pause-menu';
     this.root.innerHTML = markup();
     this.toggle.type = 'button';
     this.toggle.className = 'pause-toggle';
-    this.toggle.innerHTML = menuIcon();
-    this.toggle.setAttribute('aria-haspopup', 'dialog');
-    document.querySelector('main > header')?.append(this.toggle);
+    configureAction(this.toggle, 'options');
+
     document.body.append(this.root);
     this.removeLanguage = createLanguageSetting(this.element('[data-pause-language]'));
     const options = { signal: this.abort.signal };
 
+    this.mountHeader(options);
+
+    this.element('[data-pause-album]').addEventListener('click', () => this.openAlbum(), options);
     this.toggle.addEventListener('click', () => this.open(), options);
     this.element('[data-pause-resume]').addEventListener('click', () => this.close(), options);
     this.element('[data-pause-restart]').addEventListener(
@@ -83,8 +99,18 @@ export class PauseMenu {
     this.refreshMotion();
   }
 
+  private mountHeader(options: AddEventListenerOptions) {
+    this.headerActions.className = 'game-menu-actions';
+    this.albumToggle.type = 'button';
+    this.albumToggle.className = 'album-toggle';
+    configureAction(this.albumToggle, 'album');
+    this.albumToggle.addEventListener('click', () => this.openAlbum(), options);
+    this.headerActions.append(this.albumToggle, this.toggle);
+    document.querySelector('main > header')?.append(this.headerActions);
+  }
+
   get opened() {
-    return this.root.open;
+    return this.root.open || this.album.opened;
   }
 
   private readonly menuKey = (event: KeyboardEvent) => {
@@ -100,6 +126,11 @@ export class PauseMenu {
     if (this.opened) this.close();
     else this.open();
   };
+
+  openAlbum() {
+    this.actions.pause(true);
+    this.album.open();
+  }
 
   open() {
     if (this.opened || document.querySelector('dialog[open]')) return;
@@ -157,10 +188,13 @@ export class PauseMenu {
   }
 
   private refreshToggle() {
-    const label = t('menu');
-
-    this.toggle.setAttribute('aria-label', label);
-    this.toggle.title = label;
+    configureCloseButton(
+      this.element('[data-pause-resume]') as HTMLButtonElement,
+      t('optionsClose'),
+    );
+    configureAction(this.toggle, 'options');
+    configureAction(this.albumToggle, 'album');
+    configureAction(this.element('[data-pause-album]') as HTMLButtonElement, 'album');
     this.refreshDifficulty();
   }
 
@@ -170,9 +204,6 @@ export class PauseMenu {
 
     for (const element of Array.from(this.root.querySelectorAll<HTMLElement>('[data-menu-text]')))
       element.textContent = t(element.dataset.menuText as TextKey);
-    this.element('[data-pause-resume]').textContent = t(
-      this.actions.started() ? 'resumeGame' : 'closeSettings',
-    );
     this.element('[data-pause-restart]').hidden = !this.actions.started();
   }
 
@@ -192,18 +223,19 @@ export class PauseMenu {
   }
 
   destroy() {
+    this.album.destroy();
     this.abort.abort();
     this.removeSubscriptions();
     this.removeLanguage();
     this.root.close();
     this.root.remove();
-    this.toggle.remove();
+    this.headerActions.remove();
   }
 }
 
 // eslint-disable-next-line max-lines-per-function -- Das kleine Menü bleibt mit zugehörigen Beschriftungen als ein deklarativer Aufbau lesbar.
 function markup() {
-  return `<h2 data-menu-text="pauseSettings"></h2>
+  return `<header class="popup-heading">${closeButtonMarkup(t('optionsClose'), 'data-pause-resume')}<h2 data-menu-text="pauseSettings"></h2></header>
     <section><label for="pause-difficulty"><span data-menu-text="difficultyLabel"></span></label>
       <select id="pause-difficulty" data-difficulty aria-describedby="difficulty-help difficulty-current">
         <option value="easy" data-menu-text="difficultyEasy"></option>
@@ -221,11 +253,7 @@ function markup() {
     </section>
     <section><label class="motion-setting"><input type="checkbox" data-reduce-motion><span data-menu-text="reduceMotion"></span></label>
       <p data-system-motion data-menu-text="systemMotion" hidden></p></section>
-    <div class="pause-actions"><button type="button" data-pause-resume></button>
-      <button type="button" data-pause-restart data-menu-text="newRoundLabel"></button>
-      <a href="./" data-menu-text="quitGame"></a></div>`;
-}
-
-function menuIcon() {
-  return `<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M21.91,10.69 L21.91,13.31 L19.44,12.98 L17.95,16.57 L19.93,18.09 L18.09,19.93 L16.57,17.95 L12.98,19.44 L13.31,21.91 L10.69,21.91 L11.02,19.44 L7.43,17.95 L5.91,19.93 L4.07,18.09 L6.05,16.57 L4.56,12.98 L2.09,13.31 L2.09,10.69 L4.56,11.02 L6.05,7.43 L4.07,5.91 L5.91,4.07 L7.43,6.05 L11.02,4.56 L10.69,2.09 L13.31,2.09 L12.98,4.56 L16.57,6.05 L18.09,4.07 L19.93,5.91 L17.95,7.43 L19.44,11.02 Z M15.2,12 A3.2,3.2 0 1 0 8.8,12 A3.2,3.2 0 1 0 15.2,12 Z" /></svg>`;
+    <div class="pause-actions">${actionButton('album', 'data-pause-album')}
+      <button type="button" class="ui-button" data-pause-restart data-menu-text="newRoundLabel"></button>
+      <a class="ui-button" href="./" data-menu-text="quitGame"></a></div>`;
 }

@@ -214,7 +214,10 @@ for (const [mobile, hasTouch] of [
     }, testInfo) => {
       await openDebug(page);
       await page.keyboard.press('F2');
-      await page.getByRole('button', { name: 'Optionen', exact: true }).click();
+      await page
+        .locator('.start-screen')
+        .getByRole('button', { name: 'Optionen', exact: true })
+        .click();
       await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('hard');
       await page.locator('[data-pause-resume]').click();
       await page.keyboard.press('F2');
@@ -249,7 +252,7 @@ for (const [mobile, hasTouch] of [
         body: await page.screenshot(),
         contentType: 'image/png',
       });
-      await page.getByRole('button', { name: 'Menü', exact: true }).click();
+      await page.locator('.pause-toggle').click();
       await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
       await page.locator('[data-pause-resume]').click();
       await page.keyboard.press('F2');

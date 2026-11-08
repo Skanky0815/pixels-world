@@ -1,4 +1,8 @@
+@import './ui/button.css';
+
 :root {
+  --popup-background: #403a35;
+  --popup-text: #fff1cf;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   color: #f3e3c9;
   background: #241f29;
@@ -136,7 +140,7 @@ kbd {
   flex-direction: column;
   gap: 12px;
   padding: clamp(12px, 2vw, 24px);
-  background: #403a35;
+  background: var(--popup-background);
   color: #fff1cf;
   font-size: clamp(14px, 1.3vw, 16px);
   line-height: 1.5;
@@ -256,7 +260,7 @@ kbd {
     min-height: var(--touch-target);
     border: 2px solid #a78d77;
     border-radius: 8px;
-    background: #403a35;
+    background: var(--popup-background);
     color: #fff1cf;
     font: inherit;
     touch-action: none;
@@ -336,7 +340,7 @@ kbd {
     font-size: 14px;
     line-height: 1.4;
     white-space: pre-line;
-    background: #403a35;
+    background: var(--popup-background);
     padding: 8px;
     border: 1px solid #a78d77;
   }
@@ -359,7 +363,7 @@ kbd {
     overflow: auto;
     overscroll-behavior: contain;
     padding: 12px;
-    background: #403a35;
+    background: var(--popup-background);
     font-size: 14px;
     line-height: 1.4;
     white-space: pre-line;
@@ -686,20 +690,6 @@ kbd {
   flex-wrap: wrap;
   gap: 8px;
 }
-.start-options {
-  min-height: 44px;
-  padding: 6px 8px;
-  border: 1px solid #b79879;
-  border-radius: 4px;
-  background: none;
-  color: #fff1cf;
-  font: inherit;
-  cursor: pointer;
-}
-.start-options:focus-visible {
-  outline: 2px solid #edc37c;
-  outline-offset: 3px;
-}
 
 .mobile-result .result-hearts[data-count='4'] svg {
   width: 18px;
@@ -715,4 +705,13 @@ kbd {
   .touch-actions {
     gap: 12px;
   }
+}
+
+.ai-disclosure {
+  flex-basis: 100%;
+  margin: 0;
+  color: #b6a195;
+  font-size: 10px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }

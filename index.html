@@ -43,8 +43,10 @@
             ganz bei dir.
           </p>
           <div class="hero-actions">
-            <a class="play-link" href="./play.html" data-i18n="landingPlay">Jetzt spielen →</a>
-            <button id="install-app" class="install-link" type="button">
+            <a class="play-link ui-button" href="./play.html" data-i18n="landingPlay"
+              >Jetzt spielen →</a
+            >
+            <button id="install-app" class="install-link ui-button" type="button">
               Als App installieren
             </button>
           </div>
@@ -147,10 +149,45 @@
           </div>
         </div>
       </section>
+      <section class="landing-album" aria-labelledby="album-heading">
+        <div>
+          <p class="eyebrow" data-i18n="landingAlbumEyebrow">
+            KLEINE SCHANDTATEN. BLEIBENDE ERINNERUNGEN.
+          </p>
+          <h2 id="album-heading" data-i18n="albumTitle">Album der Schandtaten</h2>
+          <p data-i18n="landingAlbumDescription">
+            Pixels Unfug bekommt ein eigenes Buch. Entdecke beim Spielen neue Einträge mit Bildern,
+            frechen Kommentaren und kleinen Geschichten. Was noch unentdeckt ist, bleibt ein
+            Geheimnis.
+          </p>
+          <p class="album-storage-note" data-i18n="landingAlbumStorage">
+            Deine Entdeckungen bleiben in diesem Browser erhalten – auch nach einer neuen Runde.
+          </p>
+          <a class="play-link ui-button" href="./play.html" data-i18n="landingAlbumPlay"
+            >Schandtaten sammeln →</a
+          >
+        </div>
+        <figure>
+          <img
+            src="./assets/landing/album.png"
+            width="1120"
+            height="740"
+            loading="lazy"
+            decoding="async"
+            alt="Das aufgeschlagene Album mit einem entdeckten Sofa und noch geheimen Einträgen."
+            data-i18n-label="landingAlbumAlt"
+          />
+          <figcaption data-i18n="landingAlbumCaption">
+            Ein Beweisstück ist schon gesichert. Der Rest wartet auf Pixel.
+          </figcaption>
+        </figure>
+      </section>
       <section class="landing-finale" aria-labelledby="finale-heading">
         <p class="eyebrow">A QUIET AFTERNOON. FOR NOW.</p>
         <h2 id="finale-heading" data-i18n="landingReady">Bereit für ein bisschen Chaos?</h2>
-        <a class="play-link" href="./play.html" data-i18n="landingPlay">Jetzt spielen →</a>
+        <a class="play-link ui-button" href="./play.html" data-i18n="landingPlay"
+          >Jetzt spielen →</a
+        >
       </section>
       <section class="landing-team" id="team" aria-labelledby="team-heading">
         <div class="section-heading">
@@ -263,6 +300,9 @@
           ><a href="./datenschutz.html" data-i18n="privacyGerman">Datenschutz</a>
         </div>
         <p class="build-info" id="build-info"></p>
+        <p class="ai-disclosure" data-i18n="aiDisclosure">
+          Code, Grafiken und Texte mit KI erstellt. Idee und Review: Rico.
+        </p>
       </footer>
     </main>
     <script type="module" src="/src/landing.ts"></script>

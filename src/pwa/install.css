@@ -27,14 +27,14 @@
   padding: 24px;
   border: 2px solid #a7896b;
   border-radius: 6px;
-  background: #382f35;
+  background: var(--popup-background);
   color: #f3e3c9;
   font:
     16px/1.6 system-ui,
     sans-serif;
 }
 .install-dialog::backdrop {
-  background: #201b20cc;
+  background: #201b20bb;
 }
 .install-dialog h2 {
   font:
@@ -44,17 +44,7 @@
 .install-dialog p {
   margin: 16px 0;
 }
-.install-dialog button {
-  min-height: 44px;
-  padding: 8px 16px;
-  border: 1px solid #a7896b;
-  border-radius: 4px;
-  background: #493a3d;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.install-dialog :focus-visible {
+.install-dialog :focus-visible:not(.ui-button) {
   outline: 2px solid #edc37c;
   outline-offset: 3px;
 }

@@ -42,7 +42,7 @@
           <p>E-Mail: <a href="mailto:rico-schulz@web.de">rico-schulz@web.de</a></p>
           <h2>Das Spiel im Browser</h2>
           <p>
-            Pixel’s World benötigt kein Nutzerkonto und hat kein eigenes Backend. Spielstand,
+            Pixel’s World benötigt kein Nutzerkonto und hat kein eigenes Backend. Laufende Runden,
             Chaospunkte und Eingaben werden nur im Arbeitsspeicher deines Browsers verarbeitet und
             beim Neuladen zurückgesetzt. Sie werden vom Spiel nicht an einen Server übertragen.
           </p>
@@ -51,10 +51,13 @@
             Lautstärkeeinstellungen, die Vorgabe für reduzierte Bewegung und der gewählte
             Schwierigkeitsgrad werden lokal im Browser (Local Storage) gespeichert und beim nächsten
             Besuch wiederhergestellt. Du kannst sie über die Website-Daten deines Browsers löschen.
-            Spielstände werden nicht dauerhaft gespeichert. Das Spiel verwendet keine Analyse- oder
-            Werbedienste und bindet keine externen Schriftarten oder Medien ein. Spieldateien und
-            Grafiken werden vom selben Host geladen; dein Browser kann sie im normalen Browsercache
-            zwischenspeichern.
+            Laufende Runden werden nicht dauerhaft gespeichert. Entdeckungen im Album der
+            Schandtaten werden lokal im Browser gespeichert, damit die Sammlung beim nächsten Besuch
+            erhalten bleibt. Das Album lässt sich dort ausdrücklich zurücksetzen; über die
+            Website-Daten des Browsers können diese Daten ebenfalls gelöscht werden. Das Spiel
+            verwendet keine Analyse- oder Werbedienste und bindet keine externen Schriftarten oder
+            Medien ein. Spieldateien und Grafiken werden vom selben Host geladen; dein Browser kann
+            sie im normalen Browsercache zwischenspeichern.
           </p>
           <h2>Installierbare Webapp und Offline-Dateien</h2>
           <p>
@@ -146,7 +149,8 @@
           <a href="./impressum.html">Impressum</a>
           <a href="./datenschutz.html">Datenschutz</a>
         </div>
-        <p>Pixel’s World</p>
+        <p class="build-info" id="build-info"><!-- BUILD_INFO --></p>
+        <p class="ai-disclosure" data-i18n="aiDisclosure"><!-- AI_DISCLOSURE --></p>
       </footer>
     </main>
   </body>

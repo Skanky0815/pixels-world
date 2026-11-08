@@ -1,0 +1,603 @@
+.album-dialog {
+  width: min(
+    850px,
+    calc(100vw - max(24px, env(safe-area-inset-left)) - max(24px, env(safe-area-inset-right)))
+  );
+  max-height: calc(
+    100dvh - max(24px, env(safe-area-inset-top)) - max(24px, env(safe-area-inset-bottom))
+  );
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+  border: 2px solid #c49464;
+  border-radius: 10px;
+  background: var(--popup-background);
+  color: var(--popup-text);
+  font:
+    14px/1.5 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+.album-dialog::backdrop {
+  background: #201b20bb;
+}
+.album-dialog header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+}
+.album-dialog h2 {
+  font-size: clamp(20px, 3vw, 26px);
+  margin: 3px 0;
+}
+.album-dialog h3 {
+  font-size: 17px;
+  margin: 0;
+}
+.album-dialog p {
+  margin: 0;
+}
+.album-dialog :where(button:not(.ui-button)) {
+  min-height: 44px;
+  padding: 8px 12px;
+  background: #41373a;
+  color: #f3e3c9;
+  border: 1px solid #9f8060;
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+}
+.album-dialog :where(button:not(.ui-button)):focus-visible {
+  outline: 3px solid #edc37c;
+  outline-offset: 3px;
+}
+.album-dialog button[aria-selected='true'],
+.album-dialog button[aria-pressed='true'] {
+  border: 2px solid #e4bc7e;
+  background: #5d4937;
+}
+.album-eyebrow {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #cfbaa3;
+}
+.album-dialog .album-overall {
+  color: #e4bc7e;
+  margin: 8px 0 18px;
+}
+
+.album-dialog small {
+  font-size: 11px;
+  color: #cfbaa3;
+}
+.album-spread {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #493e35;
+  border: 1px solid #806b52;
+}
+.album-story,
+.album-index {
+  min-width: 0;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.album-story {
+  border-right: 1px solid #806b52;
+  background: linear-gradient(to right, transparent 93%, #201b2040);
+}
+.album-story figure {
+  background: #3b3234;
+  padding: 20px 16px 12px;
+  margin: 8px 4px;
+  text-align: center;
+  box-shadow: 3px 4px 0 #201b2040;
+  transform: rotate(-2deg);
+}
+.album-story img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.album-story figcaption {
+  font:
+    20px/1.4 Georgia,
+    serif;
+  margin-top: 12px;
+}
+.album-story blockquote {
+  border-left: 3px solid #e4bc7e;
+  margin: 0;
+  padding: 10px 0 10px 14px;
+  font:
+    italic 18px/1.5 Georgia,
+    serif;
+}
+.album-story cite {
+  display: block;
+  font:
+    12px/1.5 ui-monospace,
+    monospace;
+  margin-top: 8px;
+  color: #cfbaa3;
+}
+.album-mystery {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  font-size: 70px;
+  color: #cfbaa3;
+  background: #3b3234;
+}
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+.album-dialog .album-tile {
+  aspect-ratio: 1;
+  padding: 8px;
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+.album-tile img {
+  width: 100%;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.album-dialog .album-tile:disabled {
+  color: #c5b29e;
+  border: 1px dashed #806b52;
+  cursor: default;
+  opacity: 1;
+  font-size: 26px;
+}
+.album-progress,
+.album-hint {
+  color: #cfbaa3;
+  font-size: 12px;
+}
+.album-empty {
+  min-height: 300px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.album-dialog footer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 12px;
+}
+.album-reset-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (max-width: 600px) {
+  .album-dialog {
+    padding: 16px 12px;
+  }
+  .album-dialog header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .album-dialog header button {
+    font-size: 12px;
+  }
+  .album-spread {
+    grid-template-columns: 1fr;
+  }
+  .album-story {
+    border-right: 0;
+    border-bottom: 1px solid #806b52;
+    background: none;
+  }
+  .album-story,
+  .album-index {
+    padding: 18px 14px;
+    gap: 12px;
+  }
+  .album-story img {
+    height: 110px;
+  }
+  .album-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .album-tile img {
+    height: 40px;
+  }
+  .album-dialog .album-tile {
+    padding: 3px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .album-story figure {
+    transform: none;
+  }
+}
+
+/* Cloth bookmarks tuck into the upper edge of the book. */
+.album-dialog .album-tabs {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  height: 72px;
+  margin: 0 0 -16px;
+  padding: 0 10px;
+  position: relative;
+  z-index: 1;
+}
+.album-dialog .album-bookmark {
+  --room-marker: #d6a469;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 62px;
+  padding: 8px 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #30292d;
+}
+.album-bookmark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, #0002, transparent 18%, transparent 82%, #0002), var(--room-marker);
+  clip-path: polygon(
+    0 0,
+    10% 3px,
+    18% 0,
+    27% 5px,
+    50% 12px,
+    73% 5px,
+    82% 0,
+    90% 3px,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+.album-bookmark::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  top: 16px;
+  bottom: 4px;
+  left: 5px;
+  right: 5px;
+  border-left: 1px dashed #30292d55;
+  border-right: 1px dashed #30292d55;
+}
+.album-dialog .album-bookmark[aria-selected='true'] {
+  height: 72px;
+  background: transparent;
+  border: 0;
+}
+.album-bookmark[data-room='kitchen'] {
+  --room-marker: #87a6ad;
+}
+.album-bookmark[data-room='bedroom'] {
+  --room-marker: #b594b2;
+}
+.album-bookmark[data-room='study'] {
+  --room-marker: #93a17b;
+}
+.album-bookmark svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* An imported PNG supplies the paper; overlays keep the print and page fold quiet. */
+.album-spread,
+.album-empty {
+  color: #493925;
+  background: #f5deb2 url('../../../assets/ui/album/paper.png') repeat;
+  background-size: 256px 256px;
+  border-color: #b18c64;
+}
+.album-story {
+  border-color: #b18c64;
+  background: linear-gradient(to right, transparent 90%, #5d422330);
+}
+.album-story figure {
+  background: #fff2d8;
+  box-shadow: 3px 4px 0 #5c40252a;
+}
+.album-story blockquote {
+  border-color: #9f6b36;
+}
+.album-spread .album-eyebrow,
+.album-spread cite,
+.album-progress,
+.album-hint {
+  color: #70573f;
+}
+.album-mystery {
+  color: #765d3a;
+  background: #765c3a12;
+}
+.album-dialog .album-tile {
+  background: #b18c5520;
+  color: #765d3a;
+  border-color: #9a7c58;
+}
+.album-dialog .album-tile:disabled {
+  color: #765d3a;
+  border-color: #9a7c58;
+}
+.album-dialog .album-tile[aria-pressed='true'] {
+  background: #fff2d866;
+  border-color: #966a37;
+}
+@media (max-width: 600px) {
+  .album-story {
+    background: none;
+  }
+}
+
+.album-empty {
+  border: 1px solid #b18c64;
+  padding: 20px;
+}
+
+/* A bounded spread keeps the object collection on pages, not in a tall list. */
+.album-dialog {
+  width: min(
+    1120px,
+    calc(100vw - max(16px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right)))
+  );
+  height: min(740px, calc(100dvh - 48px));
+  padding: 20px;
+  overflow: hidden;
+}
+.album-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.album-dialog header,
+.album-dialog .album-overall,
+.album-dialog footer {
+  flex-shrink: 0;
+}
+.album-dialog #album-room {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 12px;
+}
+
+/* Paper edges and the cloth cover sit beneath the open spread. */
+.album-dialog #album-room::before,
+.album-dialog #album-room::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+.album-dialog #album-room::before {
+  z-index: -2;
+  inset: 6px -7px -12px;
+  border: 2px solid #94704f;
+  border-radius: 2px 3px 5px 5px;
+  background: repeating-linear-gradient(90deg, #fff1 0 1px, transparent 1px 4px), #554236;
+  box-shadow: 0 3px 5px #150f1340;
+}
+.album-dialog #album-room::after {
+  z-index: -1;
+  inset: 3px -3px -7px;
+  border: 1px solid #af9065;
+  border-radius: 1px 1px 3px 3px;
+  background: repeating-linear-gradient(0deg, #b6986c 0 1px, #efdab3 1px 3px);
+}
+.album-spread,
+.album-empty {
+  height: 100%;
+  min-height: 0;
+}
+.album-story,
+.album-index {
+  min-height: 0;
+  padding: 18px;
+  gap: 12px;
+  overflow: auto;
+}
+.album-story img {
+  height: clamp(72px, 14vh, 128px);
+}
+.album-story figure {
+  padding: 14px 12px 10px;
+  margin: 4px;
+}
+.album-index-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+.album-grid {
+  flex: 1;
+  min-height: 95px;
+  max-height: 300px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(44px, 1fr));
+}
+.album-dialog .album-tile {
+  height: 100%;
+  aspect-ratio: auto;
+  min-height: 44px;
+  padding: 5px;
+}
+.album-tile img {
+  max-height: 100%;
+  height: 64px;
+}
+.album-pagination {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  margin-top: auto;
+  font-size: 12px;
+}
+.album-pagination button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.album-pagination button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.album-dialog footer {
+  margin-top: 12px;
+}
+.album-dialog .album-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  flex-shrink: 0;
+  z-index: auto;
+}
+.album-tabs-coming,
+.album-tabs-turned {
+  display: flex;
+  gap: 8px;
+}
+.album-tabs-turned {
+  justify-content: flex-end;
+}
+.album-dialog .album-bookmark {
+  z-index: 0;
+}
+.album-dialog .album-bookmark[aria-selected='true'] {
+  z-index: 2;
+}
+.album-dialog .album-overview {
+  display: none;
+}
+@media (max-width: 600px), (max-height: 550px) {
+  .album-dialog {
+    padding: 14px 12px;
+  }
+  .album-spread {
+    grid-template-columns: 1fr;
+  }
+  .album-story {
+    display: none;
+    background: none;
+    border: 0;
+  }
+  .album-dialog[data-detail='true'] .album-story {
+    display: flex;
+  }
+  .album-dialog[data-detail='true'] .album-index {
+    display: none;
+  }
+  .album-dialog .album-overview {
+    display: block;
+    align-self: flex-start;
+  }
+  .album-dialog .album-tabs {
+    grid-template-columns: 1fr;
+  }
+  .album-tabs-coming,
+  .album-tabs-turned {
+    grid-area: 1 / 1;
+  }
+  .album-tabs-turned {
+    padding-left: 6px;
+    justify-self: end;
+  }
+}
+@media (max-height: 550px) {
+  .album-dialog {
+    padding: 10px;
+  }
+  .album-dialog header .album-eyebrow {
+    display: none;
+  }
+  .album-dialog h2 {
+    font-size: 18px;
+  }
+  .album-dialog .album-overall {
+    margin: 0 0 6px;
+    font-size: 12px;
+  }
+  .album-dialog .album-tabs {
+    height: 52px;
+    margin-bottom: -10px;
+  }
+  .album-dialog .album-bookmark {
+    height: 44px;
+  }
+  .album-dialog .album-bookmark[aria-selected='true'] {
+    height: 52px;
+  }
+  .album-story,
+  .album-index {
+    padding: 8px;
+    gap: 6px;
+  }
+  .album-index-header h3 {
+    font-size: 14px;
+  }
+  .album-dialog footer {
+    margin-top: 6px;
+    gap: 4px;
+  }
+}
+
+/* Empty chapters use the same two-page fold as populated chapters. */
+.album-empty {
+  position: relative;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 0;
+}
+.album-empty::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 24px;
+  transform: translateX(-100%);
+  border-right: 1px solid #b18c64;
+  background: linear-gradient(to right, transparent, #5d422330);
+  pointer-events: none;
+}
+.album-empty > * {
+  padding: 16px;
+}
+@media (max-width: 600px), (max-height: 550px) {
+  .album-empty {
+    grid-template-columns: 1fr;
+  }
+  .album-empty::before {
+    display: none;
+  }
+}

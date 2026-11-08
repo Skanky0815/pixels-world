@@ -88,7 +88,7 @@ async function tabletGeometry(page: Page, landscape: boolean) {
 }
 
 async function tabletMenu(page: Page) {
-  await page.getByRole('button', { name: 'Menü', exact: true }).tap();
+  await page.locator('.pause-toggle').tap();
   const menu = await bounds(page, '.pause-menu');
 
   expect(menu.y).toBeGreaterThanOrEqual(0);

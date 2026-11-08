@@ -1,0 +1,9 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-11-08",
+  "source": "sources/paper-source-v1.png",
+  "asset": "paper.png",
+  "prompt": "Use case: stylized-concept. Asset type: one seamless square background texture for the blank pages of a cozy pixel-art scrapbook in a 2D cat game. Generate only the material, not a book or a UI. Flat orthographic view of warm creamy parchment / lightly aged scrapbook paper. Muted ivory, honey beige and pale tan; gentle irregular fibers and tiny, low-contrast age mottling, extremely subtle so dark text remains easy to read everywhere. Deliberate crisp square pixel clusters in a restrained 8–12 color palette, no photographic grain or antialiased detail. Flat evenly lit surface, no perspective, shadows, folds, binding, edges, frame, stains that look like objects, illustrations, handwriting, symbols, letters, logos or watermark. All four edges must match seamlessly for tiling. Fill the whole square image with opaque paper texture. Calm and warm, not dirty or distressed. Intended to be exported as a small repeating PNG texture.",
+  "exporter": "node tools/prepare-album-paper.mjs",
+  "sampling": "256×256, Nearest-Neighbour über Zellmittelpunkte; RGBA-Samples unverändert."
+}
