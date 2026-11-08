@@ -16,6 +16,12 @@ Release Please pflegt Paket-/Lockversion, `.release-please-manifest.json`,
 `CHANGELOG.md`, Tags und GitHub Releases. Versionen nicht einzeln von Hand erhöhen.
 Conventional Commits, insbesondere der Squash-Titel, steuern den Vorschlag.
 Strategie und Versionsregeln stehen in [release-please-config.json](../release-please-config.json).
+Es gilt die normale SemVer-Strategie, auch vor Version 1.0: `fix:` erhöht Patch,
+`feat:` erhöht Minor und `!` bzw. `BREAKING CHANGE` erhöht Major.
+Ausgehend von 0.1.5 ergibt das beispielsweise 0.1.6, 0.2.0 oder 1.0.0.
+Die Sonderregeln `bump-minor-pre-major` und `bump-patch-for-minor-pre-major`
+sind dafür deaktiviert. Bei mehreren Änderungen bestimmt der größte nötige
+Versionssprung den Vorschlag; die Prüfung erfolgt weiterhin im Versions-PR.
 Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
 
 ## Bedienung
