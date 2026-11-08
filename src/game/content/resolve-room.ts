@@ -78,6 +78,8 @@ function validateObjectRules(value: ObjectDefinition, path: string) {
   if (value.kind === 'vase') return validateVase(value, path);
   record(value.rules, `${path}.rules`);
 
+  if (value.kind === 'books') return validateBooks(value, path);
+
   if (value.kind === 'plant') return validatePlant(value, path);
   validateGeometry(value, path);
 
@@ -104,6 +106,12 @@ function validateVase(value: Extract<ObjectDefinition, { kind: 'vase' }>, path: 
 
   if (value.appearance !== undefined && !isVaseAppearance(value.appearance))
     fail(`${path}.appearance`, 'unknown vase appearance');
+}
+
+function validateBooks(value: Extract<ObjectDefinition, { kind: 'books' }>, path: string) {
+  number(value.rules.warningMs, `${path}.rules.warningMs`, Number.EPSILON);
+  number(value.rules.fallMs, `${path}.rules.fallMs`, Number.EPSILON);
+  integer(value.rules.points, `${path}.rules.points`);
 }
 
 // eslint-disable-next-line max-lines-per-function -- Zeitparameter, Punktwerte und Reichweite bilden gemeinsam den Pflanzenvertrag.
@@ -356,6 +364,8 @@ class RoomResolver {
 
     if (d.kind === 'plant') return this.resolvePlant(instance, d, path, support);
 
+    if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
+
     return this.resolveVase(instance, d, path, support);
   }
 
@@ -485,6 +495,32 @@ class RoomResolver {
     };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der feste Bodenstapel wird mit seiner gesamten Umsturzfläche auf Raumgrenzen und Auflage geprüft.
+  private resolveBooks(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'books' }>,
+    path: string,
+    support: Bounds,
+  ): ResolvedObject {
+    const p = instance.placement;
+
+    if (support.y !== this.room.floor.y) fail(`${path}.placement`, 'books require floor support');
+    bounds(
+      { x: p.x - 48, y: support.y - 36, width: 96, height: 36 },
+      this.room,
+      `${path}.geometry`,
+    );
+    supportFits(p.x - 48, 96, support, `${path}.placement`);
+
+    return {
+      id: instance.id,
+      variant: instance.variant,
+      asset: d.asset,
+      kind: 'books',
+      config: { id: instance.id, x: p.x, floorY: support.y, rules: d.rules },
+    };
+  }
+
   run(): ResolvedRoom {
     const { room } = this;
     const objects = room.objects.map((instance) => this.resolve(instance));
@@ -502,11 +538,13 @@ class RoomResolver {
 
     for (const object of objects) {
       maximum +=
-        object.kind === 'vase'
-          ? object.config.points
-          : object.kind === 'plant'
-            ? object.config.rules.nibbleValue + object.config.rules.tipValue
-            : object.config.rules.maxDamage * object.config.rules.damageValue;
+        object.kind === 'books'
+          ? object.config.rules.points
+          : object.kind === 'vase'
+            ? object.config.points
+            : object.kind === 'plant'
+              ? object.config.rules.nibbleValue + object.config.rules.tipValue
+              : object.config.rules.maxDamage * object.config.rules.damageValue;
 
       if (!Number.isSafeInteger(maximum))
         fail(`${root}.objects`, 'maximum score exceeds safe integer range');

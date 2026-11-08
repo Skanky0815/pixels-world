@@ -75,5 +75,10 @@ export const LIVING_ROOM = {
       variant: 'heirloom-vase',
       placement: { mode: 'surface', x: 890, surfaceId: 'upper-shelf' },
     },
+    {
+      id: 'books',
+      variant: 'reading-books',
+      placement: { mode: 'surface', x: 650, surfaceId: 'floor' },
+    },
   ],
 } as const satisfies RoomDefinition;

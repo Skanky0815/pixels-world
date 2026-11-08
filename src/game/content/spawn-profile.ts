@@ -26,6 +26,7 @@ export interface SpawnSlotFilter {
 }
 const CATEGORIES = {
   vase: 'decoration',
+  books: 'decoration',
   plant: 'plant',
   couch: 'furniture',
   curtain: 'furniture',
@@ -57,6 +58,8 @@ export function spawnSizeFor(width: number, height: number): SpawnSize {
 }
 
 function objectSize(object: ObjectDefinition) {
+  if (object.kind === 'books') return spawnSizeFor(48, 36);
+
   if (object.kind === 'couch') return spawnSizeFor(object.geometry.width, object.geometry.seatRise);
 
   if (object.kind === 'curtain') return spawnSizeFor(object.geometry.width, object.geometry.height);

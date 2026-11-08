@@ -50,6 +50,10 @@ Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimm
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
 Wiederholte Landungen lassen fragile und normale Regale erst wackeln, dann reißen
 und schließlich einstürzen. Das obere Zielregal bleibt stabil.
+In beiden Wohnzimmern steht ein Bücherstapel: Kontakt lässt ihn erst wackeln;
+bleibst du zu lange, fallen die Bücher mit einem kurzen dumpfen Geräusch auseinander.
+Weggehen während der Warnung bricht die Aktion ab. Ein Umsturz zählt einmalig
+Chaospunkte; die verstreuten Bücher bleiben bis zur nächsten Runde liegen.
 
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
 Pixel möchte seinen Lieblingsball finden. Bleib dort kurz
@@ -96,7 +100,7 @@ Im Menü wechselst du DE/EN und stellst Gesamtlautstärke und Soundeffekte ein.
 Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.
 **Bewegung reduzieren** hält die kurzen Rückmeldungen statisch; eine entsprechende
 Systemvorgabe wird immer respektiert.
-Das Spiel enthält aktuell noch keine Audio-Assets. **Neue Runde** setzt die
+Der Bücherumsturz hat einen kurzen synthetisierten Soundeffekt. **Neue Runde** setzt die
 laufende Runde zurück und ist während des Spiels nur über das Menü erreichbar;
 am Ergebnis bleibt der Button auf Touch-Geräten verfügbar.
 

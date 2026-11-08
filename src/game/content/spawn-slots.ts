@@ -68,7 +68,12 @@ function objectArea(object: ResolvedObject): Bounds {
   if ('area' in c) return c.area;
 
   if ('seat' in c) return { ...c.seat, height: c.floorY - c.seat.y };
-  const asset = object.kind === 'plant' ? ASSETS['catgrass-default'] : ASSETS['vase-default'];
+  const asset =
+    object.kind === 'books'
+      ? ASSETS['book-stack']
+      : object.kind === 'plant'
+        ? ASSETS['catgrass-default']
+        : ASSETS['vase-default'];
   const bottom = 'shelfY' in c ? c.shelfY : c.floorY;
 
   return {

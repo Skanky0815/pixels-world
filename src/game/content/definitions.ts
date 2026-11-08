@@ -13,6 +13,8 @@ import type { CouchConfig } from '../objects/Couch.ts';
 import type { CurtainConfig } from '../objects/Curtain.ts';
 import type { PlantObjectConfig } from '../objects/Plant.ts';
 import type { VaseConfig } from '../objects/Vase.ts';
+import type { BookStackConfig } from '../objects/BookStack.ts';
+import type { BookRules } from '../interactions/book-toppling.ts';
 
 export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
 interface Base {
@@ -20,6 +22,7 @@ interface Base {
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
+  | (Base & { readonly kind: 'books'; readonly asset: 'book-stack'; readonly rules: BookRules })
   | (Base & {
       readonly kind: 'couch';
       readonly asset: 'couch-default';
@@ -118,6 +121,7 @@ interface ResolvedBase {
   readonly asset: AssetKey;
 }
 export type ResolvedObject =
+  | (ResolvedBase & { readonly kind: 'books'; readonly config: BookStackConfig })
   | (ResolvedBase & { readonly kind: 'couch'; readonly config: CouchConfig })
   | (ResolvedBase & { readonly kind: 'curtain'; readonly config: CurtainConfig })
   | (ResolvedBase & { readonly kind: 'plant'; readonly config: PlantObjectConfig })

@@ -66,8 +66,10 @@ Es verwendet den bestehenden Sprachwähler und `AudioPreferences`; ein Neustart
 entsorgt die alte Ansicht und startet mit frischem Aktivitätszustand. Sprache
 und Audiopegel bleiben erhalten. `GameAudio` überträgt Gesamt- × Effektpegel auf
 die Soundverwaltung. Die Aktivitätsgrenze pausiert/reaktiviert Audio selbst und
-ersetzt dafür Phasers unabhängige automatische Blur-Wiederaufnahme. Noch sind
-keine Audio-Assets eingebunden. Der E2E-Vertrag liest nur skalare Audiozustände.
+ersetzt dafür Phasers unabhängige automatische Blur-Wiederaufnahme. Der Bücherstapel
+spielt über denselben Kanal einen kurzen, deterministisch synthetisierten Aufprall.
+Ohne WebAudio bleibt dieser Effekt stumm; Spielablauf und Wertung funktionieren weiter.
+Der E2E-Vertrag liest nur skalare Audiozustände.
 
 `FeedbackModel` ist ein passiver Darstellungsbeobachter. Bereits vergebene
 Schadensereignisse und Phasen-/Versöhnungssnapshots steuern begrenzte Hinweise.

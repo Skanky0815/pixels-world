@@ -17,7 +17,12 @@ export const COZY_REMIX = {
       variant: 'worn-couch',
       placement: { mode: 'surface', x: 480, surfaceId: 'floor' },
     },
-    ...LIVING_ROOM.objects.slice(1).filter((object) => object.id !== 'plant'),
+    ...LIVING_ROOM.objects.filter((object) => !['plant', 'couch', 'books'].includes(object.id)),
+    {
+      id: 'books',
+      variant: 'reading-books',
+      placement: { mode: 'surface', x: 865, surfaceId: 'floor' },
+    },
     { id: 'plant', variant: 'catgrass', placement: { mode: 'surface', x: 62, surfaceId: 'floor' } },
   ],
 } as const satisfies RoomDefinition;
