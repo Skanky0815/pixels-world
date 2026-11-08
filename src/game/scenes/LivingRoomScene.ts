@@ -1,3 +1,4 @@
+import { preloadBookArt } from '../assets/book-art';
 import { preloadRoomArt } from '../assets/room-art';
 import { preloadShelfArt } from '../assets/shelf-art';
 import type { Shelf } from '../objects/Shelf';
@@ -99,6 +100,7 @@ export class LivingRoomScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
   preload() {
     preloadVaseArt(this);
+    preloadBookArt(this);
     preloadShelfArt(this);
     preloadRoomArt(this);
     preloadCouchArt(this);

@@ -1,53 +1,48 @@
 import type Phaser from 'phaser';
 import type { BookToppling } from '../interactions/book-toppling';
+import { motionPreferences } from '../../settings/motion';
 export type BookAppearance = 'stacked' | 'upright';
-const colors = [0x597780, 0xa65f51, 0xb59d62, 0x6c775c];
 
-/** Original code-drawn covers and paper; the fallen books retain their thickness. */
-// eslint-disable-next-line max-lines-per-function -- Die vier Bücher teilen Palette und zeitabhängige Stapel-/Fallgeometrie.
-export function drawBooks(
-  graphics: Phaser.GameObjects.Graphics,
-  state: ReturnType<BookToppling['snapshot']>,
-  appearance: BookAppearance = 'stacked',
-) {
-  graphics.clear();
-  const progress =
-    state.state === 'falling' || state.state === 'fallen' ? Math.min(1, state.progress) : 0;
-  const wobble = state.state === 'wobbling' ? Math.sin(state.progress * 36) * 2 : 0;
+/** Generated PNGs own the artwork; code only positions and animates them. */
+export class BookArt {
+  readonly root: Phaser.GameObjects.Container;
+  private readonly intact: Phaser.GameObjects.Image;
+  private readonly fallen: Phaser.GameObjects.Image;
+  private readonly tilt: number;
 
-  if (appearance === 'upright') return drawUprightBooks(graphics, progress, wobble);
-
-  for (const [index, color] of colors.entries()) {
-    const x = -19 + (index % 2) * 3 + (index - 1.5) * 12 * progress + (wobble * index) / 3;
-    const y = -8 * (index + 1) * (1 - progress) - (11 + (index % 2) * 5) * progress;
-
-    graphics
-      .save()
-      .translateCanvas(x + 19, y + 3.5)
-      .rotateCanvas((index % 2 ? 0.12 : -0.12) * progress);
-    graphics.fillStyle(0x382d2a).fillRect(-20, -4.5, 40, 9);
-    graphics.fillStyle(color).fillRect(-19, -3.5, 38, 7);
-    graphics.fillStyle(0xd9c8a2).fillRect(-14, -1.5, 30, 3);
-    graphics.fillStyle(0x4b3830).fillRect(-16, -3.5, 2, 7);
-    graphics.restore();
+  constructor(scene: Phaser.Scene, appearance: BookAppearance = 'stacked') {
+    this.tilt = appearance === 'upright' ? Math.PI / 2 : 0.35;
+    this.intact = scene.add.image(0, 0, `books-${appearance}`).setOrigin(0.5, 1);
+    this.fallen = scene.add.image(0, 0, 'books-fallen').setOrigin(0.5, 1).setVisible(false);
+    this.root = scene.add.container(0, 0, [this.intact, this.fallen]);
   }
-}
 
-// eslint-disable-next-line max-lines-per-function -- Buchrücken mit Titelfeldern kippen aus derselben Ausgangsgröße in eine flache Streulage.
-function drawUprightBooks(graphics: Phaser.GameObjects.Graphics, progress: number, wobble: number) {
-  for (const [index, color] of colors.entries()) {
-    const x = (index - 1.5) * (9 + 3 * progress) + (wobble * index) / 3;
-    const y = -18 * (1 - progress) - (8 + (index % 2) * 5) * progress;
+  // eslint-disable-next-line max-lines-per-function -- Wackeln, Umkippen und Übergang zum verstreuten PNG folgen demselben unveränderlichen Modellzustand.
+  render(state: ReturnType<BookToppling['snapshot']>) {
+    const progress =
+      state.state === 'fallen' ? 1 : state.state === 'falling' ? Math.min(1, state.progress) : 0;
+    const reduced = motionPreferences.snapshot().reduced;
+    const wobble = state.state === 'wobbling' && !reduced ? Math.sin(state.progress * 36) * 1.5 : 0;
+    const rotation = reduced ? 0 : progress * this.tilt + wobble * 0.02;
 
-    graphics
-      .save()
-      .translateCanvas(x, y)
-      .rotateCanvas((Math.PI / 2) * progress + wobble * 0.02);
-    graphics.fillStyle(0x382d2a).fillRect(-5, -17, 10, 34);
-    graphics.fillStyle(color).fillRect(-4, -16, 8, 32);
-    graphics.fillStyle(0xd9c8a2).fillRect(-3, -15, 6, 2);
-    graphics.fillStyle(0xd6b375).fillRect(-3, -8, 6, 1).fillRect(-3, 10, 6, 1);
-    graphics.fillStyle(0xefe2bf).fillRect(-2, -3, 4, 6);
-    graphics.restore();
+    this.intact.setVisible(progress < 1).setAlpha(1 - progress);
+    this.intact.setPosition(
+      wobble,
+      reduced ? 0 : -Math.abs(Math.sin(rotation)) * 24 - Math.sin(progress * Math.PI) * 4,
+    );
+    this.intact.setRotation(rotation);
+    this.fallen
+      .setVisible(progress > 0)
+      .setAlpha(progress)
+      .setScale(reduced ? 1 : 0.75 + progress * 0.25);
+  }
+
+  snapshot() {
+    return {
+      intactTexture: this.intact.texture.key,
+      fallenTexture: this.fallen.texture.key,
+      intactVisible: this.intact.visible,
+      fallenVisible: this.fallen.visible,
+    };
   }
 }

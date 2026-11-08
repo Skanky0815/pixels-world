@@ -7,7 +7,7 @@ import {
   type InteractionResult,
   type Bounds,
 } from '../interactions/contracts';
-import { drawBooks, type BookAppearance } from './book-art';
+import { BookArt, type BookAppearance } from './book-art';
 import { playBookImpact } from '../assets/book-impact';
 
 export interface BookStackConfig {
@@ -24,7 +24,8 @@ export class BookStack {
   readonly maximumScore: number;
   private readonly model: BookToppling;
   private readonly history = new DamageHistory();
-  private readonly graphic: Phaser.GameObjects.Graphics;
+  private readonly graphic: Phaser.GameObjects.Container;
+  private readonly art: BookArt;
   private drop: { from: number; elapsed: number; duration: number } | null = null;
 
   constructor(
@@ -34,8 +35,8 @@ export class BookStack {
     this.id = config.id;
     this.maximumScore = config.rules.points;
     this.model = new BookToppling(this.id, config.rules);
-    this.graphic = scene.add.graphics().setPosition(config.x, config.supportY).setDepth(0.5);
-    this.draw();
+    this.art = new BookArt(scene, config.appearance);
+    this.graphic = this.art.root.setPosition(config.x, config.supportY).setDepth(0.5);
   }
 
   eligible(context: InteractionContext) {
@@ -62,7 +63,7 @@ export class BookStack {
   }
 
   private draw() {
-    drawBooks(this.graphic, this.model.snapshot(), this.config.appearance);
+    this.art.render(this.model.snapshot());
   }
 
   // eslint-disable-next-line max-lines-per-function -- Nur ein tatsächlich aufliegender Stapel verliert seine Auflage; ein bereits zerstreuter Stapel zählt dadurch keinen zweiten Schaden.
@@ -106,6 +107,7 @@ export class BookStack {
   snapshot() {
     return {
       id: this.id,
+      art: this.art.snapshot(),
       appearance: this.config.appearance ?? 'stacked',
       ...this.model.snapshot(),
       ...this.damageSnapshot(),
@@ -126,6 +128,6 @@ export class BookStack {
   }
 
   destroy() {
-    this.graphic.destroy();
+    this.graphic.destroy(true);
   }
 }

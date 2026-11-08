@@ -1,0 +1,58 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "approval": "PNG-Produktion und Ersatz in PR #207 beauftragt; liegender Entwurf vom Nutzer bestätigt.",
+  "references": [
+    "assets/objects/couch/sources/cozy-source-v3.png",
+    "assets/objects/vases/sources/terracotta-source-v1.png"
+  ],
+  "export": {
+    "command": "node tools/prepare-book-assets.mjs",
+    "boundsAlphaThreshold": 192,
+    "rgba": "preserve nearest-neighbour samples",
+    "intactCell": [
+      48,
+      36
+    ],
+    "intactMaxFit": [
+      44,
+      34
+    ],
+    "fallenCell": [
+      96,
+      24
+    ],
+    "fallenMaxFit": [
+      84,
+      22
+    ],
+    "anchor": "bottom center"
+  },
+  "variants": [
+    {
+      "name": "stacked",
+      "source": "sources/stacked-source-v1.png",
+      "output": "books-stacked.png",
+      "prompt": "Use case: stylized-concept. Asset type: transparent pixel-art game sprite for Pixel's World. Reference images are style references ONLY: olive couch and terracotta vase show the existing warm, softly textured pixel-art game style with dark warm brown outlines, autumn palette and simple readable shading. Create ONE isolated compact stack of exactly FOUR closed old hardback books lying horizontally, viewed directly from the side like furniture in a 2D side-scrolling room. Bottom blue-grey, next muted brick red, next ochre, top moss green. Cream page blocks, slightly worn cloth covers, restrained pixel highlights and stepped pixel edges. Each book visibly distinct, stack a little uneven but stable. Nearly frontal side elevation, minimal top surface visible, no isometric perspective. Overall silhouette about 42 pixels wide and 32 pixels tall at game scale, so broad clean forms and no microscopic text. Centered, whole object fully visible with generous transparent margin, flat bottom baseline. TRUE TRANSPARENT BACKGROUND, no floor, no cast shadow, no room, no characters, no additional props, no letters or labels or watermark. Match the refs' handcrafted warm pixel texture, not flat vector rectangles or photorealism."
+    },
+    {
+      "name": "upright",
+      "source": "sources/upright-source-v1.png",
+      "output": "books-upright.png",
+      "prompt": "Use case: stylized-concept. Asset type: transparent pixel-art game sprite for Pixel's World. Reference 1 is the SAME FOUR BOOKS to reuse, not a layout to copy. Reference 2 olive couch is STYLE ONLY. Create ONE isolated compact row of exactly FOUR closed old hardback books STANDING UPRIGHT side by side, their BOOK SPINES facing the viewer in a frontal 2D side-scrolling room view. Left to right blue-grey, muted brick red, ochre, moss green, matching the four reference books' worn cloth, small blank title panels and pale gold decorative bands. One slightly shorter book, one with a very subtle lean, but bottoms align on a flat baseline. Show spines, not broad front covers, not an isometric view. Warm softly textured handcrafted pixel art, dark warm brown stepped outlines, broad clean pixels, simple readable shading. Overall footprint about 40 pixels wide by 34 tall at game scale: no tiny detail or readable lettering. Entire group fully in frame, centered, generous TRANSPARENT margin. TRUE TRANSPARENT BACKGROUND. No shelf, no floor, no shadow, no room, no cat, no other props, no text or watermark. Four distinct book spines. Match reference style closely; avoid flat vector shapes and photorealism.",
+      "references": [
+        "sources/stacked-source-v1.png",
+        "assets/objects/couch/sources/cozy-source-v3.png"
+      ]
+    },
+    {
+      "name": "fallen",
+      "source": "sources/fallen-source-v1.png",
+      "output": "books-fallen.png",
+      "prompt": "Use case: stylized-concept. Asset type: transparent fallen-books game sprite for Pixel's World. Reference 1 shows the four exact books and reference 2 their upright spines. Create their AFTER-TOPPLING state as ONE low wide loose pile of exactly FOUR closed books, blue-grey, muted brick red, ochre and moss green. Individual books visibly overlap at shallow different angles, with cream paper blocks and worn cloth covers, preserving the thickness of each original book. Spread horizontally, approximately 3.8 times wider than tall, front/side elevation on an invisible flat baseline. This is a 2D side-scrolling room sprite, NOT isometric or top-down. Clear irregular scattered silhouette; NOT one long straight plank or a neat stack. Warm softly textured handcrafted pixel art, stepped dark brown outlines and restrained pixel shading exactly matching the references. At game scale the whole group occupies about 84 by 22 pixels, so large readable shapes. Entire pile fully in frame with transparent margins. TRUE TRANSPARENT BACKGROUND. No floor, no shelf, no cast shadow, no characters, no text, no watermark, no loose pages, no torn or broken books.",
+      "references": [
+        "sources/stacked-source-v1.png",
+        "sources/upright-source-v1.png"
+      ]
+    }
+  ]
+}

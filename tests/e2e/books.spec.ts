@@ -10,6 +10,12 @@ for (const [room, x] of [
     // eslint-disable-next-line max-lines-per-function -- Echte Bewegung, Kontaktabbruch, Pause, Umsturz und Reset prüfen denselben persistenten Stapel.
   }) => {
     await start(page, `/?room=${room}&room-seed=books-3`);
+    expect((await state(page)).books[0].art).toMatchObject({
+      intactTexture: 'books-upright',
+      fallenTexture: 'books-fallen',
+      intactVisible: true,
+      fallenVisible: false,
+    });
     await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= x);
     await until(page, (s) => s.books[0].state === 'wobbling');
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= x - 65);
@@ -27,6 +33,10 @@ for (const [room, x] of [
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= x - 65);
     await until(page, (s) => s.books[0].state === 'fallen');
     expect((await state(page)).books[0]).toMatchObject({ damage: 1, events: 1 });
+    expect((await state(page)).books[0].art).toMatchObject({
+      intactVisible: false,
+      fallenVisible: true,
+    });
     expect((await state(page)).chaos.score).toBe(12);
     await page.clock.runFor(3000);
     expect((await state(page)).chaos.score).toBe(12);
