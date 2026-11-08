@@ -19,7 +19,15 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: process.env.E2E_TABLET_WEBKIT
+    ? [
+        {
+          name: 'webkit',
+          use: { ...devices['Desktop Safari'] },
+          testMatch: 'tablet-layout.spec.ts',
+        },
+      ]
+    : [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
     ...(process.env.E2E_SCOPE === 'smoke'
       ? []

@@ -235,6 +235,11 @@ kbd {
   display: none;
 }
 @media (any-pointer: coarse) {
+  :root {
+    --touch-target: 48px;
+    --touch-gap: 4px;
+    --touch-directions-width: calc(3 * var(--touch-target) + 2 * var(--touch-gap));
+  }
   body {
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
@@ -247,8 +252,8 @@ kbd {
     padding: 12px 0;
   }
   .touch-controls button {
-    min-width: 48px;
-    min-height: 48px;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
     border: 2px solid #a78d77;
     border-radius: 8px;
     background: #403a35;
@@ -268,8 +273,8 @@ kbd {
   }
   .touch-directions {
     display: grid;
-    grid-template-columns: repeat(3, 48px);
-    gap: 4px;
+    grid-template-columns: repeat(3, var(--touch-target));
+    gap: var(--touch-gap);
   }
   .touch-directions [data-control='up'] {
     grid-column: 2;
@@ -313,7 +318,7 @@ kbd {
 .mobile-hud[hidden] {
   display: none;
 }
-@media (any-pointer: coarse) and (max-width: 1100px) {
+@media (any-pointer: coarse) {
   body:has(#play-area) {
     min-height: 100svh;
     padding-top: max(8px, env(safe-area-inset-top));
@@ -386,7 +391,7 @@ kbd {
     text-align: left;
   }
 }
-@media (any-pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+@media (any-pointer: coarse) and (orientation: landscape) {
   body:has(#play-area) {
     padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
       max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
@@ -406,7 +411,7 @@ kbd {
     letter-spacing: 0;
   }
   #play-area {
-    grid-template-columns: 156px minmax(0, 1fr) 104px;
+    grid-template-columns: var(--touch-directions-width) minmax(0, 1fr) 104px;
     align-items: center;
     column-gap: 8px;
   }
@@ -438,7 +443,7 @@ kbd {
     margin-top: 4px;
   }
 }
-@media (any-pointer: coarse) and (max-width: 1100px) {
+@media (any-pointer: coarse) {
   .mobile-dialogue progress {
     display: block;
     width: min(180px, 100%);
@@ -450,7 +455,7 @@ kbd {
     display: none;
   }
 }
-@media (any-pointer: coarse) and (max-width: 1100px) {
+@media (any-pointer: coarse) {
   .mobile-dialogue:not([hidden]) {
     bottom: auto;
     max-height: calc(100% - 64px);
@@ -479,10 +484,10 @@ kbd {
 }
 
 /* Landscape sidebars leave the room free of a full-width status box. */
-@media (any-pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+@media (any-pointer: coarse) and (orientation: landscape) {
   main:has(#play-area) {
     display: grid;
-    grid-template-columns: 156px minmax(0, 1fr) 148px;
+    grid-template-columns: var(--touch-directions-width) minmax(0, 1fr) 148px;
     gap: 12px 16px;
     align-items: center;
   }
@@ -525,7 +530,7 @@ kbd {
   }
 }
 
-@media (any-pointer: coarse) and (max-width: 1100px) {
+@media (any-pointer: coarse) {
   main:has(#play-area) footer {
     color: #a08f83;
     line-height: 1.5;
@@ -608,7 +613,7 @@ kbd {
     gap: 8px;
   }
 }
-@media (any-pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+@media (any-pointer: coarse) and (orientation: landscape) {
   main:has(#play-area) header {
     flex-direction: column;
     align-items: start;
@@ -668,7 +673,7 @@ kbd {
   color: #d4b488;
   font-size: 12px;
 }
-@media (any-pointer: coarse) and (max-width: 1100px) {
+@media (any-pointer: coarse) {
   .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
     max-height: 100%;
     bottom: 0;
@@ -699,4 +704,15 @@ kbd {
 .mobile-result .result-hearts[data-count='4'] svg {
   width: 18px;
   height: 18px;
+}
+
+/* Larger touch surfaces get larger targets without classifying devices by name. */
+@media (any-pointer: coarse) and (min-width: 600px) and (min-height: 600px) {
+  :root {
+    --touch-target: clamp(56px, 6vmin, 72px);
+    --touch-gap: 8px;
+  }
+  .touch-actions {
+    gap: 12px;
+  }
 }

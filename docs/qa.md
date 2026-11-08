@@ -30,6 +30,8 @@ npm run test:e2e -- --grep 'Sofa:'
 npm run test:e2e -- --workers=1
 npm run test:e2e -- --repeat-each=3
 npm run test:e2e:debug
+npx playwright install webkit
+npm run test:e2e:tablet:webkit
 npm run test:e2e:report
 ```
 
@@ -132,6 +134,12 @@ Die Produktionsisolation umfasst beide DEV-Seiten, ihre Einstiegsmodule und die
 Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
+
+Die Tablet-Szenarien laufen regulär in Chromium; `test:e2e:tablet:webkit` prüft
+dieselben Abläufe zusätzlich mit WebKit. Viewport-/Touch-Emulation ersetzt keine
+Hardwareprüfung von iPadOS Safari oder Android-Browserleisten und Safe Areas.
+Auf echten Tablets beide Ausrichtungen, größere Tasten, Rotation, Menü und Neustart
+prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
 
 - Einführung → Optionen: Leicht/Normal/Schwer wählen, zurückkehren und starten.
   Timer, Objektbelegung und Versöhnung gemeinsam prüfen. Das untere Regal

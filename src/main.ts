@@ -2,6 +2,7 @@ import './i18n/settings';
 import { translateExact, onLanguageChange } from './i18n/locale';
 import Phaser from 'phaser';
 import './style.css';
+import { observeGameHost } from './game/host-resize';
 import { OBJECTS } from './content/objects/catalog';
 import { selectRoom } from './content/rooms';
 import { resolveRoom } from './game/content/resolve-room';
@@ -39,6 +40,7 @@ if (gameHost) {
 new Phaser.Game({
   type: matchMedia('(any-pointer: coarse)').matches ? Phaser.CANVAS : Phaser.AUTO,
   parent: 'game',
+  callbacks: { postBoot: observeGameHost },
   width: room.definition.width,
   height: room.definition.height,
   pixelArt: true,
