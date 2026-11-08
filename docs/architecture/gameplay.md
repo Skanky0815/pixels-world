@@ -134,7 +134,14 @@ Generator muss denselben validierten Vertrag verwenden, keine zweite Regelsprach
 Canvas und Raum behalten ihr Seitenverhältnis. `#play-area` ordnet mobile
 Steuerungsgruppen außerhalb des Zimmers an. `MobileReadout` rendert vorhandene
 Text-/Fortschrittsdaten in CSS-Pixeln; kompakt sind entsprechende Canvas-Textpanels
-verborgen, nicht die Figuren. Rotation erhält die Szene und löst Eingaben.
+verborgen, nicht die Figuren. `any-pointer: coarse` aktiviert dieselbe Oberfläche
+auch auf breiten Tablets und Hybrid-Geräten; die Bildschirmbreite allein bestimmt
+den Eingabemodus nicht. Maus und Tastatur bleiben parallel nutzbar. Große
+Touch-Flächen erhalten über CSS-Variablen größere Tasten mit mehr Abstand.
+Rotation erhält die Szene und löst Eingaben. Ein spielweiter `ResizeObserver`
+aktualisiert Phasers FIT-Skalierung nach Größenänderungen des CSS-Spielfensters,
+auch wenn das Grid erst nach dem Browser-Resize-Ereignis seine Größe erreicht.
+Beim Zerstören des Spiels wird der Observer entfernt.
 Szeneneigene DOM- und MediaQuery-Ressourcen werden beim Shutdown entsorgt.
 Touch-Geräte starten mit Canvas 2D, Desktop mit AUTO:
 [ADR 0002](../adr/0002-mobile-text-rendering.md).

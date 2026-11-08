@@ -218,8 +218,9 @@ test(
     expect((await state(page)).result!.canvasTextVisible).toBe(false);
     await page.setViewportSize({ width: 1200, height: 800 });
     await page.clock.runFor(100);
-    await expect(page.locator('.mobile-dialogue')).toBeHidden();
-    await until(page, (s) => s.result!.canvasTextVisible, 100);
+    await expect(page.locator('.mobile-dialogue')).toBeVisible();
+    expect((await state(page)).result!.canvasTextVisible).toBe(false);
+    await expectResultColumns(page);
     await page.setViewportSize({ width: 844, height: 390 });
     await page.clock.runFor(100);
     await until(page, (s) => !s.result!.canvasTextVisible, 100);

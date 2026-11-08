@@ -23,7 +23,10 @@ Rico, Sara (KI-Mitwirkende) und Pixel vor. Die passenden Pixel-Art-Porträts
 basieren auf Ricos GitHub-Avatar und den bestätigten Figurenreferenzen.
 
 Du brauchst einen aktuellen Browser. Am Desktop spielst du mit Tastatur; auf Geräten
-mit grobem Zeiger (Touch) erscheint eine zusätzliche Bildschirmsteuerung.
+mit grobem Zeiger (Touch) erscheint die mobile Oberfläche auch auf großen Tablets.
+Im Querformat liegen Richtungstasten links und Aktionstasten rechts vom Spielfenster.
+Tablets mit ausreichend Fläche erhalten größere Tasten. Auf Touch-Geräten bleiben
+Tastatur und Maus zusätzlich nutzbar; die Oberfläche wechselt beim Eingabewechsel nicht.
 Das Spiel läuft ohne Konto und ohne Backend. Über die Sprachwahl im Pause-Menü
 spielst du auf Deutsch oder Englisch. Sprache, Lautstärke und Bewegungseinstellung bleiben lokal im
 Browser gespeichert; ein Sprachwechsel erhält die laufende Runde.
