@@ -6,6 +6,7 @@ export const ASSETS = {
   'curtain-default': { kind: 'curtain', capabilities: ['climb', 'damage'] },
   'catgrass-default': { kind: 'plant', capabilities: ['automatic', 'damage'], width: 40, height: 60 },
   'vase-default': { kind: 'vase', capabilities: ['push', 'damage'], width: 18, height: 28 },
+  'wall-picture': { kind: 'picture', capabilities: ['automatic', 'damage'], width: 108, height: 112 },
   'book-stack': { kind: 'books', capabilities: ['automatic', 'damage'], width: 48, height: 36 },
   'favorite-ball': { kind: 'toy', width: 16, height: 16 },
   'room-plaster': { kind: 'tile' },

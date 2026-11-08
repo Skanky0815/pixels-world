@@ -4,10 +4,10 @@ Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms
 
 ## Vorlagen und Instanzen
 
-Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `plant`, `vase` oder `books`). Sie beschreibt einen bekannten symbolischen Asset-Schlüssel, tatsächlich implementierte Fähigkeiten und Geometrie/Regelwerte. Mehrere Varianten desselben Typs können andere Werte haben. Eine Rauminstanz referenziert ihre Vorlage über `variant` und besitzt eine eigene eindeutige `id` sowie Platzierung. Keine Definition enthält Klassen-/Funktionsnamen zur Ausführung oder eine allgemeine Regelsprache.
+Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `plant`, `vase`, `books` oder `picture`). Sie beschreibt einen bekannten symbolischen Asset-Schlüssel, tatsächlich implementierte Fähigkeiten und Geometrie/Regelwerte. Mehrere Varianten desselben Typs können andere Werte haben. Eine Rauminstanz referenziert ihre Vorlage über `variant` und besitzt eine eigene eindeutige `id` sowie Platzierung. Keine Definition enthält Klassen-/Funktionsnamen zur Ausführung oder eine allgemeine Regelsprache.
 
 - `placement.mode: 'surface'`: x-Position auf einer benannten Auflage. Unterstützt Boden, Raumplattformen und Sitzflächen anderer Sofas. Sofa-x bezeichnet die linke Sitzkante, Pflanzen-/Vasen-x die Mitte. Die Auflagehöhe wird aus der Referenz berechnet; sie wird nicht nochmals in die Instanz eingetragen.
-- `placement.mode: 'area'`: linke obere Ecke eines Vorhangs. Breite und Höhe stammen aus der Vorlage.
+- `placement.mode: 'area'`: linke obere Ecke eines Vorhangs oder Wandbildes. Breite und Höhe stammen aus der Vorlage beziehungsweise dem bekannten Bild-Asset.
 - Sofa-Geometrie enthält Breite, Sitzdicke und Sitzhöhe über der Auflage. Rendering, Collider und Nähe verwenden daraus dieselbe Sitzfläche.
 - `reading-books` (liegend) und `upright-books` (stehende Buchrücken) teilen Typ, Maße und Regeln. Beide sind zufällig platzierbare Dekoration für passende mittelgroße Slots auf Boden oder Regal. Die Raumdaten enthalten keine festen Bücherinstanzen. `objectSlots` gruppiert Slots über mehrere Auflagen hinweg: jede Gruppe hat eigene IDs und Dichten je Schwierigkeit; jeder Eintrag nennt seine `surfaceId` und einen lokalen x-Mittelpunkt. In den Wohnzimmern wählt eine Gruppe einen Bodenplatz, eine weitere einen Platz links auf dem unteren oder mittleren Regal. Die bestehende Pool-/Geometrie-/Kollisionsprüfung und derselbe Runden-RNG gelten für alle Gruppen. Neustart erhält dieselbe Auswahl. `warningMs`, `fallMs` und `points` steuern Wackeln und einmaligen Schaden. `supportY` und `floorY` trennen Auflage und Raumboden; Auflagenverlust zählt auch bei schon verstreuten Büchern nicht doppelt. Die Buchgrafiken liegen als transparente PNGs samt Imagegen-Quellen und vollständigen Prompts unter `assets/objects/books/`. `node tools/prepare-book-assets.mjs` exportiert liegende/stehende Bücher auf 48×36 und den Streuzustand auf 96×24 Pixel, per Alpha-Bounds und Nearest-Neighbour mit unveränderten RGBA-Samples. `BookArt` animiert diese Bilder; der kurze synthetische Aufprall bleibt in `game/assets/book-impact.ts`.
 - Der Spawn referenziert ebenfalls eine Auflage. Pixel muss mit der 52×52-Kollisionsfläche darauf Platz haben.
@@ -269,7 +269,39 @@ Die Wandbelegung läuft nach den Gegenstandsslots mit derselben Phaser-RNG-Folge
 Damit bleiben bestehende Gegenstands-Seeds stabil. Neustart mit gleicher
 Schwierigkeit behält die Auswahl; eine neue Runde nach Neuladen würfelt neu,
 außer im DEV-/E2E-Test mit explizitem `room-seed`. Gewählte Regale werden echte
-Plattformen mit normaler Stabilitätslogik, Bilder verwenden die vorhandene
-Bilddekoration. Bild-Interaktionen folgen separat in #63. `wallPlacements`
+Plattformen mit normaler Stabilitätslogik. Bildvorlagen mit `objectVariant`
+erzeugen echte `picture`-Instanzen aus dem Objektkatalog; alte Bildvorlagen ohne
+diese Referenz bleiben statische Dekoration. `wallPlacements`
 enthält die ausgewählten IDs, Varianten und Bounds; der E2E-Beobachter gibt sie
 als unveränderlichen Snapshot aus. Feste Zielregale bleiben unabhängig davon erhalten.
+
+## Interaktive Wandbilder
+
+`pixel-portrait`, `berlin-tower` und `cozy-nook` wählen drei echte transparente
+PNGs mit gemeinsamem Holzrahmen. `objectVariant` einer Wandvorlage referenziert
+einen dieser geprüften Katalogschlüssel; Maße müssen zum Asset passen. Die
+Wand-Slots würfeln das Motiv mit demselben Runden-RNG. Bilder sind als Bodenpool
+unzulässig. Ihre Plätze über dem Sofa und links davon liegen in Sprungreichweite.
+
+Ein separater Sprungkontakt hängt den Rahmen schief, ein zweiter löst den Fall
+aus. Aufwärtsbewegung armiert einen Flug; Boden- oder Kletterkontakt beendet ihn.
+Kontaktflattern innerhalb eines Flugs zählt nicht erneut, bloßes Vorbeilaufen oder
+Herabfallen ohne Sprung nicht als Treffer. Das Wackeln endet nach `wobbleMs`,
+der schiefe Winkel bleibt. Erst der Aufprall nach `fallMs` erzeugt einmalig
+`picture-fall` mit `points`. Die vorhandene kurze synthetische Aufprallwiedergabe
+nutzt denselben Lautstärke-/Pausekanal wie die Bücher. Gefallene Bilder bleiben
+sichtbar und haben keine Collider. Reduzierte Bewegung unterdrückt das Wackeln;
+Zeit-, Treffer- und Punktevertrag bleiben gleich. Neustart setzt das Bild zurück.
+
+`assets/objects/pictures/generation-v1.json` enthält Imagegen-Prompts und Quellen.
+`node tools/prepare-picture-assets.mjs` exportiert 54×56-PNGs proportional mit
+Alpha-Bounds und Nearest-Neighbour unter Erhalt der ursprünglichen RGBA-Samples.
+Die drei hochauflösenden Quellen gehören nicht zum Laufzeitbundle.
+
+[album/pictures.ts](album/pictures.ts) bereitet stabile Album-IDs, Asset,
+DE-/EN-Fluff, Saras Kommentar und die Erfolgsbedingung vor. Erst ein vom
+Chaossystem akzeptiertes Aufprallereignis sendet `album-discovered` mit
+`entryId`, `objectId` und `eventId`; Spawn und Reset entdecken nichts.
+Der nur lesbare E2E-Snapshot zeigt das letzte Ereignis. Eine dauerhafte Sammlung
+oder zweite Speicherung wird hier nicht aufgebaut: Persistenz, Deduplication
+über Runden und deren Integrationstests hängen vom gemeinsamen Album #210 ab.

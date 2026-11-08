@@ -17,7 +17,7 @@ for (const [name, path, ready] of [
 
     await expect(link).toHaveAttribute('href', path);
     await link.click();
-    await expect(page.locator('html')).toHaveAttribute(ready, 'true');
+    await waitForDevReady(page, ready);
   });
 }
 
@@ -60,9 +60,26 @@ async function untilPlayground(page: Page, check: (state: Snapshot) => boolean) 
     .toBe(true);
 }
 
+// eslint-disable-next-line max-lines-per-function -- Wie beim Spielstart muss die angehaltene Browseruhr bis zum ersten echten Szenen-Snapshot vorrücken.
+async function waitForDevReady(page: Page, attribute: string) {
+  await expect
+    .poll(
+      async () => {
+        await page.clock.runFor(32);
+
+        return page.locator('html').getAttribute(attribute);
+      },
+      { intervals: [0], timeout: 15000 },
+    )
+    .toBe('true');
+}
+
 async function loadPlayground(page: Page, variant: string) {
   await page.goto('http://127.0.0.1:4176/interactable-playground.html');
-  await expect(page.locator('html')).toHaveAttribute('data-playground-ready', 'true');
+  await waitForDevReady(page, 'data-playground-ready');
+  await expect(page.getByLabel('Objekt / Variante aus dem Spielkatalog')).toHaveValue(
+    (await snapshot(page)).variant,
+  );
   await choose(page, variant);
 }
 

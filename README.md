@@ -48,6 +48,8 @@ nötig; der normale DEV-Server richtet keinen Offline-Cache ein.
 Du spielst Pixel, einen neugierigen Tigerkater allein in Saras Wohnzimmer.
 Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimmer passt.
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
+Wandbilder mit Pixel-, Berlin- oder Wohnzimmermotiv hängen nach einem Sprung schief;
+ein zweiter Sprung lässt sie mit einem kurzen Aufprall herunterfallen.
 Wiederholte Landungen lassen fragile und normale Regale erst wackeln, dann reißen
 und schließlich einstürzen. Das obere Zielregal bleibt stabil.
 In beiden Wohnzimmern werden Bücher zufällig auf geeignete Boden- und Regalslots verteilt. Es gibt liegende Stapel und stehende Bücher mit sichtbaren Buchrücken. Ein Regalplatz wird unten oder mittig ausgewählt. Kontakt lässt sie erst wackeln;

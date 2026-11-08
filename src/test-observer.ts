@@ -5,7 +5,8 @@ import type { GameTestState } from './test-state';
 export function installTestObserver(read: () => GameTestState) {
   Object.defineProperty(window, '__pixelTest', {
     configurable: true,
-    // eslint-disable-next-line max-lines-per-function -- Der vollständige tief eingefrorene Snapshot wird atomar aus genau einer aktuellen Beobachtung aufgebaut.
+
+    // eslint-disable-next-line max-lines-per-function, complexity -- Optionale Schadens- und Albumereignisse werden defensiv eingefroren, ohne einen Zustandsschreiber zu exponieren.
     get() {
       const state = read();
 
@@ -43,6 +44,14 @@ export function installTestObserver(read: () => GameTestState) {
               ...state.plant,
               lastDamage: state.plant.lastDamage ? Object.freeze(state.plant.lastDamage) : null,
             })
+          : null,
+        pictures: Object.freeze(
+          state.pictures.map((p) =>
+            Object.freeze({ ...p, lastDamage: p.lastDamage ? Object.freeze(p.lastDamage) : null }),
+          ),
+        ),
+        pictureDiscovery: state.pictureDiscovery
+          ? Object.freeze({ ...state.pictureDiscovery })
           : null,
         wallPlacements: Object.freeze(
           state.wallPlacements.map((p) =>

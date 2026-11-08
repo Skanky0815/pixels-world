@@ -19,6 +19,7 @@ export const DAMAGE_FEEDBACK: Record<DamageKind, TextKey> = {
   'shelf-damage': 'feedbackShelfDamage',
   collapse: 'feedbackShelfCollapse',
   topple: 'feedbackBooks',
+  'picture-fall': 'feedbackPicture',
 };
 export const PHASE_FEEDBACK: Record<RoundPhase | 'success' | 'failed', TextKey> = {
   chaos: 'feedbackStart',

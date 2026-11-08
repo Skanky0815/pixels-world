@@ -3,13 +3,14 @@ import { ASSETS } from '../assets/definitions.ts';
 import { overlaps, shuffled } from './slot-geometry.ts';
 import { SPAWN_SIZES, spawnSizeFor, type SpawnSize } from './spawn-profile.ts';
 import type { Bounds } from '../interactions/contracts.ts';
-import type { RoomDefinition } from './definitions.ts';
+import type { ObjectCatalog, RoomDefinition } from './definitions.ts';
 
 type Shelf = RoomDefinition['platforms'][number];
 type Variant =
   | {
       readonly kind: 'picture';
       readonly asset: 'room-picture';
+      readonly objectVariant?: string;
       readonly width: number;
       readonly height: number;
     }
@@ -47,10 +48,11 @@ const inside = (a: Bounds, b: Bounds) =>
   a.x >= b.x && a.y >= b.y && a.x + a.width <= b.x + b.width && a.y + a.height <= b.y + b.height;
 
 // eslint-disable-next-line max-lines-per-function, complexity -- Alle Wandvorlagen werden vor der Zufallsauswahl geprüft, auch aktuell nicht ausgewählte.
-function validateVariants(variants: WallSlots['variants']) {
+function validateVariants(variants: WallSlots['variants'], catalog: ObjectCatalog) {
   for (const [key, variant] of Object.entries(variants)) {
     if (!key.trim() || !['picture', 'shelf'].includes(variant.kind)) fail('invalid variant');
     spawnSizeFor(variant.width, variant.height);
+    validatePictureVariant(variant, catalog);
 
     if (variant.kind === 'shelf' && variant.durability) shelfRules(variant.durability);
 
@@ -67,9 +69,26 @@ function validateVariants(variants: WallSlots['variants']) {
   }
 }
 
+// eslint-disable-next-line max-lines-per-function -- Katalogreferenz und exakte Maße schützen auch unbesetzte Bildvorlagen.
+function validatePictureVariant(variant: Variant, catalog: ObjectCatalog) {
+  if (variant.kind !== 'picture' || variant.objectVariant === undefined) return;
+
+  if (
+    !Object.hasOwn(catalog, variant.objectVariant) ||
+    catalog[variant.objectVariant].kind !== 'picture'
+  )
+    fail('unknown picture variant');
+
+  if (
+    variant.width !== ASSETS['wall-picture'].width ||
+    variant.height !== ASSETS['wall-picture'].height
+  )
+    fail('picture dimensions do not match object');
+}
+
 // eslint-disable-next-line max-lines-per-function, complexity -- Ein vollständiger Vertrag schützt auch unbesetzte Slots vor ungültigen IDs, Referenzen und Flächen.
-function validate(room: RoomDefinition, slots: WallSlots) {
-  validateVariants(slots.variants);
+function validate(room: RoomDefinition, slots: WallSlots, catalog: ObjectCatalog) {
+  validateVariants(slots.variants, catalog);
 
   for (const bounds of room.navigationClearances ?? [])
     if (!validBounds(bounds)) fail('invalid navigation clearance');
@@ -161,11 +180,12 @@ export function populateWallSlots(
   difficulty: 'easy' | 'normal' | 'hard',
   random: () => number,
   occupied: readonly Bounds[],
+  catalog: ObjectCatalog,
 ): RoomDefinition {
   const slots = room.wallSlots;
 
   if (!slots) return room;
-  validate(room, slots);
+  validate(room, slots, catalog);
   const reserved = [
     ...occupied,
     ...room.decorations.flatMap((d) => (d.kind === 'image' ? [d.bounds] : [])),
@@ -193,11 +213,18 @@ function materialize(
 ): RoomDefinition {
   const platforms = [...room.platforms];
   const decorations = [...room.decorations];
+  const objects = [...room.objects];
 
   for (const p of placements) {
     const variant = slots.variants[p.variant];
 
-    if (variant.kind === 'picture')
+    if (variant.kind === 'picture' && variant.objectVariant)
+      objects.push({
+        id: p.id,
+        variant: variant.objectVariant,
+        placement: { mode: 'area', x: p.bounds.x, y: p.bounds.y },
+      });
+    else if (variant.kind === 'picture')
       decorations.push({ kind: 'image', asset: variant.asset, bounds: p.bounds });
     else
       platforms.push({
@@ -208,5 +235,5 @@ function materialize(
       });
   }
 
-  return { ...room, platforms, decorations, wallPlacements: placements };
+  return { ...room, platforms, decorations, objects, wallPlacements: placements };
 }

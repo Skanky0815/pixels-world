@@ -1,3 +1,6 @@
+import type { WallPictureConfig } from '../objects/WallPicture.ts';
+import type { PictureMotif } from '../assets/picture-appearance.ts';
+import type { PictureRules } from '../interactions/picture-falling.ts';
 import type { WallSlots, WallPlacement } from './wall-slots.ts';
 import type { SpawnSlot } from './spawn-slots.ts';
 import type { SpawnProfile } from './spawn-profile.ts';
@@ -24,6 +27,12 @@ interface Base {
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
+  | (Base & {
+      readonly kind: 'picture';
+      readonly asset: 'wall-picture';
+      readonly appearance: PictureMotif;
+      readonly rules: PictureRules;
+    })
   | (Base & {
       readonly kind: 'books';
       readonly asset: 'book-stack';
@@ -137,6 +146,7 @@ interface ResolvedBase {
   readonly asset: AssetKey;
 }
 export type ResolvedObject =
+  | (ResolvedBase & { readonly kind: 'picture'; readonly config: WallPictureConfig })
   | (ResolvedBase & { readonly kind: 'books'; readonly config: BookStackConfig })
   | (ResolvedBase & { readonly kind: 'couch'; readonly config: CouchConfig })
   | (ResolvedBase & { readonly kind: 'curtain'; readonly config: CurtainConfig })
