@@ -1,4 +1,4 @@
-import { test, expect, loadIntro, state } from './support';
+import { test, expect, loadIntro, state, until, besideCouch } from './support';
 import { startTouch } from './touch-support';
 
 test.use({ hasTouch: true, isMobile: true });
@@ -19,6 +19,10 @@ for (const viewport of [
     expect(room && left && right).toBeTruthy();
 
     if (!room || !left || !right) throw new Error('Layout fehlt');
+    const main = await page.locator('main').boundingBox();
+
+    expect(main!.y).toBeGreaterThan(8);
+    expect(Math.abs(main!.y - (viewport.height - main!.y - main!.height))).toBeLessThan(2);
     expect(left.x + left.width + 16).toBeLessThanOrEqual(room.x);
     expect(room.x + room.width + 16).toBeLessThanOrEqual(right.x);
     expect(
@@ -47,6 +51,41 @@ for (const viewport of [
       contentType: 'image/png',
     });
   });
+}
+
+for (const viewport of [
+  { width: 320, height: 568 },
+  { width: 390, height: 844 },
+  { width: 844, height: 390 },
+]) {
+  test(`Chaosmeldung verschiebt kein Layout ${viewport.width}×${viewport.height} @smoke`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Echte Chaosaktion und Ablauf prüfen dieselbe Geometrie vor, während und nach der Meldung.
+  }) => {
+    await page.setViewportSize(viewport);
+    await startTouch(page);
+    await besideCouch(page);
+    await until(page, (s) => !s.feedback.text);
+    const before = await mobileGeometry(page);
+
+    await until(page, (s) => s.couch.damage === 1);
+    await expect(page.locator('.mobile-hud')).toContainText('Kratzen');
+    expect(await mobileGeometry(page)).toEqual(before);
+    await until(page, (s) => !s.feedback.text);
+    expect(await mobileGeometry(page)).toEqual(before);
+  });
+}
+
+async function mobileGeometry(page: import('@playwright/test').Page) {
+  return page
+    .locator('.mobile-hud, #game, .touch-directions, .touch-actions')
+    .evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const { x, y, width, height } = node.getBoundingClientRect();
+
+        return { x, y, width, height };
+      }),
+    );
 }
 
 test('Schmales Hochformat: Einführung scrollbar, Start erreichbar und Rotation erhält die Runde', async ({

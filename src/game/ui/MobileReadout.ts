@@ -36,7 +36,8 @@ export class MobileReadout {
     this.hud.setAttribute('aria-label', t('gameStatus'));
     this.goal.className = 'mobile-goal';
     this.status.setAttribute('role', 'status');
-    this.status.append(this.score, document.createTextNode('\n'), this.notice);
+    this.notice.className = 'mobile-notice';
+    this.status.append(this.score, this.notice);
     this.hud.append(this.status, this.goal);
     this.panel.className = 'mobile-dialogue';
     this.panel.setAttribute('aria-label', t('gameDialogue'));
