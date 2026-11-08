@@ -1,5 +1,6 @@
 import { t } from '../../i18n/locale.ts';
 import type { ResultViewSnapshot } from './RoundResultView';
+import { resultHeartIcon } from './result-hearts';
 
 /** Readable result layout fed by the same final texts as the desktop card. */
 export class MobileResultCard {
@@ -9,6 +10,7 @@ export class MobileResultCard {
   private readonly reconciliation = document.createElement('p');
   private readonly hearts = document.createElement('span');
   private readonly goal = document.createElement('p');
+  private heartState = '';
 
   // eslint-disable-next-line max-lines-per-function -- Die kompakte DOM-Karte hält Ausgang, zwei Spalten und Zielstatus gemeinsam sichtbar.
   constructor() {
@@ -35,7 +37,7 @@ export class MobileResultCard {
     this.headline.textContent = result.headlineText;
     this.chaos.textContent = result.chaosText;
     this.reconciliation.textContent = result.reconciliationText;
-    this.hearts.textContent = result.heartsText;
+    this.renderHearts(result.hearts, result.required);
     this.hearts.dataset.count = String(result.required);
     this.hearts.setAttribute('role', 'img');
     this.hearts.setAttribute(
@@ -43,5 +45,15 @@ export class MobileResultCard {
       t('resultHearts', { v0: result.hearts, v1: result.required }),
     );
     this.goal.textContent = result.goalText;
+  }
+
+  private renderHearts(earned: number, required: number) {
+    const key = `${earned}/${required}`;
+
+    if (this.heartState === key) return;
+    this.heartState = key;
+    this.hearts.replaceChildren(
+      ...Array.from({ length: required }, (_, index) => resultHeartIcon(index < earned)),
+    );
   }
 }

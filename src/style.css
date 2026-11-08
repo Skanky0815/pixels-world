@@ -668,18 +668,20 @@ kbd {
 }
 .mobile-result .result-reconciliation {
   min-width: 0;
-  flex: 1;
+  flex-basis: 100%;
   margin: 0;
   font-size: 13px;
 }
 .mobile-result .result-hearts {
   color: #e7a6a6;
-  font:
-    22px/1.2 Arial,
-    sans-serif;
-  letter-spacing: 0;
+  display: inline-flex;
+  gap: 3px;
   flex-shrink: 0;
-  white-space: nowrap;
+}
+.mobile-result .result-hearts svg {
+  display: block;
+  width: 22px;
+  height: 22px;
 }
 .mobile-result .result-goal {
   grid-column: 1 / -1;
@@ -714,6 +716,7 @@ kbd {
   outline-offset: 3px;
 }
 
-.mobile-result .result-hearts[data-count='4'] {
-  font-size: 18px;
+.mobile-result .result-hearts[data-count='4'] svg {
+  width: 18px;
+  height: 18px;
 }
