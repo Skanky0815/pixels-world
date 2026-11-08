@@ -50,10 +50,10 @@ Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimm
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
 Wiederholte Landungen lassen fragile und normale Regale erst wackeln, dann reißen
 und schließlich einstürzen. Das obere Zielregal bleibt stabil.
-In beiden Wohnzimmern steht ein Bücherstapel: Kontakt lässt ihn erst wackeln;
+In beiden Wohnzimmern stehen Bücherstapel am Boden, im Cozy Remix zusätzlich auf dem unteren Regal. Kontakt lässt sie erst wackeln;
 bleibst du zu lange, fallen die Bücher mit einem kurzen dumpfen Geräusch auseinander.
 Weggehen während der Warnung bricht die Aktion ab. Ein Umsturz zählt einmalig
-Chaospunkte; die verstreuten Bücher bleiben bis zur nächsten Runde liegen.
+Chaospunkte; die verstreuten Bücher bleiben bis zur nächsten Runde liegen. Stürzt ihr Regal ein, fallen sie mit zum Boden, ohne doppelt zu zählen.
 
 Der spielbare Prototyp bietet Bewegung, automatische Katzenaktionen und Chaospunkte.
 Pixel möchte seinen Lieblingsball finden. Bleib dort kurz

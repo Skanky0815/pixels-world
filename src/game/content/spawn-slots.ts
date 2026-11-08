@@ -74,7 +74,7 @@ function objectArea(object: ResolvedObject): Bounds {
       : object.kind === 'plant'
         ? ASSETS['catgrass-default']
         : ASSETS['vase-default'];
-  const bottom = 'shelfY' in c ? c.shelfY : c.floorY;
+  const bottom = 'supportY' in c ? c.supportY : 'shelfY' in c ? c.shelfY : c.floorY;
 
   return {
     x: c.x - asset.width / 2,

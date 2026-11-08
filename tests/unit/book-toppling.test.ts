@@ -46,3 +46,14 @@ test('Zeit- und Punktewerte müssen endlich und zulässig sein', () => {
   books.update(NaN, true);
   assert.equal(books.snapshot().progress, 0);
 });
+
+test('Verlorene Auflage löst den Fall aus; ein schon umgestürzter Stapel zählt nicht erneut', () => {
+  const books = new BookToppling('shelf-books');
+
+  books.releaseSupport();
+  assert.equal(books.snapshot().state, 'falling');
+  assert.ok(books.update(450, false));
+  books.releaseSupport();
+  assert.equal(books.update(450, false), undefined);
+  assert.equal(books.snapshot().state, 'fallen');
+});

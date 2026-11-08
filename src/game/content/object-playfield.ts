@@ -7,6 +7,7 @@ import {
   overlaps,
   updateGroundInteractions,
   type InteractionContext,
+  type Bounds,
 } from '../interactions/contracts';
 import type { Vase } from '../objects/Vase';
 import type { buildObjects } from './build-objects';
@@ -93,7 +94,7 @@ export function advanceObjectInteractions(
   damage: Damage,
   shelves: readonly Shelf[] = [],
 ) {
-  updateShelves(shelves, pixel, time, damage, objects.vases);
+  updateShelves(shelves, pixel, time, damage, [...objects.vases, ...objects.books]);
 
   for (const vase of objects.vases) vase.updateFall();
   const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));
@@ -118,19 +119,20 @@ export function advanceObjectInteractions(
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
 }
 
-// eslint-disable-next-line max-lines-per-function -- Der Einsturz gibt direkt aufliegende Vasen für ihre bestehende Fall-/Bruchphysik frei; keine künstlichen Zusatzschäden.
+// eslint-disable-next-line max-lines-per-function -- Der Einsturz gibt direkt aufliegende Vasen und Bücher für ihren vorhandenen Fallablauf frei; keine künstlichen Zusatzschäden.
 function updateShelves(
   shelves: readonly Shelf[],
   pixel: Pixel,
   time: number,
   damage: Damage,
-  vases: readonly Vase[],
+  supported: readonly { releaseSupport(surface: Bounds): void }[],
 ) {
   for (const shelf of shelves) {
     const event = shelf.update(pixel.snapshot(), time);
 
     damage(event);
 
-    if (event?.kind === 'collapse') for (const vase of vases) vase.releaseSupport(shelf.bounds);
+    if (event?.kind === 'collapse')
+      for (const object of supported) object.releaseSupport(shelf.bounds);
   }
 }

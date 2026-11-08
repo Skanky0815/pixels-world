@@ -495,7 +495,7 @@ class RoomResolver {
     };
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Der feste Bodenstapel wird mit seiner gesamten Umsturzfläche auf Raumgrenzen und Auflage geprüft.
+  // eslint-disable-next-line max-lines-per-function -- Aufrechte Bücher müssen auf die Auflage passen; die Streufläche wird separat gegen Raumgrenzen geprüft.
   private resolveBooks(
     instance: ObjectInstance,
     d: Extract<ObjectDefinition, { kind: 'books' }>,
@@ -504,20 +504,25 @@ class RoomResolver {
   ): ResolvedObject {
     const p = instance.placement;
 
-    if (support.y !== this.room.floor.y) fail(`${path}.placement`, 'books require floor support');
     bounds(
       { x: p.x - 48, y: support.y - 36, width: 96, height: 36 },
       this.room,
       `${path}.geometry`,
     );
-    supportFits(p.x - 48, 96, support, `${path}.placement`);
+    supportFits(p.x - 24, 48, support, `${path}.placement`);
 
     return {
       id: instance.id,
       variant: instance.variant,
       asset: d.asset,
       kind: 'books',
-      config: { id: instance.id, x: p.x, floorY: support.y, rules: d.rules },
+      config: {
+        id: instance.id,
+        x: p.x,
+        supportY: support.y,
+        floorY: this.room.floor.y,
+        rules: d.rules,
+      },
     };
   }
 

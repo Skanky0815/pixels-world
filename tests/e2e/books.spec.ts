@@ -1,4 +1,4 @@
-import { test, expect, start, state, until, holdUntil, reset } from './support';
+import { test, expect, start, state, until, holdUntil, reset, lowerShelf } from './support';
 import { startTouch } from './touch-support';
 
 for (const [room, x] of [
@@ -35,6 +35,51 @@ for (const [room, x] of [
       .attach('buecher-umgeworfen', { body: await page.screenshot(), contentType: 'image/png' });
     await reset(page);
     expect((await state(page)).books[0]).toMatchObject({ state: 'stacked', damage: 0, events: 0 });
+  });
+}
+
+for (const toppled of [false, true]) {
+  test(`Regaleinsturz mit ${toppled ? 'bereits verstreuten' : 'aufrechten'} Büchern`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Echte Landungen prüfen beide Ausgangszustände, Pause während des Falls, einmaligen Schaden und Reset.
+  }) => {
+    await start(page, '/?room=cozy-remix');
+    await lowerShelf(page);
+
+    if (toppled) {
+      await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 530);
+      await until(page, (s) => s.books[1].state === 'fallen');
+      expect((await state(page)).chaos.score).toBe(12);
+    }
+
+    expect((await state(page)).books[1]).toMatchObject({ supportY: 304, floorY: 468, y: 304 });
+    await test
+      .info()
+      .attach('regalbuecher', { body: await page.screenshot(), contentType: 'image/png' });
+
+    for (let landing = 0; landing < 2; landing++) {
+      await page.keyboard.down('Space');
+      await until(page, (s) => !s.pixel.grounded);
+      await page.keyboard.up('Space');
+      await until(page, (s) => s.shelves[0].landings >= landing + 2);
+    }
+
+    await until(page, (s) => s.books[1].dropping);
+    await page.keyboard.press('Escape');
+    const paused = (await state(page)).books[1];
+
+    await page.clock.runFor(2000);
+    expect((await state(page)).books[1]).toEqual(paused);
+    await page.keyboard.press('Escape');
+    await until(page, (s) => s.books[1].y === 468 && !s.books[1].dropping);
+    expect((await state(page)).books[1]).toMatchObject({ state: 'fallen', damage: 1, events: 1 });
+    await reset(page);
+    expect((await state(page)).books[1]).toMatchObject({
+      state: 'stacked',
+      y: 304,
+      events: 0,
+      dropping: false,
+    });
   });
 }
 

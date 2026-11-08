@@ -24,5 +24,10 @@ export const COZY_REMIX = {
       placement: { mode: 'surface', x: 865, surfaceId: 'floor' },
     },
     { id: 'plant', variant: 'catgrass', placement: { mode: 'surface', x: 62, surfaceId: 'floor' } },
+    {
+      id: 'shelf-books',
+      variant: 'reading-books',
+      placement: { mode: 'surface', x: 530, surfaceId: 'lower-shelf' },
+    },
   ],
 } as const satisfies RoomDefinition;

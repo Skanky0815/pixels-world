@@ -59,6 +59,12 @@ export class BookToppling {
     return chaosEvent(this.id, 'topple', 1, this.rules.points);
   }
 
+  releaseSupport() {
+    if (this.phase === 'falling' || this.phase === 'fallen') return;
+    this.phase = 'falling';
+    this.elapsed = 0;
+  }
+
   snapshot() {
     return {
       state: this.phase,
