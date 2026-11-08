@@ -21,6 +21,11 @@ Die öffentliche Startadresse lädt die Landingpage ohne Phaser. Das Spiel liegt
 `play.html`. Beide Einstiege funktionieren auch unter dem GitHub-Pages-Unterpfad;
 Vite bündelt sie als getrennte HTML-Einstiege. Die lokalen PNG-Aufnahmen in
 `assets/landing/` stammen aus dem bestehenden Spiel und benötigen keine externen Dienste.
+`album.png` zeigt den Album-Dialog des Produktionsbuilds nach echtem Kratzen am
+Sofa: eine Entdeckung, übrige Plätze geheim. Für eine neue Aufnahme ein frisches
+Browserprofil verwenden, die Runde starten, neben das Sofa laufen und nach der
+ersten Schandtat das Buchsymbol im Spielkopf öffnen. Bei 1280×800 nur den
+Album-Dialog aufnehmen; der Screenshot wird unverändert eingebunden.
 
 Für ein Handy im selben Netz:
 
@@ -204,3 +209,12 @@ function validateDefinition(/* ... */) {
 Ungenutzte Ausnahmen und Warnungen blockieren. Prüfungen, Reports und manueller
 Spieltest: [QA](qa.md). Branches, Review und Dokumentationsregeln:
 [CONTRIBUTING](../CONTRIBUTING.md). Release-Bedienung: [Deployment](deployment.md).
+
+Die Rechtsseiten erhalten Copyright und Versionsanzeige aus demselben
+`buildInfoMarkup` wie Landingpage und Spiel. Das Vite-Plugin `legal-footer.ts`
+setzt diesen Block beim Ausliefern beziehungsweise Bauen statisch ein; die
+Rechtsseiten benötigen dafür kein JavaScript und laden keine Spielengine.
+
+Ein gemeinsamer DE-/EN-Footer-Hinweis benennt KI-erstellten Code, Grafiken und
+Texte sowie Ricos Idee und Review. Auf den deutschen Rechtsseiten wird dieser
+Hinweis ebenfalls statisch ausgeliefert.

@@ -1,4 +1,8 @@
 import { test, expect, loadIntro, start } from './support';
+import { readFileSync } from 'node:fs';
+const { version } = JSON.parse(
+  readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
+) as { version: string };
 
 test('Rechtsseiten öffnen aus Einführung und Spiel im selben Tab', async ({
   page,
@@ -40,6 +44,8 @@ test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode d
 
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { name: 'Impressum', exact: true })).toBeVisible();
+    await expect(page.locator('#build-info')).toContainText(`Pixel's World · v${version}`);
+    await expect(page.locator('.ai-disclosure')).toContainText('mit KI erstellt');
     await expect(page.locator('address')).toContainText('Rico Schulz');
     await expect(page.locator('address')).toContainText('Berlin');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -53,6 +59,7 @@ test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode d
     await expect(page).toHaveURL(`${base}/datenschutz.html`);
     await expect(page.getByRole('heading', { name: 'Hosting über GitHub Pages' })).toBeVisible();
     await expect(page.locator('canvas, script')).toHaveCount(0);
+    await expect(page.locator('#build-info')).toContainText(`Pixel's World · v${version}`);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
@@ -68,7 +75,7 @@ test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode d
   }
 });
 
-test('Produktionsspiel lädt nur eigene Ressourcen und speichert keine Spielstände', async ({
+test('Produktionsspiel lädt nur eigene Ressourcen ohne automatische Speicherung laufender Runden', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Dokumentnavigation, Datenschutzbeobachtung und vollständige Browser-Assertions bleiben gemeinsam nachvollziehbar.
 }) => {

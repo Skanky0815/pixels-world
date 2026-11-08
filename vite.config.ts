@@ -10,6 +10,8 @@ import { populateSpawnSlots } from './src/game/content/spawn-slots';
 import { DIFFICULTIES, difficultyRoom } from './src/content/difficulty';
 import { releaseUrl } from './tools/release-metadata';
 import { roundConfigForBuild } from './tools/e2e-timing';
+import { legalFooter } from './tools/legal-footer';
+import { de } from './src/i18n/de';
 
 // Fail before bundling/serving when any registered content is invalid.
 for (const room of Object.values(ROOMS))
@@ -22,7 +24,19 @@ const { version } = JSON.parse(
 
 // eslint-disable-next-line max-lines-per-function -- Der deklarative Buildvertrag hält Modi, feste Defines und gemeinsame Ein-/Ausgänge zusammen.
 export default defineConfig(({ mode, command }) => ({
-  plugins: [VitePWA(pwaOptions(mode))],
+  plugins: [
+    VitePWA(pwaOptions(mode)),
+    legalFooter(
+      {
+        year: new Date().getFullYear(),
+        version,
+        releaseUrl: releaseUrl(mode, command, version, env.PIXELS_RELEASE_TAG),
+        releaseTitle: de.releaseNotesForVNewTab.replace('{v0}', version),
+        dev: command === 'serve',
+      },
+      de.aiDisclosure,
+    ),
+  ],
   define: {
     __APP_VERSION__: JSON.stringify(version),
     __APP_RELEASE_URL__: JSON.stringify(releaseUrl(mode, command, version, env.PIXELS_RELEASE_TAG)),
