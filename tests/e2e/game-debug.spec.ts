@@ -196,11 +196,15 @@ test.describe('Debug auf Touch-Geräten', () => {
   });
 });
 
-for (const mobile of [false, true]) {
+for (const [mobile, hasTouch] of [
+  [false, false],
+  [true, true],
+  [false, true],
+] as const) {
   // eslint-disable-next-line max-lines-per-function -- Auswahl, fertiges Ergebnis und Neustart bleiben ein zusammenhängender echter Menüablauf.
-  test.describe(`Schwieriges Ergebnis ${mobile ? 'mobil' : 'Desktop'}`, () => {
+  test.describe(`Schwieriges Ergebnis ${mobile ? 'mobil' : hasTouch ? 'Touch-Laptop' : 'Desktop'}`, () => {
     test.use({
-      hasTouch: mobile,
+      hasTouch,
       isMobile: mobile,
       viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 },
     });
@@ -222,6 +226,9 @@ for (const mobile of [false, true]) {
         successes: 4,
       });
       await page.keyboard.press('F2');
+
+      if (hasTouch) await expect(page.locator('[data-control="reset"]')).toBeVisible();
+      else await expect(page.locator('.touch-controls')).toBeHidden();
 
       if (mobile) {
         await expect(page.locator('.mobile-result')).toBeVisible();

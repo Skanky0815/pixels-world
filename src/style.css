@@ -616,32 +616,6 @@ kbd {
   }
 }
 
-/* A new round remains available on desktop after hiding the debug shortcut. */
-@media not (any-pointer: coarse) {
-  .touch-controls:has([data-control='reset']:not([hidden])) {
-    display: flex;
-    justify-content: end;
-    padding-top: 12px;
-  }
-  .touch-controls .touch-directions {
-    display: none;
-  }
-  .touch-controls [data-control='reset'] {
-    min-width: 100px;
-    min-height: 48px;
-    padding: 8px;
-    border: 2px solid #a78d77;
-    border-radius: 8px;
-    background: #403a35;
-    color: #fff1cf;
-    font: inherit;
-  }
-  .touch-controls [data-control='reset']:focus-visible {
-    outline: 2px solid #edc37c;
-    outline-offset: 2px;
-  }
-}
-
 /* The result keeps both parts together and the outcome above them. */
 .mobile-result:not([hidden]) {
   display: grid;
