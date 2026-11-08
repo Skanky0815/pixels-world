@@ -65,7 +65,7 @@ das Zimmer. Nach der Bestätigung per Leertaste versucht Pixel mit einer kurzen
 Pfeiltastenfolge, Sara durch Schnurren und Anschmiegen zu versöhnen.
 Die Ergebnisansicht stellt Chaos und Versöhnung nebeneinander dar. Gefüllte und
 leere Herzen zeigen den Stand; eine große Überschrift hebt hervor, ob Pixel und Sara
-sich vertragen haben. Saras ursprüngliche Reaktion und ihr Abschlussspruch bleiben sichtbar. Mit **Neue Runde** oder **␣** beginnt am Ergebnis das nächste Spiel.
+sich vertragen haben. Saras ursprüngliche Reaktion und ihr Abschlussspruch bleiben sichtbar. Am Ergebnis beginnt mit **␣** das nächste Spiel; auf Touch-Geräten gibt es dafür **Neue Runde**.
 
 Die warme, herbstliche Wohnung nutzt modulare Pixelgrafiken für Wand, Holzverkleidung,
 Dielen, Fenster, Bild, Teppich und Tür sowie Pixels und Saras Sprite-Sheets.
@@ -98,7 +98,7 @@ Diese Einstellungen bleiben lokal gespeichert, auch über neue Runden hinweg.
 Systemvorgabe wird immer respektiert.
 Das Spiel enthält aktuell noch keine Audio-Assets. **Neue Runde** setzt die
 laufende Runde zurück und ist während des Spiels nur über das Menü erreichbar;
-am Ergebnis bleibt der vorhandene Button verfügbar.
+am Ergebnis bleibt der Button auf Touch-Geräten verfügbar.
 
 Kurze Punkte- und Phasenhinweise teilen sich oben rechts einen festen Bereich.
 Punktehinweise zeigen erfolgreiche Chaosaktionen, Phasenhinweise markieren
@@ -119,13 +119,13 @@ Während der Versöhnung: die jeweils angezeigte Pfeiltaste rechtzeitig neu drü
 Anleitung und Saras Sprüche kannst du in Ruhe lesen und mit Leertaste bestätigen.
 Je nach Chaos benötigt Sara ein, zwei oder drei Herzen.
 Eine erfolgreiche Folge füllt die Herzleiste; pro Herz hast du zwei Versuche. Danach kann die Versöhnung auch scheitern.
-Am Ergebnis startet **Neue Runde** das nächste Spiel.
+Am Ergebnis startet **␣** das nächste Spiel; auf Touch-Geräten auch **Neue Runde**.
 
 Beim Öffnen von `play.html` erscheint eine kurze Einführung mit Ziel und Steuerung.
 Die ausführliche Spielvorstellung steht auf der Landingpage.
 Klicke bei Bedarf ins Zimmer und drücke Leertaste, um die erste Runde zu starten.
 Vorher bleiben Timer, Bewegung und Chaosaktionen angehalten. Am Ergebnis
-startet **Neue Runde** direkt das nächste Spiel; Neuladen zeigt die Einführung erneut.
+startet **␣** direkt das nächste Spiel, auf Touch-Geräten auch **Neue Runde**; Neuladen zeigt die Einführung erneut.
 Beim Anspringen greift Pixel den Vorhang automatisch; ohne Klettereingabe rutscht er langsam ab.
 Am Sofa oder Katzengras kurz stehen bleiben: Pixel wird von selbst aktiv.
 Weglaufen oder Springen unterbricht die Bodenaktionen.

@@ -185,6 +185,8 @@ test('Charme scheitert nach zwei Versuchen am selben Herz', { tag }, async ({ pa
 
 // eslint-disable-next-line max-lines-per-function -- Sichtbare Ergebniswerte, Unveränderlichkeit und stabiler Abschluss werden zusammen geprüft.
 async function expectResult(page: Page, outcome: 'success' | 'failed') {
+  await expect(page.locator('[data-control="reset"]')).toBeHidden();
+  await expect(page.locator('.touch-controls')).toBeHidden();
   const current = await state(page);
 
   const result = current.result;
