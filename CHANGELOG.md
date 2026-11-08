@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/Skanky0815/pixels-world/compare/v0.2.0...v0.3.0) (2026-11-08)
+
+
+### Features
+
+* **album:** add a persistent collection with room chapters ([#234](https://github.com/Skanky0815/pixels-world/issues/234)) ([dc73e53](https://github.com/Skanky0815/pixels-world/commit/dc73e53f7a0e3277ae1339ba2b3bc4f24d07e904)), closes [#210](https://github.com/Skanky0815/pixels-world/issues/210) [#211](https://github.com/Skanky0815/pixels-world/issues/211) [#212](https://github.com/Skanky0815/pixels-world/issues/212) [#213](https://github.com/Skanky0815/pixels-world/issues/213) [#214](https://github.com/Skanky0815/pixels-world/issues/214) [#216](https://github.com/Skanky0815/pixels-world/issues/216)
+
+
+### Bug Fixes
+
+* **release:** generate consistent release notes without duplicate entries ([3dc2506](https://github.com/Skanky0815/pixels-world/commit/3dc250654a8c38f0ac5037a2862a617a0bfe1191)), closes [#233](https://github.com/Skanky0815/pixels-world/issues/233) [#235](https://github.com/Skanky0815/pixels-world/issues/235)
+
 ## [0.2.0](https://github.com/Skanky0815/pixels-world/compare/v0.1.5...v0.2.0) (2026-11-08)
 
 
