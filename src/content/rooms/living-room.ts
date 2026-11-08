@@ -9,7 +9,6 @@ const FLOOR_Y = 468;
 
 const decorations: readonly Decoration[] = [
   { kind: 'image', asset: 'room-window', bounds: { x: 682, y: 126, width: 112, height: 184 } },
-  { kind: 'image', asset: 'room-rug', bounds: { x: 245, y: 493, width: 430, height: 30 } },
   { kind: 'image', asset: 'room-door', bounds: { x: 848, y: 252, width: 112, height: 216 } },
 ];
 
@@ -81,6 +80,11 @@ export const LIVING_ROOM = {
       id: 'heirloom-vase',
       variant: 'heirloom-vase',
       placement: { mode: 'surface', x: 890, surfaceId: 'upper-shelf' },
+    },
+    {
+      id: 'living-room-rug',
+      variant: 'living-room-rug',
+      placement: { mode: 'surface', x: 245, surfaceId: 'floor' },
     },
   ],
 } as const satisfies RoomDefinition;

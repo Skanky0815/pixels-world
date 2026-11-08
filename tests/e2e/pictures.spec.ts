@@ -30,7 +30,7 @@ for (const [room, variant, seed] of fixtures) {
       angle: 0,
       texture: PICTURE_ALBUM[variant].asset,
     });
-    expect((await state(page)).pictureDiscovery).toBeNull();
+    expect((await state(page)).albumDiscovery).toBeNull();
     await couch(page);
     await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 335);
     await until(page, (s) => s.pixel.velocityX === 0);
@@ -40,7 +40,7 @@ for (const [room, variant, seed] of fixtures) {
     await page.keyboard.up('Space');
     await until(page, (s) => picture(s).state === 'crooked');
     expect(picture(await state(page)).wobble).toBeGreaterThan(0);
-    expect((await state(page)).pictureDiscovery).toBeNull();
+    expect((await state(page)).albumDiscovery).toBeNull();
 
     if (room === 'living-room' && variant === 'pixel-portrait') {
       await page.keyboard.press('Escape');
@@ -77,7 +77,7 @@ for (const [room, variant, seed] of fixtures) {
       damagedObjects: 1,
       anger: 'calm',
     });
-    expect((await state(page)).pictureDiscovery).toMatchObject({
+    expect((await state(page)).albumDiscovery).toMatchObject({
       entryId: PICTURE_ALBUM[variant].id,
       objectId: 'wall:sofa',
     });
@@ -86,7 +86,7 @@ for (const [room, variant, seed] of fixtures) {
         () =>
           Object.isFrozen(window.__pixelTest?.pictures) &&
           Object.isFrozen(window.__pixelTest?.pictures[0]) &&
-          Object.isFrozen(window.__pixelTest?.pictureDiscovery),
+          Object.isFrozen(window.__pixelTest?.albumDiscovery),
       ),
     ).toBe(true);
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 265);
@@ -98,7 +98,7 @@ for (const [room, variant, seed] of fixtures) {
       .attach(`${variant}-gefallen`, { body: await page.screenshot(), contentType: 'image/png' });
     await reset(page);
     expect(picture(await state(page))).toEqual(initial);
-    expect((await state(page)).pictureDiscovery).toBeNull();
+    expect((await state(page)).albumDiscovery).toBeNull();
   });
 }
 

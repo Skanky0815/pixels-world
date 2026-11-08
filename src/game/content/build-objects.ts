@@ -1,3 +1,4 @@
+import { Carpet } from '../objects/Carpet';
 import { WallPicture } from '../objects/WallPicture';
 import type Phaser from 'phaser';
 import type { ResolvedRoom, ResolvedObject } from './definitions';
@@ -20,6 +21,8 @@ export function buildObjects(scene: Phaser.Scene, room: ResolvedRoom) {
 // eslint-disable-next-line max-lines-per-function -- Der vollständige diskriminierte Switch zeigt die vier erlaubten Objektadapter ohne versteckte Fallthroughs.
 function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
   switch (definition.kind) {
+    case 'carpet':
+      return new Carpet(scene, definition.config);
     case 'picture':
       return new WallPicture(scene, definition.config);
     case 'books':
@@ -37,22 +40,26 @@ function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
 
 // eslint-disable-next-line max-lines-per-function -- Der typisierte Rückgabevertrag und seine stabil geordneten Objektgruppen bleiben zusammen.
 function groupObjects(
-  objects: (Couch | Curtain | Plant | Vase | BookStack | WallPicture)[],
+  objects: (Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet)[],
   entries: {
     readonly definition: ResolvedObject;
-    readonly object: Couch | Curtain | Plant | Vase | BookStack | WallPicture;
+    readonly object: Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet;
   }[],
 ) {
   return {
+    carpets: objects.filter((object) => object instanceof Carpet),
     couches: objects.filter((object) => object instanceof Couch),
     curtains: objects.filter((object) => object instanceof Curtain),
     plants: objects.filter((object) => object instanceof Plant),
     vases: objects.filter((object) => object instanceof Vase),
     pictures: objects.filter((object) => object instanceof WallPicture),
     books: objects.filter((object) => object instanceof BookStack),
-    ground: objects.filter(
-      (object): object is Couch | Plant => object instanceof Couch || object instanceof Plant,
-    ),
+    ground: [
+      ...objects.filter((object) => object instanceof Carpet),
+      ...objects.filter(
+        (object): object is Couch | Plant => object instanceof Couch || object instanceof Plant,
+      ),
+    ],
     entries,
   };
 }

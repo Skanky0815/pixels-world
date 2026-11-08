@@ -1,0 +1,9 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-11-08",
+  "source": "sources/hairball-source-v1.png",
+  "reference": "assets/objects/books/books-fallen.png",
+  "prompt": "Use case: stylized-concept. Asset type: one tiny transparent pixel-art game sprite of a harmless cat hairball, intended for a warm cozy 2D cat game. Reference image is ONLY for the chunky pixel scale and muted earthy material palette; do not include books. Subject: one small soft oval clump of curled gray-brown/taupe fur, like a cute little loosely tangled wool puff, with just two short curly strands and a soft dark brown outline. Three to five readable shades, no face, no eyes. A dry fluffy tuft, absolutely no vomit, slime, fluids, green goo or realistic gross detail. Very simple readable silhouette at 32x16 native pixels, slightly wider than tall, viewed from the side and a little above as if lying on a carpet. Deliberate large square pixel clusters, crisp blocky contours, no antialiasing, no gradients, no fine noisy hair texture. ONE isolated sprite centered with ample transparent margin; truly transparent background. No carpet, floor, wall, scenery, additional objects, text, signature, logo or watermark. Do not draw a checkerboard.",
+  "exporter": "node tools/prepare-hairball-asset.mjs",
+  "sampling": "Alpha-Bounds ab 192; proportionaler Nearest-Neighbour-Export in 32×16 mit unveränderten RGBA-Samples."
+}

@@ -42,6 +42,8 @@ export function playgroundRoom(variant: string, catalog: ObjectCatalog = PLAYGRO
 }
 
 function placement(definition: ObjectDefinition, surfaceId: string): ObjectInstance['placement'] {
+  if (definition.kind === 'carpet') return { mode: 'surface', x: 185, surfaceId: 'floor' };
+
   if (definition.kind === 'picture') return { mode: 'area', x: 340, y: 270 };
 
   if (definition.capabilities.includes('climb') && 'geometry' in definition)

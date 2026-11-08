@@ -70,7 +70,7 @@ function reservedAreas(
   return [
     goal,
     ...room.platforms.map((p) => p.bounds),
-    ...objects.map(objectArea),
+    ...objects.filter((o) => o.kind !== 'carpet').map(objectArea),
     ...room.decorations.flatMap((d) => (d.kind === 'rect' && d.supportedBy ? [d.bounds] : [])),
   ];
 }

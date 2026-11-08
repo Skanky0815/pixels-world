@@ -7,7 +7,7 @@ export interface Bounds {
   readonly width: number;
   readonly height: number;
 }
-export type GroundAction = 'idle' | 'scratching' | 'nibbling' | 'wobbling';
+export type GroundAction = 'idle' | 'scratching' | 'nibbling' | 'wobbling' | 'retching';
 export interface InteractionContext {
   readonly time: number;
   readonly delta: number;

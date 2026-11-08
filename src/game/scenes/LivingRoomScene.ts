@@ -1,4 +1,6 @@
-import { pictureDiscovery, type PictureDiscovery } from '../../content/album/pictures';
+import { preloadCarpetArt } from '../assets/carpet-art';
+import { discoverAlbum } from '../../content/album';
+import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
 import { preloadBookArt } from '../assets/book-art';
 import { preloadRoomArt } from '../assets/room-art';
@@ -88,7 +90,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private vases: Vase[] = [];
   private objects: ObjectLifecycle[] = [];
   private shelves: Shelf[] = [];
-  private lastPictureDiscovery: PictureDiscovery | null = null;
+  private lastAlbumDiscovery: AlbumDiscovery | null = null;
   private destructibles: Destructible[] = [];
 
   private room: ResolvedRoom;
@@ -103,6 +105,7 @@ export class LivingRoomScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
   preload() {
     preloadVaseArt(this);
+    preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);
     preloadShelfArt(this);
@@ -282,7 +285,8 @@ export class LivingRoomScene extends Phaser.Scene {
             },
             wallPlacements: this.room.definition.wallPlacements ?? [],
             shelves: this.shelves.map((shelf) => shelf.snapshot()),
-            pictureDiscovery: this.lastPictureDiscovery,
+            albumDiscovery: this.lastAlbumDiscovery,
+            carpets: this.built.carpets.map((carpet) => carpet.snapshot()),
             pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
             objects: this.built.entries.map((entry) => ({
@@ -379,7 +383,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private initializeInteractions() {
-    this.lastPictureDiscovery = null;
+    this.lastAlbumDiscovery = null;
     this.destructibles = this.built.entries.map((entry) => entry.object);
     this.objects = this.built.entries.map((entry) => entry.object);
 
@@ -447,17 +451,17 @@ export class LivingRoomScene extends Phaser.Scene {
   private processDamage(event: ChaosEvent | undefined) {
     if (!this.canPlay() || !event || !this.chaos.awardEvent(event)) return;
     this.events.emit('object-damaged', event);
-    this.discoverPicture(event);
+    this.discoverAlbum(event);
   }
 
-  private discoverPicture(event: ChaosEvent) {
+  private discoverAlbum(event: ChaosEvent) {
     const entry = this.built.entries.find((e) => e.object.id === event.objectId);
 
-    if (entry?.definition.kind !== 'picture') return;
-    const discovery = pictureDiscovery(event, entry.definition.variant);
+    if (!entry) return;
+    const discovery = discoverAlbum(event, entry.definition.variant);
 
     if (!discovery) return;
-    this.lastPictureDiscovery = discovery;
+    this.lastAlbumDiscovery = discovery;
     this.events.emit('album-discovered', discovery);
   }
 

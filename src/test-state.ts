@@ -1,5 +1,6 @@
+import type { Carpet } from './game/objects/Carpet';
 import type { WallPicture } from './game/objects/WallPicture';
-import type { PictureDiscovery } from './content/album/pictures';
+import type { AlbumDiscovery } from './content/album/discovery';
 import type { WallPlacement } from './game/content/wall-slots';
 import type { Shelf } from './game/objects/Shelf';
 import type { BookStack } from './game/objects/BookStack';
@@ -16,8 +17,9 @@ import type { PixelReturnSnapshot } from './game/domain/pixel-return';
 
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
+  readonly carpets: readonly ReturnType<Carpet['snapshot']>[];
   readonly pictures: readonly ReturnType<WallPicture['snapshot']>[];
-  readonly pictureDiscovery: PictureDiscovery | null;
+  readonly albumDiscovery: AlbumDiscovery | null;
   readonly wallPlacements: readonly WallPlacement[];
   readonly books: readonly ReturnType<BookStack['snapshot']>[];
   readonly shelves: readonly ReturnType<Shelf['snapshot']>[];

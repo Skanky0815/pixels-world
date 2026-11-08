@@ -1,3 +1,4 @@
+import { CARPET_RULES } from '../../game/interactions/carpet-hairball.ts';
 import { PICTURE_RULES } from '../../game/interactions/picture-falling.ts';
 import type { ObjectCatalog } from '../../game/content/definitions.ts';
 import { COUCH_SCRATCH } from '../../game/interactions/couch-scratching.ts';
@@ -25,6 +26,14 @@ const picture = {
 } as const;
 
 export const OBJECTS = {
+  'living-room-rug': {
+    kind: 'carpet',
+    asset: 'carpet-default',
+    spawn: { size: 'large', category: 'furniture', random: false, reason: 'room-fixture' },
+    capabilities: ['automatic', 'damage'],
+    geometry: { width: 430, height: 30 },
+    rules: CARPET_RULES,
+  },
   'pixel-portrait': { ...picture, appearance: 'pixel' },
   'berlin-tower': { ...picture, appearance: 'berlin' },
   'cozy-nook': { ...picture, appearance: 'cozy' },
