@@ -231,3 +231,20 @@ unlösbares Minispiel zu starten. `npm run check:pr` prüft die eingecheckten
 Standardwerte und alle Spielabläufe. Nach eigenen Balancing-Änderungen erwartete
 Werte in Tests bewusst abgleichen; Normal bleibt die Referenz des bisherigen
 Balancings.
+
+## Album und lokale Sammlung
+
+`AlbumCollection` speichert ausschließlich stabile, bekannte Album-IDs unter
+`pixels-world.album`, nicht Instanzen, Punkte oder laufende Runden. Version 1 enthält
+`discovered`; Version 0 mit `unlocked` wird migriert. Fremde IDs und Duplikate zählen
+nicht. Korrupte Daten führen zu einem leeren Album mit Hinweis, blockierter Speicher
+zu sitzungsweitem Fortschritt. Neuere Speicherversionen werden bis zu einem bewusst
+bestätigten Album-Reset nicht überschrieben. Ein Runden-Reset löscht die Sammlung nicht.
+
+Die Szene übernimmt Entdeckungen erst nach erfolgreichem `ChaosScore.awardEvent`.
+Der szenengebundene `AlbumView` zeigt das freigegebene Buchlayout als nativen Dialog.
+Einführung und Pause-Menü öffnen dasselbe Album, pausieren dabei das Spiel und lösen
+gehaltene Eingaben. Beim Schließen wird der vorherige Menü-/Pausenzustand respektiert.
+Tabs wechseln nur das Kapitel; Tastatur und Touch bedienen dieselbe Ansicht, DE/EN
+wechseln die Darstellung ohne Änderung der Entdeckungen. Listener und Dialog werden
+beim Szenen-Shutdown entfernt. Die Sammlung selbst bleibt über Szenen hinweg erhalten.

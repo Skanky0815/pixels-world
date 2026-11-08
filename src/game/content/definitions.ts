@@ -1,3 +1,4 @@
+import type { AlbumEntry } from '../../content/album/discovery.ts';
 import type { CarpetConfig } from '../objects/Carpet.ts';
 import type { CarpetRules } from '../interactions/carpet-hairball.ts';
 import type { WallPictureConfig } from '../objects/WallPicture.ts';
@@ -25,6 +26,7 @@ import type { BookAppearance } from '../objects/book-art.ts';
 
 export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
 interface Base {
+  readonly album?: AlbumEntry;
   readonly spawn: SpawnProfile;
   readonly capabilities: readonly Capability[];
 }

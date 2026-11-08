@@ -1,7 +1,11 @@
 import type { ChaosEvent, DamageKind } from '../../game/domain/chaos-event.ts';
+export type AlbumRoom = 'living-room' | 'kitchen' | 'bedroom' | 'study';
 export interface AlbumEntry {
   readonly id: string;
   readonly asset: string;
+  readonly name: { readonly de: string; readonly en: string };
+  readonly previewOnly?: boolean;
+  readonly rooms: readonly AlbumRoom[];
   readonly condition: { readonly kind: DamageKind; readonly stage: number };
   readonly fluff: { readonly de: string; readonly en: string };
   readonly sara: { readonly de: string; readonly en: string };

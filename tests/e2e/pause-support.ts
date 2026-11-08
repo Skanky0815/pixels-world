@@ -2,7 +2,10 @@ import type { Page } from '@playwright/test';
 import { expect } from './support';
 
 export async function openPause(page: Page) {
-  await page.getByRole('button', { name: /^(Menü|Menu)$/ }).click();
+  await page
+    .locator('main > header')
+    .getByRole('button', { name: /^(Optionen|Options)$/ })
+    .click();
   await expect(page.locator('.pause-menu')).toBeVisible();
 }
 

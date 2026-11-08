@@ -103,7 +103,7 @@ for (const base of ['http://127.0.0.1:4177/', 'http://127.0.0.1:4175/pixels-worl
       await page.keyboard.up('Space');
       await expect(page.locator('.start-screen')).toBeHidden();
       await expectDrawnRoom(page);
-      await page.getByRole('button', { name: 'Menü', exact: true }).click();
+      await page.locator('.pause-toggle').click();
       await page.getByRole('link', { name: 'Beenden', exact: true }).click();
       await expect(page).toHaveURL(base);
       await expect(page.locator('h1')).toHaveText('Ein Zimmer. Eine Katze. Dein Chaos.');

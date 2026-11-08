@@ -4,7 +4,7 @@ import { loadIntro, until } from './support';
 
 export async function startDifficulty(page: Page, difficulty: Difficulty, path = '/') {
   await loadIntro(page, path);
-  await page.getByRole('button', { name: 'Optionen', exact: true }).click();
+  await page.locator('[data-start-options]').click();
   await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption(difficulty);
   await page.locator('[data-pause-resume]').click();
   await page.keyboard.down('Space');

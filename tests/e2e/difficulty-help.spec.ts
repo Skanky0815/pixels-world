@@ -26,7 +26,10 @@ for (const viewport of [
       // eslint-disable-next-line max-lines-per-function -- Die Gerätevariante hält den vollständigen Vergleich von Sprache, Erklärung und Auswahl zusammen.
     }, testInfo) => {
       await loadIntro(page);
-      await page.getByRole('button', { name: 'Optionen', exact: true }).click();
+      await page
+        .locator('.start-screen')
+        .getByRole('button', { name: 'Optionen', exact: true })
+        .click();
       const help = page.locator('#difficulty-help');
       const select = page.locator('[data-difficulty]');
 

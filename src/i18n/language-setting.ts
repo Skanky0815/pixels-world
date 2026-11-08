@@ -8,7 +8,7 @@ export function createLanguageSetting(host: Element) {
   picker.className = 'language-setting';
   picker.setAttribute('role', 'group');
   picker.innerHTML =
-    '<button type="button" data-language="de" aria-label="Deutsch" lang="de">DE</button><span aria-hidden="true">/</span><button type="button" data-language="en" aria-label="English" lang="en">EN</button>';
+    '<button type="button" class="ui-button ui-button--icon" data-language="de" aria-label="Deutsch" lang="de">DE</button><span aria-hidden="true">/</span><button type="button" class="ui-button ui-button--icon" data-language="en" aria-label="English" lang="en">EN</button>';
   const refresh = () => {
     picker.setAttribute('aria-label', t('language'));
 

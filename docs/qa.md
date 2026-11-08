@@ -135,6 +135,13 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
 
+- Album aus Einführung und Pause öffnen: Runde bleibt stehen, Esc schließt nur das
+  oberste Album. Raum-Tabs und Gesamt-/Kapitelzähler prüfen. Vor einer echten
+  Schadensaktion dürfen weder Bilder noch Namen unbekannter Objekte sichtbar sein.
+  Nach Schaden neu öffnen, zwischen DE/EN wechseln und Rundenneustart/Reload prüfen.
+  Album-Reset erst nach Bestätigung; Abbrechen erhält die Sammlung. Auf schmalen
+  Bildschirmen müssen beide Buchseiten und alle Aktionen durch Scrollen erreichbar sein.
+
 Die Tablet-Szenarien laufen regulär in Chromium; `test:e2e:tablet:webkit` prüft
 dieselben Abläufe zusätzlich mit WebKit. Viewport-/Touch-Emulation ersetzt keine
 Hardwareprüfung von iPadOS Safari oder Android-Browserleisten und Safe Areas.

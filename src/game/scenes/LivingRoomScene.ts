@@ -1,4 +1,5 @@
 import { preloadCarpetArt } from '../assets/carpet-art';
+import { albumCollection } from '../../settings/album';
 import { discoverAlbum } from '../../content/album';
 import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
@@ -407,7 +408,12 @@ export class LivingRoomScene extends Phaser.Scene {
     });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
-    this.startScreen = new StartScreen(!this.started, this.room.goal, () => this.menu.open());
+    this.startScreen = new StartScreen(
+      !this.started,
+      this.room.goal,
+      () => this.menu.open(),
+      () => this.menu.openAlbum(),
+    );
     this.goalView = new GoalView(this, this.room.goal, this.difficulty);
     this.goalView.render(this.goal.snapshot(), this.started);
     this.menu = new PauseMenu({
@@ -461,6 +467,7 @@ export class LivingRoomScene extends Phaser.Scene {
     const discovery = discoverAlbum(event, entry.definition.variant);
 
     if (!discovery) return;
+    albumCollection.unlock(discovery.entryId);
     this.lastAlbumDiscovery = discovery;
     this.events.emit('album-discovered', discovery);
   }

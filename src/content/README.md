@@ -311,9 +311,9 @@ Die drei hochauflösenden Quellen gehören nicht zum Laufzeitbundle.
 DE-/EN-Fluff, Saras Kommentar und die Erfolgsbedingung vor. Erst ein vom
 Chaossystem akzeptiertes Aufprallereignis sendet `album-discovered` mit
 `entryId`, `objectId` und `eventId`; Spawn und Reset entdecken nichts.
-Der nur lesbare E2E-Snapshot zeigt das letzte Ereignis als `albumDiscovery`. Eine dauerhafte Sammlung
-oder zweite Speicherung wird hier nicht aufgebaut: Persistenz, Deduplication
-über Runden und deren Integrationstests hängen vom gemeinsamen Album #210 ab.
+Der nur lesbare E2E-Snapshot zeigt das letzte Ereignis als `albumDiscovery`.
+Das gemeinsame Album übernimmt die dauerhafte Sammlung und dedupliziert nach
+stabiler Album-ID; die einzelnen Objektmechaniken speichern keinen eigenen Fortschritt.
 
 ## Teppich und Haarballen
 
@@ -347,5 +347,58 @@ Teppich-PNG wird wiederverwendet, die große Haarballenquelle nicht gebündelt.
 `album/discovery.ts` definiert den gemeinsamen Daten-/Ereignisvertrag für Bilder
 und Teppich. `album/carpet.ts` enthält Asset, stabile ID, DE-/EN-Fluff und Saras
 Kommentar. Nur akzeptierter tatsächlicher Schaden sendet `album-discovered`;
-Spawn, Abbruch und Reset erzeugen keinen Fund. Sammlung, Persistenz und deren
-Integrationstests bleiben Aufgabe des gemeinsamen Albums #210.
+Spawn, Abbruch und Runden-Reset erzeugen keinen Fund. Die gemeinsame Sammlung
+übernimmt Persistenz und Deduplication.
+
+## Album der Schandtaten
+
+`objects/catalog.ts` hält die Album-Metadaten direkt als `album` an der jeweiligen
+Objektvariante. `album/index.ts` leitet daraus den gemeinsamen Katalog ab. Jeder Eintrag enthält
+stabile ID, Asset-Schlüssel, DE-/EN-Name, Flufftext, Saras Kommentar, Erfolgsbedingung
+und Raumzuordnungen. Vasen, Sofas, Vorhang, Katzengras, Bücher, Bilder und Teppich
+werden an derselben Quelle gepflegt. Einträge entstehen nur nach vom Chaossystem akzeptiertem Schaden; es gibt
+keine zusätzliche Punktevergabe. Neue Varianten benötigen einen eindeutigen Eintrag
+und eine PNG-Zuordnung in `album-art.ts`.
+
+Die beiden Wohnzimmer-Varianten teilen das Kapitel `living-room`. Weitere Räume
+können dieselbe ID verwenden, ohne den Gesamtzähler zu erhöhen. Noch nicht mit
+Einträgen belegte Raum-Tabs zeigen einen Leerzustand und zählen keine Platzhalter.
+Unentdeckte Plätze zeigen ausschließlich `?` und neutrale zugängliche Beschriftungen;
+Name, Bild und Texte werden erst nach Freischaltung in den Dialog eingefügt.
+`previewOnly` kennzeichnet Varianten, die ausschließlich in DEV-/E2E-Räumen
+erreichbar sind. Sie fehlen im veröffentlichten Album und dessen Zählern, bleiben
+aber mit ihren stabilen IDs in Entwicklungsvorschauen sammelbar.
+
+Das Album verwendet echte PNG-Papiertextur unter `assets/ui/album/paper.png`.
+Original, vollständiger Imagegen-Prompt und Herkunft sind in
+[`generation-v1.json`](../../assets/ui/album/generation-v1.json) dokumentiert.
+`node tools/prepare-album-paper.mjs` exportiert die Originalquelle reproduzierbar
+per Nearest-Neighbour auf 256×256; nur die kleine Textur wird im Spiel gebündelt.
+Raum-Icons bleiben schlanke SVG-Bediensymbole, die ausgefransten Stoff-Lesezeichen
+und der Bucheinband verwenden CSS. Raumfarben für noch nicht gestaltete Zimmer
+sind vorläufig; die Beschriftungen bleiben als Tooltip und für Screenreader erhalten.
+
+Die Objektübersicht zeigt neun Plätze pro Seite im 3×3-Raster mit Vor-/Zurück-Navigation.
+Das Album bleibt in der Bildschirmhöhe begrenzt und nutzt auf breiten Displays
+beide Buchhälften für ein Kapitel. Auf schmalen oder niedrigen Displays wechselt
+es zwischen Übersicht und ausgewähltem Eintrag; „Zur Übersicht“ führt zurück.
+Beim Raumwechsel wandern ausschließlich die Lesezeichen bereits besuchter
+Kapitel auf die rechte Buchhälfte. Inaktive Enden liegen hinter den Seiten.
+
+Ein Buchsymbol neben dem Menü im Spielkopf öffnet das Album direkt und pausiert
+die laufende Runde. Leere Raumkapitel zeigen auf breiten Displays ebenfalls
+einen mittleren Buchfalz mit Raumname links und Leerhinweis rechts.
+
+Album und Optionen nutzen in Einführung, Spielkopf und Pause-Menü dieselben
+Icon-Buttons aus `game-action.ts`/`game-action.css`, einschließlich zugänglicher
+DE-/EN-Namen. Die Popup-Flächen teilen `--popup-background` ohne Stoffraster;
+Papiertextur und darunterliegender Bucheinband gehören nur zu den Buchseiten.
+
+Normale UI-Buttons teilen `src/ui/button.ts` und `button.css`: 44 Pixel Höhe,
+eine quadratische Icon-Variante und gemeinsame Fokus-/Disabled-Zustände.
+`game-action.ts` ordnet Buch und Zahnrad samt lokalisierter Beschriftung zu.
+Die Sammlungskacheln und stoffförmigen Raum-Lesezeichen behalten ihre Buchform.
+
+Öffentliche Popups (Optionen, Album, Installationshilfe) teilen dieselbe
+`popup-heading` mit einem 44×44-X oben rechts. Der zugängliche Name und Tooltip
+bleiben lokalisiert; das Schließen der Optionen setzt eine laufende Runde fort.

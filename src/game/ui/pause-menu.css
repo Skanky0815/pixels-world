@@ -1,31 +1,3 @@
-.pause-toggle {
-  position: relative;
-  isolation: isolate;
-  flex-shrink: 0;
-  min-height: 44px;
-  min-width: 44px;
-  display: grid;
-  place-items: center;
-  padding: 12px;
-  border: 0;
-  background: transparent;
-  color: #f2e4c9;
-  font: inherit;
-  cursor: pointer;
-}
-.pause-toggle::before {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  z-index: -1;
-  border: 1px solid #7d6858;
-  border-radius: 3px;
-  background: #493a3d;
-}
-.pause-toggle svg {
-  width: 18px;
-  height: 18px;
-}
 .pause-menu {
   box-sizing: border-box;
   width: min(400px, calc(100vw - 24px));
@@ -34,8 +6,8 @@
   padding: 20px;
   border: 2px solid #c49464;
   border-radius: 10px;
-  background: #382f35;
-  color: #f2e4c9;
+  background: var(--popup-background);
+  color: var(--popup-text);
   font:
     14px/1.5 system-ui,
     sans-serif;
@@ -69,23 +41,7 @@
   gap: 8px;
   margin-top: 20px;
 }
-.pause-actions button:not([hidden]),
-.pause-actions a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  min-height: 44px;
-  padding: 8px 14px;
-  border: 1px solid #b79879;
-  border-radius: 6px;
-  background: #493a3d;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.pause-menu :focus-visible,
-.pause-toggle:focus-visible {
+.pause-menu :focus-visible:not(.ui-button) {
   outline: 2px solid #edc37c;
   outline-offset: 2px;
 }
