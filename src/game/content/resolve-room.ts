@@ -1,3 +1,4 @@
+import { validateCarpetRules } from '../interactions/carpet-hairball.ts';
 import { PICTURE_MOTIFS } from '../assets/picture-appearance.ts';
 import { validatePictureRules } from '../interactions/picture-falling.ts';
 import { validateObjectSpawn, validateGoalSpawn } from './spawn-profile.ts';
@@ -84,10 +85,19 @@ function validateObjectRules(value: ObjectDefinition, path: string) {
 
   if (value.kind === 'picture') return validatePicture(value, path);
 
+  if (value.kind === 'carpet') return validateCarpet(value, path);
+
   if (value.kind === 'plant') return validatePlant(value, path);
   validateGeometry(value, path);
 
   if (value.kind === 'couch') validateCouch(value, path);
+}
+
+function validateCarpet(value: Extract<ObjectDefinition, { kind: 'carpet' }>, path: string) {
+  record(value.geometry, `${path}.geometry`);
+  number(value.geometry.width, `${path}.geometry.width`, 80);
+  number(value.geometry.height, `${path}.geometry.height`, 24);
+  validateCarpetRules(value.rules);
 }
 
 function validatePicture(value: Extract<ObjectDefinition, { kind: 'picture' }>, path: string) {
@@ -374,6 +384,8 @@ class RoomResolver {
     if (p.mode !== 'surface') fail(`${path}.placement`, 'object needs support surface');
     const support = this.surface(p.surfaceId, `${path}.placement.surfaceId`);
 
+    if (d.kind === 'carpet') return this.resolveCarpet(instance, d, path, support);
+
     if (d.kind === 'couch') return this.resolveCouch(instance, d, path, support);
 
     if (d.kind === 'plant') return this.resolvePlant(instance, d, path, support);
@@ -381,6 +393,31 @@ class RoomResolver {
     if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
 
     return this.resolveVase(instance, d, path, support);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Sichtbarer Teppich, Interaktionsboden und Raumprüfung verwenden denselben Auflageanker.
+  private resolveCarpet(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'carpet' }>,
+    path: string,
+    support: Bounds,
+  ): ResolvedObject {
+    const p = instance.placement;
+
+    if (p.mode !== 'surface' || p.surfaceId !== this.room.floor.id)
+      fail(`${path}.placement`, 'carpet requires floor support');
+    const area = { x: p.x, y: support.y - 2, ...d.geometry };
+
+    bounds(area, this.room, `${path}.area`);
+    supportFits(p.x, area.width, support, `${path}.placement`);
+
+    return {
+      id: instance.id,
+      variant: instance.variant,
+      asset: d.asset,
+      kind: 'carpet',
+      config: { id: instance.id, area, floorY: support.y, rules: d.rules },
+    };
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der Bildvertrag löst einen Wandanker auf, ohne eine zusätzliche Physikfläche anzulegen.
@@ -595,7 +632,7 @@ class RoomResolver {
 
     for (const object of objects) {
       maximum +=
-        object.kind === 'books' || object.kind === 'picture'
+        object.kind === 'books' || object.kind === 'picture' || object.kind === 'carpet'
           ? object.config.rules.points
           : object.kind === 'vase'
             ? object.config.points

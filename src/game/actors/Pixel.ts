@@ -1,3 +1,4 @@
+import { motionPreferences } from '../../settings/motion';
 import Phaser from 'phaser';
 import { PIXEL_ANIMATIONS, pixelAnimation } from './pixel-animations';
 import { CURTAIN_SLIDE } from '../interactions/curtain-sliding';
@@ -189,7 +190,7 @@ export class Pixel {
     this.trackLanding(time, body);
     const animation = this.playAnimation(time, groundAction, sliding, body);
 
-    this.positionVisual(body, animation);
+    this.positionVisual(body, animation, time);
   }
 
   private trackLanding(time: number, body: Phaser.Physics.Arcade.Body) {
@@ -218,6 +219,7 @@ export class Pixel {
       velocityX: body.velocity.x,
       velocityY: body.velocity.y,
       scratching: groundAction === 'scratching',
+      retching: groundAction === 'retching',
       nibbling: groundAction === 'nibbling' || groundAction === 'wobbling',
       landing: time < this.landingUntil,
     });
@@ -233,14 +235,20 @@ export class Pixel {
   private positionVisual(
     body: Phaser.Physics.Arcade.Body,
     animation: keyof typeof PIXEL_ANIMATIONS,
+    time: number,
   ) {
     const scale = PIXEL_ANIMATIONS[animation].scale;
+    const pulse =
+      animation === 'retch' && !motionPreferences.snapshot().reduced
+        ? Math.sin(time / 75) * 0.025
+        : 0;
+    const scaleY = scale * (1 + pulse);
 
     this.visual
       .setTexture('pixel', this.sprite.frame.name)
       .setFlipX(this.flipX)
-      .setScale(scale)
-      .setPosition(body.center.x, body.bottom - 16 * scale);
+      .setScale(scale * (1 - pulse), scaleY)
+      .setPosition(body.center.x, body.bottom - 16 * scaleY);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der flache Beobachtungsvertrag bleibt vollständig an einer Stelle sichtbar.

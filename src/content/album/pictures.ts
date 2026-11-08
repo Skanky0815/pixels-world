@@ -1,3 +1,4 @@
+import { albumDiscovery, type AlbumCatalog, type AlbumDiscovery } from './discovery.ts';
 import type { ChaosEvent } from '../../game/domain/chaos-event.ts';
 /** Daten und Ereignisgrenze für #210; Speicherung und Fortschrittsanzeige gehören dem gemeinsamen Album. */
 export const PICTURE_ALBUM = {
@@ -37,16 +38,7 @@ export const PICTURE_ALBUM = {
       en: 'It was perfectly cozy on the wall, too.',
     },
   },
-} as const;
-export interface PictureDiscovery {
-  readonly entryId: string;
-  readonly objectId: string;
-  readonly eventId: string;
-}
-export function pictureDiscovery(event: ChaosEvent, variant: string): PictureDiscovery | null {
-  if (event.kind !== 'picture-fall' || event.stage !== 1 || !Object.hasOwn(PICTURE_ALBUM, variant))
-    return null;
-  const entry = PICTURE_ALBUM[variant as keyof typeof PICTURE_ALBUM];
-
-  return Object.freeze({ entryId: entry.id, objectId: event.objectId, eventId: event.id });
+} as const satisfies AlbumCatalog;
+export function pictureDiscovery(event: ChaosEvent, variant: string): AlbumDiscovery | null {
+  return albumDiscovery(event, variant, PICTURE_ALBUM);
 }

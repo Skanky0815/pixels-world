@@ -406,7 +406,7 @@ test('Playground: Kratzpatch folgt der Sitzfläche', async ({ page }) => {
 async function tearSnapshot(page: Page) {
   const object = (await snapshot(page)).object;
 
-  if (!('area' in object)) throw new Error('Expected curtain diagnostics');
+  if (!('area' in object) || !('marks' in object)) throw new Error('Expected curtain diagnostics');
 
   return object;
 }

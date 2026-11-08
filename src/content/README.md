@@ -4,9 +4,9 @@ Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms
 
 ## Vorlagen und Instanzen
 
-Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `plant`, `vase`, `books` oder `picture`). Sie beschreibt einen bekannten symbolischen Asset-Schlüssel, tatsächlich implementierte Fähigkeiten und Geometrie/Regelwerte. Mehrere Varianten desselben Typs können andere Werte haben. Eine Rauminstanz referenziert ihre Vorlage über `variant` und besitzt eine eigene eindeutige `id` sowie Platzierung. Keine Definition enthält Klassen-/Funktionsnamen zur Ausführung oder eine allgemeine Regelsprache.
+Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `plant`, `vase`, `books`, `picture` oder `carpet`). Sie beschreibt einen bekannten symbolischen Asset-Schlüssel, tatsächlich implementierte Fähigkeiten und Geometrie/Regelwerte. Mehrere Varianten desselben Typs können andere Werte haben. Eine Rauminstanz referenziert ihre Vorlage über `variant` und besitzt eine eigene eindeutige `id` sowie Platzierung. Keine Definition enthält Klassen-/Funktionsnamen zur Ausführung oder eine allgemeine Regelsprache.
 
-- `placement.mode: 'surface'`: x-Position auf einer benannten Auflage. Unterstützt Boden, Raumplattformen und Sitzflächen anderer Sofas. Sofa-x bezeichnet die linke Sitzkante, Pflanzen-/Vasen-x die Mitte. Die Auflagehöhe wird aus der Referenz berechnet; sie wird nicht nochmals in die Instanz eingetragen.
+- `placement.mode: 'surface'`: x-Position auf einer benannten Auflage. Unterstützt Boden, Raumplattformen und Sitzflächen anderer Sofas. Sofa-x bezeichnet die linke Sitzkante, Teppich-x die linke Kante, Pflanzen-/Vasen-x die Mitte. Die Auflagehöhe wird aus der Referenz berechnet; sie wird nicht nochmals in die Instanz eingetragen.
 - `placement.mode: 'area'`: linke obere Ecke eines Vorhangs oder Wandbildes. Breite und Höhe stammen aus der Vorlage beziehungsweise dem bekannten Bild-Asset.
 - Sofa-Geometrie enthält Breite, Sitzdicke und Sitzhöhe über der Auflage. Rendering, Collider und Nähe verwenden daraus dieselbe Sitzfläche.
 - `reading-books` (liegend) und `upright-books` (stehende Buchrücken) teilen Typ, Maße und Regeln. Beide sind zufällig platzierbare Dekoration für passende mittelgroße Slots auf Boden oder Regal. Die Raumdaten enthalten keine festen Bücherinstanzen. `objectSlots` gruppiert Slots über mehrere Auflagen hinweg: jede Gruppe hat eigene IDs und Dichten je Schwierigkeit; jeder Eintrag nennt seine `surfaceId` und einen lokalen x-Mittelpunkt. In den Wohnzimmern wählt eine Gruppe einen Bodenplatz, eine weitere einen Platz links auf dem unteren oder mittleren Regal. Die bestehende Pool-/Geometrie-/Kollisionsprüfung und derselbe Runden-RNG gelten für alle Gruppen. Neustart erhält dieselbe Auswahl. `warningMs`, `fallMs` und `points` steuern Wackeln und einmaligen Schaden. `supportY` und `floorY` trennen Auflage und Raumboden; Auflagenverlust zählt auch bei schon verstreuten Büchern nicht doppelt. Die Buchgrafiken liegen als transparente PNGs samt Imagegen-Quellen und vollständigen Prompts unter `assets/objects/books/`. `node tools/prepare-book-assets.mjs` exportiert liegende/stehende Bücher auf 48×36 und den Streuzustand auf 96×24 Pixel, per Alpha-Bounds und Nearest-Neighbour mit unveränderten RGBA-Samples. `BookArt` animiert diese Bilder; der kurze synthetische Aufprall bleibt in `game/assets/book-impact.ts`.
@@ -302,6 +302,41 @@ Die drei hochauflösenden Quellen gehören nicht zum Laufzeitbundle.
 DE-/EN-Fluff, Saras Kommentar und die Erfolgsbedingung vor. Erst ein vom
 Chaossystem akzeptiertes Aufprallereignis sendet `album-discovered` mit
 `entryId`, `objectId` und `eventId`; Spawn und Reset entdecken nichts.
-Der nur lesbare E2E-Snapshot zeigt das letzte Ereignis. Eine dauerhafte Sammlung
+Der nur lesbare E2E-Snapshot zeigt das letzte Ereignis als `albumDiscovery`. Eine dauerhafte Sammlung
 oder zweite Speicherung wird hier nicht aufgebaut: Persistenz, Deduplication
 über Runden und deren Integrationstests hängen vom gemeinsamen Album #210 ab.
+
+## Teppich und Haarballen
+
+`living-room-rug` ist ein festes `carpet`-Objekt in beiden Wohnzimmern. Seine
+`geometry` beschreibt die sichtbare Teppichfläche; `placement.mode: 'surface'`
+referenziert ausschließlich den Raumboden. Die Grafik wird zwei Pixel über dessen
+Oberkante verankert und ersetzt die frühere Vordergrunddekoration. Teppiche sind
+keine festen Hindernisse: andere Bodenobjekte dürfen darauf stehen, weshalb ihre
+Grafik nicht als belegte Spawn-Fläche reserviert wird. Die Punkteberechnung und
+Objektlebensdauer laufen durch dieselbe Objektfabrik wie bei Sofa und Pflanze.
+
+Nur Stillstehen innerhalb der Teppichbreite mit den Füßen auf dem Raumboden
+startet die Aktion. `delayMs` und `retchMs` steuern Warte- und Würgezeit. Bewegung,
+Springen oder Klettern brechen vor Abschluss vollständig ohne Schaden ab.
+Die eigene `retch`-Animation nutzt die vorhandene geduckte Pixel-Pose mit
+unregelmäßiger Bildfolge und leichtem, am Fuß verankertem Pulsieren; der
+52×52-Physikkörper bleibt unverändert. Reduzierte Bewegung schaltet den Puls ab.
+
+Am Boden hat der Teppich Vorrang vor überlappenden Sofaaktionen, auch nachdem er
+bereits benutzt wurde. Auf den erhöhten Sitzflächen und außerhalb der Matte
+bleibt das Kratzen erreichbar. Ein erfolgreicher Abschluss zeigt genau einen
+harmlosen PNG-Haarballen innerhalb des Teppichs und erzeugt einmalig `hairball`.
+Wiederbetreten verändert weder Position noch Punkte; Neustart entfernt die Spur.
+Pause und Heimkehr verwenden die bestehenden Simulationsgrenzen.
+
+`assets/objects/carpet/generation-v1.json` hält Quelle und Imagegen-Prompt fest.
+`node tools/prepare-hairball-asset.mjs` exportiert das transparente 32×16-PNG
+proportional per Nearest-Neighbour mit unveränderten RGBA-Samples. Der vorhandene
+Teppich-PNG wird wiederverwendet, die große Haarballenquelle nicht gebündelt.
+
+`album/discovery.ts` definiert den gemeinsamen Daten-/Ereignisvertrag für Bilder
+und Teppich. `album/carpet.ts` enthält Asset, stabile ID, DE-/EN-Fluff und Saras
+Kommentar. Nur akzeptierter tatsächlicher Schaden sendet `album-discovered`;
+Spawn, Abbruch und Reset erzeugen keinen Fund. Sammlung, Persistenz und deren
+Integrationstests bleiben Aufgabe des gemeinsamen Albums #210.

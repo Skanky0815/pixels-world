@@ -13,6 +13,7 @@ const names: Record<Animation, string> = {
   climb: 'Klettern',
   slide: 'Rutschen',
   scratch: 'Sofa kratzen',
+  retch: 'Würgen',
   nibble: 'Knabbern',
 };
 

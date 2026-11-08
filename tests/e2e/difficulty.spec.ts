@@ -8,7 +8,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   await startDifficulty(page, 'hard');
   const active = await state(page);
 
-  expect(active.objects.filter((o) => o.kind !== 'picture')).toHaveLength(14);
+  expect(active.objects.filter((o) => o.kind !== 'picture')).toHaveLength(15);
   expect(active.goalView).toMatchObject({
     ballVisible: true,
     markerVisible: false,
@@ -32,7 +32,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   await until(page, (s) => s.started && s.difficulty === 'easy');
   const next = await state(page);
 
-  expect(next.objects.filter((o) => o.kind !== 'picture')).toHaveLength(6);
+  expect(next.objects.filter((o) => o.kind !== 'picture')).toHaveLength(7);
   expect(next.goalView).toMatchObject({ ballVisible: true, markerVisible: true, markerWidth: 36 });
   expect(next.round.returnAtMs).toBeGreaterThanOrEqual(90_000);
   expect(next.round.returnAtMs).toBeLessThanOrEqual(157_500);
@@ -72,7 +72,7 @@ test.describe('Schwierigkeitswahl mit Touch', () => {
     await touch.press('jump');
     await until(page, (s) => s.started && s.difficulty === 'easy');
     await touch.lift();
-    expect((await state(page)).objects.filter((o) => o.kind !== 'picture')).toHaveLength(6);
+    expect((await state(page)).objects.filter((o) => o.kind !== 'picture')).toHaveLength(7);
     await until(page, (s) => s.pixel.grounded);
     expect((await state(page)).pixel.velocityY).toBe(0);
   });

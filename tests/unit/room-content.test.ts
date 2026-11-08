@@ -18,7 +18,7 @@ test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Pr
   assert.deepEqual(room.spawn, { x: 110, bottom: 468 });
   assert.equal(room.definition.width, 960);
   assert.equal(room.definition.height, 540);
-  assert.equal(room.objects.length, 3);
+  assert.equal(room.objects.length, 4);
   const couch = room.objects.find((object) => object.kind === 'couch');
 
   assert.ok(couch);

@@ -1,3 +1,5 @@
+import type { CarpetConfig } from '../objects/Carpet.ts';
+import type { CarpetRules } from '../interactions/carpet-hairball.ts';
 import type { WallPictureConfig } from '../objects/WallPicture.ts';
 import type { PictureMotif } from '../assets/picture-appearance.ts';
 import type { PictureRules } from '../interactions/picture-falling.ts';
@@ -27,6 +29,12 @@ interface Base {
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
+  | (Base & {
+      readonly kind: 'carpet';
+      readonly asset: 'carpet-default';
+      readonly geometry: { readonly width: number; readonly height: number };
+      readonly rules: CarpetRules;
+    })
   | (Base & {
       readonly kind: 'picture';
       readonly asset: 'wall-picture';
@@ -146,6 +154,7 @@ interface ResolvedBase {
   readonly asset: AssetKey;
 }
 export type ResolvedObject =
+  | (ResolvedBase & { readonly kind: 'carpet'; readonly config: CarpetConfig })
   | (ResolvedBase & { readonly kind: 'picture'; readonly config: WallPictureConfig })
   | (ResolvedBase & { readonly kind: 'books'; readonly config: BookStackConfig })
   | (ResolvedBase & { readonly kind: 'couch'; readonly config: CouchConfig })

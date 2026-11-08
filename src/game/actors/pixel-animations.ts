@@ -8,6 +8,7 @@ export const PIXEL_ANIMATIONS = {
   climb: { scale: 2.5, frames: [15, 16, 17, 18], frameRate: 7, repeat: -1 },
   slide: { scale: 2.5, frames: [19], frameRate: 6, repeat: -1 },
   scratch: { scale: 2.5, frames: [20, 21, 22], frameRate: 8, repeat: -1 },
+  retch: { scale: 2.5, frames: [23, 23, 24, 23, 24, 24], frameRate: 8, repeat: -1 },
   nibble: { scale: 2.5, frames: [23, 24], frameRate: 6, repeat: -1 },
 } as const;
 
@@ -19,6 +20,7 @@ interface AnimationState {
   velocityY: number;
   scratching: boolean;
   nibbling: boolean;
+  retching?: boolean;
   landing: boolean;
 }
 
@@ -34,6 +36,8 @@ export function pixelAnimation(state: AnimationState): keyof typeof PIXEL_ANIMAT
 }
 
 function groundedAnimation(state: AnimationState): keyof typeof PIXEL_ANIMATIONS {
+  if (state.retching) return 'retch';
+
   if (state.nibbling) return 'nibble';
 
   if (state.scratching) return 'scratch';

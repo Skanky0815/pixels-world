@@ -45,14 +45,21 @@ export function installTestObserver(read: () => GameTestState) {
               lastDamage: state.plant.lastDamage ? Object.freeze(state.plant.lastDamage) : null,
             })
           : null,
+        carpets: Object.freeze(
+          state.carpets.map((c) =>
+            Object.freeze({
+              ...c,
+              area: Object.freeze({ ...c.area }),
+              lastDamage: c.lastDamage ? Object.freeze(c.lastDamage) : null,
+            }),
+          ),
+        ),
         pictures: Object.freeze(
           state.pictures.map((p) =>
             Object.freeze({ ...p, lastDamage: p.lastDamage ? Object.freeze(p.lastDamage) : null }),
           ),
         ),
-        pictureDiscovery: state.pictureDiscovery
-          ? Object.freeze({ ...state.pictureDiscovery })
-          : null,
+        albumDiscovery: state.albumDiscovery ? Object.freeze({ ...state.albumDiscovery }) : null,
         wallPlacements: Object.freeze(
           state.wallPlacements.map((p) =>
             Object.freeze({ ...p, bounds: Object.freeze({ ...p.bounds }) }),

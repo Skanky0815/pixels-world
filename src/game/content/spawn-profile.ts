@@ -28,6 +28,7 @@ const CATEGORIES = {
   vase: 'decoration',
   books: 'decoration',
   picture: 'decoration',
+  carpet: 'furniture',
   plant: 'plant',
   couch: 'furniture',
   curtain: 'furniture',
@@ -59,6 +60,8 @@ export function spawnSizeFor(width: number, height: number): SpawnSize {
 }
 
 function objectSize(object: ObjectDefinition) {
+  if (object.kind === 'carpet') return spawnSizeFor(object.geometry.width, object.geometry.height);
+
   if (object.kind === 'books') return spawnSizeFor(48, 36);
 
   if (object.kind === 'picture') return spawnSizeFor(108, 112);
@@ -114,7 +117,7 @@ export function validateObjectSpawn(object: ObjectDefinition, path: string) {
 }
 
 function validateRandomObject(object: ObjectDefinition, path: string) {
-  if (object.kind === 'curtain' || object.kind === 'picture')
+  if (object.kind === 'curtain' || object.kind === 'picture' || object.kind === 'carpet')
     fail(path, 'structural object must stay fixed');
 
   if (
