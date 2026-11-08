@@ -2,6 +2,7 @@ import type { ObjectCatalog } from '../../game/content/definitions.ts';
 import { COUCH_SCRATCH } from '../../game/interactions/couch-scratching.ts';
 import { CURTAIN_SLIDE } from '../../game/interactions/curtain-sliding.ts';
 import { PLANT_NIBBLE } from '../../game/interactions/plant-nibbling.ts';
+import { BOOK_TOPPLE } from '../../game/interactions/book-toppling.ts';
 
 const cozyCouch = {
   kind: 'couch',
@@ -68,5 +69,20 @@ export const OBJECTS = {
     capabilities: ['push', 'damage'],
     points: 15,
     color: 0xc5875f,
+  },
+  'reading-books': {
+    kind: 'books',
+    asset: 'book-stack',
+    capabilities: ['automatic', 'damage'],
+    spawn: { size: 'medium', category: 'decoration', random: true, support: 'any-surface' },
+    rules: BOOK_TOPPLE,
+  },
+  'upright-books': {
+    kind: 'books',
+    asset: 'book-stack',
+    appearance: 'upright',
+    capabilities: ['automatic', 'damage'],
+    spawn: { size: 'medium', category: 'decoration', random: true, support: 'any-surface' },
+    rules: BOOK_TOPPLE,
   },
 } as const satisfies ObjectCatalog;

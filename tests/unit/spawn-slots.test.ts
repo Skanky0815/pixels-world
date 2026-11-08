@@ -130,7 +130,7 @@ test('Vasen dürfen weder Ziel noch feste Vase oder Vorhang verdrängen', () => 
         }
       : { ...p, slots: undefined },
   );
-  const room = populate({ ...LIVING_ROOM, platforms }, 'hard');
+  const room = populate({ ...LIVING_ROOM, objectSlots: [], platforms }, 'hard');
 
   assert.deepEqual(room.objects, difficultyRoom(LIVING_ROOM, 'hard').objects);
 });
@@ -171,8 +171,55 @@ test('Ungültige Counts, IDs und unbekannte Poolvarianten werden auch bei gering
 test('Räume ohne Slots behalten ihre Instanzen vollständig', () => {
   const room = {
     ...LIVING_ROOM,
+    objectSlots: [],
     platforms: LIVING_ROOM.platforms.map((p) => ({ ...p, slots: undefined })),
   };
 
   assert.deepEqual(populate(room).objects, room.objects);
+});
+
+// eslint-disable-next-line max-lines-per-function -- Mehrere Seeds prüfen reale Platzierungs-/Variantenvielfalt und deterministische Wiederholung in beiden Räumen.
+test('Bücher wählen passende Boden-/Regalslots und beide Erscheinungen statt fester Instanzen', () => {
+  for (const source of [LIVING_ROOM, COZY_REMIX]) {
+    const placements = new Set<string>();
+    const variants = new Set<string>();
+
+    for (let seed = 0; seed < 12; seed++) {
+      const result = populate(source, 'normal', `books-${seed}`);
+      const books = result.objects.filter((o) => o.id.startsWith('book-'));
+
+      assert.equal(books.length, 2);
+      assert.equal(
+        books.filter((o) => o.placement.mode === 'surface' && o.placement.surfaceId === 'floor')
+          .length,
+        1,
+      );
+      books.forEach((book) => {
+        placements.add(JSON.stringify(book.placement));
+        variants.add(book.variant);
+      });
+      assert.deepEqual(result, populate(source, 'normal', `books-${seed}`));
+    }
+
+    assert.equal(placements.size, 4);
+    assert.deepEqual([...variants].sort(), ['reading-books', 'upright-books']);
+  }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Zwei beschädigte Gruppen prüfen getrennt ID- und Auflagenvalidierung.
+test('Auflagenübergreifende Slotgruppen prüfen IDs und Auflagen', () => {
+  const group = LIVING_ROOM.objectSlots[0];
+
+  assert.throws(
+    () => populate({ ...LIVING_ROOM, objectSlots: [group, group] }),
+    /invalid slot group/,
+  );
+  assert.throws(
+    () =>
+      populate({
+        ...LIVING_ROOM,
+        objectSlots: [{ ...group, entries: [{ ...group.entries[0], surfaceId: 'missing' }] }],
+      }),
+    /unknown support surface/,
+  );
 });

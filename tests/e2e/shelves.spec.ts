@@ -1,6 +1,7 @@
 import { advanceRoundTo, useIdleFrames } from './round-clock';
 import { test, expect, start, state, firstVase, holdUntil, until, reset } from './support';
 import { openPause } from './pause-support';
+import { BOOK_TOPPLE } from '../../src/game/interactions/book-toppling';
 
 test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattform und Reset repariert', async ({
   page,
@@ -29,6 +30,9 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
   await until(page, (s) => Math.abs(s.shelves[0].angle) > 0.1);
   const beforeCollapse = await state(page);
   const score = beforeCollapse.chaos.score;
+  const bookPoints =
+    beforeCollapse.books.filter((book) => book.supportY === 304 && book.damage === 0).length *
+    BOOK_TOPPLE.points;
   const remainingVasePoints = beforeCollapse.vases
     .filter((v) => v.id.startsWith('lower-shelf:') && v.state !== 'broken')
     .reduce((sum, v) => sum + v.points, 0);
@@ -57,7 +61,10 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
   await until(page, (s) =>
     s.vases.filter((v) => v.id.startsWith('lower-shelf:')).every((v) => v.state === 'broken'),
   );
-  expect((await state(page)).chaos.score).toBe(score + 10 + remainingVasePoints);
+  await until(page, (s) =>
+    s.books.filter((b) => b.supportY === 304).every((b) => b.state === 'fallen' && !b.dropping),
+  );
+  expect((await state(page)).chaos.score).toBe(score + 10 + remainingVasePoints + bookPoints);
   await testInfo.attach('regal-eingestürzt', {
     body: await page.screenshot(),
     contentType: 'image/png',

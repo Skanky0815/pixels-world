@@ -16,6 +16,7 @@ import {
 
 const shelf: SpawnSlotFilter = { capacity: 'small', categories: ['decoration'], support: 'raised' };
 const vases = ['small-vase', 'blue-vase', 'heirloom-vase', 'mellow-vase'];
+const books = ['reading-books', 'upright-books'];
 
 // eslint-disable-next-line max-lines-per-function -- Alle vorhandenen Varianten werden gemeinsam auf ihre unterschiedlichen Profile geprüft.
 test('Alle Bestandsvarianten haben passende Größe, Kategorie und Spawn-Eignung', () => {
@@ -73,12 +74,15 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
     support: 'floor',
   };
 
-  assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), ['catgrass', ...vases]);
-  assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, support: 'raised' }), vases);
+  assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), ['catgrass', ...vases, ...books]);
+  assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, support: 'raised' }), [
+    ...vases,
+    ...books,
+  ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, capacity: 'small' }), vases);
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['automatic', 'damage'] }),
-    ['catgrass'],
+    ['catgrass', ...books],
   );
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['push', 'damage'] }),
@@ -102,7 +106,7 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
     support: 'floor',
   };
 
-  assert.deepEqual(filterSpawnCandidates(OBJECTS, all), ['catgrass', ...vases]);
+  assert.deepEqual(filterSpawnCandidates(OBJECTS, all), ['catgrass', ...vases, ...books]);
   assert.equal(fitsSpawnSlot(LIVING_ROOM.goal.spawn, [], all), false);
   assert.equal(Object.hasOwn(OBJECTS, 'favorite-ball'), false);
   assert.equal(Object.hasOwn(OBJECTS, 'pixel'), false);

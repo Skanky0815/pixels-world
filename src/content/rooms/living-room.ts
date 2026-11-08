@@ -1,3 +1,4 @@
+import { bookSlots } from './book-slots.ts';
 import { LOWER_SHELF_SLOTS, MIDDLE_SHELF_SLOTS } from './shelf-slots.ts';
 import { LIVING_ROOM_DENSITY } from '../difficulty.ts';
 import { copy } from '../../i18n/locale.ts';
@@ -62,6 +63,7 @@ export const LIVING_ROOM = {
     },
   ],
   decorations,
+  objectSlots: bookSlots([600, 650]),
   objects: [
     {
       id: 'couch',

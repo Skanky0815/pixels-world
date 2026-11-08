@@ -1,5 +1,5 @@
 export type DamageKind =
-  'scratch' | 'tear' | 'nibble' | 'tip' | 'break' | 'shelf-damage' | 'collapse';
+  'scratch' | 'tear' | 'nibble' | 'tip' | 'break' | 'shelf-damage' | 'collapse' | 'topple';
 export interface ChaosEvent<K extends DamageKind = DamageKind, S extends number = number> {
   readonly id: string;
   readonly objectId: string;

@@ -115,5 +115,7 @@ async function expectChaos(page: import('@playwright/test').Page) {
     0,
   );
 
-  expect(s.chaos.score).toBe(points + s.curtain.damage * 4 + shelfPoints);
+  const bookPoints = s.books.reduce((sum, book) => sum + (book.lastDamage?.value ?? 0), 0);
+
+  expect(s.chaos.score).toBe(points + s.curtain.damage * 4 + shelfPoints + bookPoints);
 }
