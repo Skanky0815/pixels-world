@@ -50,7 +50,7 @@ Spring auf Möbel, klettere am Vorhang und entdecke, wie viel Unsinn in ein Zimm
 Vasen zerbrechen, das Sofa bekommt Kratzer und selbst das Katzengras bleibt nicht verschont.
 Wiederholte Landungen lassen fragile und normale Regale erst wackeln, dann reißen
 und schließlich einstürzen. Das obere Zielregal bleibt stabil.
-In beiden Wohnzimmern stehen Bücherstapel am Boden, im Cozy Remix zusätzlich auf dem unteren Regal. Kontakt lässt sie erst wackeln;
+In beiden Wohnzimmern werden Bücher zufällig auf geeignete Boden- und Regalslots verteilt. Es gibt liegende Stapel und stehende Bücher mit sichtbaren Buchrücken. Ein Regalplatz wird unten oder mittig ausgewählt. Kontakt lässt sie erst wackeln;
 bleibst du zu lange, fallen die Bücher mit einem kurzen dumpfen Geräusch auseinander.
 Weggehen während der Warnung bricht die Aktion ab. Ein Umsturz zählt einmalig
 Chaospunkte; die verstreuten Bücher bleiben bis zur nächsten Runde liegen. Stürzt ihr Regal ein, fallen sie mit zum Boden, ohne doppelt zu zählen.
@@ -91,7 +91,7 @@ unverändert. Der gespielte Grad steht im HUD und im Ergebnis.
 Zum Balancieren bearbeitest du [difficulty.json](src/content/difficulty.json);
 die [Felderklärung](docs/architecture/gameplay.md#balancing-per-json) beschreibt
 Zeitfaktoren, Herzen, Tastenfolgen und feste Vasenbelegung.
-Das mittlere Regal hat einen Slot (auf Leicht leer), das untere drei zufällig bestückte Plätze: Leicht belegt einen,
+Der Vasenslot auf dem mittleren Regal bleibt auf Leicht leer; das untere Regal bietet drei zufällig bestückte Vasenplätze: Leicht belegt einen,
 Normal zwei und Schwer drei. Ein Neustart behält die Belegung bei gleichem Grad;
 ein neuer Seitenaufruf würfelt sie neu. Auf Schwer ist das mittlere Regal fragil;
 die zusätzlichen Regale wechseln zwischen fragil und normal. Das Zielregal bleibt stabil.

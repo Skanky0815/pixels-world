@@ -7,7 +7,7 @@ import {
   type InteractionResult,
   type Bounds,
 } from '../interactions/contracts';
-import { drawBooks } from './book-art';
+import { drawBooks, type BookAppearance } from './book-art';
 import { playBookImpact } from '../assets/book-impact';
 
 export interface BookStackConfig {
@@ -15,6 +15,7 @@ export interface BookStackConfig {
   readonly x: number;
   readonly floorY: number;
   readonly supportY: number;
+  readonly appearance?: BookAppearance;
   readonly rules: BookRules;
 }
 
@@ -61,7 +62,7 @@ export class BookStack {
   }
 
   private draw() {
-    drawBooks(this.graphic, this.model.snapshot());
+    drawBooks(this.graphic, this.model.snapshot(), this.config.appearance);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Nur ein tatsächlich aufliegender Stapel verliert seine Auflage; ein bereits zerstreuter Stapel zählt dadurch keinen zweiten Schaden.
@@ -105,6 +106,7 @@ export class BookStack {
   snapshot() {
     return {
       id: this.id,
+      appearance: this.config.appearance ?? 'stacked',
       ...this.model.snapshot(),
       ...this.damageSnapshot(),
       x: this.config.x,

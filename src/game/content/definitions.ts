@@ -15,6 +15,7 @@ import type { PlantObjectConfig } from '../objects/Plant.ts';
 import type { VaseConfig } from '../objects/Vase.ts';
 import type { BookStackConfig } from '../objects/BookStack.ts';
 import type { BookRules } from '../interactions/book-toppling.ts';
+import type { BookAppearance } from '../objects/book-art.ts';
 
 export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
 interface Base {
@@ -22,7 +23,12 @@ interface Base {
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
-  | (Base & { readonly kind: 'books'; readonly asset: 'book-stack'; readonly rules: BookRules })
+  | (Base & {
+      readonly kind: 'books';
+      readonly asset: 'book-stack';
+      readonly rules: BookRules;
+      readonly appearance?: BookAppearance;
+    })
   | (Base & {
       readonly kind: 'couch';
       readonly asset: 'couch-default';
@@ -79,6 +85,11 @@ export type Decoration =
       readonly color: number;
     };
 export interface RoomDefinition {
+  readonly objectSlots?: readonly {
+    readonly id: string;
+    readonly count: Readonly<Record<'easy' | 'normal' | 'hard', number>>;
+    readonly entries: readonly (SpawnSlot & { readonly surfaceId: string })[];
+  }[];
   readonly environment?: 'cozy-room';
   readonly difficultyObjects?: {
     readonly easyOmit: readonly string[];

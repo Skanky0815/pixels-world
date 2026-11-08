@@ -1,5 +1,6 @@
 import { test, expect, state, until, reset, lowerShelf, waitForGame } from './support';
 import { startDifficulty } from './difficulty-support';
+import { BOOK_TOPPLE } from '../../src/game/interactions/book-toppling';
 
 for (const room of ['living-room', 'cozy-remix']) {
   for (const difficulty of ['easy', 'normal', 'hard'] as const) {
@@ -50,10 +51,17 @@ test('Belegtes Slotregal stürzt ein; Vasen fallen selbständig, brechen einmal 
   await until(page, (s) =>
     s.vases.filter((v) => v.id.startsWith('lower-shelf:')).every((v) => v.state === 'broken'),
   );
+  await until(page, (s) =>
+    s.books.filter((b) => b.supportY === 304).every((b) => b.state === 'fallen' && !b.dropping),
+  );
   const broken = await state(page);
 
   expect(broken.shelves[0]).toMatchObject({ state: 'collapsed', enabled: false });
-  expect(broken.chaos.score).toBe(12 + slots.reduce((sum, v) => sum + v.points, 0));
+  expect(broken.chaos.score).toBe(
+    12 +
+      before.books.filter((b) => b.supportY === 304 && b.damage === 0).length * BOOK_TOPPLE.points +
+      slots.reduce((sum, v) => sum + v.points, 0),
+  );
   await page.clock.runFor(1500);
   expect((await state(page)).chaos.score).toBe(broken.chaos.score);
   expect((await state(page)).vases.map((v) => [v.id, v.state])).toEqual(

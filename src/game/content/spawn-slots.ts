@@ -15,8 +15,10 @@ export interface SpawnSlot extends Omit<SpawnSlotFilter, 'support'> {
   readonly x: number;
   readonly pool: readonly string[];
 }
-type Platform = RoomDefinition['platforms'][number];
+type Platform = Pick<RoomDefinition['platforms'][number], 'id' | 'bounds' | 'slots'>;
 type Difficulty = 'easy' | 'normal' | 'hard';
+type ObjectSlotGroup = NonNullable<RoomDefinition['objectSlots']>[number];
+type ObjectSlot = ObjectSlotGroup['entries'][number];
 const overlaps = (a: Bounds, b: Bounds) =>
   a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 
@@ -40,6 +42,9 @@ export function populateSpawnSlots(
 
   for (const platform of room.platforms)
     generated.push(...populatePlatform(platform, room, catalog, difficulty, random, occupied));
+
+  for (const group of room.objectSlots ?? [])
+    generated.push(...populateGroup(group, room, catalog, difficulty, random, occupied));
   const result = { ...room, objects: [...generated, ...room.objects] };
 
   resolveRoom(result, catalog);
@@ -68,12 +73,7 @@ function objectArea(object: ResolvedObject): Bounds {
   if ('area' in c) return c.area;
 
   if ('seat' in c) return { ...c.seat, height: c.floorY - c.seat.y };
-  const asset =
-    object.kind === 'books'
-      ? ASSETS['book-stack']
-      : object.kind === 'plant'
-        ? ASSETS['catgrass-default']
-        : ASSETS['vase-default'];
+  const asset = looseAsset(object.kind);
   const bottom = 'supportY' in c ? c.supportY : 'shelfY' in c ? c.shelfY : c.floorY;
 
   return {
@@ -167,7 +167,10 @@ function choose(
   random: () => number,
   occupied: Bounds[],
 ) {
-  const compatible = filterSpawnCandidates(catalog, { ...slot, support: 'raised' });
+  const compatible = filterSpawnCandidates(catalog, {
+    ...slot,
+    support: platform.id === room.floor.id ? 'floor' : 'raised',
+  });
 
   for (const key of slot.pool)
     if (!Object.hasOwn(catalog, key)) fail(`${slot.id}: unknown variant ${key}`);
@@ -177,8 +180,7 @@ function choose(
     random,
   )) {
     const instance = slotInstance(slot, platform, variant);
-    const asset =
-      catalog[variant].kind === 'plant' ? ASSETS['catgrass-default'] : ASSETS['vase-default'];
+    const asset = looseAsset(catalog[variant].kind);
     const area = slotArea(slot, platform, asset);
 
     if (fits(area, platform.bounds, room) && !occupied.some((other) => overlaps(area, other)))
@@ -214,6 +216,96 @@ function validateIds(room: RoomDefinition) {
       ids.add(id);
     }
   }
+
+  validateGroups(room, ids);
+}
+
+function validateGroups(room: RoomDefinition, ids: Set<string>) {
+  if (room.objectSlots !== undefined && !Array.isArray(room.objectSlots))
+    fail('expected object slot groups');
+
+  for (const group of room.objectSlots ?? []) validateGroup(group, room, ids);
+}
+
+function validateGroup(group: ObjectSlotGroup, room: RoomDefinition, ids: Set<string>) {
+  if (!validGroupHeader(group, ids)) fail('invalid slot group');
+  ids.add(group.id);
+  validateCounts(group, group.id);
+
+  if (Object.keys(group.count).sort().join(',') !== 'easy,hard,normal')
+    fail(`${group.id}: missing difficulty`);
+
+  for (const slot of group.entries) validateGroupEntry(slot, group.id, room, ids);
+}
+
+// eslint-disable-next-line max-lines-per-function -- Identität, Listenform und Dichtevertrag bilden gemeinsam den Gruppenheader.
+function validGroupHeader(group: ObjectSlotGroup, ids: Set<string>) {
+  return (
+    group &&
+    typeof group.id === 'string' &&
+    !!group.id.trim() &&
+    !ids.has(group.id) &&
+    Array.isArray(group.entries) &&
+    group.count &&
+    typeof group.count === 'object'
+  );
+}
+
+// eslint-disable-next-line max-lines-per-function -- Auflage und globale ID werden vor derselben Slotregistrierung geprüft.
+function validateGroupEntry(
+  slot: ObjectSlot,
+  group: string,
+  room: RoomDefinition,
+  ids: Set<string>,
+) {
+  validateEntry(slot, groupSurface(room, slot.surfaceId));
+  const id = `${group}:${slot.id}`;
+
+  if (ids.has(id)) fail(`duplicate ID ${id}`);
+  ids.add(id);
+}
+
+function groupSurface(room: RoomDefinition, id: string): Platform {
+  if (id === room.floor.id)
+    return {
+      id,
+      bounds: { x: 0, y: room.floor.y, width: room.width, height: room.height - room.floor.y },
+    };
+  const platform = room.platforms.find((surface) => surface.id === id);
+
+  if (!platform) fail(`unknown support surface ${id}`);
+
+  return platform;
+}
+
+// eslint-disable-next-line max-lines-per-function -- Dieselbe Pool- und Kollisionswahl gilt für Slots einer Gruppe über mehrere Auflagen hinweg.
+function populateGroup(
+  group: NonNullable<RoomDefinition['objectSlots']>[number],
+  room: RoomDefinition,
+  catalog: ObjectCatalog,
+  difficulty: Difficulty,
+  random: () => number,
+  occupied: Bounds[],
+) {
+  const result: ObjectInstance[] = [];
+
+  for (const slot of shuffled(group.entries, random)) {
+    const candidate = choose(
+      slot,
+      groupSurface(room, slot.surfaceId),
+      room,
+      catalog,
+      random,
+      occupied,
+    );
+
+    if (candidate && result.length < group.count[difficulty]) {
+      result.push({ ...candidate.instance, id: `${group.id}:${slot.id}` });
+      occupied.push(candidate.area);
+    }
+  }
+
+  return result;
 }
 
 function slotInstance(slot: SpawnSlot, platform: Platform, variant: string): ObjectInstance {
@@ -236,4 +328,12 @@ function slotArea(
     width: asset.width,
     height: asset.height,
   };
+}
+
+function looseAsset(kind: ResolvedObject['kind']) {
+  return kind === 'books'
+    ? ASSETS['book-stack']
+    : kind === 'plant'
+      ? ASSETS['catgrass-default']
+      : ASSETS['vase-default'];
 }

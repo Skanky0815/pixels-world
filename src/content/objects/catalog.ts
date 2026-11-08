@@ -74,7 +74,15 @@ export const OBJECTS = {
     kind: 'books',
     asset: 'book-stack',
     capabilities: ['automatic', 'damage'],
-    spawn: { size: 'medium', category: 'decoration', random: false, reason: 'room-fixture' },
+    spawn: { size: 'medium', category: 'decoration', random: true, support: 'any-surface' },
+    rules: BOOK_TOPPLE,
+  },
+  'upright-books': {
+    kind: 'books',
+    asset: 'book-stack',
+    appearance: 'upright',
+    capabilities: ['automatic', 'damage'],
+    spawn: { size: 'medium', category: 'decoration', random: true, support: 'any-surface' },
     rules: BOOK_TOPPLE,
   },
 } as const satisfies ObjectCatalog;

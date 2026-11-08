@@ -109,6 +109,8 @@ function validateVase(value: Extract<ObjectDefinition, { kind: 'vase' }>, path: 
 }
 
 function validateBooks(value: Extract<ObjectDefinition, { kind: 'books' }>, path: string) {
+  if (!['stacked', 'upright'].includes(value.appearance ?? 'stacked'))
+    fail(`${path}.appearance`, 'unknown book appearance');
   number(value.rules.warningMs, `${path}.rules.warningMs`, Number.EPSILON);
   number(value.rules.fallMs, `${path}.rules.fallMs`, Number.EPSILON);
   integer(value.rules.points, `${path}.rules.points`);
@@ -521,6 +523,7 @@ class RoomResolver {
         x: p.x,
         supportY: support.y,
         floorY: this.room.floor.y,
+        appearance: d.appearance,
         rules: d.rules,
       },
     };

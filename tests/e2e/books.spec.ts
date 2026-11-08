@@ -3,13 +3,13 @@ import { startTouch } from './touch-support';
 
 for (const [room, x] of [
   ['living-room', 650],
-  ['cozy-remix', 865],
+  ['cozy-remix', 910],
 ] as const) {
   test(`Bücher: abbrechbares Wackeln und einmaliger Umsturz in ${room} @smoke`, async ({
     page,
     // eslint-disable-next-line max-lines-per-function -- Echte Bewegung, Kontaktabbruch, Pause, Umsturz und Reset prüfen denselben persistenten Stapel.
   }) => {
-    await start(page, `/?room=${room}`);
+    await start(page, `/?room=${room}&room-seed=books-3`);
     await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= x);
     await until(page, (s) => s.books[0].state === 'wobbling');
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= x - 65);
@@ -38,12 +38,17 @@ for (const [room, x] of [
   });
 }
 
-for (const toppled of [false, true]) {
-  test(`Regaleinsturz mit ${toppled ? 'bereits verstreuten' : 'aufrechten'} Büchern`, async ({
+for (const [room, toppled] of [
+  ['living-room', false],
+  ['living-room', true],
+  ['cozy-remix', false],
+  ['cozy-remix', true],
+] as const) {
+  test(`Regaleinsturz in ${room} mit ${toppled ? 'bereits verstreuten' : 'aufrechten'} Büchern`, async ({
     page,
     // eslint-disable-next-line max-lines-per-function -- Echte Landungen prüfen beide Ausgangszustände, Pause während des Falls, einmaligen Schaden und Reset.
   }) => {
-    await start(page, '/?room=cozy-remix');
+    await start(page, `/?room=${room}&room-seed=${toppled ? 'books-3' : 'books-5'}`);
     await lowerShelf(page);
 
     if (toppled) {
@@ -88,7 +93,7 @@ test.describe('Bücher auf Touch', () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
 
   test('Kontakt funktioniert ohne zusätzliche Aktionstaste', async ({ page }) => {
-    const touch = await startTouch(page);
+    const touch = await startTouch(page, '/?room-seed=books-3');
 
     await touch.press('right');
     await until(page, (s) => s.pixel.x >= 650);
