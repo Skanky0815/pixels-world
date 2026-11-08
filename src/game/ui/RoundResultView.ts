@@ -3,6 +3,7 @@ import { t } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { RoundResult } from '../domain/round-result';
+import { drawResultHearts } from './result-hearts';
 export type ResultViewSnapshot = ReturnType<RoundResultView['snapshot']>;
 /** Scene-owned result card; the outcome and all values remain domain decisions. */
 export class RoundResultView {
@@ -13,7 +14,7 @@ export class RoundResultView {
   private readonly headline: Phaser.GameObjects.Text;
   private readonly chaos: Phaser.GameObjects.Text;
   private readonly reconciliation: Phaser.GameObjects.Text;
-  private readonly hearts: Phaser.GameObjects.Text;
+  private readonly hearts: Phaser.GameObjects.Graphics;
   private readonly goal: Phaser.GameObjects.Text;
   private readonly quote: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
@@ -29,12 +30,7 @@ export class RoundResultView {
     this.headline = scene.add.text(width / 2, 150, '', style(28)).setOrigin(0.5, 0);
     this.chaos = scene.add.text(64, 215, '', { ...style(16), wordWrap: { width: width / 2 - 90 } });
     this.reconciliation = scene.add.text(width / 2 + 20, 215, '', style(16));
-    this.hearts = scene.add
-      .text(width / 2 + 20, 262, '', {
-        ...style(32),
-        fontFamily: 'Arial, sans-serif',
-      })
-      .setOrigin(0, 0.5);
+    this.hearts = scene.add.graphics().setScale(1.75);
     this.goal = scene.add.text(64, 315, '', style(13));
     this.quote = scene.add.text(64, 344, '', {
       ...style(14),
@@ -76,11 +72,10 @@ export class RoundResultView {
     this.reconciliation.setText(
       t('resultReconciliation', { v0: t(success ? 'success' : 'failed') }),
     );
-    this.hearts.setText('♥'.repeat(result.hearts) + '♡'.repeat(result.required - result.hearts));
-    this.hearts.setColor(success ? '#e7a6a6' : '#d4b488');
+    drawResultHearts(this.hearts, result.hearts, result.required, success ? 0xe7a6a6 : 0xd4b488);
     this.hearts.setPosition(
       this.reconciliation.x + this.reconciliation.width + 16,
-      this.reconciliation.y + this.reconciliation.height - 10,
+      this.reconciliation.y + this.reconciliation.height - 24,
     );
     this.goal.setText(
       `${t('resultGoal', { v0: t(result.goalReached ? 'reached' : 'notReached') })} · ${t('difficultyLabel')}: ${t(DIFFICULTY_LABELS[result.difficulty])}`,
@@ -100,12 +95,12 @@ export class RoundResultView {
       headlineText: this.headline.text,
       chaosText: this.chaos.text,
       reconciliationText: this.reconciliation.text,
-      heartsText: this.hearts.text,
+      heartsText: this.heartsText(),
       goalText: this.goal.text,
       summaryText: [
         this.chaos.text,
         this.reconciliation.text,
-        this.hearts.text,
+        this.heartsText(),
         this.goal.text,
       ].join('\n'),
       quoteText: this.quote.text,
@@ -116,6 +111,14 @@ export class RoundResultView {
   destroy() {
     this.removeCompactListener();
     this.root.destroy(true);
+  }
+
+  private heartsText() {
+    const result = this.result;
+
+    if (!result) return '';
+
+    return '♥'.repeat(result.hearts) + '♡'.repeat(result.required - result.hearts);
   }
 }
 

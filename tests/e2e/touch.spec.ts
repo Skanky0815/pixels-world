@@ -203,7 +203,7 @@ test(
     expect((await state(page)).result?.outcome).toBe('success');
     await expect(page.locator('.mobile-dialogue')).toContainText('RUNDENERGEBNIS');
     await expect(page.locator('.result-headline')).toHaveText('Wieder vertragen!');
-    await expect(page.locator('.result-hearts')).toHaveText('♥');
+    await expect(page.locator('.result-hearts svg[data-filled="true"]')).toHaveCount(1);
     await expect(page.locator('.result-hearts')).toHaveAttribute('aria-label', '1 von 1 Herzen');
     await expectResultColumns(page);
     expect(

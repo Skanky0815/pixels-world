@@ -225,7 +225,11 @@ for (const mobile of [false, true]) {
 
       if (mobile) {
         await expect(page.locator('.mobile-result')).toBeVisible();
-        await expect(page.locator('.result-hearts')).toHaveText('♥♥♥♥');
+        await expect(page.locator('.result-hearts svg[data-filled="true"]')).toHaveCount(4);
+        const hearts = await page.locator('.result-hearts').boundingBox();
+        const text = await page.locator('.result-reconciliation').boundingBox();
+
+        expect(hearts!.y).toBeGreaterThanOrEqual(text!.y + text!.height);
         await expect(page.locator('.result-goal')).toContainText('Schwer');
         const fits = await page
           .locator('.mobile-result')
