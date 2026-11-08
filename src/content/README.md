@@ -238,6 +238,15 @@ Teppich werden anhand ihrer Alpha-Bounds ab 192 eingepasst. Nearest Neighbor bew
 abgetastete RGBA-Werte. Alle Laufzeitbilder verwenden den 2×-Maßstab; nur die kleinen
 Export-PNGs werden gebündelt. Die Bodenmodule respektieren das konfigurierte Dielenraster.
 
+Die vier Zusatzregale auf Schwer deklarieren ihre `slots` direkt in
+`difficulty.json` unter `livingRoom.hardPlatforms`. Jedes erhält genau eine Vase
+und wählt zwischen drei lokalen Positionen und dem bekannten Vasenpool. Die
+bisherigen festen `difficulty-vase-*`-Instanzen entfallen; neue IDs haben die Form
+`difficulty-shelf-N:extra-slot-M`. Die Anflugseite bleibt frei und die gemeinsame
+Phaser-RNG-Folge bestimmt auch diese Wahl. Feste Regale, Stabilität und Ballroute
+werden dadurch nicht verschoben. `hardAdd` ist für bewusst feste Zusatzobjekte
+weiterhin Teil des Raumvertrags, enthält hier aber keine Vasen mehr.
+
 ## Boden- und Wandplätze
 
 `objectSlots` verwenden für Bodenplätze `surfaceId: 'floor'`. Ein Slot nennt

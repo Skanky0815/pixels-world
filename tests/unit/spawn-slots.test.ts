@@ -135,7 +135,10 @@ test('Vasen dürfen weder Ziel noch feste Vase oder Vorhang verdrängen', () => 
     'hard',
   );
 
-  assert.deepEqual(room.objects, difficultyRoom(LIVING_ROOM, 'hard').objects);
+  assert.deepEqual(
+    room.objects.filter((o) => !o.id.startsWith('difficulty-shelf-')),
+    difficultyRoom(LIVING_ROOM, 'hard').objects,
+  );
 });
 
 // eslint-disable-next-line max-lines-per-function -- Zusammengehörige Validierung, Platzierung oder Testschritte bleiben als atomarer Ablauf lesbar.
@@ -226,4 +229,61 @@ test('Auflagenübergreifende Slotgruppen prüfen IDs und Auflagen', () => {
       }),
     /unknown support surface/,
   );
+});
+
+// eslint-disable-next-line max-lines-per-function -- Beide Räume und alle Zusatzregale werden über viele reproduzierbare Seeds gemeinsam geprüft.
+test('Hard-Zusatzregale bleiben sicher und variieren Position sowie Variante pro Seed', () => {
+  for (const source of [LIVING_ROOM, COZY_REMIX]) {
+    const original = JSON.stringify(source);
+    const layouts = new Map<string, Set<number>>();
+    const variants = new Map<string, Set<string>>();
+
+    for (let seed = 0; seed < 60; seed++) {
+      const room = populate(source, 'hard', String(seed));
+      const extras = room.platforms.filter((p) => p.id.startsWith('difficulty-shelf-'));
+      const objects = room.objects.filter((o) => o.id.startsWith('difficulty-shelf-'));
+
+      assert.equal(objects.length, 4);
+      assert.deepEqual(room, populate(source, 'hard', String(seed)));
+      assert.deepEqual(room.goal, source.goal);
+      assert.deepEqual(
+        room.platforms.filter((p) => !p.id.startsWith('wall:')),
+        difficultyRoom(source, 'hard').platforms,
+      );
+
+      for (const shelf of extras) {
+        const placed = objects.filter((o) => o.id.startsWith(`${shelf.id}:`));
+
+        assert.equal(placed.length, 1);
+        const object = placed[0];
+
+        assert.equal(object.placement.mode, 'surface');
+
+        assert.ok(object.placement.mode === 'surface');
+        assert.equal(object.placement.surfaceId, shelf.id);
+        assert.ok(object.placement.x - 9 >= shelf.bounds.x);
+        assert.ok(object.placement.x + 9 <= shelf.bounds.x + shelf.bounds.width);
+        assert.ok(
+          ['small-vase', 'blue-vase', 'heirloom-vase', 'mellow-vase'].includes(object.variant),
+        );
+
+        layouts.set(shelf.id, layouts.get(shelf.id) ?? new Set());
+
+        variants.set(shelf.id, variants.get(shelf.id) ?? new Set());
+        layouts.get(shelf.id)!.add(object.placement.x);
+        variants.get(shelf.id)!.add(object.variant);
+      }
+    }
+
+    assert.equal(JSON.stringify(source), original);
+    assert.ok([...layouts.values()].every((values) => values.size === 3));
+    assert.ok([...variants.values()].every((values) => values.size === 4));
+
+    for (const difficulty of ['easy', 'normal'] as const)
+      assert.equal(
+        populate(source, difficulty).objects.filter((o) => o.id.startsWith('difficulty-shelf-'))
+          .length,
+        0,
+      );
+  }
 });

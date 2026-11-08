@@ -33,56 +33,162 @@
   },
   "livingRoom": {
     "easyOmit": ["blue-vase", "heirloom-vase"],
-    "hardAdd": [
-      {
-        "id": "difficulty-vase-1",
-        "variant": "blue-vase",
-        "x": 85,
-        "surfaceId": "difficulty-shelf-1"
-      },
-      {
-        "id": "difficulty-vase-2",
-        "variant": "heirloom-vase",
-        "x": 245,
-        "surfaceId": "difficulty-shelf-2"
-      },
-      {
-        "id": "difficulty-vase-3",
-        "variant": "small-vase",
-        "x": 425,
-        "surfaceId": "difficulty-shelf-3"
-      },
-      {
-        "id": "difficulty-vase-4",
-        "variant": "blue-vase",
-        "x": 605,
-        "surfaceId": "difficulty-shelf-4"
-      }
-    ],
     "hardPlatforms": [
       {
         "id": "difficulty-shelf-1",
         "x": 10,
         "y": 330,
-        "width": 100
+        "width": 100,
+        "slots": {
+          "count": {
+            "easy": 0,
+            "normal": 0,
+            "hard": 1
+          },
+          "entries": [
+            {
+              "id": "extra-slot-1",
+              "x": 60,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            },
+            {
+              "id": "extra-slot-2",
+              "x": 75,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            },
+            {
+              "id": "extra-slot-3",
+              "x": 90,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            }
+          ]
+        }
       },
       {
         "id": "difficulty-shelf-2",
         "x": 230,
         "y": 250,
-        "width": 120
+        "width": 120,
+        "slots": {
+          "count": {
+            "easy": 0,
+            "normal": 0,
+            "hard": 1
+          },
+          "entries": [
+            {
+              "id": "extra-slot-1",
+              "x": 15,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            },
+            {
+              "id": "extra-slot-2",
+              "x": 28,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            },
+            {
+              "id": "extra-slot-3",
+              "x": 42,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            }
+          ]
+        }
       },
       {
         "id": "difficulty-shelf-3",
         "x": 410,
         "y": 170,
-        "width": 120
+        "width": 120,
+        "slots": {
+          "count": {
+            "easy": 0,
+            "normal": 0,
+            "hard": 1
+          },
+          "entries": [
+            {
+              "id": "extra-slot-1",
+              "x": 15,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            },
+            {
+              "id": "extra-slot-2",
+              "x": 28,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            },
+            {
+              "id": "extra-slot-3",
+              "x": 42,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            }
+          ]
+        }
       },
       {
         "id": "difficulty-shelf-4",
         "x": 590,
         "y": 90,
-        "width": 120
+        "width": 120,
+        "slots": {
+          "count": {
+            "easy": 0,
+            "normal": 0,
+            "hard": 1
+          },
+          "entries": [
+            {
+              "id": "extra-slot-1",
+              "x": 15,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            },
+            {
+              "id": "extra-slot-2",
+              "x": 28,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            },
+            {
+              "id": "extra-slot-3",
+              "x": 42,
+              "capacity": "small",
+              "categories": ["decoration"],
+              "requiredCapabilities": ["push", "damage"],
+              "pool": ["small-vase", "blue-vase", "heirloom-vase", "mellow-vase"]
+            }
+          ]
+        }
       }
     ],
     "hardStability": {
