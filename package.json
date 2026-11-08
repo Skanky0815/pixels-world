@@ -24,7 +24,7 @@
     "check:pr": "npm run qa && npm run test:e2e",
     "hooks:install": "sh tools/install-hooks.sh",
     "test:e2e:smoke": "playwright test --grep @smoke",
-    "test:ci": "bash tests/ci/ensure-main-qa.sh && bash tests/ci/release-gates.sh && bash tests/ci/prepare-release.sh && bash tests/ci/pre-push.sh && node tests/ci/qa-scope.test.mjs && bash tests/ci/auto-publish.sh && node tests/ci/release-flow.test.mjs && bash tests/ci/release-qa-dispatch.sh"
+    "test:ci": "bash tests/ci/ensure-main-qa.sh && bash tests/ci/release-gates.sh && bash tests/ci/prepare-release.sh && bash tests/ci/pre-push.sh && node tests/ci/qa-scope.test.mjs && bash tests/ci/auto-publish.sh && node tests/ci/release-flow.test.mjs && bash tests/ci/release-qa-dispatch.sh && node --test tests/ci/release-notes.test.mjs"
   },
   "dependencies": {
     "phaser": "^3.90.0"
@@ -39,6 +39,7 @@
     "globals": "^17.14.0",
     "pngjs": "^7.0.0",
     "prettier": "3.9.10",
+    "release-please": "17.6.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.72.1",
     "vite": "^7.2.2",

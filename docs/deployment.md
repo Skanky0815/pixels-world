@@ -24,6 +24,56 @@ sind dafür deaktiviert. Bei mehreren Änderungen bestimmt der größte nötige
 Versionssprung den Vorschlag; die Prüfung erfolgt weiterhin im Versions-PR.
 Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
 
+## Englische Release Notes ohne Doppeleinträge
+
+Release Please ist die einzige Quelle für Changelog und GitHub-Release-Text.
+Die sichtbaren Kategorien heißen `Features`, `Bug Fixes`, `Performance Improvements`,
+`Dependencies` und `Documentation`. Keine parallelen automatisch generierten GitHub-Notes
+und keine nachträgliche pauschale Filterung nach SHA oder Text.
+
+Release Please liest zusätzliche Conventional-Commit-Zeilen im Squash-Body als weitere
+Änderungen. Daher erzeugt ein englischer Squash-Titel plus erneut kopierter Commit-Titel
+zwei Einträge derselben SHA; ein deutscher PR-Titel erklärt zusätzlich den Sprachmix.
+Die Lösung ist ein kanonischer Eintrag an der Quelle: Jeder normale PR hat genau einen
+englischen Release-Note-Block, auch wenn er mehrere interne Commits enthält:
+
+```text
+BEGIN_COMMIT_OVERRIDE
+fix(ui): keep result restart controls touch-only
+
+Refs #205
+END_COMMIT_OVERRIDE
+```
+
+Dies ist der [offizielle Commit-Override von Release Please](https://github.com/googleapis/release-please#how-can-i-fix-release-notes).
+Er ersetzt die gesamte ausgewertete Squash-Nachricht. Relevante Issue-Verweise gehören
+deshalb auch in den Block; `Closes #N` bleibt zusätzlich im normalen Issue-Bezug des PRs.
+PR-Titel und übrige Beschreibung können Deutsch bleiben. Der englische Betreff muss die
+zusammengehörige Änderung beschreiben, keine Aufzählung interner Zwischenstände.
+Unabhängige Änderungen gehören in getrennte PRs. `!` und eine optionale englische
+`BREAKING CHANGE:`-Erklärung bleiben für SemVer erhalten.
+
+Normale PRs werden per Squash-Merge integriert; Plain-/Rebase-Merges verwenden
+diesen Override nicht zuverlässig. Beim Squash-Merge den englischen Betreff aus dem Block übernehmen und im Commit-Body nur
+Issue-Verweise verwenden. Keine Liste interner Commit-Titel anhängen. Bestehende
+Git-Historie, veröffentlichte Tags und alte Changelog-Abschnitte werden nicht umgeschrieben.
+Bereits veröffentlichte Release-Texte können bei Bedarf separat geprüft werden.
+
+Der Check `Release note` läuft auch bei Bearbeitung des PR-Texts und bei Label-Änderungen.
+So wird ein nach dem Öffnen gesetztes `autorelease: pending` erneut berücksichtigt. Er prüft exakt einen
+vollständigen Block, einen Conventional-Commit-Betreff, zulässige Footer und erhaltene
+Issue-Verweise. Änderungen an Release-Konfiguration und Manifest starten ebenfalls die
+reguläre QA. Englische Grammatik lässt sich aus kurzen Überschriften nicht zuverlässig
+ableiten; den Wortlaut prüft die Review, es findet keine automatische Übersetzung statt.
+Nur vom GitHub-Actions-Bot im eigenen Repository erzeugte Release-Please-Versions-PRs
+mit `autorelease: pending` sind ausgenommen; deren Text generiert Release Please.
+
+`tests/ci/release-notes.test.mjs` prüft mit dem echten Parser und Changelog-Writer aus
+`release-please` die doppelte Squash-Nachricht, deutsche Eingabe mit englischem Override,
+Feature/Fix, Issue-Verweise, mehrere interne Commits, Breaking Changes und unterschiedliche
+Änderungen derselben SHA. Die Entwicklungsabhängigkeit ist auf `17.6.0` fixiert, passend
+zur bestehenden Action v5; bei Action-/Parser-Updates gemeinsam prüfen.
+
 ## Bedienung
 
 1. Vor Code-/Tooling-PRs lokal `npm run check:pr`, PR-Checks und Review abschließen.
