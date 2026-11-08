@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.2.0](https://github.com/Skanky0815/pixels-world/compare/v0.1.5...v0.2.0) (2026-11-08)
+
+
+### Funktionen
+
+* add interactive wall pictures with three PNG motifs ([d2b1062](https://github.com/Skanky0815/pixels-world/commit/d2b1062efeed39539d7da97a57fb8a648ead2932))
+* add interruptible carpet hairball interaction ([9e3e2cc](https://github.com/Skanky0815/pixels-world/commit/9e3e2ccdc9f23279bc37796e6eb68694cecd01a6))
+* add seeded floor and wall slots with catgrass ([f481eff](https://github.com/Skanky0815/pixels-world/commit/f481eff6c99ea936e6324ddd67b6bfb46e8a8f45))
+* Boden- und Wand-Slots mit zufälligem Katzengras ([#218](https://github.com/Skanky0815/pixels-world/issues/218)) ([f481eff](https://github.com/Skanky0815/pixels-world/commit/f481eff6c99ea936e6324ddd67b6bfb46e8a8f45))
+* **gameplay:** Bücher mit PNG-Grafiken in zufälligen Slots ([#207](https://github.com/Skanky0815/pixels-world/issues/207)) ([140c2ee](https://github.com/Skanky0815/pixels-world/commit/140c2eefe1f81a06ef05b6788f766f8cb247b7fd))
+* Teppich-Interaktion mit Würgeanimation und Haarballen ([#220](https://github.com/Skanky0815/pixels-world/issues/220)) ([9e3e2cc](https://github.com/Skanky0815/pixels-world/commit/9e3e2ccdc9f23279bc37796e6eb68694cecd01a6))
+* Wandbilder mit drei PNG-Motiven und Sprunginteraktion ([#219](https://github.com/Skanky0815/pixels-world/issues/219)) ([d2b1062](https://github.com/Skanky0815/pixels-world/commit/d2b1062efeed39539d7da97a57fb8a648ead2932))
+
+
+### Fehlerkorrekturen
+
+* **ci:** ensure main QA before preparing a release ([c6599ae](https://github.com/Skanky0815/pixels-world/commit/c6599ae8de704256be89c0fec3ebdcfd43cabc61))
+* randomize hard shelf occupants through spawn slots ([2f530b8](https://github.com/Skanky0815/pixels-world/commit/2f530b8d57525a249ccf94c8b53af4e542e1c153))
+* Touch-Oberfläche auch auf großen Tablets verwenden ([#223](https://github.com/Skanky0815/pixels-world/issues/223)) ([12e2755](https://github.com/Skanky0815/pixels-world/commit/12e27554f62ea03dd4cc01db911271f05d352419))
+* **ui:** keep result restart button touch-only ([9d5daef](https://github.com/Skanky0815/pixels-world/commit/9d5daef85bb856bffe26c96d85b8d3d973f27cbd)), closes [#205](https://github.com/Skanky0815/pixels-world/issues/205)
+* **ui:** keep result restart button touch-only ([#206](https://github.com/Skanky0815/pixels-world/issues/206)) ([9d5daef](https://github.com/Skanky0815/pixels-world/commit/9d5daef85bb856bffe26c96d85b8d3d973f27cbd))
+* **ui:** render result hearts with consistent geometry ([fc54af9](https://github.com/Skanky0815/pixels-world/commit/fc54af906770689ffc4cae08772459489e57d925)), closes [#202](https://github.com/Skanky0815/pixels-world/issues/202)
+* **ui:** render result hearts with consistent geometry ([#204](https://github.com/Skanky0815/pixels-world/issues/204)) ([fc54af9](https://github.com/Skanky0815/pixels-world/commit/fc54af906770689ffc4cae08772459489e57d925))
+* **ui:** stabilize mobile feedback and center landscape layout ([82cfb11](https://github.com/Skanky0815/pixels-world/commit/82cfb1178f33a85f20ed3a076af99139ab833a88)), closes [#199](https://github.com/Skanky0815/pixels-world/issues/199)
+* **ui:** stabilize mobile feedback and center landscape layout ([#201](https://github.com/Skanky0815/pixels-world/issues/201)) ([82cfb11](https://github.com/Skanky0815/pixels-world/commit/82cfb1178f33a85f20ed3a076af99139ab833a88))
+* use touch layout on large tablets and resize the game host ([12e2755](https://github.com/Skanky0815/pixels-world/commit/12e27554f62ea03dd4cc01db911271f05d352419))
+* Zusatzvasen auf Schwer über Regal-Slots verteilen ([#221](https://github.com/Skanky0815/pixels-world/issues/221)) ([2f530b8](https://github.com/Skanky0815/pixels-world/commit/2f530b8d57525a249ccf94c8b53af4e542e1c153))
+
+
+### Dokumentation
+
+* README auf kompakten Repository-Einstieg kürzen ([#224](https://github.com/Skanky0815/pixels-world/issues/224)) ([d6273c5](https://github.com/Skanky0815/pixels-world/commit/d6273c5ff252840fa7dfdcaf8cca2ea54fdfb28f))
+
 ## [0.1.5](https://github.com/Skanky0815/pixels-world/compare/v0.1.4...v0.1.5) (2026-11-07)
 
 
