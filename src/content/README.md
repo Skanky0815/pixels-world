@@ -21,13 +21,11 @@ Jede Objektvorlage besitzt ein typisiertes `spawn`-Profil im bestehenden Katalog
 nennen ihre zulässige Auflage (`support: 'floor' | 'any-surface'`). Feste
 Raumausstattung verwendet `random: false` mit `reason: 'room-fixture'`.
 `goal.spawn` schützt das separate Hauptziel ausdrücklich mit `reason: 'main-goal'`;
-es wird nicht in den gewöhnlichen Objektkatalog verschoben. Figuren und
-Plattformen sind ebenfalls keine Zufallskandidaten.
+es wird nicht in den gewöhnlichen Objektkatalog verschoben. Figuren bleiben ausgeschlossen; optionale Wandregale verwenden die unten beschriebenen Wandvorlagen.
 
 Die Größenklassen aus [spawn-profile.ts](../game/content/spawn-profile.ts) sind
 konservative Auswahlklassen: bis 32×32 Spielpixel `small`, bis 96×96 `medium`,
-darüber `large`. Die Prüfung nutzt vorhandene Asset-/Objektmaße; bei Sofas Breite
-und Sitzhöhe. Diese Klassen verändern keine Grafik oder Kollisionsfläche und
+darüber `large`. Die Prüfung nutzt vorhandene Asset-/Objektmaße; bei Sofas die vollständige Grafikbreite und -höhe einschließlich Rücken und Armlehnen. Diese Klassen verändern keine Grafik oder Kollisionsfläche und
 ersetzen keine exakte Geometrie-/Überlappungsprüfung. Kategorie und vorhandene
 `capabilities` bleiben unabhängig: benötigte Fähigkeiten eines Filters müssen
 alle vorliegen, Kategorien sind erlaubte Alternativen.
@@ -37,7 +35,7 @@ alle vorliegen, Kategorien sind erlaubte Alternativen.
 `requiredCapabilities`. Ein leerer Kategoriefilter erlaubt keine Kandidaten.
 Profile, Größen und Filter werden vor Verwendung validiert. Die bestehende
 Raumvalidierung erkennt fehlende Metadaten, unpassende Kategorien/Größen und
-verbotene Zufallsplatzierung struktureller Objekte oder des Hauptziels.
+verbotene Zufallsplatzierung des Vorhangs oder Hauptziels.
 
 Katzengras ist aktuell nur für Bodenplätze geeignet: seine stehende Interaktion,
 Kippbewegung und Erde benötigen einen festen Bodenanker. Der Filter schließt es
@@ -239,3 +237,39 @@ Wand-/Bodenmodule und das Bild aus dem abgestimmten Quellenraster; Fenster, Tür
 Teppich werden anhand ihrer Alpha-Bounds ab 192 eingepasst. Nearest Neighbor bewahrt
 abgetastete RGBA-Werte. Alle Laufzeitbilder verwenden den 2×-Maßstab; nur die kleinen
 Export-PNGs werden gebündelt. Die Bodenmodule respektieren das konfigurierte Dielenraster.
+
+## Boden- und Wandplätze
+
+`objectSlots` verwenden für Bodenplätze `surfaceId: 'floor'`. Ein Slot nennt
+seinen lokalen Mittelpunkt, Kapazität, Kategorien und einen expliziten Pool.
+Neben kleinen Gegenständen sind auch Sofavorlagen mit `random: true` und
+`support: 'floor'` möglich. Die exakte Prüfung berücksichtigt deren vollständige
+Grafik (Sitzbreite + 18, Sitzhöhe + 60), übersetzt den Mittelpunkt in die linke
+Sitzkante und schützt feste Objekte, Spawn, Ball und Auflagen. Zusätzliche
+kollidierende Bodenobjekte respektieren Tür/Fenster und `navigationClearances`.
+Nicht kollidierende Bücher dürfen weiterhin vor einer Tür liegen. Die Sofas und
+der Vorhang der beiden Wohnzimmer bleiben feste Anker des Zielwegs.
+Katzengras nutzt ebenfalls `objectSlots`: pro Schwierigkeit wird ein freier
+Bodenplatz aus dem Catgrass-Pool gewählt. Das Standardzimmer besitzt zusätzlich
+einen Platz rechts neben dem Sofa; Cozy Remix verwendet wegen des zweiten Sofas
+nur die beiden linken Plätze. Spawn und andere Slotobjekte bleiben geschützt.
+Knabbern, Kippen, Erde und Punkte verwenden unverändert dieselbe Pflanzenklasse.
+
+`wallSlots` enthält eigene stabile Slot-IDs, rechteckige Bereiche, Kapazitäten,
+Kategorien (`picture`, `shelf`), Vorlagenpools und Dichten je Schwierigkeit.
+[wall-slots.ts](rooms/wall-slots.ts) zeigt die gemeinsame Konfiguration beider
+Wohnzimmer. Vorlagen referenzieren bekannte PNG-Assets und feste Maße; Regale
+nennen zusätzlich ihre Stabilität. Die Auswahl sitzt horizontal mittig und unten
+im Slot. Sie darf keine belegten Flächen, Bilder, Fenster, Türen, Spawn oder das
+Ziel überdecken; zusätzliche Regale halten außerdem die Sprungkorridore frei.
+Unpassende Kandidaten werden übersprungen, nicht verkleinert oder erzwungen.
+Alle Vorlagen und Slotreferenzen werden vor der Auswahl geprüft, auch bei Dichte null.
+
+Die Wandbelegung läuft nach den Gegenstandsslots mit derselben Phaser-RNG-Folge.
+Damit bleiben bestehende Gegenstands-Seeds stabil. Neustart mit gleicher
+Schwierigkeit behält die Auswahl; eine neue Runde nach Neuladen würfelt neu,
+außer im DEV-/E2E-Test mit explizitem `room-seed`. Gewählte Regale werden echte
+Plattformen mit normaler Stabilitätslogik, Bilder verwenden die vorhandene
+Bilddekoration. Bild-Interaktionen folgen separat in #63. `wallPlacements`
+enthält die ausgewählten IDs, Varianten und Bounds; der E2E-Beobachter gibt sie
+als unveränderlichen Snapshot aus. Feste Zielregale bleiben unabhängig davon erhalten.

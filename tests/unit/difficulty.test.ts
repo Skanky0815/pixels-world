@@ -54,8 +54,10 @@ test('Normal erhält Balancing; alle Dichten erhalten Ziel, Plattformgeometrie u
         room.platforms.length + (difficulty === 'hard' ? 4 : 0),
       );
 
-      for (const id of ['couch', 'curtain', 'plant'])
-        assert.ok(variant.objects.some((o) => o.id === id));
+      for (const id of ['couch', 'curtain']) assert.ok(variant.objects.some((o) => o.id === id));
+      assert.ok(
+        variant.objectSlots!.some((g) => g.entries.some((s) => s.pool.includes('catgrass'))),
+      );
       assert.equal(new Set(variant.objects.map((o) => o.id)).size, variant.objects.length);
     }
 

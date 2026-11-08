@@ -44,7 +44,7 @@ test('Beide Räume verwenden getrennte Kulissenelemente ohne Bücher und gültig
     assert.equal(room.environment, 'cozy-room');
     assert.deepEqual(
       room.decorations.map((d) => d.kind === 'image' && d.asset),
-      ['room-window', 'room-picture', 'room-rug', 'room-door'],
+      ['room-window', 'room-rug', 'room-door'],
     );
     assert.doesNotThrow(() => resolveRoom(room, OBJECTS));
     assert.throws(

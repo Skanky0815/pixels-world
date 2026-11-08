@@ -1,3 +1,4 @@
+import type { WallSlots, WallPlacement } from './wall-slots.ts';
 import type { SpawnSlot } from './spawn-slots.ts';
 import type { SpawnProfile } from './spawn-profile.ts';
 import type { ShelfStabilityConfig, ShelfClass } from '../domain/shelf-stability.ts';
@@ -85,6 +86,10 @@ export type Decoration =
       readonly color: number;
     };
 export interface RoomDefinition {
+  readonly wallSlots?: WallSlots;
+  readonly wallPlacements?: readonly WallPlacement[];
+  /** Freiräume für zusätzliche kollidierende Möbel und Wandregale. */
+  readonly navigationClearances?: readonly Bounds[];
   readonly objectSlots?: readonly {
     readonly id: string;
     readonly count: Readonly<Record<'easy' | 'normal' | 'hard', number>>;

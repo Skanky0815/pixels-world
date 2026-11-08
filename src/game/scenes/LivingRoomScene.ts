@@ -276,6 +276,7 @@ export class LivingRoomScene extends Phaser.Scene {
               width: this.room.definition.width,
               height: this.room.definition.height,
             },
+            wallPlacements: this.room.definition.wallPlacements ?? [],
             shelves: this.shelves.map((shelf) => shelf.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
             objects: this.built.entries.map((entry) => ({

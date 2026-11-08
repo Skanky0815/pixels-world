@@ -1,8 +1,11 @@
+import { overlaps, shuffled } from './slot-geometry.ts';
+import { populateWallSlots } from './wall-slots.ts';
 import { ASSETS } from '../assets/definitions.ts';
 import { filterSpawnCandidates, type SpawnSlotFilter } from './spawn-profile.ts';
 import { resolveRoom } from './resolve-room.ts';
 import type {
   ObjectCatalog,
+  ObjectDefinition,
   ObjectInstance,
   ResolvedObject,
   RoomDefinition,
@@ -19,8 +22,6 @@ type Platform = Pick<RoomDefinition['platforms'][number], 'id' | 'bounds' | 'slo
 type Difficulty = 'easy' | 'normal' | 'hard';
 type ObjectSlotGroup = NonNullable<RoomDefinition['objectSlots']>[number];
 type ObjectSlot = ObjectSlotGroup['entries'][number];
-const overlaps = (a: Bounds, b: Bounds) =>
-  a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 
 function fail(message: string): never {
   throw new Error(`Content spawnSlots: ${message}`);
@@ -38,6 +39,8 @@ export function populateSpawnSlots(
 
   validateIds(room);
   const occupied = reservedAreas(resolved.objects, room, resolved.goal.area);
+
+  occupied.push({ x: resolved.spawn.x - 26, y: resolved.spawn.bottom - 52, width: 52, height: 52 });
   const generated: ObjectInstance[] = [];
 
   for (const platform of room.platforms)
@@ -45,7 +48,12 @@ export function populateSpawnSlots(
 
   for (const group of room.objectSlots ?? [])
     generated.push(...populateGroup(group, room, catalog, difficulty, random, occupied));
-  const result = { ...room, objects: [...generated, ...room.objects] };
+  const result = populateWallSlots(
+    { ...room, objects: [...generated, ...room.objects] },
+    difficulty,
+    random,
+    occupied,
+  );
 
   resolveRoom(result, catalog);
 
@@ -72,7 +80,13 @@ function objectArea(object: ResolvedObject): Bounds {
 
   if ('area' in c) return c.area;
 
-  if ('seat' in c) return { ...c.seat, height: c.floorY - c.seat.y };
+  if ('seat' in c)
+    return {
+      x: c.seat.x - 8,
+      y: c.seat.y - 60,
+      width: c.seat.width + 18,
+      height: c.floorY - c.seat.y + 60,
+    };
   const asset = looseAsset(object.kind);
   const bottom = 'supportY' in c ? c.supportY : 'shelfY' in c ? c.shelfY : c.floorY;
 
@@ -122,18 +136,6 @@ function validateEntry(slot: SpawnSlot, platform: Platform) {
     fail(`${slot.id}: invalid pool`);
 }
 
-function shuffled<T>(entries: readonly T[], random: () => number): T[] {
-  const result = [...entries];
-
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-
-  return result;
-}
-
 // eslint-disable-next-line max-lines-per-function -- Slotreihenfolge, Dichtebegrenzung und Reservierung müssen dieselbe Auswahl atomar abbilden.
 function populatePlatform(
   platform: Platform,
@@ -158,7 +160,7 @@ function populatePlatform(
   return result.sort((a, b) => a.placement.x - b.placement.x);
 }
 
-// eslint-disable-next-line max-lines-per-function -- Poolfilter, exakte Geometrie und Kollisionsprüfung entscheiden gemeinsam über einen Kandidaten.
+// eslint-disable-next-line max-lines-per-function, complexity -- Poolfilter, exakte Geometrie und Kollisionsprüfung entscheiden gemeinsam über einen Kandidaten.
 function choose(
   slot: SpawnSlot,
   platform: Platform,
@@ -179,11 +181,18 @@ function choose(
     slot.pool.filter((key) => compatible.includes(key)),
     random,
   )) {
-    const instance = slotInstance(slot, platform, variant);
-    const asset = looseAsset(catalog[variant].kind);
-    const area = slotArea(slot, platform, asset);
+    const instance = slotInstance(slot, platform, variant, catalog[variant]);
+    const asset = candidateSize(catalog[variant]);
+    const footprint = slotArea(slot, platform, asset);
+    // Die Armlehnen ragen links 8 und rechts 10 Pixel über den Sitz.
+    const area =
+      catalog[variant].kind === 'couch' ? { ...footprint, x: footprint.x + 1 } : footprint;
 
-    if (fits(area, platform.bounds, room) && !occupied.some((other) => overlaps(area, other)))
+    if (
+      fits(area, platform.bounds, room) &&
+      !occupied.some((other) => overlaps(area, other)) &&
+      !(platform.id === room.floor.id && blocked(area, catalog[variant], room))
+    )
       return { instance, area };
   }
 }
@@ -308,11 +317,24 @@ function populateGroup(
   return result;
 }
 
-function slotInstance(slot: SpawnSlot, platform: Platform, variant: string): ObjectInstance {
+// eslint-disable-next-line max-lines-per-function -- Der Slotmittelpunkt wird ausschließlich für Sofas in den linken Sitzanker übersetzt.
+function slotInstance(
+  slot: SpawnSlot,
+  platform: Platform,
+  variant: string,
+  definition: ObjectDefinition,
+): ObjectInstance {
   return {
     id: `${platform.id}:${slot.id}`,
     variant,
-    placement: { mode: 'surface', x: platform.bounds.x + slot.x, surfaceId: platform.id },
+    placement: {
+      mode: 'surface',
+      x:
+        platform.bounds.x +
+        slot.x -
+        (definition.kind === 'couch' ? definition.geometry.width / 2 : 0),
+      surfaceId: platform.id,
+    },
   };
 }
 
@@ -336,4 +358,20 @@ function looseAsset(kind: ResolvedObject['kind']) {
     : kind === 'plant'
       ? ASSETS['catgrass-default']
       : ASSETS['vase-default'];
+}
+
+function candidateSize(definition: ObjectDefinition) {
+  if (definition.kind === 'couch')
+    return { width: definition.geometry.width + 18, height: definition.geometry.seatRise + 60 };
+
+  return looseAsset(definition.kind);
+}
+
+function blocked(area: Bounds, definition: ObjectDefinition, room: RoomDefinition) {
+  if (!definition.capabilities.some((c) => c === 'platform' || c === 'push')) return false;
+  const fixed = room.decorations.flatMap((d) =>
+    d.kind === 'image' && ['room-door', 'room-window'].includes(d.asset) ? [d.bounds] : [],
+  );
+
+  return [...fixed, ...(room.navigationClearances ?? [])].some((b) => overlaps(area, b));
 }

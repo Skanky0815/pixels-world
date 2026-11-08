@@ -154,7 +154,7 @@ test('Fehlende und inkonsistente Metadaten scheitern vor dem Engine-Start', () =
 });
 
 // eslint-disable-next-line max-lines-per-function -- Drei unzulässige Freigaben prüfen die typabhängigen Ausschlüsse vor dem Engine-Start.
-test('Strukturelle Objekte und Hauptziel können nicht durch Metadaten in den Pool gelangen', () => {
+test('Auflagegebundene Objekte und Hauptziel behalten ihre Platzierungsgrenzen', () => {
   assert.throws(
     () =>
       resolveRoom(LIVING_ROOM, {
@@ -166,7 +166,7 @@ test('Strukturelle Objekte und Hauptziel können nicht durch Metadaten in den Po
       }),
     /floor support/,
   );
-  const couchSpawn = { size: 'large', category: 'furniture', random: true, support: 'floor' };
+  const couchSpawn = { size: 'large', category: 'furniture', random: true, support: 'any-surface' };
 
   assert.throws(
     () =>
@@ -174,7 +174,7 @@ test('Strukturelle Objekte und Hauptziel können nicht durch Metadaten in den Po
         ...OBJECTS,
         'cozy-couch': { ...OBJECTS['cozy-couch'], spawn: couchSpawn },
       } as unknown as ObjectCatalog),
-    /structural/,
+    /floor support/,
   );
   const goal = {
     ...LIVING_ROOM.goal,

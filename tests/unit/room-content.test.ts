@@ -18,7 +18,7 @@ test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Pr
   assert.deepEqual(room.spawn, { x: 110, bottom: 468 });
   assert.equal(room.definition.width, 960);
   assert.equal(room.definition.height, 540);
-  assert.equal(room.objects.length, 4);
+  assert.equal(room.objects.length, 3);
   const couch = room.objects.find((object) => object.kind === 'couch');
 
   assert.ok(couch);
@@ -167,7 +167,7 @@ test('Ungültige Geometrie, Auflagen und Spawns erreichen keinen Objektkonstrukt
         ...LIVING_ROOM,
         objects: [
           {
-            ...LIVING_ROOM.objects[3],
+            ...LIVING_ROOM.objects[2],
             placement: { mode: 'surface', x: 500, surfaceId: 'lower-shelf' },
           },
         ],

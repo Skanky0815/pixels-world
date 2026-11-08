@@ -1,3 +1,4 @@
+import type { WallPlacement } from './game/content/wall-slots';
 import type { Shelf } from './game/objects/Shelf';
 import type { BookStack } from './game/objects/BookStack';
 import type { GoalView } from './game/ui/GoalView';
@@ -13,6 +14,7 @@ import type { PixelReturnSnapshot } from './game/domain/pixel-return';
 
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
+  readonly wallPlacements: readonly WallPlacement[];
   readonly books: readonly ReturnType<BookStack['snapshot']>[];
   readonly shelves: readonly ReturnType<Shelf['snapshot']>[];
   readonly goal: ReturnType<MainGoal['snapshot']>;

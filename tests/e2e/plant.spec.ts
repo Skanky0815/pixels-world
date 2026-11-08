@@ -4,7 +4,8 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   page,
   // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
-  await start(page);
+  await start(page, '/?room-seed=grass-5');
+  expect((await state(page)).plant.x).toBe(680);
   await besidePlant(page);
   await page.clock.runFor(1500);
   expect((await state(page)).plant.damage).toBe(0);
@@ -19,9 +20,11 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
     bodyWidth: 52,
     bodyHeight: 52,
   });
+  const plantId = first.objects.find((o) => o.kind === 'plant')!.id;
+
   expect(first.plant.lastDamage).toEqual({
-    id: '["plant","nibble",1]',
-    objectId: 'plant',
+    id: JSON.stringify([plantId, 'nibble', 1]),
+    objectId: plantId,
     kind: 'nibble',
     stage: 1,
     value: 2,
@@ -36,7 +39,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
     path: screenshot,
     contentType: 'image/png',
   });
-  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 120);
+  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= first.plant.x - 160);
   expect((await state(page)).plant.state).toBe('idle');
   expect((await state(page)).plant.angle).toBe(0);
   expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
@@ -58,13 +61,21 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
   await until(page, (s) => s.plant.state === 'tipped');
   const tipped = await state(page);
 
+  const plantId = tipped.objects.find((o) => o.kind === 'plant')!.id;
+
   expect(tipped.plant).toMatchObject({
     damage: 2,
     events: 2,
     angle: -80,
     texture: 'catgrass-bitten',
     soilVisible: true,
-    lastDamage: { id: '["plant","tip",2]', objectId: 'plant', kind: 'tip', stage: 2, value: 10 },
+    lastDamage: {
+      id: JSON.stringify([plantId, 'tip', 2]),
+      objectId: plantId,
+      kind: 'tip',
+      stage: 2,
+      value: 10,
+    },
   });
   expect(tipped.chaos).toEqual({ score: 12, damagedObjects: 1, anger: 'calm' });
   expect(tipped.pixel.animation).toBe('idle');
