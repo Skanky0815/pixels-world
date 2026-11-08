@@ -41,7 +41,7 @@ test('Normal erhält Balancing; alle Dichten erhalten Ziel, Plattformgeometrie u
     for (const difficulty of DIFFICULTIES) {
       const variant = difficultyRoom(room, difficulty);
       const resolved = resolveRoom(variant, OBJECTS);
-      const delta = difficulty === 'easy' ? -1 : difficulty === 'hard' ? 4 : 0;
+      const delta = difficulty === 'easy' ? -1 : 0;
 
       assert.equal(resolved.objects.length, room.objects.length + delta);
       assert.equal(variant.goal, room.goal);
@@ -228,22 +228,21 @@ test('JSON-Presets weisen ungültige Zeit-, Herz- und Sequenzwerte zurück', () 
   assert.doesNotThrow(() => validateDifficultyPresets(custom));
 });
 
-// eslint-disable-next-line max-lines-per-function -- Zusätzliche Regale halten je eine Vase und mischen vorhandene Farben, ohne die bisherigen Plattformen zu ersetzen.
-test('Schwer verteilt verschiedenfarbige Vasen einzeln auf zusätzliche Regale', () => {
+// eslint-disable-next-line max-lines-per-function -- Zusatzregale deklarieren ihre Belegung, ohne sie vor der gemeinsamen Slotwahl fest zu materialisieren.
+test('Schwer ergänzt vier konfigurierte Slotregale statt fester Zusatzvasen', () => {
   for (const room of [LIVING_ROOM, COZY_REMIX]) {
     const definition = difficultyRoom(room, 'hard');
-    const resolved = resolveRoom(definition, OBJECTS);
-    const extras = resolved.objects.filter((o) => o.id.startsWith('difficulty-vase-'));
 
-    assert.equal(extras.length, 4);
-    assert.equal(new Set(extras.map((o) => o.kind === 'vase' && o.config.color)).size, 3);
+    assert.equal(resolveRoom(definition, OBJECTS).objects.length, room.objects.length);
+    assert.equal(
+      definition.objects.some((o) => o.id.startsWith('difficulty-vase-')),
+      false,
+    );
 
     for (const platform of definition.platforms.slice(room.platforms.length)) {
-      const occupants = definition.objects.filter(
-        (o) => o.placement.mode === 'surface' && o.placement.surfaceId === platform.id,
-      );
-
-      assert.equal(occupants.length, 1);
+      assert.ok(platform.slots);
+      assert.equal(platform.slots.count.hard, 1);
+      assert.equal(platform.slots.entries.length, 3);
       assert.ok(platform.bounds.width >= 100);
     }
   }

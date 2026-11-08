@@ -13,7 +13,7 @@ test('Schwer: zusätzliches fragiles Regal stürzt nach drei Landungen ein und R
   const shelf = () => state(page).then((s) => s.shelves.find((p) => p.id === 'difficulty-shelf-1'));
 
   expect(await shelf()).toMatchObject({ stability: 'fragile', landings: 1, state: 'wobbly' });
-  expect((await state(page)).vases.find((v) => v.id === 'difficulty-vase-1')?.state).toBe(
+  expect((await state(page)).vases.find((v) => v.id.startsWith('difficulty-shelf-1:'))?.state).toBe(
     'resting',
   );
 
@@ -28,7 +28,10 @@ test('Schwer: zusätzliches fragiles Regal stürzt nach drei Landungen ein und R
   }
 
   expect(await shelf()).toMatchObject({ state: 'collapsed', events: 2, enabled: false });
-  await until(page, (s) => s.vases.find((v) => v.id === 'difficulty-vase-1')?.state === 'broken');
+  await until(
+    page,
+    (s) => s.vases.find((v) => v.id.startsWith('difficulty-shelf-1:'))?.state === 'broken',
+  );
   expect((await state(page)).shelves.find((s) => s.id === 'upper-shelf')).toMatchObject({
     stability: 'stable',
     enabled: true,

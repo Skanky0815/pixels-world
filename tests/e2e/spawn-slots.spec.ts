@@ -9,6 +9,9 @@ for (const room of ['living-room', 'cozy-remix']) {
       await startDifficulty(page, difficulty, `/?room=${room}&room-seed=slots-172`);
       const before = await state(page);
 
+      expect(before.vases.filter((v) => v.id.startsWith('difficulty-shelf-'))).toHaveLength(
+        difficulty === 'hard' ? 4 : 0,
+      );
       expect(before.wallPlacements).toHaveLength(difficulty === 'hard' ? 2 : 1);
 
       for (const wall of before.wallPlacements.filter((p) => p.kind === 'shelf'))

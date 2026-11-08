@@ -92,12 +92,11 @@ export const LIVING_ROOM_DENSITY = {
     id: shelf.id,
     asset: 'wood-shelf' as const,
     bounds: { x: shelf.x, y: shelf.y, width: shelf.width, height: 16 },
+    // Die gemeinsame Slotvalidierung prüft den JSON-Vertrag vor jedem Szenenaufbau.
+    slots: shelf.slots as NonNullable<RoomDefinition['platforms'][number]['slots']>,
   })),
-  hardAdd: config.livingRoom.hardAdd.map((vase): ObjectInstance => ({
-    id: vase.id,
-    variant: vase.variant,
-    placement: { mode: 'surface', x: vase.x, surfaceId: vase.surfaceId },
-  })),
+  // Bewusst feste Zusatzobjekte bleiben im Raumvertrag möglich; die Vasen nutzen Slots.
+  hardAdd: [] as readonly ObjectInstance[],
 } as const;
 
 export function difficultyRoom(room: RoomDefinition, difficulty: Difficulty): RoomDefinition {

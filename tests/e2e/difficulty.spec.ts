@@ -79,7 +79,7 @@ test.describe('Schwierigkeitswahl mit Touch', () => {
 });
 
 for (const room of ['living-room', 'cozy-remix']) {
-  test(`Schwer: einzelne verschiedenfarbige Vasen auf der Regaltreppe im ${room}`, async ({
+  test(`Schwer: einzelne Slotvasen auf der Regaltreppe im ${room}`, async ({
     page,
     // eslint-disable-next-line max-lines-per-function -- Die komplette Regaltreppe wird mit echten Sprüngen und Anschubsen bis zum Herunterwerfen jeder zusätzlichen Vase gespielt.
   }, testInfo) => {
@@ -100,30 +100,33 @@ for (const room of ['living-room', 'cozy-remix']) {
     await holdUntil(
       page,
       ['ArrowRight'],
-      (s) => s.vases.find((v) => v.id === 'difficulty-vase-1')?.state !== 'resting',
+      (s) => s.vases.find((v) => v.id.startsWith('difficulty-shelf-1:'))?.state !== 'resting',
     );
-    await until(page, (s) => s.vases.find((v) => v.id === 'difficulty-vase-1')?.state === 'broken');
+    await until(
+      page,
+      (s) => s.vases.find((v) => v.id.startsWith('difficulty-shelf-1:'))?.state === 'broken',
+    );
     await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 90);
 
     for (const [id, landingX, y, edgeX] of [
-      ['difficulty-vase-2', 310, 250, 330],
-      ['difficulty-vase-3', 490, 170, 510],
-      ['difficulty-vase-4', 670, 90, 690],
+      ['difficulty-shelf-2:', 310, 250, 330],
+      ['difficulty-shelf-3:', 490, 170, 510],
+      ['difficulty-shelf-4:', 670, 90, 690],
     ] as const) {
       await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= landingX);
       await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - y) < 2);
       await holdUntil(
         page,
         ['ArrowLeft'],
-        (s) => s.vases.find((v) => v.id === id)?.state !== 'resting',
+        (s) => s.vases.find((v) => v.id.startsWith(id))?.state !== 'resting',
       );
-      await until(page, (s) => (s.vases.find((v) => v.id === id)?.bottom ?? 0) > y + 8);
+      await until(page, (s) => (s.vases.find((v) => v.id.startsWith(id))?.bottom ?? 0) > y + 8);
       await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= edgeX);
     }
 
     expect(
       (await state(page)).vases
-        .filter((v) => v.id.startsWith('difficulty-vase-'))
+        .filter((v) => v.id.startsWith('difficulty-shelf-'))
         .every((v) => v.state !== 'resting'),
     ).toBe(true);
     await testInfo.attach('regaltreppe-gespielt', {

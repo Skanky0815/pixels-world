@@ -197,12 +197,13 @@ identisch zu den bisherigen Presets.
 Unter `livingRoom.easyOmit` stehen die Objekt-IDs, die auf Leicht fehlen.
 Nur optionale Vasen auslassen; Sofa, Vorhang und Pflanze erhalten.
 `livingRoom.hardPlatforms` ergänzt Regale für Schwer (`id`, `x`, `y`,
-`width`; Höhe 16 Pixel). Die Vasen stehen einzeln auf einer erreichbaren
-Regaltreppe. `livingRoom.hardAdd` enthält die zugehörigen Vasen: Einträge
-entfernen oder hinzufügen, jeweils mit eindeutiger `id`, `variant`, `x` und
-`surfaceId`. Varianten: `small-vase` (Terrakotta), `blue-vase` (Blau) oder
-`heirloom-vase` (Gold), mit den jeweiligen bestehenden Punktwerten.
-`surfaceId` verweist auf die Regal-ID. Positionen liegen im 960 Pixel breiten Raum.
+`width`, `slots`). Die gemeinsame Slotwahl erzeugt pro Zusatzregal genau eine
+Vase aus dem konfigurierten Pool. Drei lokale Plätze erlauben Variation, halten
+aber die Anflugseite der Regaltreppe frei. Counts, IDs, Filter, Pools und exakte
+Geometrie werden wie bei den Hauptregalen validiert. Gleicher Seed und Grad
+reproduzieren die Belegung beim Neustart; die Regalgeometrie bleibt fest.
+`difficultyObjects.hardAdd` bleibt für bewusst feste Zusatzobjekte verfügbar,
+ist in den Wohnzimmern aber leer. Das Hauptziel bleibt ausdrücklich fixiert.
 `livingRoom.hardStability` überschreibt die Stabilitätsklasse einzelner Regal-IDs
 auf Schwer (`fragile`, `normal`, `stable`). Aktuell wird das mittlere Regal fragil;
 die zusätzliche Treppe wechselt fragil/normal/fragil/normal. Fragile Regale stürzen
