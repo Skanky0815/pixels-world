@@ -1,3 +1,5 @@
+import { pictureDiscovery, type PictureDiscovery } from '../../content/album/pictures';
+import { preloadPictureArt } from '../assets/picture-art';
 import { preloadBookArt } from '../assets/book-art';
 import { preloadRoomArt } from '../assets/room-art';
 import { preloadShelfArt } from '../assets/shelf-art';
@@ -86,6 +88,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private vases: Vase[] = [];
   private objects: ObjectLifecycle[] = [];
   private shelves: Shelf[] = [];
+  private lastPictureDiscovery: PictureDiscovery | null = null;
   private destructibles: Destructible[] = [];
 
   private room: ResolvedRoom;
@@ -100,6 +103,7 @@ export class LivingRoomScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
   preload() {
     preloadVaseArt(this);
+    preloadPictureArt(this);
     preloadBookArt(this);
     preloadShelfArt(this);
     preloadRoomArt(this);
@@ -278,6 +282,8 @@ export class LivingRoomScene extends Phaser.Scene {
             },
             wallPlacements: this.room.definition.wallPlacements ?? [],
             shelves: this.shelves.map((shelf) => shelf.snapshot()),
+            pictureDiscovery: this.lastPictureDiscovery,
+            pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
             objects: this.built.entries.map((entry) => ({
               id: entry.object.id,
@@ -373,6 +379,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private initializeInteractions() {
+    this.lastPictureDiscovery = null;
     this.destructibles = this.built.entries.map((entry) => entry.object);
     this.objects = this.built.entries.map((entry) => entry.object);
 
@@ -438,8 +445,20 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private processDamage(event: ChaosEvent | undefined) {
-    if (this.canPlay() && event && this.chaos.awardEvent(event))
-      this.events.emit('object-damaged', event);
+    if (!this.canPlay() || !event || !this.chaos.awardEvent(event)) return;
+    this.events.emit('object-damaged', event);
+    this.discoverPicture(event);
+  }
+
+  private discoverPicture(event: ChaosEvent) {
+    const entry = this.built.entries.find((e) => e.object.id === event.objectId);
+
+    if (entry?.definition.kind !== 'picture') return;
+    const discovery = pictureDiscovery(event, entry.definition.variant);
+
+    if (!discovery) return;
+    this.lastPictureDiscovery = discovery;
+    this.events.emit('album-discovered', discovery);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Startsignal, Neustart und aktiver Frame werden in fester Reihenfolge mit derselben Eingabe behandelt.

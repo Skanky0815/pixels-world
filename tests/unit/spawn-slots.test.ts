@@ -130,7 +130,10 @@ test('Vasen dürfen weder Ziel noch feste Vase oder Vorhang verdrängen', () => 
         }
       : { ...p, slots: undefined },
   );
-  const room = populate({ ...LIVING_ROOM, objectSlots: [], platforms }, 'hard');
+  const room = populate(
+    { ...LIVING_ROOM, wallSlots: undefined, objectSlots: [], platforms },
+    'hard',
+  );
 
   assert.deepEqual(room.objects, difficultyRoom(LIVING_ROOM, 'hard').objects);
 });
@@ -171,6 +174,7 @@ test('Ungültige Counts, IDs und unbekannte Poolvarianten werden auch bei gering
 test('Räume ohne Slots behalten ihre Instanzen vollständig', () => {
   const room = {
     ...LIVING_ROOM,
+    wallSlots: undefined,
     objectSlots: [],
     platforms: LIVING_ROOM.platforms.map((p) => ({ ...p, slots: undefined })),
   };

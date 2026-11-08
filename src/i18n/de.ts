@@ -86,6 +86,7 @@ export const de = {
   feedbackShelfDamage: '+{v0} · Regal beschädigt',
   feedbackShelfCollapse: '+{v0} · Regal eingestürzt',
   feedbackBreak: '+{v0} · Klirr!',
+  feedbackPicture: 'Bild abgestürzt',
   feedbackBooks: '+{v0} · Bücher umgeworfen',
   feedbackHeart: 'Herz gewonnen ♥',
   feedbackCorrect: 'Richtig!',

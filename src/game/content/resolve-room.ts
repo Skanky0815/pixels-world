@@ -1,3 +1,5 @@
+import { PICTURE_MOTIFS } from '../assets/picture-appearance.ts';
+import { validatePictureRules } from '../interactions/picture-falling.ts';
 import { validateObjectSpawn, validateGoalSpawn } from './spawn-profile.ts';
 import { shelfRules } from '../domain/shelf-stability.ts';
 import { isCouchAppearance } from '../assets/couch-appearance.ts';
@@ -80,10 +82,18 @@ function validateObjectRules(value: ObjectDefinition, path: string) {
 
   if (value.kind === 'books') return validateBooks(value, path);
 
+  if (value.kind === 'picture') return validatePicture(value, path);
+
   if (value.kind === 'plant') return validatePlant(value, path);
   validateGeometry(value, path);
 
   if (value.kind === 'couch') validateCouch(value, path);
+}
+
+function validatePicture(value: Extract<ObjectDefinition, { kind: 'picture' }>, path: string) {
+  if (!PICTURE_MOTIFS.includes(value.appearance))
+    fail(`${path}.appearance`, 'unknown picture motif');
+  validatePictureRules(value.rules);
 }
 
 // eslint-disable-next-line max-lines-per-function -- Ein atomarer Vergleich prüft Inhalt und Kardinalität derselben Capability-Liste.
@@ -357,6 +367,8 @@ class RoomResolver {
     path: string,
   ): ResolvedObject {
     if (d.kind === 'curtain') return this.resolveCurtain(instance, d, path);
+
+    if (d.kind === 'picture') return this.resolvePicture(instance, d, path);
     const p = instance.placement;
 
     if (p.mode !== 'surface') fail(`${path}.placement`, 'object needs support surface');
@@ -369,6 +381,43 @@ class RoomResolver {
     if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
 
     return this.resolveVase(instance, d, path, support);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der Bildvertrag löst einen Wandanker auf, ohne eine zusätzliche Physikfläche anzulegen.
+  private resolvePicture(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'picture' }>,
+    path: string,
+  ): ResolvedObject {
+    const p = instance.placement;
+
+    if (p.mode !== 'area') fail(`${path}.placement`, 'picture needs area placement');
+    number(p.y, `${path}.placement.y`);
+    const area = {
+      x: p.x,
+      y: p.y,
+      width: ASSETS['wall-picture'].width,
+      height: ASSETS['wall-picture'].height,
+    };
+
+    bounds(area, this.room, `${path}.area`);
+
+    if (area.y + area.height > this.room.floor.y)
+      fail(`${path}.area`, 'picture extends below floor');
+
+    return {
+      id: instance.id,
+      variant: instance.variant,
+      asset: d.asset,
+      kind: 'picture',
+      config: {
+        id: instance.id,
+        area,
+        floorY: this.room.floor.y,
+        appearance: d.appearance,
+        rules: d.rules,
+      },
+    };
   }
 
   // eslint-disable-next-line max-lines-per-function -- Flächenvalidierung und der vollständige Vorhang-Konfigurationsvertrag bleiben nebeneinander sichtbar.
@@ -546,7 +595,7 @@ class RoomResolver {
 
     for (const object of objects) {
       maximum +=
-        object.kind === 'books'
+        object.kind === 'books' || object.kind === 'picture'
           ? object.config.rules.points
           : object.kind === 'vase'
             ? object.config.points

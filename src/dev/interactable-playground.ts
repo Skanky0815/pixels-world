@@ -60,6 +60,7 @@ function restart() {
 
 function render(snapshot: ReturnType<PlaygroundScene['snapshot']>) {
   select.disabled = reset.disabled = false;
+  select.value = snapshot.variant;
   diagnostics.textContent = JSON.stringify(snapshot, null, 2);
   kind.value = `${snapshot.kind} · ${snapshot.variant}`;
   state.value = snapshot.object.state;

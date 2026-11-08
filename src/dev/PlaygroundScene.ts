@@ -1,3 +1,4 @@
+import { preloadPictureArt } from '../game/assets/picture-art';
 import { preloadBookArt } from '../game/assets/book-art';
 import { preloadRoomArt } from '../game/assets/room-art';
 import { preloadShelfArt } from '../game/assets/shelf-art';
@@ -51,6 +52,7 @@ export class PlaygroundScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Gemeinsame Objektbilder und Pixels Sprite-Sheet werden in einer Vorladephase registriert.
   preload() {
     preloadVaseArt(this);
+    preloadPictureArt(this);
     preloadBookArt(this);
     preloadShelfArt(this);
     preloadRoomArt(this);

@@ -53,6 +53,7 @@ export function populateSpawnSlots(
     difficulty,
     random,
     occupied,
+    catalog,
   );
 
   resolveRoom(result, catalog);

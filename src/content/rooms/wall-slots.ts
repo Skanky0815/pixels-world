@@ -4,7 +4,27 @@ import type { WallSlots } from '../../game/content/wall-slots.ts';
 export const WALL_SLOTS = {
   count: { easy: 1, normal: 1, hard: 2 },
   variants: {
-    family: { kind: 'picture', asset: 'room-picture', width: 108, height: 112 },
+    pixelPortrait: {
+      kind: 'picture',
+      asset: 'room-picture',
+      objectVariant: 'pixel-portrait',
+      width: 108,
+      height: 112,
+    },
+    berlinTower: {
+      kind: 'picture',
+      asset: 'room-picture',
+      objectVariant: 'berlin-tower',
+      width: 108,
+      height: 112,
+    },
+    cozyNook: {
+      kind: 'picture',
+      asset: 'room-picture',
+      objectVariant: 'cozy-nook',
+      width: 108,
+      height: 112,
+    },
     spareShelf: {
       kind: 'shelf',
       asset: 'wood-shelf',
@@ -16,17 +36,17 @@ export const WALL_SLOTS = {
   entries: [
     {
       id: 'wall:left',
-      bounds: { x: 20, y: 82, width: 120, height: 112 },
+      bounds: { x: 20, y: 114, width: 120, height: 112 },
       capacity: 'large',
       categories: ['picture', 'shelf'],
-      pool: ['family', 'spareShelf'],
+      pool: ['pixelPortrait', 'berlinTower', 'cozyNook', 'spareShelf'],
     },
     {
       id: 'wall:sofa',
-      bounds: { x: 274, y: 66, width: 124, height: 128 },
+      bounds: { x: 274, y: 98, width: 124, height: 128 },
       capacity: 'large',
       categories: ['picture'],
-      pool: ['family'],
+      pool: ['pixelPortrait', 'berlinTower', 'cozyNook'],
     },
     {
       id: 'wall:high',

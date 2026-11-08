@@ -34,12 +34,13 @@ function assertMaterialized(
 ) {
   if (placement.kind === 'shelf')
     assert.ok(room.platforms.some((p) => p.id === placement.id && p.bounds === placement.bounds));
-  else
-    assert.ok(
-      room.decorations.some(
-        (d) => d.kind === 'image' && d.asset === 'room-picture' && d.bounds === placement.bounds,
-      ),
-    );
+  else {
+    const object = resolveRoom(room, OBJECTS).objects.find((o) => o.id === placement.id);
+
+    assert.equal(object?.kind, 'picture');
+
+    if (object?.kind === 'picture') assert.deepEqual(object.config.area, placement.bounds);
+  }
 }
 
 // eslint-disable-next-line max-lines-per-function -- Viele echte Seeds prüfen beide Räume und alle Schwierigkeiten als zusammenhängenden Layoutvertrag.
@@ -95,7 +96,7 @@ function singleSlot(
           bounds,
           capacity: 'large',
           categories: [kind],
-          pool: [kind === 'picture' ? 'family' : 'spareShelf'],
+          pool: [kind === 'picture' ? 'pixelPortrait' : 'spareShelf'],
         },
       ],
     },

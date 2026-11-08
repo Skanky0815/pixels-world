@@ -1,0 +1,29 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-11-08",
+  "references": [
+    "assets/environment/living-room/room-picture.png",
+    "assets/team/pixel-portrait-v3.png"
+  ],
+  "exporter": "node tools/prepare-picture-assets.mjs",
+  "sampling": "Alpha-Bounds ab 192; Nearest-Neighbour, unveränderte RGBA-Samples, proportional in 54×56.",
+  "motifs": [
+    {
+      "id": "pixel",
+      "source": "sources/pixel-source-v1.png",
+      "prompt": "Use case: stylized-concept. Asset type: single transparent PNG sprite for a warm cozy pixel-art cat game, a framed wall painting displayed at only 54x56 native pixels (108x112 world pixels). Input image 1 is reference for the existing warm walnut wood frame, simple blocky low-resolution style and palette, not an edit target. Input image 2 is the character identity reference for Pixel, not an edit target. Generate ONE complete frontal rectangular wooden framed painting: same chunky warm brown wood frame with dark pixel outline and subtle ochre highlight, cream inner mat, upright slightly taller-than-wide proportions. Motif: a charming portrait of Pixel, the gray-brown striped tabby cat with white muzzle and fluffy white chest, large green eyes and pink ears/nose, looking slightly to the right. Recognizably match the reference cat. A simple muted sage backdrop INSIDE the painting. Coarse deliberate square pixel clusters, strong simplified silhouette, 1990s adventure-game sprite aesthetic, no antialiasing, no fine grain or photorealism, readable when reduced to 54x56. Frame perfectly front-facing and symmetrical, no perspective, frame fully visible and occupying about 85% of the canvas, no floor, no wall, no casting shadow outside the frame. Truly transparent background outside the rectangular framed painting. No words, letters, captions, signature or watermark. Do not draw an extra cat outside the painting."
+    },
+    {
+      "id": "berlin",
+      "source": "sources/berlin-source-v1.png",
+      "reference": "sources/pixel-source-v1.png",
+      "prompt": "Use case: precise-object-edit. Edit target: the provided framed Pixel portrait. Create a second motif in this SAME GAME ASSET SERIES. Preserve the outer wooden frame and cream mat, straight frontal rectangle, size, pixel scale, colors, silhouette, framing and transparent exterior exactly. Change ONLY the painted interior image: show the iconic Berlin Fernsehturm, its slender pale concrete shaft, a clearly readable silver observation sphere and red-white antenna, centered against a muted apricot sunset sky, with a few simple dark terracotta Berlin roof silhouettes at the bottom. Make the television tower the unmistakable dominant subject, large enough to read at a tiny 54x56-pixel sprite. Warm cozy pixel art, deliberate coarse square pixel clusters, simplified blocks, limited earthy palette; no gradients, fine detail, modern vector shapes or photorealism. No cat in this version. No text, captions, logos, signature or watermark. Keep everything outside the frame genuinely transparent. One complete upright framed painting, no wall, no floor, no external shadow."
+    },
+    {
+      "id": "cozy",
+      "source": "sources/cozy-source-v1.png",
+      "reference": "sources/pixel-source-v1.png",
+      "prompt": "Use case: precise-object-edit. Edit target: the provided framed Pixel portrait. Create a third motif in this SAME GAME ASSET SERIES. Preserve the outer wooden frame and cream mat, straight frontal rectangle, size, pixel scale, colors, silhouette, framing and transparent exterior exactly. Change ONLY the painted interior image: a peaceful cozy window nook, with one simple warm olive-green armchair in the lower half beside a sunlit window with muted apricot sky and one tiny terra-cotta pot of green leaves. A compact readable still-life that belongs in the same warm living-room pixel-art game. Dominant large simple shapes: armchair, window and a soft patch of afternoon light. No people or animals. Coarse deliberate square pixel clusters, 1990s adventure-game sprite aesthetic, earthy muted colors, no antialiasing, no fine noisy details, no photorealism. Must read at only 54x56 native pixels. No words, captions, logos, signature or watermark. Keep everything outside the frame genuinely transparent. One complete upright framed painting, no wall or floor outside its frame, no external shadow."
+    }
+  ]
+}
