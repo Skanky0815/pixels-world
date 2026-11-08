@@ -60,7 +60,8 @@ export function spawnSizeFor(width: number, height: number): SpawnSize {
 function objectSize(object: ObjectDefinition) {
   if (object.kind === 'books') return spawnSizeFor(48, 36);
 
-  if (object.kind === 'couch') return spawnSizeFor(object.geometry.width, object.geometry.seatRise);
+  if (object.kind === 'couch')
+    return spawnSizeFor(object.geometry.width + 18, object.geometry.seatRise + 60);
 
   if (object.kind === 'curtain') return spawnSizeFor(object.geometry.width, object.geometry.height);
   const asset = object.kind === 'plant' ? ASSETS['catgrass-default'] : ASSETS['vase-default'];
@@ -110,11 +111,14 @@ export function validateObjectSpawn(object: ObjectDefinition, path: string) {
 }
 
 function validateRandomObject(object: ObjectDefinition, path: string) {
-  if (object.kind === 'couch' || object.kind === 'curtain')
-    fail(path, 'structural object must stay fixed');
+  if (object.kind === 'curtain') fail(path, 'structural object must stay fixed');
 
-  if (object.kind === 'plant' && object.spawn.random && object.spawn.support !== 'floor')
-    fail(`${path}.support`, 'plant requires fixed floor support');
+  if (
+    (object.kind === 'plant' || object.kind === 'couch') &&
+    object.spawn.random &&
+    object.spawn.support !== 'floor'
+  )
+    fail(`${path}.support`, `${object.kind} requires fixed floor support`);
 }
 
 export function validateGoalSpawn(value: unknown, path: string) {

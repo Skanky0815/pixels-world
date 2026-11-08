@@ -162,7 +162,13 @@ async function besideCouch(page: Page) {
 }
 
 async function besidePlant(page: Page) {
-  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 103);
+  const before = await state(page);
+  const right = before.pixel.x < before.plant.x;
+  const target = before.plant.x + (right ? 0 : 18);
+
+  await holdUntil(page, [right ? 'ArrowRight' : 'ArrowLeft'], (s) =>
+    right ? s.pixel.x >= target : s.pixel.x <= target,
+  );
   await until(page, (s) => s.pixel.velocityX === 0 && s.plant.state === 'waiting');
 }
 

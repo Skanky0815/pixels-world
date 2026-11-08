@@ -1,3 +1,5 @@
+import { plantSlots } from './plant-slots.ts';
+import { WALL_SLOTS } from './wall-slots.ts';
 import { bookSlots } from './book-slots.ts';
 import { LOWER_SHELF_SLOTS, MIDDLE_SHELF_SLOTS } from './shelf-slots.ts';
 import { LIVING_ROOM_DENSITY } from '../difficulty.ts';
@@ -7,13 +9,17 @@ const FLOOR_Y = 468;
 
 const decorations: readonly Decoration[] = [
   { kind: 'image', asset: 'room-window', bounds: { x: 682, y: 126, width: 112, height: 184 } },
-  { kind: 'image', asset: 'room-picture', bounds: { x: 282, y: 112, width: 108, height: 112 } },
   { kind: 'image', asset: 'room-rug', bounds: { x: 245, y: 493, width: 430, height: 30 } },
   { kind: 'image', asset: 'room-door', bounds: { x: 848, y: 252, width: 112, height: 216 } },
 ];
 
 export const LIVING_ROOM = {
   id: 'living-room',
+  wallSlots: WALL_SLOTS,
+  navigationClearances: [
+    { x: 0, y: 194, width: 710, height: 230 },
+    { x: 96, y: 416, width: 744, height: 52 },
+  ],
   environment: 'cozy-room',
   difficultyObjects: LIVING_ROOM_DENSITY,
   goal: {
@@ -63,7 +69,7 @@ export const LIVING_ROOM = {
     },
   ],
   decorations,
-  objectSlots: bookSlots([600, 650]),
+  objectSlots: [...bookSlots([600, 650]), plantSlots([54, 62, 680])],
   objects: [
     {
       id: 'couch',
@@ -71,7 +77,6 @@ export const LIVING_ROOM = {
       placement: { mode: 'surface', x: 180, surfaceId: 'floor' },
     },
     { id: 'curtain', variant: 'warm-curtain', placement: { mode: 'area', x: 728, y: 112 } },
-    { id: 'plant', variant: 'catgrass', placement: { mode: 'surface', x: 82, surfaceId: 'floor' } },
     {
       id: 'heirloom-vase',
       variant: 'heirloom-vase',

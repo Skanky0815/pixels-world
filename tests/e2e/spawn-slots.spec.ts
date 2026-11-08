@@ -8,6 +8,14 @@ for (const room of ['living-room', 'cozy-remix']) {
     test(`Spawn-Slots: ${room}, ${difficulty}, Seed und Neustart`, async ({ page }) => {
       await startDifficulty(page, difficulty, `/?room=${room}&room-seed=slots-172`);
       const before = await state(page);
+
+      expect(before.wallPlacements).toHaveLength(difficulty === 'hard' ? 2 : 1);
+
+      for (const wall of before.wallPlacements.filter((p) => p.kind === 'shelf'))
+        expect(before.shelves.find((s) => s.id === wall.id)).toMatchObject({
+          enabled: true,
+          state: 'intact',
+        });
       const slots = before.objects.filter((o) => o.id.startsWith('lower-shelf:'));
 
       expect(slots).toHaveLength({ easy: 1, normal: 2, hard: 3 }[difficulty]);
@@ -19,11 +27,13 @@ for (const room of ['living-room', 'cozy-remix']) {
         expect(before.vases.find((v) => v.id === 'middle-shelf:middle-slot')?.x).toBe(646);
       expect(before.vases.every((v) => v.state === 'resting')).toBe(true);
       await reset(page);
+      expect((await state(page)).wallPlacements).toEqual(before.wallPlacements);
       expect((await state(page)).objects).toEqual(before.objects);
       expect((await state(page)).vases).toEqual(before.vases);
       expect((await state(page)).goal).toEqual(before.goal);
       await page.reload();
       await waitForGame(page);
+      expect((await state(page)).wallPlacements).toEqual(before.wallPlacements);
       expect((await state(page)).objects).toEqual(before.objects);
     });
   }

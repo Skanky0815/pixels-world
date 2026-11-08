@@ -1,4 +1,4 @@
-import { test, expect, loadIntro, state, until, reset } from './support';
+import { test, expect, loadIntro, state, until, reset, waitForGame } from './support';
 
 test('Kurze Einführung zeigt Ziel und Steuerung; vor dem Start bleiben Uhr, Schäden und Pixel stehen', async ({
   page,
@@ -73,6 +73,7 @@ test('Leertaste startet einmal ohne Sprung; R startet danach direkt eine frische
   expect((await state(page)).intro.visible).toBe(false);
   expect((await state(page)).round.elapsedMs).toBeLessThan(500);
   await page.reload();
+  await waitForGame(page);
   await until(page, (s) => s.intro.visible);
   expect((await state(page)).started).toBe(false);
 });

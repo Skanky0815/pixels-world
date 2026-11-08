@@ -137,10 +137,11 @@ test('Touch: Knabbern und Kratzen starten automatisch und lassen sich unterbrech
   page,
   // eslint-disable-next-line max-lines-per-function -- Beide automatischen Bodenaktionen werden mit echten Touch-Wegen begonnen und mit Bewegung beziehungsweise Sprung unterbrochen.
 }) => {
-  const touch = await startTouch(page);
+  const touch = await startTouch(page, '/?room-seed=grass-left');
+  const target = (await state(page)).plant.x + 18;
 
   await touch.press('left');
-  await until(page, (s) => s.pixel.x <= 103);
+  await until(page, (s) => s.pixel.x <= target);
   await touch.lift();
   await until(page, (s) => s.plant.state === 'nibbling');
   await touch.press('right');
