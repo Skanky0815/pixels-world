@@ -27,9 +27,14 @@ Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
 ## Bedienung
 
 1. Vor Code-/Tooling-PRs lokal `npm run check:pr`, PR-Checks und Review abschließen.
-   Nach Merge erfolgreiche Main-QA für genau den aktuellen Main-Commit abwarten.
+   Der Release-Start verwendet die erfolgreiche Main-QA für genau den aktuellen Commit.
 2. **Actions → Spielrelease → main → Run workflow** startet ausschließlich `prepare`
-   und erstellt/aktualisiert den Versions-PR.
+   und erstellt/aktualisiert den Versions-PR. Fehlt für diesen Main-Commit QA
+   (etwa nach einem reinen Docs-Merge), startet Prepare automatisch eine kurze QA.
+   Bereits laufende QA wird bis zu 20 Minuten abgewartet, erfolgreiche QA wird
+   wiederverwendet. Ein separater QA-Klick ist dafür nicht erforderlich.
+   Fehlgeschlagene/abgebrochene QA oder ein inzwischen veränderter Main stoppen
+   Prepare weiterhin; zuerst den Fehler beheben bzw. auf aktuellem Main neu starten.
    Version und Changelog prüfen. Weil `GITHUB_TOKEN`-PR-Ereignisse keine normale
    PR-QA starten, stößt prepare ausdrücklich `workflow_dispatch` mit Smoke-Profil
    auf dem Release-Branch an. Vollprüfungen bleiben manuell möglich. Sara
@@ -62,7 +67,7 @@ Release/Rollout; notwendige Gates dürfen nicht übersprungen sein.
 
 | Zustand                                                                 | Vorgehen                                                                                                                                                         |
 | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Main-QA fehlt/läuft/ist fehlgeschlagen                                  | Abwarten bzw. Fehler beheben; keine Ersatz-QA im Releasejob. Bei gefiltertem Docs-Merge QA manuell auf genau diesem Main starten.                                |
+| Main-QA fehlt/läuft/ist fehlgeschlagen                                  | Prepare startet fehlende Main-QA und wartet auf laufende QA. Bei Fehler/Abbruch den verlinkten QA-Lauf beheben; nach Timeout erneut Spielrelease starten.        |
 | Kein aktueller Versions-Merge                                           | `prepare`, Versions-PR prüfen/mergen und Main-QA abwarten. Normale Merges sind keine Veröffentlichung.                                                           |
 | Main nach Versions-Merge weitergelaufen                                 | Neu auf aktuellem grünem Main vorbereiten; keinen alten Kandidaten ungeprüft veröffentlichen.                                                                    |
 | Mehrere pending-Kandidaten, Tag/Release vorhanden oder unklare Historie | Status untersuchen; keine automatische Bereinigung erzwingen.                                                                                                    |

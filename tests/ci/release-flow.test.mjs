@@ -57,3 +57,18 @@ assert.match(workflow, /ref: \$\{\{ github.sha \}\}/);
 log(
   'Release-Verdrahtung: manuelles Prepare, geschütztes Auto-Publish und Pages nur nach neuem Release geprüft.',
 );
+
+const ensureStep = workflow.match(
+  /- name: Main-QA für Release-Vorbereitung bereitstellen\n\s+if: (.+)/,
+);
+assert.ok(ensureStep);
+for (const mode of ['prepare', 'publish'])
+  assert.equal(
+    Function('env', `return (${ensureStep[1]});`)({ RELEASE_MODE: mode }),
+    mode === 'prepare',
+  );
+assert.ok(
+  workflow.indexOf('run: bash .github/scripts/ensure-main-qa.sh') <
+    workflow.indexOf('- name: QA und Veröffentlichungskandidat bestätigen'),
+);
+assert.match(workflow, /timeout-minutes: 30/);

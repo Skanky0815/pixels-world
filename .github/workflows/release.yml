@@ -21,7 +21,7 @@ jobs:
   release:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 30
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag: ${{ steps.release.outputs.tag_name }}
@@ -36,6 +36,11 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Main-QA für Release-Vorbereitung bereitstellen
+        if: env.RELEASE_MODE == 'prepare'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/ensure-main-qa.sh
       - name: QA und Veröffentlichungskandidat bestätigen
         id: source
         env:
