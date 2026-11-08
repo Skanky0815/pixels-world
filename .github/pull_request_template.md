@@ -14,3 +14,15 @@ Tatsächlich ausgeführte Prüfungen und Ergebnisse angeben. Übersprungene Test
 
 Refs #N
 https://github.com/Skanky0815/pixels-world/issues/N
+
+## Release Note (English)
+
+<!-- Genau eine englische Conventional-Commit-Zeile. Beschreibung und PR-Titel dürfen Deutsch bleiben. Relevante Issue-Verweise auch hier eintragen, weil dieser Block die Squash-Nachricht für Release Please ersetzt. -->
+
+```text
+BEGIN_COMMIT_OVERRIDE
+type(scope): English summary
+
+Refs #N
+END_COMMIT_OVERRIDE
+```

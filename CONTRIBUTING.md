@@ -8,6 +8,14 @@ Deutsch ist die Standardsprache für Projektdokumentation, neue Issue-Titel und 
 
 Git-Identitäten müssen wahrheitsgemäß bleiben; standardmäßig keine Attribution-Trailer wie `AI-assisted-by` ergänzen. Keine Secrets oder echten Gesprächsprotokolle committen.
 
+Jeder normale PR enthält zusätzlich genau einen englischen Conventional-Commit-Eintrag im
+`BEGIN_COMMIT_OVERRIDE`-/`END_COMMIT_OVERRIDE`-Block der Vorlage. PR-Titel und
+Beschreibung bleiben Deutsch; die Release Note wird Englisch geprüft. Issue-Verweise
+auch innerhalb des Blocks erhalten. Beim Squash-Merge denselben englischen Betreff
+verwenden, im Body nur Verweise statt wiederholter Commit-Titel. Der CI-Check prüft
+Struktur und Eindeutigkeit; den englischen Wortlaut prüft die Review. Vollständiger
+Vertrag und Beispiele: [Release Notes](docs/deployment.md#englische-release-notes-ohne-doppeleinträge).
+
 ## Änderungen vorbereiten
 
 [README](README.md) und [Arbeitsregeln](AGENTS.md) lesen. Änderungen auf einem eigenen Branch entwickeln und überschaubar halten. Bewährte Werkzeuge bevorzugen; wesentliche Entscheidungen mit Alternativen und Grenzen nachvollziehbar dokumentieren. Bedeutende langfristige Architekturentscheidungen erhalten bei Bedarf einen Eintrag unter `docs/adr/`.
