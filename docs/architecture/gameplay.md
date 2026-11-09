@@ -248,3 +248,18 @@ gehaltene Eingaben. Beim Schließen wird der vorherige Menü-/Pausenzustand resp
 Tabs wechseln nur das Kapitel; Tastatur und Touch bedienen dieselbe Ansicht, DE/EN
 wechseln die Darstellung ohne Änderung der Entdeckungen. Listener und Dialog werden
 beim Szenen-Shutdown entfernt. Die Sammlung selbst bleibt über Szenen hinweg erhalten.
+
+## Objektgeräusche
+
+Wohnzimmer-Geräusche werden nach akzeptierten Schadensereignissen ausgelöst;
+Regalwarnung und der zusätzliche Bodenaufprall bereits umgestürzter Bücher
+melden ihre tatsächlichen Übergänge separat. Spawn, Reset und unveränderte
+Updates bleiben still. Die alten gemeinsamen Buch-/Bildtöne entfallen.
+`GameAudio` nutzt weiterhin Gesamtlautstärke × Effektlautstärke und deren
+lokale Speicherung. Es gibt höchstens drei gleichzeitige Effekte, keine
+Warteschlange und keine Musik. Gesperrtes oder suspendiertes Browseraudio
+verwirft Ereignisse; Phasers Nutzerinteraktions-Freigabe bleibt zuständig.
+Pause, Tabwechsel und Szenenabbau stoppen Effekte, ohne sie später fortzusetzen.
+Die kurzen WAV-Varianten werden mit der Szene geladen und offline vorgehalten;
+Herkunft, Rechte und reproduzierbare Synthese stehen bei den
+[Audio-Assets](../../assets/audio/README.md).

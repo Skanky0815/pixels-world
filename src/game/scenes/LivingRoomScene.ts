@@ -1,3 +1,4 @@
+import { preloadObjectAudio } from '../assets/object-audio';
 import { preloadCarpetArt } from '../assets/carpet-art';
 import { albumCollection } from '../../settings/album';
 import { discoverAlbum } from '../../content/album';
@@ -105,6 +106,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
   preload() {
+    preloadObjectAudio(this);
     preloadVaseArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
@@ -400,6 +402,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.controls = new InputController(this);
     this.activity = new PlayActivity(() => this.syncActivity());
     this.audio = new GameAudio(this.sound);
+    this.events.on('object-impact', this.audio.playObject, this.audio);
     this.hud = new GameHud(this);
     this.sara = new SaraReturnView(this, {
       width: room.width,
@@ -446,6 +449,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.goalView.destroy();
     this.mobile.destroy();
     this.menu.destroy();
+    this.events.off('object-impact', this.audio.playObject, this.audio);
     this.audio.destroy();
     this.feedback.destroy();
   }
@@ -456,6 +460,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private processDamage(event: ChaosEvent | undefined) {
     if (!this.canPlay() || !event || !this.chaos.awardEvent(event)) return;
+    this.audio.playDamage(event);
     this.events.emit('object-damaged', event);
     this.discoverAlbum(event);
   }

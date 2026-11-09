@@ -205,3 +205,12 @@ Zahlentabelle hier. Release-Identität und Wiederanlauf: [Deployment](deployment
 Die CI-Gate-Tests simulieren auch QA-Ereignisse, veraltete Versuche, Main-Wechsel,
 mehrdeutige Kandidaten und vorhandene Tags/Release-Metadaten. Sie führen keine
 GitHub-Schreiboperationen oder echten Releases aus.
+
+Für die Hörprobe zu Objektgeräuschen beide Wohnzimmer und den DEV-Playground
+verwenden: Vasenbruch, Bildaufprall, Buchumsturz und Regalwarnung/-einsturz
+vergleichen. Pause oder Tabwechsel mitten im Klang, dann Fortsetzen und Neustart:
+keine alten Töne nachholen. Gesamt-/Effektregler einzeln auf null und nach Reload
+prüfen. Auf Desktop und echten Mobilgeräten den ersten Ton nach Start per
+Tastatur bzw. Touch prüfen; verweigerte Audiofreigabe darf das Spiel nicht
+blockieren. Gleichzeitige fallende Objekte dürfen keine Lautstärkespitze bilden.
+Die einzelnen [WAV-Dateien](../assets/audio/README.md) sind direkt anhörbar.

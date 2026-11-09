@@ -1,3 +1,4 @@
+import { recordAudio, expectAudio } from './audio-support';
 import { test, expect, start, state, until, holdUntil, reset, couch } from './support';
 import { startTouch } from './touch-support';
 import { PICTURE_RULES } from '../../src/game/interactions/picture-falling';
@@ -21,7 +22,9 @@ for (const [room, variant, seed] of fixtures) {
     page,
     // eslint-disable-next-line max-lines-per-function -- Zwei echte Sprünge, Animation, Pause, einmaliger Schaden, Albumereignis und Reset bilden einen gemeinsamen Bildablauf.
   }) => {
+    await recordAudio(page);
     await start(page, `/?room=${room}&room-seed=${seed}`);
+    await expectAudio(page, 0.38, 0);
     const initial = picture(await state(page));
 
     expect(initial).toMatchObject({
@@ -66,6 +69,7 @@ for (const [room, variant, seed] of fixtures) {
     await until(page, (s) => picture(s).state === 'falling');
     expect(picture(await state(page)).events).toBe(0);
     await until(page, (s) => picture(s).state === 'fallen');
+    await expectAudio(page, 0.38, 1);
     expect(picture(await state(page))).toMatchObject({
       damage: 1,
       events: 1,
@@ -97,6 +101,7 @@ for (const [room, variant, seed] of fixtures) {
       .info()
       .attach(`${variant}-gefallen`, { body: await page.screenshot(), contentType: 'image/png' });
     await reset(page);
+    await expectAudio(page, 0.38, 1);
     expect(picture(await state(page))).toEqual(initial);
     expect((await state(page)).albumDiscovery).toBeNull();
   });

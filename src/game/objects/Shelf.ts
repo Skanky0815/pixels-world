@@ -20,7 +20,7 @@ export class Shelf {
 
   // eslint-disable-next-line max-lines-per-function -- Content, Grafik und unveränderlicher statischer Körper werden für dieselbe Regalfläche gemeinsam erzeugt.
   constructor(
-    scene: Phaser.Scene,
+    private readonly scene: Phaser.Scene,
     private readonly definition: ShelfDefinition,
     private readonly floorY: number,
     decorations: readonly Decoration[],
@@ -48,11 +48,14 @@ export class Shelf {
 
   // eslint-disable-next-line max-lines-per-function -- Landung, einmaliges Ereignis und dazu konsistente Körper-/Bildänderung bilden einen gemeinsamen Zustandsschritt.
   update(pixel: InteractionContext['pixel'], time: number) {
-    const before = this.model.snapshot().landings;
+    const previous = this.model.snapshot();
+    const before = previous.landings;
     const event = this.model.observe(!pixel.grounded && !pixel.climbing, this.supports(pixel));
     const { state, landings } = this.model.snapshot();
 
     if (landings > before) this.wobbleStartedAt = time;
+
+    this.warn(previous.state, state);
 
     if (event) this.history.record(event);
     this.draw();
@@ -68,6 +71,10 @@ export class Shelf {
       );
 
     return event;
+  }
+
+  private warn(before: string, after: string) {
+    if (before !== after && after === 'wobbly') this.scene.events.emit('object-impact', 'creak');
   }
 
   private supports(p: InteractionContext['pixel']) {

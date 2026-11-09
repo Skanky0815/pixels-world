@@ -1,3 +1,4 @@
+import { recordAudio, expectAudio } from './audio-support';
 import { advanceRoundTo, useIdleFrames } from './round-clock';
 import { test, expect, start, state, firstVase, holdUntil, until, reset } from './support';
 import { openPause } from './pause-support';
@@ -7,6 +8,7 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
   page,
   // eslint-disable-next-line max-lines-per-function -- Reale Sprünge prüfen Warnung, nur einmaligen Schaden, Pause, Einsturz, freien Fall und vollständigen Neustart.
 }, testInfo) => {
+  await recordAudio(page);
   await start(page, '/?room-seed=shelves-172');
   await firstVase(page);
   await until(page, (s) => s.vases[0].state === 'broken');
@@ -19,6 +21,7 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
     state: 'wobbly',
     enabled: true,
   });
+  await expectAudio(page, 0.32, 1);
   await page.clock.runFor(800);
   expect((await shelf())?.angle).toBe(0);
   expect((await shelf())?.landings).toBe(1);
@@ -27,6 +30,7 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
   await page.keyboard.up('Space');
   await until(page, (s) => s.shelves[0].landings === 2);
   expect(await shelf()).toMatchObject({ state: 'damaged', events: 1, enabled: true });
+  await expectAudio(page, 0.32, 2);
   await until(page, (s) => Math.abs(s.shelves[0].angle) > 0.1);
   const beforeCollapse = await state(page);
   const score = beforeCollapse.chaos.score;
@@ -50,6 +54,7 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
   await until(page, (s) => !s.pixel.grounded);
   await page.keyboard.up('Space');
   await until(page, (s) => s.shelves[0].state === 'collapsed');
+  await expectAudio(page, 0.65, 1);
   expect(await shelf()).toMatchObject({
     landings: 3,
     events: 2,
