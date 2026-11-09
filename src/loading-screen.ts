@@ -11,11 +11,20 @@ class LoadingScreen {
   private broken = false;
   private readonly shownAt = performance.now();
   private timer: number | undefined;
+  private onReady: (() => void) | undefined;
+  private readonly skipKey = (event: KeyboardEvent) => {
+    if (event.code !== 'Space' || event.repeat || !this.onReady || this.broken) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    this.finish();
+  };
 
   constructor() {
     this.unsubscribeLanguage = onLanguageChange(() => this.refresh());
     this.unsubscribeMotion = motionPreferences.subscribe(() => this.refreshMotion());
     this.root?.querySelector('#loading-retry')?.addEventListener('click', () => location.reload());
+    this.root?.querySelector('#loading-skip')?.addEventListener('click', () => this.skip());
+    window.addEventListener('keydown', this.skipKey, true);
     this.refresh();
     this.refreshMotion();
   }
@@ -61,7 +70,6 @@ class LoadingScreen {
     this.root.dataset.phase = 'error';
     this.root.setAttribute('aria-busy', 'false');
     this.root.querySelector('#loading-status')?.setAttribute('role', 'alert');
-    this.root.querySelector<HTMLButtonElement>('#loading-retry')?.removeAttribute('hidden');
     this.refresh();
   }
 
@@ -70,15 +78,27 @@ class LoadingScreen {
 
     if (!this.blocking) return onReady();
 
+    this.onReady = onReady;
+
     if (this.root) this.root.dataset.phase = 'ready';
     this.refresh();
     const delay = Math.max(0, 2000 - (performance.now() - this.shownAt));
 
-    this.timer = window.setTimeout(() => this.finish(onReady), delay);
+    this.timer = window.setTimeout(() => this.finish(), delay);
   }
 
-  private finish(onReady: () => void) {
-    if (this.broken) return;
+  private skip() {
+    if (this.onReady && !this.broken) this.finish();
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Timer, Tastaturbindung und einmaliger Bereitschafts-Callback enden gemeinsam.
+  private finish() {
+    if (this.broken || !this.onReady) return;
+    const onReady = this.onReady;
+
+    this.onReady = undefined;
+    window.clearTimeout(this.timer);
+    window.removeEventListener('keydown', this.skipKey, true);
     this.root?.remove();
 
     if (this.main) this.main.inert = false;
@@ -91,7 +111,18 @@ class LoadingScreen {
     this.text('#loading-title', t(this.broken ? 'loadingFailed' : 'loadingTitle'));
     this.text('#loading-status', t(this.statusKey()));
     this.text('#loading-retry', t('loadingRetry'));
+    this.text('#loading-skip', t('loadingSkip'));
+    this.refreshActions();
     this.root?.querySelector('#loading-progress')?.setAttribute('aria-label', t('loadingProgress'));
+  }
+
+  private refreshActions() {
+    const skip = this.root?.querySelector<HTMLButtonElement>('#loading-skip');
+    const retry = this.root?.querySelector<HTMLButtonElement>('#loading-retry');
+
+    if (skip) skip.hidden = this.broken || !this.onReady;
+
+    if (retry) retry.hidden = !this.broken;
   }
 
   private statusKey(): TextKey {

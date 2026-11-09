@@ -306,6 +306,12 @@ Neuladeversuch. Scene-Neustarts zeigen den initialen Ladescreen nicht erneut.
 Die DEV-Vorschau wird über einen ausschließlich in Entwicklung ausgewerteten
 Queryparameter geladen; ihr Modul und ihre Steuerung gehören nicht zum Build.
 
+Nach vollständigem Laden kann die verbleibende Mindestanzeige mit einer frischen
+Leertaste oder „Los geht’s!“ übersprungen werden. Vorher ist diese Aktion nicht
+verfügbar; gehaltene Tasten werden nicht nachträglich als Freigabe gewertet.
+Der Button-Platz ist von Beginn an reserviert. Das Fortsetzen zeigt die Einführung
+und startet nicht mit derselben Eingabe schon die Runde.
+
 ## Spielmoment nach dem Ballfund
 
 Nur ein erfolgreicher Hauptzielabschluss startet `BallPlay`: Pixel stupst den Ball

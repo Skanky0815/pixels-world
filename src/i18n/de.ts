@@ -1,6 +1,7 @@
 export const de = {
   loadingTitle: 'Pixels Wohnzimmer wird vorbereitet …',
-  loadingReady: 'Bereit! Pixel jagt noch kurz den Ball …',
+  loadingReady: 'Pixel wartet schon auf dich. Mit der Leertaste geht’s los!',
+  loadingSkip: 'Los geht’s!',
   loadingStarting: 'Pixel jagt schon mal den Ball.',
   loadingAssets: 'Das Wohnzimmer wird geladen …',
   loadingProgress: 'Ladefortschritt',

@@ -245,3 +245,9 @@ vorhandene Bewegungseinstellung. „Zum Spiel“ lädt den normalen Einstieg.
 Im normalen Spiel dauert die Anzeige mindestens zwei Sekunden, folgt aber dem
 echten Ladefortschritt. Die Vorschau-Query hat im Produktions-/E2E-Build keine
 Wirkung; dort wird das Spiel regulär geladen.
+
+Nach vollständigem Laden kann die verbleibende Mindestanzeige mit einer frischen
+Leertaste oder „Los geht’s!“ übersprungen werden. Vorher ist diese Aktion nicht
+verfügbar; gehaltene Tasten werden nicht nachträglich als Freigabe gewertet.
+Der Button-Platz ist von Beginn an reserviert. Das Fortsetzen zeigt die Einführung
+und startet nicht mit derselben Eingabe schon die Runde.

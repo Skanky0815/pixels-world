@@ -36,7 +36,7 @@
   line-height: 1.4;
 }
 #loading-status {
-  min-height: 3em;
+  min-height: 4.5em;
   color: #d2bfa7;
 }
 .loading-stage {
@@ -100,7 +100,14 @@
   font-size: 12px;
   color: #d2bfa7;
 }
-#loading-retry {
+.loading-actions {
+  display: grid;
+  place-items: center;
+  min-height: 60px;
+}
+#loading-retry,
+#loading-skip {
+  grid-area: 1 / 1;
   margin: 16px auto 0;
   padding: 10px 18px;
   border: 1px solid #edc37c;
@@ -110,7 +117,8 @@
   font: inherit;
   cursor: pointer;
 }
-#loading-retry:focus-visible {
+#loading-retry:focus-visible,
+#loading-skip:focus-visible {
   outline: 3px solid #fff1cf;
   outline-offset: 4px;
 }

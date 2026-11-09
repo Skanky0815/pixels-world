@@ -248,3 +248,9 @@ der Ressource muss der vollständige Neuladeversuch gelingen. DE/EN, kleine
 Displays und gespeicherte/System-Bewegungsreduktion prüfen. DEV-Vorschau und
 isolierter Produktionsbuild werden separat geprüft; der Produktionscheck liest
 auch tatsächlich geladene dynamische JavaScript-Chunks.
+
+Nach vollständigem Laden kann die verbleibende Mindestanzeige mit einer frischen
+Leertaste oder „Los geht’s!“ übersprungen werden. Vorher ist diese Aktion nicht
+verfügbar; gehaltene Tasten werden nicht nachträglich als Freigabe gewertet.
+Der Button-Platz ist von Beginn an reserviert. Das Fortsetzen zeigt die Einführung
+und startet nicht mit derselben Eingabe schon die Runde.

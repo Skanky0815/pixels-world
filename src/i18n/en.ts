@@ -1,7 +1,8 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
   loadingTitle: 'Getting Pixel’s living room ready …',
-  loadingReady: 'Ready! Pixel is chasing the ball for another moment …',
+  loadingReady: 'Pixel is waiting for you. Press Space to get going!',
+  loadingSkip: 'Let’s go!',
   loadingStarting: 'Pixel is already chasing the ball.',
   loadingAssets: 'Loading the living room …',
   loadingProgress: 'Loading progress',
