@@ -10,21 +10,15 @@
       <p class="eyebrow">DEV · ISSUE #186 · BEWEGUNGSENTWURF</p>
       <h1>Gefunden. Angestupst. Meins!</h1>
       <p>
-        Vorschlag: kurz hinschauen, mit der Pfote anstupsen, hinterher und den Ball wieder
-        einfangen. Bestehende Pixel-Posen als Platzhalter; noch kein Eingriff in die Spielrunde.
+        Pixel spielt seinen Ball von links nach rechts und wieder zurück. Dabei dreht er sich
+        hinterher und macht kleine Schritte auf dem Regal. Bestehende Pixel-Posen als Platzhalter;
+        noch kein Eingriff in die Spielrunde.
       </p>
       <nav aria-label="Vorschau steuern">
         <button id="replay" type="button">Noch mal, Pixel!</button>
         <button id="pause" type="button">Pause</button>
         <button id="zoom" type="button" aria-pressed="false">Nah ansehen</button>
       </nav>
-      <label
-        >Spielort
-        <select id="placement">
-          <option value="shelf">Am Fundort · kompakt auf dem oberen Regal</option>
-          <option value="floor">Alternative · mehr Platz am Boden</option>
-        </select>
-      </label>
       <label
         ><span
           ><input
@@ -39,18 +33,17 @@
         <div
           id="game"
           role="img"
-          aria-label="Pixel stupst seinen Ball an und fängt ihn wieder ein"
+          aria-label="Pixel spielt den Ball nach rechts und zurück und dreht sich dabei um"
         ></div>
         <label for="timeline"
           >Moment · <output id="phase">Lädt …</output>
-          <input id="timeline" type="range" min="0" max="3600" step="10" value="0" />
+          <input id="timeline" type="range" min="0" max="4200" step="10" value="0" />
         </label>
       </article>
       <p id="placement-note" class="note"></p>
       <p class="note">
-        3,6 Sekunden ohne Dialog darüber. Der Ball bewegt sich nur optisch. Am Fundort bleibt die
-        Bewegung bewusst klein; die Bodenvariante bräuchte später einen abgestimmten Weg vom Regal
-        hinunter.
+        4,2 Sekunden ohne Dialog darüber. Der Ball rollt und dreht sich nur optisch innerhalb des
+        Regals. Nahansicht und Zeitregler zeigen die beiden Richtungswechsel im Detail.
       </p>
     </main>
     <script type="module" src="/src/dev/ball-play-preview.ts"></script>
