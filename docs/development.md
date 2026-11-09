@@ -75,6 +75,21 @@ Beide DEV-Seiten nutzen `src/dev/dev-shell.css` für Seitenbreite, Navigation,
 Typografie und Bedienelemente. Die aktive Seite ist in der Navigation markiert;
 „Zum Spiel“ führt zurück. Seitenspezifische Layouts bleiben in eigenen Stylesheets.
 
+## Ballspiel als Bewegungsentwurf ansehen
+
+`/ball-play-preview.html` zeigt im Dev-Server den Vorschlag für #186: hinschauen,
+anstupsen, folgen, einfangen und zur Ruhe kommen. Zeitregler, Pause und Nahansicht
+helfen beim Vergleichen von Posen und Dauer. Die kompakte Regalvariante bleibt am
+Fundort; die Bodenalternative zeigt mehr Ballweg, aber noch keinen Abstieg.
+Reduzierte Bewegung lässt Figuren und Ball am Platz. Fokusverlust pausiert.
+
+Die Vorschau verwendet unveränderte [Pixel-Assets](../assets/pixel/README.md), den
+vorhandenen Lieblingsball und die reguläre Raumzeichnung. Es entstehen keine
+neuen Bildquellen oder Exporte. Bestehende Pfotenposen sind Platzhalter für die
+Abstimmung. Die isolierte Szene erzeugt weder Hauptziel noch Punkte oder Heimkehr;
+die Spielintegration folgt erst nach Freigabe des Mockups im Issue. HTML und
+DEV-Module sind keine Build-Einstiegspunkte und fehlen im Produktionsbuild.
+
 ## Einzelne Objekte ausprobieren
 
 Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.

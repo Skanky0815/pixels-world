@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pixel spielt · Bewegungsentwurf</title>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">DEV · ISSUE #186 · BEWEGUNGSENTWURF</p>
+      <h1>Gefunden. Angestupst. Meins!</h1>
+      <p>
+        Vorschlag: kurz hinschauen, mit der Pfote anstupsen, hinterher und den Ball wieder
+        einfangen. Bestehende Pixel-Posen als Platzhalter; noch kein Eingriff in die Spielrunde.
+      </p>
+      <nav aria-label="Vorschau steuern">
+        <button id="replay" type="button">Noch mal, Pixel!</button>
+        <button id="pause" type="button">Pause</button>
+        <button id="zoom" type="button" aria-pressed="false">Nah ansehen</button>
+      </nav>
+      <label
+        >Spielort
+        <select id="placement">
+          <option value="shelf">Am Fundort · kompakt auf dem oberen Regal</option>
+          <option value="floor">Alternative · mehr Platz am Boden</option>
+        </select>
+      </label>
+      <label
+        ><span
+          ><input
+            id="reduced"
+            type="checkbox"
+            style="width: auto; min-height: auto; vertical-align: middle"
+          />
+          Reduzierte Bewegung ansehen</span
+        ></label
+      >
+      <article>
+        <div
+          id="game"
+          role="img"
+          aria-label="Pixel stupst seinen Ball an und fängt ihn wieder ein"
+        ></div>
+        <label for="timeline"
+          >Moment · <output id="phase">Lädt …</output>
+          <input id="timeline" type="range" min="0" max="3600" step="10" value="0" />
+        </label>
+      </article>
+      <p id="placement-note" class="note"></p>
+      <p class="note">
+        3,6 Sekunden ohne Dialog darüber. Der Ball bewegt sich nur optisch. Am Fundort bleibt die
+        Bewegung bewusst klein; die Bodenvariante bräuchte später einen abgestimmten Weg vom Regal
+        hinunter.
+      </p>
+    </main>
+    <script type="module" src="/src/dev/ball-play-preview.ts"></script>
+  </body>
+</html>
