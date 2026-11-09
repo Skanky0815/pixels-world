@@ -32,6 +32,17 @@
       "pcmSha256": "7ba948e521562d751f9bd8656876ba89a11f10d7498d298e39230a14aad6cee4",
       "hqMp3Sha256": "3bfda19af98bc904a97c86d51bb1e0dab3d04799ac19cc09246772d64a0ba657",
       "conversion": "Public HQ MP3 preview decoded with macOS afconvert to mono PCM16 22050 Hz; repacked as canonical PCM WAV."
+    },
+    "561726": {
+      "title": "Cat Coughing.wav",
+      "author": "har2h",
+      "url": "https://freesound.org/people/har2h/sounds/561726/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "preview": "https://cdn.freesound.org/previews/561/561726_8384492-hq.mp3",
+      "pcmSha256": "1583a6af36a7e4658a5091e66c1c3ae607853bde97405b7a45bce4cb51aed14e",
+      "hqMp3Sha256": "89fc33c6b1e4708aedfa3c82731307219d7ef806698e3fea6af910cf7c74c0be",
+      "conversion": "Public HQ MP3 preview decoded with macOS afconvert to mono PCM16 22050 Hz; repacked as canonical PCM WAV."
     }
   },
   "clips": {
@@ -79,6 +90,15 @@
       "lowpass": 3200,
       "rms": 0.055,
       "peak": 0.45
+    },
+    "retch": {
+      "source": "561726",
+      "starts": [2.12, 4.12],
+      "duration": 0.56,
+      "highpass": 150,
+      "lowpass": 5000,
+      "rms": 0.09,
+      "peak": 0.6
     }
   }
 }

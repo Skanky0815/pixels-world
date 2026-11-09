@@ -13,11 +13,12 @@ Quellaufnahmen liegen unter `reference-sources/` und werden nicht gebündelt.
 | [Nails on sofa (SoundAction 270), 863248](https://freesound.org/people/alexarje/sounds/863248/) | alexarje   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)     | `scratch-*`, `climb-*`, `slide-*` |
 | [Cat Eating.WAV, 407177](https://freesound.org/people/Spyboticer/sounds/407177/)                | Spyboticer | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | `nibble-*`                        |
 | [Animal Footsteps, 658429](https://freesound.org/people/IENBA/sounds/658429/)                   | IENBA      | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | `walk-*`                          |
+| [Cat Coughing.wav, 561726](https://freesound.org/people/har2h/sounds/561726/)                   | har2h      | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | `retch-*`                         |
 
 Die Kratzaufnahme und ihre Bearbeitungen bleiben **CC BY 4.0**. Sie werden nicht
 als eigene CC0-Synthese ausgegeben. Namensnennung, Quelle, Lizenz und
 Bearbeitungshinweis stehen auch im ausgelieferten [Impressum](../../impressum.html#audio-credits).
-Die anderen Aufnahmen behalten CC0; ihre Urheber werden freiwillig genannt.
+Die Knabber-, Schritt- und Würgeaufnahmen behalten CC0; ihre Urheber werden freiwillig genannt.
 
 Als Eingang dient jeweils die auf der Quellseite öffentlich angebotene
 **HQ-MP3-Vorschau**, nicht die nur nach Anmeldung erhältliche Original-WAV.
@@ -39,12 +40,14 @@ python3 tools/prepare-recorded-audio.py
 
 ## Eigene Synthesen
 
-`vase-*`, `picture-*`, `books-*`, `creak-*`, `collapse-*`, `jump-*`, `hairball-*`
-und `retch-*` sind eigene deterministische Synthesen ohne fremde Samples.
+`vase-*`, `picture-*`, `books-*`, `creak-*`, `collapse-*`, `jump-*` und `hairball-*`
+sind eigene deterministische Synthesen ohne fremde Samples.
 Diese Dateien und die beiden Bearbeitungs-/Syntheseprogramme sind unter
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) freigegeben.
 Reproduktion: `python3 tools/prepare-object-audio.py`. Dieser Befehl überschreibt
 keine aus Aufnahmen bearbeiteten Dateien.
+
+## Auslösung
 
 | Gruppe                           | Anlass                                                   |
 | -------------------------------- | -------------------------------------------------------- |

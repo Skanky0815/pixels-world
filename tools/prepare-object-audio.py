@@ -47,14 +47,9 @@ def activity_sample(kind, t, duration, noise, pitch):
         return (noise * .3 + math.sin(math.tau * (180 * t + 420 * t * t) * pitch) * .35) * math.exp(-t * 20)
     if kind == "hairball":
         return (math.sin(math.tau * (135 * t - 170 * t * t) * pitch) * .7 + noise * .15) * math.exp(-t * 22)
-    if kind == "retch":
-        pulse = math.sin(math.pi * t / duration) ** 2
-        rasp = math.sin(math.tau * 83 * t * pitch) * math.sin(math.tau * 131 * t)
-        return (rasp * .65 + noise * .23) * pulse * (.6 + .4 * math.sin(t * 45) ** 2)
     raise ValueError(f"Unknown synthetic cue: {kind}")
 
 
-for cue in ("vase", "picture", "books", "creak", "collapse", "jump", "hairball",
-            "retch"):
+for cue in ("vase", "picture", "books", "creak", "collapse", "jump", "hairball"):
     for variation in range(2):
         render(cue, variation)

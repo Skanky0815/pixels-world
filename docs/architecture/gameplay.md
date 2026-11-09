@@ -275,7 +275,7 @@ Tabwechsel und Szenenabbau entfernen auch von Phaser vorausgeplante Loopquellen.
 Beim Fortsetzen wird nur die weiterhin laufende aktuelle Aktion neu ausgewählt;
 Einzelereignisse werden nicht nachgeholt. Das gemeinsame Limit bleibt bestehen.
 
-Die von Rico ausgewählten Freesound-Aufnahmen ersetzen Kratz-, Knabber- und
+Die von Rico ausgewählten Freesound-Aufnahmen ersetzen Kratz-, Knabber-, Würge- und
 Vorhangplatzhalter. Ein weiterer Aktionsloop gibt beim tatsächlichen Laufen
 Schritte aus: nur mit Bodenkontakt, geringer vertikaler Geschwindigkeit und
 horizontalem Positionsfortschritt. Sprung, Fall, Vorhang, Anschlag und Stillstand
