@@ -1,4 +1,6 @@
 import { preloadObjectAudio } from '../assets/object-audio';
+import { BallPlay, ballPlayPose, ballPlayPlacement } from '../domain/ball-play';
+import { motionPreferences } from '../../settings/motion';
 import { preloadCarpetArt } from '../assets/carpet-art';
 import { albumCollection } from '../../settings/album';
 import { discoverAlbum } from '../../content/album';
@@ -67,6 +69,10 @@ export class LivingRoomScene extends Phaser.Scene {
   private feedback!: GameFeedback;
   private goal!: MainGoal;
   private goalView!: GoalView;
+  private ballPlay = new BallPlay();
+  private ballPlayLayout!: ReturnType<typeof ballPlayPlacement>;
+  private ballPlayOrigin = 0;
+  private ballPlayVisualX = 0;
   private started = false;
   private startScreen!: StartScreen;
   private pixel!: Pixel;
@@ -308,6 +314,7 @@ export class LivingRoomScene extends Phaser.Scene {
             started: this.started,
             intro: this.startScreen.snapshot(),
             goal: this.goal.snapshot(),
+            ballPlay: this.ballPlay.snapshot(),
             goalView: this.goalView.snapshot(),
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
@@ -397,6 +404,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private initializeViews() {
     const room = this.room.definition;
 
+    this.ballPlay = new BallPlay();
     this.mobile = new MobileReadout();
     this.feedback = new GameFeedback(this);
     this.controls = new InputController(this);
@@ -430,6 +438,11 @@ export class LivingRoomScene extends Phaser.Scene {
     });
     this.syncActivity();
     const unsubscribe = onLanguageChange(() => this.refreshLanguage());
+    const unsubscribeMotion = motionPreferences.subscribe(() => {
+      if (this.ballPlay.snapshot().active) this.renderBallPlay();
+    });
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribeMotion);
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribe);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
@@ -560,7 +573,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.setWorldActive(active);
     this.pixel.setPaused(!this.activity.active || !this.started);
     this.sara.setPaused(!this.activity.active);
-    this.audio.setActive(this.activity.active && this.started);
+    this.audio.setActive(this.activity.active && this.started && !this.ballPlay.snapshot().active);
     this.renderHud();
   }
 
@@ -581,7 +594,8 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (input.confirmPressed && this.resultView.snapshot()) return this.scene.restart({});
 
-    if (this.canPlay()) this.playFrame(input, elapsed);
+    if (this.ballPlay.snapshot().active) this.advanceBallPlay(elapsed);
+    else if (this.canPlay()) this.playFrame(input, elapsed);
     else this.advanceHomecoming(input, elapsed);
     this.presentFeedback(elapsed);
   }
@@ -610,12 +624,75 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.goalView.render(this.goal.snapshot(), true);
 
-    if (this.round.advance(elapsed, this.chaos.score, true, reached)) this.startHomecoming();
+    if (this.round.advance(elapsed, this.chaos.score, true, reached)) this.finishRound();
     else this.renderHud();
+  }
+
+  private finishRound() {
+    this.goal.finish(this.round.snapshot().endReason ?? 'timer');
+
+    if (this.round.snapshot().endReason === 'goal') this.beginBallPlay();
+    else this.startHomecoming();
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Die echte Zielfläche bestimmt die sichere rein visuelle Bewegung auf demselben Regal.
+  private beginBallPlay() {
+    const goal = this.room.goal;
+    const shelf = this.room.definition.platforms.find((p) => p.id === goal.surfaceId);
+    const left = shelf?.bounds.x ?? 0;
+    const right = shelf ? left + shelf.bounds.width : this.room.definition.width;
+
+    this.ballPlayLayout = ballPlayPlacement(goal.x, left, right);
+    this.ballPlayOrigin = this.pixel.x;
+    this.ballPlay.start();
+    this.syncActivity();
+    this.renderBallPlay();
+  }
+
+  private advanceBallPlay(elapsed: number) {
+    const finished = this.ballPlay.advance(elapsed);
+
+    this.renderBallPlay();
+
+    if (finished) {
+      this.pixel.finishBallPlay(this.ballPlayVisualX);
+      this.startHomecoming();
+    }
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Ball und Figur folgen dem freigegebenen gemeinsamen Zeitprofil; Interaktionen und Wertung bleiben eingefroren.
+  private renderBallPlay() {
+    const snapshot = this.ballPlay.snapshot();
+    const pose = ballPlayPose(snapshot.elapsedMs, motionPreferences.snapshot().reduced);
+    const { direction, travel, anchorX } = this.ballPlayLayout;
+    const aligned = this.ballPlayOrigin + (anchorX - this.ballPlayOrigin) * pose.alignment;
+    const offset = (pose.ball * direction * travel) / 48;
+    const aligning =
+      snapshot.elapsedMs > 0 &&
+      snapshot.elapsedMs < 400 &&
+      Math.abs(anchorX - this.ballPlayOrigin) > 2 &&
+      pose.alignment > 0;
+    const frame = aligning ? 5 + (Math.floor(snapshot.elapsedMs / 100) % 5) : pose.frame;
+    const faceLeft = aligning
+      ? anchorX < this.ballPlayOrigin
+      : direction > 0
+        ? pose.faceLeft
+        : !pose.faceLeft;
+
+    this.ballPlayVisualX = aligned + direction * pose.step;
+    this.pixel.presentBallPlay(
+      frame,
+      pose.scale,
+      this.ballPlayVisualX - this.ballPlayOrigin,
+      faceLeft,
+    );
+    this.goalView.presentBallPlay(offset, offset / 8, snapshot.active);
+    this.goalView.render(this.goal.snapshot(), true);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Aktionssound und Zielanzeige enden gemeinsam vor der unveränderten Heimkehr.
   private startHomecoming() {
+    if (this.ballPlay.snapshot().active) return;
     this.audio.updatePixel('idle', this.pixel.y);
     const score = this.round.snapshot().finalChaosScore;
 

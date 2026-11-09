@@ -9,6 +9,7 @@ import type { Difficulty } from './content/difficulty';
 import type { GameHud } from './game/ui/GameHud';
 import type { GameFeedback } from './game/ui/GameFeedback';
 import type { MainGoal } from './game/domain/main-goal';
+import type { BallPlay } from './game/domain/ball-play';
 import type { ResultViewSnapshot } from './game/ui/RoundResultView';
 import type { ReconciliationSnapshot } from './game/domain/reconciliation';
 import type { RoundSnapshot } from './game/domain/round-controller';
@@ -24,6 +25,7 @@ export interface GameTestState {
   readonly books: readonly ReturnType<BookStack['snapshot']>[];
   readonly shelves: readonly ReturnType<Shelf['snapshot']>[];
   readonly goal: ReturnType<MainGoal['snapshot']>;
+  readonly ballPlay: ReturnType<BallPlay['snapshot']>;
   readonly goalView: ReturnType<GoalView['snapshot']>;
   readonly started: boolean;
   readonly difficulty: Difficulty;
@@ -156,6 +158,9 @@ export interface GameTestState {
     } | null;
   } | null;
   readonly pixel: {
+    readonly visualX: number;
+    readonly visualFrame: number;
+    readonly visualFlipX: boolean;
     readonly animation: string | null;
     readonly animationFrame: number;
     readonly flipX: boolean;

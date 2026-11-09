@@ -20,6 +20,8 @@ Mit dem eingebauten Bildwerkzeug anhand des bestätigten Masters erstellt; Origi
 
 Abspielreihenfolge und Geschwindigkeit: `src/game/actors/pixel-animations.ts`. Gameplay bestimmt die Animation; Frames steuern weder Kollisionen noch Schaden. Die Quelldaten bleiben 32×32. Die Grunddarstellung im Spiel ist ohne Glättung 2× groß (64×64); die horizontal zentrierte Kollisionsfläche skaliert von 26×26 Quellpixeln auf 52×52 Spielpixel. Der Produktionsbuild lädt nur das gepackte Sheet.
 
+Das im Mockup für #186 freigegebene Ballspiel verwendet unveränderte Sitz-/Blinzelbilder 0/2, Laufbilder 5–9 und Pfotenposen 20–22 aus diesem Sheet. Hin-/Rückweg, kleine Schritte und beide Richtungswechsel sind im gemeinsamen Zeitprofil `src/game/domain/ball-play.ts` hinterlegt und über `/ball-play-preview.html` im Dev-Server reproduzierbar. Sitz-/Laufbilder bleiben 2×, die Pfotenposen 2,5× groß. Es wurden keine neuen Bilder generiert oder Exporte verändert; die ursprünglichen Quellen und Prompts oben gelten weiterhin. Der bestehende Lieblingsball bleibt ebenfalls unverändert; nur Position und Rotation der Darstellung bewegen sich.
+
 
 Die Laufposen werden aus `pixel-walk-source.png` übernommen: kompakter Körper, größerer Kopf und aufgerichteter Schwanz halten die Figur auch beim Gehen annähernd so hoch wie den Idle. Dadurch muss ein langgestreckter Lauf nicht mehr in dieselbe quadratische Zelle hineingeschrumpft werden. Alle fünf Laufbilder sind mindestens 27 Quellpixel hoch (Idle: 30). Unit-Tests sichern diese Untergrenze ab. Die übrigen Posen und der bestätigte Master bleiben erhalten.
 

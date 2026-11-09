@@ -53,6 +53,7 @@ test(
       expect(source).not.toContain('__E2E_ROUND_CONFIG__');
       expect(source).not.toContain('Vergleichsansicht unvollständig');
       expect(source).not.toContain('InteractablePlayground');
+      expect(source).not.toContain('BallPlayPreview');
       expect(source).not.toContain('GameDebug');
       expect(source).not.toContain('dev-scenario');
     }
@@ -60,6 +61,9 @@ test(
     for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175/pixels-world']) {
       for (const path of [
         '/animation-compare.html',
+        '/ball-play-preview.html',
+        '/src/dev/ball-play-preview.ts',
+        '/src/dev/BallPlayPreview.ts',
         '/interactable-playground.html',
         '/src/dev/game-debug.ts',
         '/src/dev/game-debug.css',

@@ -171,6 +171,7 @@ export const en: Record<keyof typeof de, string> = {
   chaosPoints: 'CHAOS: {v0}',
   chaos: 'CHAOS: {v0}  ·  {v1}: {v2}',
   goalReachedSaraIsComingHome: 'Goal reached: {v0} · Sara is coming home.',
+  ballPlayCelebration: 'Found it! Pixel has time for a little play.',
   goalMissedSaraIsBack: 'Goal missed: {v0} · Sara is back.',
   pixelIsPlayingWithThe: 'Pixel is playing with the {v0} … {v1}%',
   aSuspiciousLook: 'A suspicious look',

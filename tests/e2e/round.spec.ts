@@ -29,6 +29,8 @@ test(
     await advanceRoundTo(page, initial.round.returnAtMs);
     const finished = await state(page);
 
+    expect(finished.ballPlay).toMatchObject({ active: false, elapsedMs: 0 });
+
     test.info().annotations.push({
       type: 'round-simulation',
       description: JSON.stringify({
