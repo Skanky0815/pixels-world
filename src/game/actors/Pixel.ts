@@ -99,6 +99,26 @@ export class Pixel {
     this.sprite.setFlipX(this.x > x);
   }
 
+  /** Presentation only: the successful goal freezes the real body until homecoming. */
+  presentBallPlay(frame: number, scale: number, offset: number, faceLeft: boolean) {
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+
+    this.visual
+      .setTexture('pixel', frame)
+      .setScale(scale)
+      .setFlipX(faceLeft)
+      .setDepth(20)
+      .setPosition(body.center.x + offset, body.bottom - 16 * scale);
+  }
+
+  /** Hand the visible final shelf position back to normal movement without a visual jump. */
+  finishBallPlay(x: number) {
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+
+    body.reset(x, this.sprite.y);
+    this.visual.setDepth(1);
+  }
+
   move(input: InputState, time: number, delta: number, area: Bounds | undefined) {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
 
@@ -272,6 +292,9 @@ export class Pixel {
       bodyHeight: body.height,
       displayWidth: this.visual.displayWidth,
       displayHeight: this.visual.displayHeight,
+      visualX: this.visual.x,
+      visualFrame: Number(this.visual.frame.name),
+      visualFlipX: this.visual.flipX,
       velocityX: body.velocity.x,
       velocityY: body.velocity.y,
       grounded: body.blocked.down,

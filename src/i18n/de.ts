@@ -172,6 +172,7 @@ export const de = {
   chaosPoints: 'CHAOS: {v0}',
   chaos: 'CHAOS: {v0}  ·  {v1}: {v2}',
   goalReachedSaraIsComingHome: 'Ziel erreicht: {v0} · Sara kommt nach Hause.',
+  ballPlayCelebration: 'Gefunden! Pixel spielt noch eine kleine Runde.',
   goalMissedSaraIsBack: 'Ziel nicht erreicht: {v0} · Sara ist zurück.',
   pixelIsPlayingWithThe: 'Pixel spielt mit dem {v0} … {v1} %',
   aSuspiciousLook: 'Skeptischer Blick',

@@ -16,16 +16,21 @@ import { preloadCarpetArt } from '../game/assets/carpet-art';
 import { preloadFavoriteBallArt } from '../game/assets/favorite-ball-art';
 import { spriteUrl } from '../game/assets/urls';
 
-const DURATION = 4200;
-const phases = [
-  'Oh, mein Ball!',
-  'Nach rechts!',
-  'Hinterherdrehen',
-  'Und zurück!',
-  'Zur anderen Seite',
-  'Hab dich!',
-  'Meins.',
-];
+import {
+  BALL_PLAY_DURATION as DURATION,
+  ballPlayPose,
+  type BallPlayPhase,
+} from '../game/domain/ball-play';
+
+const phases: Record<BallPlayPhase, string> = {
+  look: 'Oh, mein Ball!',
+  'tap-right': 'Nach rechts!',
+  'follow-right': 'Hinterherdrehen',
+  'tap-left': 'Und zurück!',
+  'follow-left': 'Zur anderen Seite',
+  catch: 'Hab dich!',
+  settle: 'Meins.',
+};
 
 /** Isolated visual proposal: no actor, goal, score or homecoming controller is created. */
 export class BallPlayPreview extends Phaser.Scene {
@@ -118,41 +123,22 @@ export class BallPlayPreview extends Phaser.Scene {
     this.renderMoment();
   }
 
-  // eslint-disable-next-line max-lines-per-function, complexity -- Zwei Ballwege und die zugehörigen Richtungswechsel teilen einen scrubbaren Zeitwert; kein Spielzustand wird verändert.
+  // eslint-disable-next-line max-lines-per-function -- Die Vorschau zeigt exakt das mit der Spielintegration gemeinsame Zeitprofil.
   private renderMoment() {
-    const t = this.elapsed;
-    const phase =
-      t < 400 ? 0 : t < 700 ? 1 : t < 1500 ? 2 : t < 1800 ? 3 : t < 2600 ? 4 : t < 3000 ? 5 : 6;
-    const outward = Phaser.Math.Clamp((t - 700) / 800, 0, 1);
-    const inward = Phaser.Math.Clamp((t - 1800) / 800, 0, 1);
-    const ballOffset = this.reduced ? 0 : 48 * (outward - inward);
-    const following = phase === 2 || phase === 4;
-    const turning = Math.abs(t - 1100) < 90 || Math.abs(t - 2200) < 90;
-    const paw = !this.reduced && [1, 3, 5].includes(phase);
-    const faceLeft = this.reduced || t < 1100 || t >= 2200;
-    const step = this.reduced ? 0 : 4 * Math.sin(Math.PI * (outward - inward));
-    const frame = this.frame(phase, paw, following && !turning);
+    const pose = ballPlayPose(this.elapsed, this.reduced);
 
     this.pixel
-      .setPosition(874 + step, 154)
-      .setFrame(frame)
-      .setScale(paw ? 2.5 : 2)
-      .setFlipX(faceLeft);
-    this.ball.setPosition(850 + ballOffset, 146).setRotation(ballOffset / 8);
+      .setPosition(874 + pose.step, 154)
+      .setFrame(pose.frame)
+      .setScale(pose.scale)
+      .setFlipX(pose.faceLeft);
+    this.ball.setPosition(850 + pose.ball, 146).setRotation(pose.ball / 8);
     this.cameras.main.setZoom(this.zoomed ? 2.5 : 1);
     this.cameras.main.centerOn(this.zoomed ? 874 : 480, this.zoomed ? 114 : 270);
-    this.renderControls(phase);
+    this.renderControls(pose.phase);
   }
 
-  private frame(phase: number, paw: boolean, following: boolean) {
-    if (paw) return [20, 21, 22][Math.floor(this.elapsed / 125) % 3];
-
-    if (!this.reduced && following) return 5 + (Math.floor(this.elapsed / 100) % 5);
-
-    return phase === 6 ? 2 : 0;
-  }
-
-  private renderControls(phase: number) {
+  private renderControls(phase: BallPlayPhase) {
     (element('timeline') as HTMLInputElement).value = String(this.elapsed);
     element('phase').textContent = `${phases[phase]} · ${(this.elapsed / 1000).toFixed(1)} / 4,2 s`;
     element('pause').textContent = this.playing ? 'Pause' : 'Abspielen';

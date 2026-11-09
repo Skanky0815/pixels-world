@@ -1,6 +1,7 @@
 import { DIFFICULTIES } from '../../src/content/difficulty';
 import { startDifficulty } from './difficulty-support';
-import { test, expect, state, holdUntil, until, reset } from './support';
+import { test, expect, state, until, reset } from './support';
+import { climbToBall } from './goal-support';
 
 for (const difficulty of DIFFICULTIES) {
   for (const room of ['living-room', 'cozy-remix']) {
@@ -9,14 +10,7 @@ for (const difficulty of DIFFICULTIES) {
       // eslint-disable-next-line max-lines-per-function -- Der echte schadenfreie Weg, Zielabschluss und Neustart sind ein zusammenhängender Erreichbarkeitsnachweis.
     }) => {
       await startDifficulty(page, difficulty, room === 'living-room' ? '/' : '/?room=cozy-remix');
-      await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 800);
-      await holdUntil(page, ['ArrowUp'], (s) => s.pixel.bottom <= 116);
-      await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 835);
-      await holdUntil(
-        page,
-        ['ArrowDown'],
-        (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 154) < 2,
-      );
+      await climbToBall(page);
       const onShelf = await state(page);
 
       expect(onShelf.chaos.score).toBe(0);
@@ -53,14 +47,16 @@ for (const difficulty of DIFFICULTIES) {
       expect(reached.round.endReason).toBe('goal');
       expect(reached.round.elapsedMs).toBeLessThan(reached.round.returnAtMs);
       expect(reached.round.finalChaosScore).toBe(0);
-      expect(reached.homecoming.selection?.score).toBe(0);
-      expect(reached.goalView.text).toContain('Ziel erreicht');
+      expect(reached.homecoming.selection).toBeNull();
+      expect(reached.ballPlay.active).toBe(true);
+      expect(reached.goalView.text).toContain('Pixel spielt');
       expect(reached.goalView).toMatchObject({ ballVisible: true, markerVisible: false });
       await until(
         page,
         (s) => s.pixelReturn.stage === 'seated' && s.homecoming.stage === 'dialogue',
         500,
       );
+      expect((await state(page)).homecoming.selection?.score).toBe(0);
       await test
         .info()
         .attach('ziel-erreicht', { body: await page.screenshot(), contentType: 'image/png' });

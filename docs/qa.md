@@ -135,6 +135,14 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
 
+- Lieblingsball in beiden Räumen ohne Schaden finden: Nach dem kurzen Aufenthalt
+  spielt Pixel den Ball auf dem Regal nach rechts und zurück und dreht sich mit.
+  Ball und Pfoten bleiben auf dem Regal; Punkte, Objekte und Rundentimer ändern
+  sich dabei nicht. Saras Heimkehr und Dialog beginnen erst nach dem Spielmoment.
+  Menüpause und Fokusverlust beim Rollen prüfen, dann fortsetzen und während
+  eines zweiten Funds neu starten. Reduzierte Bewegung in System und Menü sowie
+  Touch im Hoch-/Querformat prüfen; bei verpasstem Ziel gibt es keinen Spielmoment.
+
 - Album aus Einführung und Pause öffnen: Runde bleibt stehen, Esc schließt nur das
   oberste Album. Raum-Tabs und Gesamt-/Kapitelzähler prüfen. Vor einer echten
   Schadensaktion dürfen weder Bilder noch Namen unbekannter Objekte sichtbar sein.

@@ -11,6 +11,9 @@ export class GoalView {
   private readonly caption: Phaser.GameObjects.Text;
   private readonly ball: Phaser.GameObjects.Image;
   private readonly marker: Phaser.GameObjects.Container;
+  private readonly ballX: number;
+  private readonly ballY: number;
+  private playing = false;
   // eslint-disable-next-line max-lines-per-function -- Zielmarker und kurzer Hinweis werden gemeinsam aus derselben validierten Platzierung aufgebaut.
   constructor(
     scene: Phaser.Scene,
@@ -27,6 +30,8 @@ export class GoalView {
       wordWrap: { width: 670 },
     });
     this.ball = scene.add.image(goal.x, goal.surfaceY, FAVORITE_BALL_TEXTURE).setOrigin(0.5, 1);
+    this.ballX = goal.x;
+    this.ballY = goal.surfaceY;
     this.marker = createGoalMarker(scene, goal, difficulty);
     this.root.add([this.caption, this.marker, this.ball]);
     this.removeCompactListener = compactVisibility(this.caption);
@@ -35,15 +40,29 @@ export class GoalView {
   render(goal: ReturnType<MainGoal['snapshot']>, started: boolean) {
     this.root.setVisible(started);
     this.marker.setVisible(goal.status === 'active' && this.difficulty !== 'hard');
-    this.caption.setText(translateExact(goalCaption(goal)));
+    this.caption.setText(
+      this.playing ? t('ballPlayCelebration') : translateExact(goalCaption(goal)),
+    );
   }
 
+  presentBallPlay(offset: number, angle: number, playing: boolean) {
+    this.playing = playing;
+    this.root.setDepth(playing ? 21 : 9);
+    this.ball
+      .setOrigin(0.5)
+      .setPosition(this.ballX + offset, this.ballY - 8)
+      .setRotation(angle);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige unveränderliche Beobachtungsvertrag enthält auch die rein visuelle Ballbewegung.
   snapshot() {
     return Object.freeze({
       text: this.caption.text,
       visible: this.root.visible,
       ballTexture: this.ball.texture.key,
       ballVisible: this.root.visible && this.ball.visible,
+      ballX: this.ball.x,
+      ballRotation: this.ball.rotation,
       markerVisible: this.root.visible && this.marker.visible,
       markerWidth: this.marker.getBounds().width,
     });

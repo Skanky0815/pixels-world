@@ -288,3 +288,24 @@ Auch Pixels automatische Rückkehr verwendet dieselbe bodengebundene Schrittrege
 Der Wechsel aus der Chaosphase beendet vorherige Aktionsloops; tatsächliches
 Laufen zur Sitzposition kann danach neue Schritte auslösen. Sitzen und Pause
 beenden auch diese Quellen ohne Nachlauf.
+
+## Spielmoment nach dem Ballfund
+
+Nur ein erfolgreicher Hauptzielabschluss startet `BallPlay`: Pixel stupst den Ball
+nach rechts und zurück, folgt ihm mit kleinen Schritten und dreht sich zweimal.
+Das gemeinsame Zeitprofil mit der DEV-Vorschau dauert 4,2 Sekunden aktiver Zeit.
+Die Ballbewegung ist rein visuell und bleibt innerhalb der Zielfläche; es gibt
+weder Ballkörper noch weitere Wertung oder Objektinteraktionen.
+
+Die Runde hält ihren endgültigen Punktestand bereits beim Fund fest. Physik,
+Aktionssounds und Rundentimer stehen während des Spielmoments; Saras einmalige
+Heimkehr und Pixels Rückweg beginnen erst danach. Pixel richtet sich in der ersten
+Phase sanft am Spielort aus. Sein sichtbarer Fußanker wird am Ende auf derselben
+Regalfläche an die normale Bewegung übergeben. Die Ballgrafik endet wieder am
+Fundort. Bei Zeitablauf ohne Fund beginnt die Heimkehr sofort.
+
+Pause, Fokus und Sichtbarkeit verwenden weiterhin `PlayActivity`; es gibt keine
+separaten Timer oder nachgeholte Hintergrundzeit. Ein neuer Szenenaufbau ersetzt
+das Modell und alle Darstellungen. Reduzierte Bewegung unterdrückt Ballrollen,
+Schritte, Ausrichtung und Drehungen; der ruhige Blick/Blinzler und dieselbe Dauer
+bleiben. Änderungen der Bewegungspräferenz wirken auch im geöffneten Pause-Menü.

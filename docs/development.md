@@ -88,7 +88,8 @@ Die Vorschau verwendet unveränderte [Pixel-Assets](../assets/pixel/README.md), 
 vorhandenen Lieblingsball und die reguläre Raumzeichnung. Es entstehen keine
 neuen Bildquellen oder Exporte. Bestehende Pfotenposen sind Platzhalter für die
 Abstimmung. Die isolierte Szene erzeugt weder Hauptziel noch Punkte oder Heimkehr;
-die Spielintegration folgt erst nach Freigabe des Mockups im Issue. HTML und
+Vorschau und Spiel verwenden das gemeinsame Zeitprofil in `game/domain/ball-play.ts`.
+Der freigegebene Ablauf dauert 4,2 Sekunden. HTML und
 DEV-Module sind keine Build-Einstiegspunkte und fehlen im Produktionsbuild.
 
 ## Einzelne Objekte ausprobieren
