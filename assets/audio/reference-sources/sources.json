@@ -1,0 +1,84 @@
+{
+  "sources": {
+    "863248": {
+      "title": "Nails on sofa (SoundAction 270)",
+      "author": "alexarje",
+      "url": "https://freesound.org/people/alexarje/sounds/863248/",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "preview": "https://cdn.freesound.org/previews/863/863248_262-hq.mp3",
+      "pcmSha256": "dd83d69441a85c397679e13cf9ecaf53b13991c2469c0128929feb5022c75c17",
+      "hqMp3Sha256": "d1b8563594d013d3828682241e71a11982d42fec7a973b902cce81aba5b76aa0",
+      "conversion": "Public HQ MP3 preview decoded with macOS afconvert to mono PCM16 22050 Hz; repacked as canonical PCM WAV."
+    },
+    "407177": {
+      "title": "Cat Eating.WAV",
+      "author": "Spyboticer",
+      "url": "https://freesound.org/people/Spyboticer/sounds/407177/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "preview": "https://cdn.freesound.org/previews/407/407177_7113933-hq.mp3",
+      "pcmSha256": "00d6264081eb9ef4ca548c48799b898b97d128f608ea2fc47a39245134c9b992",
+      "hqMp3Sha256": "7a90b49d76be9d3b8143cc682bf2e121cdd8e101aa109c57f190dc60ec2874c1",
+      "conversion": "Public HQ MP3 preview decoded with macOS afconvert to mono PCM16 22050 Hz; repacked as canonical PCM WAV."
+    },
+    "658429": {
+      "title": "Animal Footsteps",
+      "author": "IENBA",
+      "url": "https://freesound.org/people/IENBA/sounds/658429/",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "preview": "https://cdn.freesound.org/previews/658/658429_9616576-hq.mp3",
+      "pcmSha256": "7ba948e521562d751f9bd8656876ba89a11f10d7498d298e39230a14aad6cee4",
+      "hqMp3Sha256": "3bfda19af98bc904a97c86d51bb1e0dab3d04799ac19cc09246772d64a0ba657",
+      "conversion": "Public HQ MP3 preview decoded with macOS afconvert to mono PCM16 22050 Hz; repacked as canonical PCM WAV."
+    }
+  },
+  "clips": {
+    "scratch": {
+      "source": "863248",
+      "starts": [1.84, 1.94],
+      "duration": 0.72,
+      "highpass": 130,
+      "lowpass": 6500,
+      "rms": 0.09,
+      "peak": 0.55
+    },
+    "climb": {
+      "source": "863248",
+      "starts": [1.99, 2.2],
+      "duration": 0.28,
+      "highpass": 200,
+      "lowpass": 4200,
+      "rms": 0.065,
+      "peak": 0.45
+    },
+    "slide": {
+      "source": "863248",
+      "starts": [1.97, 2.12],
+      "duration": 0.4,
+      "highpass": 130,
+      "lowpass": 3500,
+      "rms": 0.075,
+      "peak": 0.5
+    },
+    "nibble": {
+      "source": "407177",
+      "starts": [5.25, 8.8],
+      "duration": 0.9,
+      "highpass": 180,
+      "lowpass": 6000,
+      "rms": 0.075,
+      "peak": 0.5
+    },
+    "walk": {
+      "source": "658429",
+      "starts": [5.75, 12.85],
+      "duration": 1.0,
+      "highpass": 100,
+      "lowpass": 3200,
+      "rms": 0.055,
+      "peak": 0.45
+    }
+  }
+}

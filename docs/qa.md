@@ -223,3 +223,9 @@ und nach Ablösen/Bodenkontakt endet die Reibung. Boden- und Vorhangsprünge geb
 je einen kurzen Ton, Lufttastendrücke und Spawn keinen. Pause, Tabwechsel,
 Stummschaltung und Heimkehr auch mitten im Aktionsloop prüfen; keine vorbereitete
 Loopquelle darf weiterlaufen. Danach dieselben Abläufe im DEV-Playground testen.
+
+Bei den aufgenommenen Aktionsgeräuschen die Schnittübergänge und Pegel per
+Hörprobe vergleichen. Schritte nur beim realen Laufen prüfen, einschließlich
+sofortigem Ende bei Luftphase, Vorhang, Stillstand, Wanddruck und Pause.
+Im Impressum müssen die Audio-Quellen samt alexarje, CC BY 4.0 und Hinweis auf
+Bearbeitung auch im Produktions-/Pages-Unterpfad erreichbar bleiben.

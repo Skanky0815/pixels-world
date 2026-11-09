@@ -274,3 +274,17 @@ Aktionswechsel, Abbruch, Stummschaltung und Heimkehr entfernen den Loop. Pause,
 Tabwechsel und Szenenabbau entfernen auch von Phaser vorausgeplante Loopquellen.
 Beim Fortsetzen wird nur die weiterhin laufende aktuelle Aktion neu ausgewählt;
 Einzelereignisse werden nicht nachgeholt. Das gemeinsame Limit bleibt bestehen.
+
+Die von Rico ausgewählten Freesound-Aufnahmen ersetzen Kratz-, Knabber- und
+Vorhangplatzhalter. Ein weiterer Aktionsloop gibt beim tatsächlichen Laufen
+Schritte aus: nur mit Bodenkontakt, geringer vertikaler Geschwindigkeit und
+horizontalem Positionsfortschritt. Sprung, Fall, Vorhang, Anschlag und Stillstand
+beenden ihn. Die vollständigen kanonischen PCM-Quellen und Bearbeitungsparameter
+bleiben außerhalb des Runtime-Imports; der Offline-Build enthält nur die kurzen
+Varianten. Gemischte CC-BY-/CC0-Rechte und Bearbeitungen sind bei den
+Audio-Assets und im Impressum dokumentiert.
+
+Auch Pixels automatische Rückkehr verwendet dieselbe bodengebundene Schrittregel.
+Der Wechsel aus der Chaosphase beendet vorherige Aktionsloops; tatsächliches
+Laufen zur Sitzposition kann danach neue Schritte auslösen. Sitzen und Pause
+beenden auch diese Quellen ohne Nachlauf.

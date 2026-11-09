@@ -604,7 +604,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.physics.world.update(time, elapsed);
     this.updateGameplay(input, time, elapsed);
-    this.audio.updatePixel(this.pixel.activity, this.pixel.y);
+    this.audio.updateMovement(this.pixel.activity, this.pixel.snapshot());
 
     const reached = this.goal.advance(elapsed, this.pixel.snapshot(), input.active);
 
@@ -665,6 +665,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (this.returning.snapshot().stage === 'seated') this.faceSara();
     this.pixel.present(this.returnTime, 'idle', false);
+    this.audio.updateMovement(this.pixel.activity, this.pixel.snapshot());
 
     if (walking && this.returning.snapshot().stage === 'seated') this.syncActivity();
   }

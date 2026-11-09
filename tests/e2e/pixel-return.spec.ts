@@ -1,3 +1,4 @@
+import { recordAudio, expectActiveAudio } from './audio-support';
 import { test, expect, state, start, until, lowerShelf, curtain, reset } from './support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
 
@@ -11,6 +12,7 @@ for (const place of ['Regal', 'Vorhang'] as const) {
     { tag },
     // eslint-disable-next-line max-lines-per-function -- Echter Weg zum Ausgangspunkt, Heimkehr und unveränderte Schadenswelt werden gemeinsam geprüft.
     async ({ page }) => {
+      await recordAudio(page);
       await seedRoundRandom(page);
       await start(page, path);
 
@@ -26,6 +28,7 @@ for (const place of ['Regal', 'Vorhang'] as const) {
         (s) => s.pixelReturn.stage === 'seated' && s.homecoming.stage === 'dialogue',
         500,
       );
+      await expectActiveAudio(page, 1, false);
       const seated = await state(page);
 
       expect(Math.abs(seated.pixel.x - (seated.sara.x - 64))).toBeLessThanOrEqual(4);

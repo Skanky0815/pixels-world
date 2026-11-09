@@ -1,38 +1,71 @@
-# Wohnzimmer-Geräusche
+# Wohnzimmer- und Aktionsgeräusche
 
-Originale, deterministisch synthetisierte Geräusche für Pixel’s World (#237).
-Keine Samples, Aufnahmen oder fremden Klangquellen. Erstellt mit
-[`tools/prepare-object-audio.py`](../../tools/prepare-object-audio.py), reproduzierbar
-mit `python3 tools/prepare-object-audio.py` (Python-Standardbibliothek).
+Alle Laufzeitdateien liegen als kurze Mono-WAVs (PCM 16 Bit, 22.050 Hz) direkt
+in diesem Ordner. Je zwei Varianten werden über Phasers Effektkanal mit
+Gesamtlautstärke × Effektlautstärke abgespielt. Es gibt keine externen
+Audioabrufe zur Laufzeit. Nicht für das Spiel benötigte vollständige
+Quellaufnahmen liegen unter `reference-sources/` und werden nicht gebündelt.
 
-Alle WAV-Dateien und ihr Syntheseprogramm werden unter **CC0-1.0**
-freigegeben: [CC0 Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/).
-Es bestehen keine fremden Namensnennungs- oder Lizenzpflichten.
-Format: Mono, PCM 16 Bit, 22.050 Hz. Je zwei Varianten:
+## Aufnahmen und Rechte
 
-| Dateigruppe  | Anlass                                                   | Klang                                    |
-| ------------ | -------------------------------------------------------- | ---------------------------------------- |
-| `vase-*`     | Bruch am Boden                                           | heller keramischer Bruch, kurze Splitter |
-| `picture-*`  | Bild erreicht Boden                                      | tieferer Rahmen-/Glasklirrer             |
-| `books-*`    | Umsturz oder erneuter Bodenaufprall nach Auflagenverlust | dumpfer Papier-/Buchschlag               |
-| `creak-*`    | Regal wird wacklig oder beschädigt                       | kurzes Holzknarzen                       |
-| `collapse-*` | Regal stürzt ein                                         | tiefer Holzbruch mit Nachpoltern         |
+| Quelle                                                                                          | Urheber    | Lizenz                                                        | Abgeleitete Dateien               |
+| ----------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------- | --------------------------------- |
+| [Nails on sofa (SoundAction 270), 863248](https://freesound.org/people/alexarje/sounds/863248/) | alexarje   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)     | `scratch-*`, `climb-*`, `slide-*` |
+| [Cat Eating.WAV, 407177](https://freesound.org/people/Spyboticer/sounds/407177/)                | Spyboticer | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | `nibble-*`                        |
+| [Animal Footsteps, 658429](https://freesound.org/people/IENBA/sounds/658429/)                   | IENBA      | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | `walk-*`                          |
 
-| `jump-*` | Tatsächlich ausgelöster Boden-/Vorhangsprung | kurzer weicher Luft-/Absprungimpuls |
-| `hairball-*` | Einmaliger Abschluss des Würgens | kurzer dumpfer Haarballen-Plopp |
-| `retch-*` | Laufende Würgeanimation | gedämpftes rhythmisches Würgen |
-| `scratch-*` | Laufende Kratzanimation | rhythmisches Schaben |
-| `nibble-*` | Laufende Knabberanimation, einschließlich Wackelwarnung | leises Knuspern und Rascheln |
-| `climb-*` | Tatsächliche Aufwärtsbewegung am Vorhang | kurze rhythmische Stoff-/Krallenreibung |
-| `slide-*` | Tatsächliche Abwärtsbewegung am Vorhang | weiche kontinuierliche Stoffreibung |
+Die Kratzaufnahme und ihre Bearbeitungen bleiben **CC BY 4.0**. Sie werden nicht
+als eigene CC0-Synthese ausgegeben. Namensnennung, Quelle, Lizenz und
+Bearbeitungshinweis stehen auch im ausgelieferten [Impressum](../../impressum.html#audio-credits).
+Die anderen Aufnahmen behalten CC0; ihre Urheber werden freiwillig genannt.
 
-Die Originaldateien lassen sich direkt im Browser oder Audioplayer anhören.
-Im DEV-Objekt-Playground lassen sich die Geräusche mit den realen Interaktionen
-prüfen. Beide Räume nutzen dieselben Übergänge. Die Variante wechselt pro
-abgespieltem Effekt; objektbezogene Pegel liegen in `object-cues.ts`.
+Als Eingang dient jeweils die auf der Quellseite öffentlich angebotene
+**HQ-MP3-Vorschau**, nicht die nur nach Anmeldung erhältliche Original-WAV.
+Diese wurde am 9. November 2026 mit `afconvert` in Mono-PCM umgewandelt und als
+kanonische WAV unter `reference-sources/` abgelegt. Die Quellen sind weiterhin
+komplette Aufnahmen; die Spiel-WAVs enthalten ausschließlich kurze Ausschnitte.
+Die Schrittausgangsaufnahme ist Tier-Foley auf Sand/Gras/Kies; sie wird für das
+Wohnzimmer durch Filterung und einen zurückhaltenden Spielpegel weicher gestaltet.
 
-Aktionsgeräusche laufen als genau ein Loop für Pixels aktuelle Aktion. Wechsel,
-Bewegungsabbruch, stillstehender Vorhangrand, Pause, Stummschaltung, Heimkehr und
-Neustart entfernen den laufenden und den von Phaser vorbereiteten Folgesound.
+Bearbeitungen: Mono-/Abtastratenwandlung, Zuschnitt, Hoch-/Tiefpass, Normalisierung
+mit Spitzengrenze und 12-ms-Randblenden. Die zwei Varianten nutzen verschiedene
+Ausschnitte. Quelle, Vorschau-URL, SHA-256 und sämtliche Schnitt-/Filterparameter
+stehen in [sources.json](reference-sources/sources.json).
+Reproduktion nur mit Python-Standardbibliothek:
+
+```sh
+python3 tools/prepare-recorded-audio.py
+```
+
+## Eigene Synthesen
+
+`vase-*`, `picture-*`, `books-*`, `creak-*`, `collapse-*`, `jump-*`, `hairball-*`
+und `retch-*` sind eigene deterministische Synthesen ohne fremde Samples.
+Diese Dateien und die beiden Bearbeitungs-/Syntheseprogramme sind unter
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) freigegeben.
+Reproduktion: `python3 tools/prepare-object-audio.py`. Dieser Befehl überschreibt
+keine aus Aufnahmen bearbeiteten Dateien.
+
+| Gruppe                           | Anlass                                                   |
+| -------------------------------- | -------------------------------------------------------- |
+| `vase-*`, `picture-*`, `books-*` | Bruch bzw. tatsächlicher Aufprall des jeweiligen Objekts |
+| `creak-*`, `collapse-*`          | Regalwarnung/-schaden bzw. Einsturz                      |
+| `jump-*`, `hairball-*`           | Tatsächlicher Absprung bzw. einmaliger Würgeabschluss    |
+| `retch-*`                        | Laufende Würgeanimation                                  |
+| `scratch-*`, `nibble-*`          | Kratzen bzw. Knabbern samt Wackelwarnung                 |
+| `climb-*`, `slide-*`             | Tatsächliche Bewegung am Vorhang                         |
+| `walk-*`                         | Tatsächliche waagerechte Bewegung mit Bodenkontakt       |
+
+## Hörprobe und Lebensdauer
+
+Beide Wohnzimmer und der DEV-Objekt-Playground verwenden dieselbe Audioanbindung.
+Aktionsgeräusche laufen als genau ein Loop für Pixels aktuelle Aktion. Schritte
+sind an Bodenkontakt, geringe vertikale Geschwindigkeit und tatsächlichen
+horizontalen Positionsfortschritt gebunden: Luft, Vorhang und Wanddruck bleiben
+frei von Schritten. Aktionswechsel, Bewegungsabbruch, Anschlag, Pause,
+Stummschaltung, Heimkehr und Neustart entfernen laufende und vorbereitete Quellen.
 Aktuelle Aktionen können beim Fortsetzen neu erklingen; alte Einzelereignisse
-werden nicht nachgeholt. Aktionsloops teilen das Stimmenlimit mit den Impacts.
+werden nicht nachgeholt. Loops und Impacts teilen das Stimmenlimit.
+
+Die automatische Rückkehr zu Sara nutzt dieselbe Schrittregel; beim Sitzen endet
+auch dort der Schrittsound. Der Wechsel zur Heimkehr spielt keine alte Aktion nach.

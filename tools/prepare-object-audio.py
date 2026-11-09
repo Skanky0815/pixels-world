@@ -13,7 +13,7 @@ def render(kind, variant):
     rng = random.Random(237 + variant)
     duration = {"vase": .48, "picture": .38, "books": .24,
                 "creak": .32, "collapse": .65, "jump": .16, "hairball": .22,
-                "retch": .56, "scratch": .36, "nibble": .30, "climb": .28, "slide": .40}[kind]
+                "retch": .56}[kind]
     samples = []
     for i in range(int(RATE * duration)):
         t = i / RATE
@@ -51,20 +51,10 @@ def activity_sample(kind, t, duration, noise, pitch):
         pulse = math.sin(math.pi * t / duration) ** 2
         rasp = math.sin(math.tau * 83 * t * pitch) * math.sin(math.tau * 131 * t)
         return (rasp * .65 + noise * .23) * pulse * (.6 + .4 * math.sin(t * 45) ** 2)
-    if kind == "scratch":
-        stroke = max(0, math.sin(t * math.tau * 6)) ** 2
-        return (noise * .65 + math.sin(t * math.tau * 730 * pitch) * .1) * stroke
-    if kind == "nibble":
-        crunch = max(0, math.sin(t * math.tau * 10)) ** 4
-        return noise * crunch * .65 + math.sin(t * math.tau * 190 * pitch) * crunch * .12
-    if kind == "climb":
-        step = max(0, math.sin(t * math.tau * 7)) ** 3
-        return (noise * .35 + math.sin(t * math.tau * 145 * pitch) * .2) * step
-    # Soft continuous fabric friction, distinct from the rhythmic climb/scratch.
-    return noise * .4 * (.7 + .3 * math.sin(t * math.tau * 17) ** 2)
+    raise ValueError(f"Unknown synthetic cue: {kind}")
 
 
 for cue in ("vase", "picture", "books", "creak", "collapse", "jump", "hairball",
-            "retch", "scratch", "nibble", "climb", "slide"):
+            "retch"):
     for variation in range(2):
         render(cue, variation)

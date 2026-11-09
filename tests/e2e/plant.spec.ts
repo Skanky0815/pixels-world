@@ -12,7 +12,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   await page.clock.runFor(1500);
   expect((await state(page)).plant.damage).toBe(0);
   await until(page, (s) => s.plant.state === 'nibbling');
-  await expectActiveAudio(page, 0.3, true);
+  await expectActiveAudio(page, 0.9, true);
   const first = await state(page);
 
   expect(first.plant).toMatchObject({ texture: 'catgrass-bitten', soilVisible: false });
@@ -44,7 +44,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   });
   await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= first.plant.x - 160);
   expect((await state(page)).plant.state).toBe('idle');
-  await expectActiveAudio(page, 0.3, false);
+  await expectActiveAudio(page, 0.9, false);
   expect((await state(page)).plant.angle).toBe(0);
   expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   await page.clock.runFor(1500);

@@ -17,10 +17,14 @@ test(
   { tag: '@smoke' },
   // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
   async ({ page }) => {
+    await recordAudio(page);
     await start(page);
+    await expectAudio(page, 1, 0);
     await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x > 150);
+    await expectActiveAudio(page, 1, true);
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.left <= 0.1);
     await framesPass(page);
+    await expectActiveAudio(page, 1, false);
     const { pixel } = await state(page);
 
     expect(pixel.x).toBeGreaterThanOrEqual(0);
@@ -35,6 +39,7 @@ test('Tastatursprünge landen auf Sofa und erstem Regal', async ({ page }) => {
   await start(page);
   await expectAudio(page, 0.16, 0);
   await lowerShelf(page);
+  await expectActiveAudio(page, 1, false);
   await expectAudio(page, 0.16, 2);
   expect((await state(page)).pixel.x).toBeLessThan(664);
 });

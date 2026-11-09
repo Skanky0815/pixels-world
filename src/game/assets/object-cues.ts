@@ -13,6 +13,7 @@ export const OBJECT_CUES = [
   'nibble',
   'climb',
   'slide',
+  'walk',
 ] as const;
 export type ObjectCue = (typeof OBJECT_CUES)[number];
 export const CUE_VOLUME: Record<ObjectCue, number> = {
@@ -28,6 +29,7 @@ export const CUE_VOLUME: Record<ObjectCue, number> = {
   nibble: 0.3,
   climb: 0.25,
   slide: 0.3,
+  walk: 0.22,
 };
 const DAMAGE_CUES: Partial<Record<DamageKind, ObjectCue>> = {
   break: 'vase',
@@ -52,7 +54,7 @@ const ACTION_CUES: Partial<Record<string, ObjectCue>> = {
 };
 
 export function actionCue(action: string, moving: boolean): ObjectCue | undefined {
-  if ((action === 'climbing' || action === 'sliding') && !moving) return;
+  if (['climbing', 'sliding'].includes(action) && !moving) return;
 
   return ACTION_CUES[action];
 }

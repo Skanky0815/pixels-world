@@ -2,6 +2,15 @@ import { CUE_VOLUME, damageCue, actionCue, type ObjectCue } from '../assets/obje
 import type { ChaosEvent } from '../domain/chaos-event.ts';
 import { audioPreferences } from '../../settings/audio.ts';
 
+interface PixelAudioFrame {
+  readonly x: number;
+  readonly y: number;
+  readonly grounded: boolean;
+  readonly climbing: boolean;
+  readonly velocityX: number;
+  readonly velocityY: number;
+}
+
 interface SoundPort {
   volume: number;
   pauseOnBlur: boolean;
@@ -20,6 +29,7 @@ export class GameAudio {
   private action: ObjectCue | undefined;
   private actionKey: string | undefined;
   private previousY: number | undefined;
+  private previousX: number | undefined;
   private active: boolean | undefined;
   private readonly sound: SoundPort;
   private readonly unsubscribe: () => void;
@@ -82,6 +92,29 @@ export class GameAudio {
     this.syncAction(actionCue(action, moving));
   }
 
+  updateMovement(action: string, pixel: PixelAudioFrame) {
+    const walking = this.walking(action, pixel);
+
+    this.previousX = pixel.x;
+
+    if (walking) this.syncAction('walk');
+    else this.updatePixel(action, pixel.y);
+    this.previousY = pixel.y;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Bodenkontakt, freie Bewegung und realer Positionsfortschritt schließen Luft, Vorhang und Wanddruck aus.
+  private walking(action: string, pixel: PixelAudioFrame) {
+    return (
+      action === 'idle' &&
+      pixel.grounded &&
+      !pixel.climbing &&
+      Math.abs(pixel.velocityX) > 1 &&
+      Math.abs(pixel.velocityY) < 1 &&
+      this.previousX !== undefined &&
+      Math.abs(pixel.x - this.previousX) > 0.01
+    );
+  }
+
   private syncAction(cue: ObjectCue | undefined) {
     if (!this.available()) return this.stopAction();
 
@@ -111,6 +144,7 @@ export class GameAudio {
     this.action = undefined;
     this.actionKey = undefined;
     this.previousY = undefined;
+    this.previousX = undefined;
     this.sound.stopAll();
     this.sound.removeAll();
   }

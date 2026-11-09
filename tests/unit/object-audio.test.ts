@@ -144,7 +144,7 @@ test('WAV-Assets sind kurz, unterscheidbar und unter Vollaussteuerung', () => {
   const root = new URL('../../assets/audio/', import.meta.url);
   const files = readdirSync(root).filter((name) => name.endsWith('.wav'));
 
-  assert.equal(files.length, 24);
+  assert.equal(files.length, 26);
 
   for (const file of files) {
     const wav = readFileSync(new URL(file, root));
@@ -152,7 +152,7 @@ test('WAV-Assets sind kurz, unterscheidbar und unter Vollaussteuerung', () => {
     assert.equal(wav.toString('ascii', 0, 4), 'RIFF');
     assert.equal(wav.readUInt32LE(24), 22050);
     assert.equal(wav.readUInt16LE(22), 1);
-    assert.ok(wav.length < 30000);
+    assert.ok(wav.length < 90000);
     let peak = 0;
 
     for (let i = 44; i < wav.length; i += 2) peak = Math.max(peak, Math.abs(wav.readInt16LE(i)));
@@ -257,4 +257,33 @@ test('Aktionsloops respektieren Pause, Stummschaltung, Reset und das gemeinsame 
 
   audio.updatePixel('retching', 100);
   assert.equal(calls.length, 3);
+});
+
+// eslint-disable-next-line max-lines-per-function -- Echte Bodenbewegung wird gemeinsam gegen Spawn, Wanddruck, Sprung, Fall, Vorhang und Abbruch abgegrenzt.
+test('Schritte brauchen tatsächlichen Bodenfortschritt und stoppen sofort ohne Bewegung', () => {
+  const { audio, calls, removedKeys } = setup();
+  const pixel = { x: 100, y: 400, grounded: true, climbing: false, velocityX: 230, velocityY: 0 };
+
+  try {
+    audio.updateMovement('idle', pixel);
+    audio.updateMovement('idle', pixel);
+    assert.equal(calls.length, 0);
+    audio.updateMovement('idle', { ...pixel, x: 110 });
+    audio.updateMovement('idle', { ...pixel, x: 120 });
+    assert.deepEqual(calls, [{ key: 'object-walk-0', volume: CUE_VOLUME.walk, loop: true }]);
+    audio.updateMovement('idle', { ...pixel, x: 120 });
+    assert.deepEqual(removedKeys, ['object-walk-0']);
+    audio.updateMovement('idle', { ...pixel, x: 125, velocityY: -480 });
+    audio.updateMovement('idle', { ...pixel, x: 130, grounded: false });
+    audio.updateMovement('climbing', { ...pixel, x: 135, climbing: true });
+    audio.updateMovement('idle', { ...pixel, x: 140, velocityX: 0 });
+    assert.equal(calls.length, 1);
+    audio.updateMovement('idle', { ...pixel, x: 150 });
+    assert.equal(calls.length, 2);
+    audio.updateMovement('nibbling', { ...pixel, x: 150, velocityX: 0 });
+    assert.equal(calls.at(-1)?.key, 'object-nibble-0');
+    assert.equal(removedKeys.at(-1), 'object-walk-1');
+  } finally {
+    audio.destroy();
+  }
 });
