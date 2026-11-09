@@ -7,6 +7,9 @@ const rug = (s: Awaited<ReturnType<typeof state>>) => s.carpets[0];
 for (const room of ['living-room', 'cozy-remix']) {
   // eslint-disable-next-line max-lines-per-function -- Anlauf, Abbruch, Pose, einmaliger Fleck, Albumereignis und Reset werden gemeinsam mit echten Wegen geprüft.
   test(`Teppich: Abbruch, Würgen und einmaliger Haarballen im ${room} @smoke`, async ({ page }) => {
+    // Several real room crossings plus pause/reset nearly exhaust the default budget on CI.
+    // Keep each action's 15-second polling limit; only this complete scenario gets more time.
+    test.setTimeout(90_000);
     await recordAudio(page);
     await start(page, `/?room=${room}&room-seed=carpet-141`);
     await expectAudio(page, 0.56, 0);
