@@ -4,7 +4,8 @@
 
 | Bereich                          | Verantwortung                                                                      |
 | -------------------------------- | ---------------------------------------------------------------------------------- |
-| `src/main.ts`                    | Bootstrap, Raumwahl und Phaser-Konfiguration                                       |
+| `src/main.ts`                    | Kleiner Einstieg und Fehlerbehandlung vor dem Spielimport                          |
+| `src/world.ts`                   | Raumwahl und Phaser-Konfiguration                                                  |
 | `game/scenes/LivingRoomScene.ts` | Aufbau, Kollisionspaare, Frame-Reihenfolge und Lebenszyklus                        |
 | `game/input/`                    | Tastatur/Pointer, eingefrorener Input-Snapshot und Browseraktivität                |
 | `game/actors/`                   | Bewegung, Körper, sichtbare Figuren und Animationsauswahl                          |
@@ -288,6 +289,22 @@ Auch Pixels automatische Rückkehr verwendet dieselbe bodengebundene Schrittrege
 Der Wechsel aus der Chaosphase beendet vorherige Aktionsloops; tatsächliches
 Laufen zur Sitzposition kann danach neue Schritte auslösen. Sitzen und Pause
 beenden auch diese Quellen ohne Nachlauf.
+
+## Ladescreen und Spielstart
+
+`play.html` enthält die sofort sichtbare Ladeansicht samt kleinem separatem CSS.
+`main.ts` lädt erst den schlanken DOM-Controller, dann `world.ts` mit Phaser und
+Spielcode. Pixel und Ball verwenden die vorhandenen PNGs und CSS-Animationen;
+reduzierte Bewegung aus System und gespeicherter Einstellung hält sie statisch.
+Der Fortschrittsbalken ist vor Phaser unbestimmt und folgt danach dessen echter
+Asset-Queue. Nach erfolgreichem Aufbau und erstem Rendern bleibt die Anzeige
+insgesamt mindestens zwei Sekunden sichtbar. Längeres Laden erhält keine
+zusätzliche Mindestpause. Die Einführung ist währenddessen inaktiv; frühe
+Tastendrücke werden verbraucht und starten keine Runde hinter der Anzeige.
+Asset- oder Spielmodulfehler erhalten die Fehlermeldung und einen vollständigen
+Neuladeversuch. Scene-Neustarts zeigen den initialen Ladescreen nicht erneut.
+Die DEV-Vorschau wird über einen ausschließlich in Entwicklung ausgewerteten
+Queryparameter geladen; ihr Modul und ihre Steuerung gehören nicht zum Build.
 
 ## Spielmoment nach dem Ballfund
 

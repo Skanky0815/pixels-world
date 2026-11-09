@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { test, expect } from './support';
+import { test, expect, waitForLoadingScreen } from './support';
 import type { DebugPort, DebugScenario } from '../../src/dev/game-debug-model';
 
 type Snapshot = ReturnType<DebugPort['read']>;
@@ -39,6 +39,7 @@ async function openDebug(page: Page) {
       { intervals: [0], timeout: 15_000 },
     )
     .toBe(1);
+  await waitForLoadingScreen(page);
   await page.keyboard.press('F2');
   await expect(dialog(page)).toBeVisible();
   await untilDebug(page, () => true);

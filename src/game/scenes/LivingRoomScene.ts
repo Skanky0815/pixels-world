@@ -1,3 +1,4 @@
+import { loadingScreen } from '../../loading-screen';
 import { preloadObjectAudio } from '../assets/object-audio';
 import { BallPlay, ballPlayPose, ballPlayPlacement } from '../domain/ball-play';
 import { motionPreferences } from '../../settings/motion';
@@ -112,6 +113,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
   preload() {
+    loadingScreen.track(this.load);
     preloadObjectAudio(this);
     preloadVaseArt(this);
     preloadCarpetArt(this);
@@ -127,6 +129,10 @@ export class LivingRoomScene extends Phaser.Scene {
     this.preloadSprite('sara');
   }
 
+  private isReady() {
+    return this.scene.isActive() && !loadingScreen.blocking;
+  }
+
   private preloadSprite(key: 'pixel' | 'sara') {
     const asset = ASSETS[key];
 
@@ -138,6 +144,10 @@ export class LivingRoomScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Raum, Figuren und szenengebundene Diagnose werden in fester Aufbaufolge initialisiert.
   create(data: { debugScenario?: DebugScenario; started?: boolean } = {}) {
+    if (loadingScreen.failed) return;
+    this.events.once(Phaser.Scenes.Events.RENDER, () =>
+      loadingScreen.ready(() => this.controls.release()),
+    );
     const generation = ++this.generation;
 
     this.difficulty = difficultyPreferences.snapshot();
@@ -281,7 +291,7 @@ export class LivingRoomScene extends Phaser.Scene {
           const camera = this.cameras.main;
 
           return {
-            ready: this.scene.isActive(),
+            ready: this.isReady(),
             difficulty: this.difficulty,
             scene: this.scene.key,
             frame: this.game.loop.frame,
@@ -493,6 +503,8 @@ export class LivingRoomScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Startsignal, Neustart und aktiver Frame werden in fester Reihenfolge mit derselben Eingabe behandelt.
   update(_time: number, delta: number) {
     if (!this.pixel) return;
+
+    if (loadingScreen.blocking) return void this.controls.release();
     const input = this.controls.read(this.game.loop.frame);
 
     if (this.menu.opened) return;

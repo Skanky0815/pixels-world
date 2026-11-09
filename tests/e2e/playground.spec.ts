@@ -1,6 +1,6 @@
 import { PNG } from 'pngjs';
 import type { Page } from '@playwright/test';
-import { test, expect } from './support';
+import { test, expect, waitForLoadingScreen } from './support';
 import { TouchDriver } from './touch-support';
 import { OBJECTS } from '../../src/content/objects/catalog';
 import type { PlaygroundScene } from '../../src/dev/PlaygroundScene';
@@ -13,6 +13,7 @@ for (const [name, path, ready] of [
 ]) {
   test(`Spiel-Footer öffnet ${name} im Dev-Modus`, async ({ page }) => {
     await page.goto('http://127.0.0.1:4176/play.html');
+    await waitForLoadingScreen(page);
     const link = page.locator('#build-info').getByRole('link', { name });
 
     await expect(link).toHaveAttribute('href', path);

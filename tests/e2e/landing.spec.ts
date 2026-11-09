@@ -1,5 +1,5 @@
 import { openPause } from './pause-support';
-import { test, expect, until, waitForGame } from './support';
+import { test, expect, until, waitForGame, waitForLoadingScreen } from './support';
 
 for (const width of [320, 390, 768, 1440]) {
   // eslint-disable-next-line max-lines-per-function -- Derselbe sichtbare Landingpage-Vertrag wird pro Bildschirmbreite vollständig geprüft.
@@ -118,13 +118,7 @@ test('Landingpage: Pages-Unterpfad lädt nur lokale Ressourcen und erhält die N
 
   await page.getByRole('link', { name: 'Jetzt spielen →' }).last().click();
   await expect(page).toHaveURL(base + 'play.html');
-  await expect
-    .poll(async () => {
-      await page.clock.runFor(32);
-
-      return page.locator('.start-screen:visible').count();
-    })
-    .toBe(1);
+  await waitForLoadingScreen(page);
   await page.locator('.pause-toggle').click();
   await page.getByRole('link', { name: 'Beenden', exact: true }).click();
   await expect(page).toHaveURL(base);

@@ -1,4 +1,13 @@
 export const de = {
+  loadingTitle: 'Pixels Wohnzimmer wird vorbereitet …',
+  loadingReady: 'Bereit! Pixel jagt noch kurz den Ball …',
+  loadingStarting: 'Pixel jagt schon mal den Ball.',
+  loadingAssets: 'Das Wohnzimmer wird geladen …',
+  loadingProgress: 'Ladefortschritt',
+  loadingFailed: 'Beim Laden ist etwas schiefgegangen.',
+  loadingError: 'Das Spiel konnte nicht vollständig geladen werden. Bitte versuche es erneut.',
+  loadingRetry: 'Erneut versuchen',
+
   albumPages: 'Objektseiten',
   albumPreviousPage: 'Vorige Seite',
   albumNextPage: 'Nächste Seite',

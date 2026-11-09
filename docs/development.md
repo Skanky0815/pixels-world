@@ -235,3 +235,13 @@ Rechtsseiten benötigen dafür kein JavaScript und laden keine Spielengine.
 Ein gemeinsamer DE-/EN-Footer-Hinweis benennt KI-erstellten Code, Grafiken und
 Texte sowie Ricos Idee und Review. Auf den deutschen Rechtsseiten wird dieser
 Hinweis ebenfalls statisch ausgeliefert.
+
+## Ladescreen ansehen
+
+Unter `/play.html?loading-preview=1` bleibt im Dev-Server die reale Ladeansicht
+zum Gestalten stehen. Der Vorschau-Regler ändert den angezeigten Fortschritt;
+„Fehler anzeigen“ prüft die Fehleransicht und „Bewegung reduzieren“ die
+vorhandene Bewegungseinstellung. „Zum Spiel“ lädt den normalen Einstieg.
+Im normalen Spiel dauert die Anzeige mindestens zwei Sekunden, folgt aber dem
+echten Ladefortschritt. Die Vorschau-Query hat im Produktions-/E2E-Build keine
+Wirkung; dort wird das Spiel regulär geladen.

@@ -9,6 +9,7 @@ import {
   besideCouch,
   reset,
   waitForGame,
+  waitForLoadingScreen,
 } from './support';
 import { openPause } from './pause-support';
 import type { Page } from '@playwright/test';
@@ -170,16 +171,7 @@ test('Veröffentlichtes Album zählt keine unerreichbare DEV-Variante', async ({
     ),
   );
   await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
-  await expect
-    .poll(
-      async () => {
-        await page.clock.runFor(32);
-
-        return page.locator('[data-start-album]').count();
-      },
-      { intervals: [0] },
-    )
-    .toBe(1);
+  await waitForLoadingScreen(page);
   await page.locator('[data-start-album]').click();
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 0 von 13');
   await expect(page.locator('.album-tile:disabled')).toHaveCount(9);
