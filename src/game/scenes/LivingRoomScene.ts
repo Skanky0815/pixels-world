@@ -604,6 +604,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.physics.world.update(time, elapsed);
     this.updateGameplay(input, time, elapsed);
+    this.audio.updatePixel(this.pixel.activity, this.pixel.y);
 
     const reached = this.goal.advance(elapsed, this.pixel.snapshot(), input.active);
 
@@ -613,7 +614,9 @@ export class LivingRoomScene extends Phaser.Scene {
     else this.renderHud();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Aktionssound und Zielanzeige enden gemeinsam vor der unveränderten Heimkehr.
   private startHomecoming() {
+    this.audio.updatePixel('idle', this.pixel.y);
     const score = this.round.snapshot().finalChaosScore;
 
     if (score === null) return;

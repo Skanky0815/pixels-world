@@ -1,12 +1,15 @@
+import { recordAudio, expectActiveAudio } from './audio-support';
 import { test, expect, state, start, until, holdUntil, curtain, reset } from './support';
 
 test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung stoppen Schaden', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
+  await recordAudio(page);
   await start(page);
   await curtain(page);
   await holdUntil(page, ['ArrowUp'], (s) => s.pixel.y < 230);
+  await expectActiveAudio(page, 0.28, true);
   await until(page, (s) => s.curtain.state === 'sliding');
   const beginning = await state(page);
 
@@ -40,6 +43,8 @@ test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung sto
   try {
     await until(page, (s) => s.curtain.state === 'climbing' && s.pixel.velocityY < 0);
     await page.clock.runFor(300);
+    await expectActiveAudio(page, 0.28, true);
+    await expectActiveAudio(page, 0.4, false);
     expect((await state(page)).curtain.damage).toBe(1);
   } finally {
     await page.keyboard.up('ArrowUp');
@@ -53,6 +58,8 @@ test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung sto
     (s) => s.curtain.state === 'detached' && s.pixel.gravity,
   );
   await page.clock.runFor(300);
+  await expectActiveAudio(page, 0.28, false);
+  await expectActiveAudio(page, 0.4, false);
   expect((await state(page)).curtain.damage).toBe(2);
   expect((await state(page)).chaos.score).toBe(8);
 });

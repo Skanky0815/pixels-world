@@ -12,7 +12,8 @@ RATE = 22050
 def render(kind, variant):
     rng = random.Random(237 + variant)
     duration = {"vase": .48, "picture": .38, "books": .24,
-                "creak": .32, "collapse": .65}[kind]
+                "creak": .32, "collapse": .65, "jump": .16, "hairball": .22,
+                "retch": .56, "scratch": .36, "nibble": .30, "climb": .28, "slide": .40}[kind]
     samples = []
     for i in range(int(RATE * duration)):
         t = i / RATE
@@ -28,10 +29,12 @@ def render(kind, variant):
         elif kind == "creak":
             value = math.sin(t * math.tau * (230 * pitch + 45 * math.sin(t * 23)))
             value = (value * .4 + noise * .12) * math.sin(math.pi * t / duration) ** 2
-        else:
+        elif kind == "collapse":
             pulse = max(0, t - .12)
             value = (noise * .65 + math.sin(t * math.tau * 75 * pitch) * .3) * math.exp(-t * 7)
             value += noise * .2 * math.exp(-pulse * 22) * (t > .12)
+        else:
+            value = activity_sample(kind, t, duration, noise, pitch)
         envelope = min(1, t * 1000) * min(1, (duration - t) * 500)
         samples.append(struct.pack("<h", int(max(-1, min(1, value * envelope * .7)) * 32767)))
     with wave.open(str(ROOT / f"{kind}-{variant}.wav"), "wb") as output:
@@ -39,6 +42,29 @@ def render(kind, variant):
         output.writeframes(b"".join(samples))
 
 
-for cue in ("vase", "picture", "books", "creak", "collapse"):
+def activity_sample(kind, t, duration, noise, pitch):
+    if kind == "jump":
+        return (noise * .3 + math.sin(math.tau * (180 * t + 420 * t * t) * pitch) * .35) * math.exp(-t * 20)
+    if kind == "hairball":
+        return (math.sin(math.tau * (135 * t - 170 * t * t) * pitch) * .7 + noise * .15) * math.exp(-t * 22)
+    if kind == "retch":
+        pulse = math.sin(math.pi * t / duration) ** 2
+        rasp = math.sin(math.tau * 83 * t * pitch) * math.sin(math.tau * 131 * t)
+        return (rasp * .65 + noise * .23) * pulse * (.6 + .4 * math.sin(t * 45) ** 2)
+    if kind == "scratch":
+        stroke = max(0, math.sin(t * math.tau * 6)) ** 2
+        return (noise * .65 + math.sin(t * math.tau * 730 * pitch) * .1) * stroke
+    if kind == "nibble":
+        crunch = max(0, math.sin(t * math.tau * 10)) ** 4
+        return noise * crunch * .65 + math.sin(t * math.tau * 190 * pitch) * crunch * .12
+    if kind == "climb":
+        step = max(0, math.sin(t * math.tau * 7)) ** 3
+        return (noise * .35 + math.sin(t * math.tau * 145 * pitch) * .2) * step
+    # Soft continuous fabric friction, distinct from the rhythmic climb/scratch.
+    return noise * .4 * (.7 + .3 * math.sin(t * math.tau * 17) ** 2)
+
+
+for cue in ("vase", "picture", "books", "creak", "collapse", "jump", "hairball",
+            "retch", "scratch", "nibble", "climb", "slide"):
     for variation in range(2):
         render(cue, variation)

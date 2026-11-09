@@ -1,14 +1,17 @@
+import { recordAudio, expectActiveAudio } from './audio-support';
 import { test, expect, state, start, until, holdUntil, reset, besideCouch } from './support';
 
 test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegungsabbruch', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
+  await recordAudio(page);
   await start(page);
   await besideCouch(page);
   await page.clock.runFor(1500);
   expect((await state(page)).couch.damage).toBe(0);
   await until(page, (s) => s.couch.state === 'scratching' && s.couch.damage === 1);
+  await expectActiveAudio(page, 0.36, true);
   const first = await state(page);
 
   expect(first.pixel.animation).toBe('scratch');
@@ -41,6 +44,7 @@ test('Sofa: verzögertes Kratzen, Animation, progressive Ereignisse und Bewegung
   });
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 490);
   expect((await state(page)).couch.state).toBe('idle');
+  await expectActiveAudio(page, 0.36, false);
   expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   const stopped = (await state(page)).couch.damage;
 

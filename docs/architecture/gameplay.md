@@ -263,3 +263,14 @@ Pause, Tabwechsel und Szenenabbau stoppen Effekte, ohne sie später fortzusetzen
 Die kurzen WAV-Varianten werden mit der Szene geladen und offline vorgehalten;
 Herkunft, Rechte und reproduzierbare Synthese stehen bei den
 [Audio-Assets](../../assets/audio/README.md).
+
+Pixel-Aktionen verwenden denselben Effektkanal: Sprunggeräusche entstehen nur
+beim tatsächlich gestarteten Boden- oder Vorhangsprung, der Haarballen-Plopp
+beim akzeptierten Abschlussereignis. Für Kratzen, Knabbern/Wackelwarnung, Würgen,
+Klettern und Rutschen existiert höchstens ein aktueller Aktionsloop. Die Auswahl
+folgt Pixels bestehendem Präsentationszustand; Vorhangreibung benötigt zusätzlich
+eine tatsächliche vertikale Positionsänderung. Der Anschlag bleibt dadurch still.
+Aktionswechsel, Abbruch, Stummschaltung und Heimkehr entfernen den Loop. Pause,
+Tabwechsel und Szenenabbau entfernen auch von Phaser vorausgeplante Loopquellen.
+Beim Fortsetzen wird nur die weiterhin laufende aktuelle Aktion neu ausgewählt;
+Einzelereignisse werden nicht nachgeholt. Das gemeinsame Limit bleibt bestehen.

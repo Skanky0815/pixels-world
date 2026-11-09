@@ -8,7 +8,8 @@ import { CUE_VOLUME } from '../../src/game/assets/object-cues.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Der Adapter zählt reale Spiel-/Stoppaufrufe und bildet die Browser-Freigabegrenze ab.
 function setup() {
-  const calls: { key: string; volume: number }[] = [];
+  const calls: { key: string; volume: number; loop?: boolean }[] = [];
+  const removedKeys: string[] = [];
   let stopped = 0;
   let removed = 0;
   const sound = {
@@ -29,6 +30,11 @@ function setup() {
       stopped++;
       this.playing = [];
     },
+    removeByKey(key: string) {
+      removedKeys.push(key);
+
+      return 1;
+    },
     removeAll() {
       removed++;
     },
@@ -39,7 +45,7 @@ function setup() {
 
   audio.setActive(true);
 
-  return { audio, sound, calls, stopped: () => stopped, removed: () => removed };
+  return { audio, sound, calls, removedKeys, stopped: () => stopped, removed: () => removed };
 }
 
 // eslint-disable-next-line max-lines-per-function -- Alle hörbaren Schadensarten und die ausgeklammerten Aktionen teilen denselben Routingvertrag.
@@ -61,7 +67,9 @@ test('Objektschäden besitzen eigene Pegel und wechseln Varianten; andere Aktion
     );
     assert.deepEqual(
       calls.map((c) => c.volume),
-      Object.values(CUE_VOLUME),
+      ['vase', 'picture', 'books', 'creak', 'collapse'].map(
+        (cue) => CUE_VOLUME[cue as keyof typeof CUE_VOLUME],
+      ),
     );
     audio.playDamage(chaosEvent('couch', 'scratch', 1, 1));
     assert.equal(calls.length, 5);
@@ -136,7 +144,7 @@ test('WAV-Assets sind kurz, unterscheidbar und unter Vollaussteuerung', () => {
   const root = new URL('../../assets/audio/', import.meta.url);
   const files = readdirSync(root).filter((name) => name.endsWith('.wav'));
 
-  assert.equal(files.length, 10);
+  assert.equal(files.length, 24);
 
   for (const file of files) {
     const wav = readFileSync(new URL(file, root));
@@ -153,4 +161,100 @@ test('WAV-Assets sind kurz, unterscheidbar und unter Vollaussteuerung', () => {
     if (file.endsWith('-0.wav'))
       assert.notDeepEqual(wav, readFileSync(new URL(file.replace('-0', '-1'), root)));
   }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Wiederholte Frames, Wechsel und Ende derselben automatischen Aktion dürfen keine zusätzlichen Loops erzeugen.
+test('Kratzen, Knabbern und Würgen haben jeweils einen abbrechbaren Aktionsloop', () => {
+  const { audio, calls, removedKeys } = setup();
+
+  try {
+    audio.updatePixel('scratching', 100);
+
+    for (let i = 0; i < 100; i++) audio.updatePixel('scratching', 100);
+    assert.equal(calls.length, 1);
+    assert.deepEqual(calls[0], { key: 'object-scratch-0', volume: CUE_VOLUME.scratch, loop: true });
+    audio.playDamage(chaosEvent('couch', 'scratch', 1, 3));
+    assert.equal(calls.length, 1);
+    audio.updatePixel('nibbling', 100);
+    audio.updatePixel('wobbling', 100);
+    assert.equal(calls.length, 2);
+    audio.updatePixel('retching', 100);
+    audio.updatePixel('idle', 100);
+    assert.deepEqual(
+      calls.map((c) => c.key),
+      ['object-scratch-0', 'object-nibble-1', 'object-retch-0'],
+    );
+    assert.deepEqual(
+      removedKeys,
+      calls.map((c) => c.key),
+    );
+    audio.playDamage(chaosEvent('carpet', 'hairball', 1, 15));
+    assert.deepEqual(calls.at(-1), {
+      key: 'object-hairball-1',
+      volume: CUE_VOLUME.hairball,
+      loop: false,
+    });
+  } finally {
+    audio.destroy();
+  }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Nur tatsächlicher Positionsfortschritt darf Vorhangreibung erzeugen, auch am oberen Anschlag und beim Wechsel nach unten.
+test('Vorhangloops folgen echter Bewegung und enden am Anschlag', () => {
+  const { audio, calls, removedKeys } = setup();
+
+  try {
+    audio.updatePixel('climbing', 100);
+    audio.updatePixel('climbing', 100);
+    assert.equal(calls.length, 0);
+    audio.updatePixel('climbing', 99);
+    audio.updatePixel('climbing', 98);
+    assert.equal(calls.length, 1);
+    audio.updatePixel('climbing', 98);
+    assert.deepEqual(removedKeys, ['object-climb-0']);
+    audio.updatePixel('sliding', 99);
+    audio.updatePixel('sliding', 100);
+    assert.equal(calls.length, 2);
+    assert.equal(calls[1].key, 'object-slide-1');
+    audio.updatePixel('idle', 101);
+    assert.equal(removedKeys.length, 2);
+  } finally {
+    audio.destroy();
+  }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Pause, beide Regler und volle Kapazität sind dieselben Freigabegrenzen für aktuelle Aktionen und Einzelgeräusche.
+test('Aktionsloops respektieren Pause, Stummschaltung, Reset und das gemeinsame Stimmenlimit', () => {
+  const { audio, sound, calls, removedKeys } = setup();
+
+  try {
+    sound.playing = [1, 2, 3];
+    audio.updatePixel('retching', 100);
+    assert.equal(calls.length, 0);
+    sound.playing = [];
+    audio.updatePixel('retching', 100);
+    assert.equal(calls.length, 1);
+    audio.setActive(false);
+    audio.setActive(true);
+    assert.equal(calls.length, 1);
+    audio.updatePixel('idle', 100);
+    assert.equal(calls.length, 1);
+    audio.updatePixel('nibbling', 100);
+    audioPreferences.update('effects', 0);
+    assert.deepEqual(removedKeys, ['object-nibble-1']);
+    audio.updatePixel('nibbling', 100);
+    assert.equal(calls.length, 2);
+    audioPreferences.update('effects', 1);
+    audio.updatePixel('nibbling', 100);
+    assert.equal(calls.length, 3);
+    audioPreferences.update('master', 0);
+    assert.equal(removedKeys.length, 2);
+  } finally {
+    audio.destroy();
+    audioPreferences.update('master', 1);
+    audioPreferences.update('effects', 1);
+  }
+
+  audio.updatePixel('retching', 100);
+  assert.equal(calls.length, 3);
 });

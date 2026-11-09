@@ -1,3 +1,4 @@
+import { recordAudio, expectAudio, expectActiveAudio } from './audio-support';
 import { test, expect, start, state, until, holdUntil, reset, couch } from './support';
 import { startTouch } from './touch-support';
 import { CARPET_RULES } from '../../src/game/interactions/carpet-hairball';
@@ -6,7 +7,9 @@ const rug = (s: Awaited<ReturnType<typeof state>>) => s.carpets[0];
 for (const room of ['living-room', 'cozy-remix']) {
   // eslint-disable-next-line max-lines-per-function -- Anlauf, Abbruch, Pose, einmaliger Fleck, Albumereignis und Reset werden gemeinsam mit echten Wegen geprüft.
   test(`Teppich: Abbruch, Würgen und einmaliger Haarballen im ${room} @smoke`, async ({ page }) => {
+    await recordAudio(page);
     await start(page, `/?room=${room}&room-seed=carpet-141`);
+    await expectAudio(page, 0.56, 0);
     const initial = rug(await state(page));
 
     expect(initial).toMatchObject({
@@ -30,6 +33,7 @@ for (const room of ['living-room', 'cozy-remix']) {
     });
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 520);
     await until(page, (s) => rug(s).state === 'retching');
+    await expectActiveAudio(page, 0.56, true);
     const active = await state(page);
 
     expect(active.pixel).toMatchObject({ animation: 'retch', bodyWidth: 52, bodyHeight: 52 });
@@ -38,6 +42,7 @@ for (const room of ['living-room', 'cozy-remix']) {
 
     if (room === 'living-room') {
       await page.keyboard.press('Escape');
+      await expectActiveAudio(page, 0.56, false);
       const paused = rug(await state(page));
 
       await page.clock.runFor(2000);
@@ -52,9 +57,12 @@ for (const room of ['living-room', 'cozy-remix']) {
       events: 0,
       hairballVisible: false,
     });
+    await expectActiveAudio(page, 0.56, false);
     expect((await state(page)).chaos.score).toBe(0);
     await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 520);
     await until(page, (s) => rug(s).state === 'soiled');
+    await expectActiveAudio(page, 0.56, false);
+    await expectAudio(page, 0.22, 1);
     const complete = await state(page);
 
     expect(rug(complete)).toMatchObject({
@@ -98,6 +106,8 @@ for (const room of ['living-room', 'cozy-remix']) {
       contentType: 'image/png',
     });
     await reset(page);
+    await expectAudio(page, 0.22, 1);
+    await expectActiveAudio(page, 0.56, false);
     expect(rug(await state(page))).toEqual(initial);
     expect((await state(page)).albumDiscovery).toBeNull();
   });

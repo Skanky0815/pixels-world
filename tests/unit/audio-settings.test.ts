@@ -48,6 +48,9 @@ test('Audioadapter kombiniert Pegel und entfernt seine Einstellungsbindung', () 
     volume: 1,
     pauseOnBlur: true,
     removeAll() {},
+    removeByKey() {
+      return 0;
+    },
     stopAll() {
       paused++;
     },

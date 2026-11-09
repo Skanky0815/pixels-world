@@ -22,7 +22,10 @@ export class Pixel {
   private action: Activity = 'idle';
 
   // eslint-disable-next-line max-lines-per-function -- Physikkörper und sichtbares Sprite werden gemeinsam am identischen Spawnanker aufgebaut.
-  constructor(scene: Phaser.Scene, spawn: { readonly x: number; readonly bottom: number }) {
+  constructor(
+    private readonly scene: Phaser.Scene,
+    spawn: { readonly x: number; readonly bottom: number },
+  ) {
     registerAnimations(scene);
     this.sprite = scene.physics.add
       .sprite(spawn.x, spawn.bottom - 16 * SCALE, 'pixel')
@@ -160,13 +163,17 @@ export class Pixel {
     this.mustLeaveCurtain = true;
     body.setAllowGravity(true);
     this.sprite.setVelocity((input.horizontal || -1) * 240, -340);
+    this.scene.events.emit('object-impact', 'jump');
   }
 
   private moveFreely(input: InputState, delta: number, body: Phaser.Physics.Arcade.Body) {
     if (body.blocked.down) this.sprite.setVelocityX(input.horizontal * 230);
     else if (input.horizontal !== 0) this.steerInAir(input.horizontal, delta, body);
 
-    if (input.jumpPressed && body.blocked.down) this.sprite.setVelocityY(-480);
+    if (input.jumpPressed && body.blocked.down) {
+      this.sprite.setVelocityY(-480);
+      this.scene.events.emit('object-impact', 'jump');
+    }
   }
 
   private steerInAir(horizontal: number, delta: number, body: Phaser.Physics.Arcade.Body) {

@@ -1,3 +1,4 @@
+import { recordAudio, expectAudio, expectActiveAudio } from './audio-support';
 import {
   test,
   expect,
@@ -30,8 +31,11 @@ test(
 );
 
 test('Tastatursprünge landen auf Sofa und erstem Regal', async ({ page }) => {
+  await recordAudio(page);
   await start(page);
+  await expectAudio(page, 0.16, 0);
   await lowerShelf(page);
+  await expectAudio(page, 0.16, 2);
   expect((await state(page)).pixel.x).toBeLessThan(664);
 });
 
@@ -39,9 +43,12 @@ test('Vorhang: hoch, langsam rutschen, herunter und abspringen mit Schwerkraft',
   page,
   // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }) => {
+  await recordAudio(page);
   await start(page);
   await curtain(page);
   await until(page, (s) => s.curtain.state === 'sliding');
+  await until(page, (s) => s.pixel.velocityY > 0);
+  await expectActiveAudio(page, 0.4, true);
   const slidingStart = await state(page);
 
   await framesPass(page);
@@ -62,6 +69,8 @@ test('Vorhang: hoch, langsam rutschen, herunter und abspringen mit Schwerkraft',
     await page.keyboard.up('ArrowLeft');
   }
 
+  await expectActiveAudio(page, 0.4, false);
+  await expectAudio(page, 0.16, 1);
   expect((await state(page)).pixel.x).toBeLessThan(slidingStart.pixel.x - 50);
 });
 

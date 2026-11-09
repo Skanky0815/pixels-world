@@ -214,3 +214,12 @@ prüfen. Auf Desktop und echten Mobilgeräten den ersten Ton nach Start per
 Tastatur bzw. Touch prüfen; verweigerte Audiofreigabe darf das Spiel nicht
 blockieren. Gleichzeitige fallende Objekte dürfen keine Lautstärkespitze bilden.
 Die einzelnen [WAV-Dateien](../assets/audio/README.md) sind direkt anhörbar.
+
+Zusätzlich Pixels Aktionsgeräusche prüfen: Würgen beginnt erst mit der Animation,
+beim erfolgreichen Abschluss erklingt genau ein Haarballen-Plopp. Weglaufen oder
+Springen beendet Würgen, Kratzen und Knabbern sofort; die erneute Wartezeit bleibt
+still. Beim Vorhang unterscheiden sich Klettern und Rutschen; am oberen Anschlag
+und nach Ablösen/Bodenkontakt endet die Reibung. Boden- und Vorhangsprünge geben
+je einen kurzen Ton, Lufttastendrücke und Spawn keinen. Pause, Tabwechsel,
+Stummschaltung und Heimkehr auch mitten im Aktionsloop prüfen; keine vorbereitete
+Loopquelle darf weiterlaufen. Danach dieselben Abläufe im DEV-Playground testen.
