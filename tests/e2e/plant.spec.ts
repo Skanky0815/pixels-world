@@ -1,15 +1,18 @@
+import { recordAudio, expectActiveAudio } from './audio-support';
 import { test, expect, state, start, until, holdUntil, reset, besidePlant } from './support';
 
 test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert Kippen', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
+  await recordAudio(page);
   await start(page, '/?room-seed=grass-5');
   expect((await state(page)).plant.x).toBe(680);
   await besidePlant(page);
   await page.clock.runFor(1500);
   expect((await state(page)).plant.damage).toBe(0);
   await until(page, (s) => s.plant.state === 'nibbling');
+  await expectActiveAudio(page, 0.9, true);
   const first = await state(page);
 
   expect(first.plant).toMatchObject({ texture: 'catgrass-bitten', soilVisible: false });
@@ -41,6 +44,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   });
   await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= first.plant.x - 160);
   expect((await state(page)).plant.state).toBe('idle');
+  await expectActiveAudio(page, 0.9, false);
   expect((await state(page)).plant.angle).toBe(0);
   expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   await page.clock.runFor(1500);

@@ -8,7 +8,6 @@ import {
   type Bounds,
 } from '../interactions/contracts';
 import { BookArt, type BookAppearance } from './book-art';
-import { playBookImpact } from '../assets/book-impact';
 
 export interface BookStackConfig {
   readonly id: string;
@@ -45,17 +44,13 @@ export class BookStack {
     return this.model.snapshot().state !== 'fallen' && overlaps(context.pixel, area);
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Modell, Auflagenfall, einmaliger Ton und Darstellung werden im selben aktiven Frame synchronisiert.
   update(context: InteractionContext, active: boolean): InteractionResult {
     const event = this.model.update(context.delta, active && this.eligible(context));
     const landed = this.advanceDrop(context.delta);
 
-    if (event) {
-      this.history.record(event);
-      playBookImpact(this.scene);
-    }
+    if (event) this.history.record(event);
 
-    if (landed && !event) playBookImpact(this.scene);
+    if (landed && !event) this.scene.events.emit('object-impact', 'books');
 
     this.draw();
 

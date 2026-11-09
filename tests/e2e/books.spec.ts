@@ -1,3 +1,4 @@
+import { recordAudio, expectAudio } from './audio-support';
 import { test, expect, start, state, until, holdUntil, reset, lowerShelf } from './support';
 import { startTouch } from './touch-support';
 
@@ -9,7 +10,9 @@ for (const [room, x] of [
     page,
     // eslint-disable-next-line max-lines-per-function -- Echte Bewegung, Kontaktabbruch, Pause, Umsturz und Reset prüfen denselben persistenten Stapel.
   }) => {
+    await recordAudio(page);
     await start(page, `/?room=${room}&room-seed=books-3`);
+    await expectAudio(page, 0.24, 0);
     expect((await state(page)).books[0].art).toMatchObject({
       intactTexture: 'books-upright',
       fallenTexture: 'books-fallen',
@@ -32,6 +35,7 @@ for (const [room, x] of [
     await until(page, (s) => s.books[0].state === 'falling');
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= x - 65);
     await until(page, (s) => s.books[0].state === 'fallen');
+    await expectAudio(page, 0.24, 1);
     expect((await state(page)).books[0]).toMatchObject({ damage: 1, events: 1 });
     expect((await state(page)).books[0].art).toMatchObject({
       intactVisible: false,
@@ -39,11 +43,13 @@ for (const [room, x] of [
     });
     expect((await state(page)).chaos.score).toBe(12);
     await page.clock.runFor(3000);
+    await expectAudio(page, 0.24, 1);
     expect((await state(page)).chaos.score).toBe(12);
     await test
       .info()
       .attach('buecher-umgeworfen', { body: await page.screenshot(), contentType: 'image/png' });
     await reset(page);
+    await expectAudio(page, 0.24, 1);
     expect((await state(page)).books[0]).toMatchObject({ state: 'stacked', damage: 0, events: 0 });
   });
 }
@@ -102,13 +108,18 @@ for (const [room, toppled] of [
 test.describe('Bücher auf Touch', () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
 
+  // eslint-disable-next-line max-lines-per-function -- Touch-Freigabe und einmaliger Aufprall werden zusammen geprüft.
   test('Kontakt funktioniert ohne zusätzliche Aktionstaste', async ({ page }) => {
+    await recordAudio(page);
     const touch = await startTouch(page, '/?room-seed=books-3');
+
+    await expectAudio(page, 0.24, 0);
 
     await touch.press('right');
     await until(page, (s) => s.pixel.x >= 650);
     await touch.lift();
     await until(page, (s) => s.books[0].state === 'fallen');
+    await expectAudio(page, 0.24, 1);
     expect((await state(page)).books[0]).toMatchObject({ damage: 1, events: 1 });
     expect((await state(page)).chaos.score).toBe(12);
   });

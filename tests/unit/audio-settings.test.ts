@@ -47,7 +47,13 @@ test('Audioadapter kombiniert Pegel und entfernt seine Einstellungsbindung', () 
   const sound = {
     volume: 1,
     pauseOnBlur: true,
-    stopAll() {},
+    removeAll() {},
+    removeByKey() {
+      return 0;
+    },
+    stopAll() {
+      paused++;
+    },
     pauseAll() {
       paused++;
     },
@@ -65,7 +71,7 @@ test('Audioadapter kombiniert Pegel und entfernt seine Einstellungsbindung', () 
   audio.setActive(false);
   audio.setActive(true);
   assert.equal(paused, 1);
-  assert.equal(resumed, 1);
+  assert.equal(resumed, 0);
   audio.destroy();
   audioPreferences.update('master', 1);
   assert.equal(sound.volume, 0.125);

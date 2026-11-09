@@ -10,7 +10,6 @@ import {
 import { DamageHistory } from '../domain/chaos-event';
 import { motionPreferences } from '../../settings/motion';
 import type { PictureMotif } from '../assets/picture-appearance';
-import { playBookImpact } from '../assets/book-impact';
 export interface WallPictureConfig {
   readonly id: string;
   readonly area: Bounds;
@@ -26,7 +25,7 @@ export class WallPicture implements Interactable, Destructible {
   private readonly art: Phaser.GameObjects.Image;
   // eslint-disable-next-line max-lines-per-function -- Modell und transparente PNG teilen denselben unveränderlichen Wandanker.
   constructor(
-    private readonly scene: Phaser.Scene,
+    scene: Phaser.Scene,
     private readonly config: WallPictureConfig,
   ) {
     this.id = config.id;
@@ -55,7 +54,6 @@ export class WallPicture implements Interactable, Destructible {
 
     if (event) {
       this.history.record(event);
-      playBookImpact(this.scene);
     }
 
     this.draw();

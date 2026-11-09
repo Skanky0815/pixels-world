@@ -29,7 +29,7 @@ export function pwaOptions(mode: string): Partial<VitePWAOptions> {
       ],
     },
     workbox: {
-      globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}'],
+      globPatterns: ['**/*.{js,css,html,png,svg,wav,webmanifest}'],
       navigateFallback: null,
       cleanupOutdatedCaches: true,
       skipWaiting: false,

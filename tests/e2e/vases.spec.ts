@@ -1,3 +1,4 @@
+import { recordAudio, expectAudio } from './audio-support';
 import {
   test,
   expect,
@@ -14,7 +15,9 @@ test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', a
   page,
   // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 }, testInfo) => {
+  await recordAudio(page);
   await start(page, '/?room-seed=vases');
+  await expectAudio(page, 0.48, 0);
   await framesPass(page, 30);
   const initial = await state(page);
 
@@ -35,6 +38,7 @@ test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', a
   await until(page, (s) => s.vases[0].state === 'falling');
   expect((await state(page)).chaos.score).toBe(0);
   await until(page, (s) => s.vases[0].state === 'broken');
+  await expectAudio(page, 0.48, 1);
   await expectChaos(page);
   expect((await state(page)).vases[0].shards).toBe(7);
   const screenshot = testInfo.outputPath('chaos.png');
@@ -44,6 +48,7 @@ test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', a
   await framesPass(page, 45);
   await expectChaos(page);
   await reset(page);
+  await expectAudio(page, 0.48, 1);
   const restarted = await state(page);
 
   expect(restarted.chaos).toEqual({ score: 0, damagedObjects: 0, anger: 'calm' });

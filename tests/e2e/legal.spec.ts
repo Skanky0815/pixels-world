@@ -48,6 +48,11 @@ test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode d
     await expect(page.locator('.ai-disclosure')).toContainText('mit KI erstellt');
     await expect(page.locator('address')).toContainText('Rico Schulz');
     await expect(page.locator('address')).toContainText('Berlin');
+    await expect(page.locator('#audio-credits')).toContainText('alexarje');
+    await expect(page.locator('#audio-credits')).toContainText('Bearbeitet');
+    await expect(
+      page.locator('#audio-credits a[href="https://creativecommons.org/licenses/by/4.0/"]'),
+    ).toHaveText('CC BY 4.0');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

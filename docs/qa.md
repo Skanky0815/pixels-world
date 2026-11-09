@@ -205,3 +205,27 @@ Zahlentabelle hier. Release-Identität und Wiederanlauf: [Deployment](deployment
 Die CI-Gate-Tests simulieren auch QA-Ereignisse, veraltete Versuche, Main-Wechsel,
 mehrdeutige Kandidaten und vorhandene Tags/Release-Metadaten. Sie führen keine
 GitHub-Schreiboperationen oder echten Releases aus.
+
+Für die Hörprobe zu Objektgeräuschen beide Wohnzimmer und den DEV-Playground
+verwenden: Vasenbruch, Bildaufprall, Buchumsturz und Regalwarnung/-einsturz
+vergleichen. Pause oder Tabwechsel mitten im Klang, dann Fortsetzen und Neustart:
+keine alten Töne nachholen. Gesamt-/Effektregler einzeln auf null und nach Reload
+prüfen. Auf Desktop und echten Mobilgeräten den ersten Ton nach Start per
+Tastatur bzw. Touch prüfen; verweigerte Audiofreigabe darf das Spiel nicht
+blockieren. Gleichzeitige fallende Objekte dürfen keine Lautstärkespitze bilden.
+Die einzelnen [WAV-Dateien](../assets/audio/README.md) sind direkt anhörbar.
+
+Zusätzlich Pixels Aktionsgeräusche prüfen: Würgen beginnt erst mit der Animation,
+beim erfolgreichen Abschluss erklingt genau ein Haarballen-Plopp. Weglaufen oder
+Springen beendet Würgen, Kratzen und Knabbern sofort; die erneute Wartezeit bleibt
+still. Beim Vorhang unterscheiden sich Klettern und Rutschen; am oberen Anschlag
+und nach Ablösen/Bodenkontakt endet die Reibung. Boden- und Vorhangsprünge geben
+je einen kurzen Ton, Lufttastendrücke und Spawn keinen. Pause, Tabwechsel,
+Stummschaltung und Heimkehr auch mitten im Aktionsloop prüfen; keine vorbereitete
+Loopquelle darf weiterlaufen. Danach dieselben Abläufe im DEV-Playground testen.
+
+Bei den aufgenommenen Aktionsgeräuschen die Schnittübergänge und Pegel per
+Hörprobe vergleichen. Schritte nur beim realen Laufen prüfen, einschließlich
+sofortigem Ende bei Luftphase, Vorhang, Stillstand, Wanddruck und Pause.
+Im Impressum müssen die Audio-Quellen samt alexarje, CC BY 4.0 und Hinweis auf
+Bearbeitung auch im Produktions-/Pages-Unterpfad erreichbar bleiben.

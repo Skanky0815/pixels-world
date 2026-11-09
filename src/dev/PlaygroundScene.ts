@@ -1,3 +1,5 @@
+import { GameAudio } from '../game/ui/GameAudio';
+import { preloadObjectAudio } from '../game/assets/object-audio';
 import { preloadCarpetArt } from '../game/assets/carpet-art';
 import { preloadPictureArt } from '../game/assets/picture-art';
 import { preloadBookArt } from '../game/assets/book-art';
@@ -25,6 +27,7 @@ import { PlayActivity } from '../game/input/play-activity';
 import { playgroundRoom } from './playground-room';
 
 export class PlaygroundScene extends Phaser.Scene {
+  private audio!: GameAudio;
   private shelves: Shelf[] = [];
   private variant = 'cozy-couch';
   private built!: ReturnType<typeof buildObjects>;
@@ -52,6 +55,7 @@ export class PlaygroundScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Gemeinsame Objektbilder und Pixels Sprite-Sheet werden in einer Vorladephase registriert.
   preload() {
+    preloadObjectAudio(this);
     preloadVaseArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
@@ -86,6 +90,8 @@ export class PlaygroundScene extends Phaser.Scene {
     for (const { object } of this.built.entries) object.reset();
     this.controls = new InputController(this);
     this.controls.setActionLabel('Sprung');
+    this.audio = new GameAudio(this.sound);
+    this.events.on('object-impact', this.audio.playObject, this.audio);
     this.activity = new PlayActivity(() => this.syncActivity());
     this.syncActivity();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.shutdown());
@@ -93,6 +99,7 @@ export class PlaygroundScene extends Phaser.Scene {
   }
 
   private syncActivity() {
+    this.audio.setActive(this.activity.active);
     this.pixel.setPaused(!this.activity.active);
 
     if (this.activity.active) {
@@ -126,14 +133,16 @@ export class PlaygroundScene extends Phaser.Scene {
         (event) => this.damage(event),
         this.shelves,
       );
+      this.audio.updateMovement(this.pixel.activity, this.pixel.snapshot());
     }
 
     this.diagnose(this.snapshot());
   }
 
   private damage(event: ChaosEvent | undefined) {
-    if (event && this.chaos.awardEvent(event))
-      this.eventsLog = [...this.eventsLog.slice(-63), event];
+    if (!event || !this.chaos.awardEvent(event)) return;
+    this.audio.playDamage(event);
+    this.eventsLog = [...this.eventsLog.slice(-63), event];
   }
 
   // eslint-disable-next-line max-lines-per-function -- Nur losgelöste Diagnosewerte für die sichtbare DEV-Oberfläche, keine Engine-Referenzen oder Testsetter.
@@ -158,6 +167,8 @@ export class PlaygroundScene extends Phaser.Scene {
   }
 
   private shutdown() {
+    this.events.off('object-impact', this.audio.playObject, this.audio);
+    this.audio.destroy();
     this.controls.destroy();
     this.activity.destroy();
     this.pixel.destroy();
