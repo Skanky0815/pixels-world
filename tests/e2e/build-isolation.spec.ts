@@ -1,4 +1,4 @@
-import { test, expect } from './support';
+import { test, expect, waitForLoadingScreen } from './support';
 
 test(
   'Produktionsbuild enthält weder Test-Schnittstelle noch Animationsvergleich',
@@ -7,6 +7,11 @@ test(
     page,
     // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
   }) => {
+    const loadedScripts = new Set<string>();
+
+    page.on('response', (response) => {
+      if (new URL(response.url()).pathname.endsWith('.js')) loadedScripts.add(response.url());
+    });
     const spriteLoaded = page.waitForResponse(
       (response) =>
         response.url().includes('/pixels-world/assets/') &&
@@ -29,6 +34,7 @@ test(
       .toBe(1);
     await page.clock.runFor(500);
     await spriteLoaded;
+    await waitForLoadingScreen(page);
     await expect(page.locator('canvas')).toBeVisible();
     expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
     await expect(page.locator('.start-screen')).toBeVisible();
@@ -36,11 +42,9 @@ test(
     await expect(page.locator('.game-debug, .game-debug-toggle')).toHaveCount(0);
     await expect(page.getByRole('heading', { name: 'Bereit, Pixel?' })).toBeVisible();
     // Also inspect delivered JS, so a delayed dynamic import cannot hide a leak.
-    const scripts = await page
-      .locator('script[src]')
-      .evaluateAll((elements) => elements.map((element) => (element as HTMLScriptElement).src));
+    const scripts = [...loadedScripts];
 
-    expect(scripts.length).toBeGreaterThan(0);
+    expect(scripts.some((url) => /\/world-[^/]+\.js$/.test(url))).toBe(true);
 
     for (const url of scripts) {
       const response = await page.request.get(url);
@@ -56,6 +60,7 @@ test(
       expect(source).not.toContain('BallPlayPreview');
       expect(source).not.toContain('GameDebug');
       expect(source).not.toContain('dev-scenario');
+      expect(source).not.toContain('Ladefortschritt in der Vorschau');
     }
 
     for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175/pixels-world']) {
@@ -66,6 +71,7 @@ test(
         '/src/dev/BallPlayPreview.ts',
         '/interactable-playground.html',
         '/src/dev/game-debug.ts',
+        '/src/dev/loading-preview.ts',
         '/src/dev/game-debug.css',
         '/src/dev/game-debug-model.ts',
         '/src/dev/interactable-playground.ts',

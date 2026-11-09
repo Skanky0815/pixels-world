@@ -1,4 +1,4 @@
-import { test, expect, loadIntro, start } from './support';
+import { test, expect, loadIntro, start, waitForLoadingScreen } from './support';
 import { readFileSync } from 'node:fs';
 const { version } = JSON.parse(
   readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
@@ -92,6 +92,7 @@ test('Produktionsspiel lädt nur eigene Ressourcen ohne automatische Speicherung
     if (url.protocol.startsWith('http') && url.hostname !== '127.0.0.1') external.push(url.origin);
   });
   await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
+  await waitForLoadingScreen(page);
   await page.clock.runFor(1000);
   await expect(page.locator('.start-screen')).toBeVisible();
   await page.locator('#game').focus();

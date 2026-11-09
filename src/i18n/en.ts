@@ -1,5 +1,15 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  loadingTitle: 'Getting Pixel’s living room ready …',
+  loadingReady: 'Pixel is waiting for you. Press Space to get going!',
+  loadingSkip: 'Let’s go!',
+  loadingStarting: 'Pixel is already chasing the ball.',
+  loadingAssets: 'Loading the living room …',
+  loadingProgress: 'Loading progress',
+  loadingFailed: 'Something went wrong while loading.',
+  loadingError: 'The game could not finish loading. Please try again.',
+  loadingRetry: 'Try again',
+
   albumPages: 'Object pages',
   albumPreviousPage: 'Previous page',
   albumNextPage: 'Next page',

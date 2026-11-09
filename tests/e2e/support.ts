@@ -72,6 +72,22 @@ async function waitForGame(page: Page) {
   await page.locator('#game').focus();
 }
 
+/** Read-only DOM readiness also works in production and DEV without a game observer. */
+
+// eslint-disable-next-line max-lines-per-function -- Der vollständige DOM-/Clock-Wartevertrag bleibt als gemeinsamer Einstieg zusammen.
+async function waitForLoadingScreen(page: Page) {
+  await expect
+    .poll(
+      async () => {
+        await page.clock.runFor(32);
+
+        return page.locator('#loading-screen').count();
+      },
+      { intervals: [0], timeout: 15_000 },
+    )
+    .toBe(0);
+}
+
 async function start(page: Page, path = '/') {
   await loadIntro(page, path);
   await page.keyboard.down('Space');
@@ -179,6 +195,7 @@ export {
   start,
   loadIntro,
   waitForGame,
+  waitForLoadingScreen,
   until,
   holdUntil,
   couch,

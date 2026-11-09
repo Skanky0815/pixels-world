@@ -237,3 +237,20 @@ Hörprobe vergleichen. Schritte nur beim realen Laufen prüfen, einschließlich
 sofortigem Ende bei Luftphase, Vorhang, Stillstand, Wanddruck und Pause.
 Im Impressum müssen die Audio-Quellen samt alexarje, CC BY 4.0 und Hinweis auf
 Bearbeitung auch im Produktions-/Pages-Unterpfad erreichbar bleiben.
+
+Ladescreen: Spielmodul und einzelne Audio-/Bilddateien im Netzwerk verzögern.
+Anzeige und Pixel-/Ballmotiv müssen schon vor Phaser sichtbar sein, danach folgt
+der Balken echten Asset-Abschlüssen. Bei schnellem Laden bleibt die Anzeige
+insgesamt zwei Sekunden stehen, bei längerem Laden endet sie nach dem ersten
+fertigen Bild ohne erneute Mindestpause. Frühe Spieltasten dürfen die Einführung
+nicht überspringen. Modul-/Assetfehler zeigen „Erneut versuchen“; nach Freigabe
+der Ressource muss der vollständige Neuladeversuch gelingen. DE/EN, kleine
+Displays und gespeicherte/System-Bewegungsreduktion prüfen. DEV-Vorschau und
+isolierter Produktionsbuild werden separat geprüft; der Produktionscheck liest
+auch tatsächlich geladene dynamische JavaScript-Chunks.
+
+Nach vollständigem Laden kann die verbleibende Mindestanzeige mit einer frischen
+Leertaste oder „Los geht’s!“ übersprungen werden. Vorher ist diese Aktion nicht
+verfügbar; gehaltene Tasten werden nicht nachträglich als Freigabe gewertet.
+Der Button-Platz ist von Beginn an reserviert. Das Fortsetzen zeigt die Einführung
+und startet nicht mit derselben Eingabe schon die Runde.
