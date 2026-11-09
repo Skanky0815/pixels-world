@@ -202,6 +202,13 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
 - DE/EN in Einführung, Dialog, Versöhnung und Ergebnis wechseln: Runde bleibt
   erhalten. Auswahl wird beim Reload wiederhergestellt; gesperrter Speicher
   verhindert das Spiel nicht. Sprache, Lautstärke und Bewegungseinstellung, kein Spielstand, werden gespeichert.
+- Saras Heimkehr im Wohnzimmer und in der DEV-Leseecke prüfen: allgemeine und zur
+  Einrichtung passende Varianten bleiben innerhalb der richtigen Ärgerstufe.
+  Zwei reguläre Runden derselben Stufe dürfen nicht dieselbe Zeile direkt
+  wiederholen. DE/EN während der Lesepause wechseln: Auswahl und Bestätigung
+  bleiben erhalten. Auf schmalem Touch-Bildschirm muss auch die längste Zeile
+  vollständig lesbar bleiben. F2-Szenarien mit identischem Seed bleiben absichtlich
+  wiederholbar; Reload startet die Dialogerinnerung neu.
 - Produktions-/Pages-Build: eigene Ressourcen, kein Testobserver, erreichbare
   Rechtsseiten; verlinkte Spielversion passt zum Release. Entwicklung/Preview
   ohne Release-Kontext zeigen nur die Versionsnummer. Für die gezielte Prüfung

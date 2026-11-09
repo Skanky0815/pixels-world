@@ -58,6 +58,7 @@ import { ROUND_CONFIG, RoundController } from '../domain/round-controller';
 import { PlayActivity } from '../input/play-activity';
 import { GameHud } from '../ui/GameHud';
 import { HomecomingSequence } from '../domain/homecoming';
+import { DialogueMemory } from '../domain/sara-dialogue';
 import { SaraReturnView } from '../ui/SaraReturnView';
 import { roundConfigForPage } from '../input/round-profile';
 import { homecomingPositions } from '../content/homecoming-layout';
@@ -82,6 +83,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private resultView!: RoundResultView;
   private charmView!: ReconciliationView;
   private homecoming!: HomecomingSequence;
+  private readonly dialogueMemory = new DialogueMemory();
   private sara!: SaraReturnView;
   private returning!: PixelReturnController;
   private returnTime = 0;
@@ -182,12 +184,16 @@ export class LivingRoomScene extends Phaser.Scene {
     );
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Die neuen Rundenmodelle teilen denselben Aufbau, während nur die Dialogerinnerung über Szenenneustarts erhalten bleibt.
   private initializeRound() {
     this.physics.disableUpdate();
     this.chaos.reset();
     this.random = undefined;
     this.round = this.createRound();
-    this.homecoming = new HomecomingSequence();
+    this.homecoming = new HomecomingSequence({
+      roomId: this.room.definition.id,
+      memory: this.dialogueMemory,
+    });
     this.charm = new Reconciliation(this.random);
     this.returnTime = 0;
     this.goal = new MainGoal(this.room.goal);
@@ -228,7 +234,9 @@ export class LivingRoomScene extends Phaser.Scene {
             get charm() {
               return models().charm;
             },
+            // eslint-disable-next-line max-lines-per-function -- Ein explizites DEV-Szenario beginnt ohne Dialoghistorie, damit identische Seeds reproduzierbar bleiben.
             configure: (config, random) => {
+              this.dialogueMemory.clear();
               this.random = random;
               this.round = new RoundController(
                 { minDurationMs: config.seconds * 1000, maxDurationMs: config.seconds * 1000 },

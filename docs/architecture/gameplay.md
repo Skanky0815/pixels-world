@@ -107,8 +107,8 @@ Wertung emittiert `object-damaged`; die Domain vergibt selbst keine Punkte.
 - `RoundController`: aktive Laufzeit, grobe Hinweise, Phasen und finaler Score.
   `chaos → returning → reaction → reconciliation` ist geordnet; wiederholte oder
   verfrühte Übergänge werden zurückgewiesen.
-- `HomecomingSequence`: einmalige Reaktions-/Dialogauswahl aus finalem Score,
-  semantische Animationskeys und explizite Bestätigung ohne Lesefrist.
+- `HomecomingSequence`: einmalige Reaktions-/Dialogauswahl aus finalem Score und
+  Raumkontext, semantische Animationskeys und explizite Bestätigung ohne Lesefrist.
 - `PixelReturnController`: reine Bewegungseingaben über Möbelkanten zum Sitzanker;
   keine direkten Körpermutationen. Nur Pixel bewegt sich weiter, übrige Schäden
   und Weltkörper bleiben gesperrt. Bestätigung erst nach dem Hinsetzen.
@@ -121,6 +121,17 @@ Wertung emittiert `object-damaged`; die Domain vergibt selbst keine Punkte.
 Alle Modelle bleiben Phaser-/DOM-unabhängig. Zufallsquellen sind injizierbar;
 Auswahl und Snapshots sind eingefroren. Ansichten besitzen weder eigene Spieluhren
 noch verzögerte Übergänge, die nach einem Neustart weiterlaufen könnten.
+
+`sara-dialogue.ts` kombiniert allgemeine und zur Raum-ID passende Inhalte aus
+`content/sara-reactions.ts`. Unbekannte Räume nutzen den allgemeinen Pool;
+fehlende/leere Stufen erhalten eine gültige allgemeine Ersatzzeile. Bereinigung
+und Deduplizierung erfolgen vor genau einer Zufallsziehung. Die letzte kanonische
+Zeile derselben Raum-/Ärgerstufe wird ausgeschlossen, solange Alternativen bestehen.
+`DialogueMemory` gehört der Szene und bleibt bei regulären Rundenneustarts erhalten,
+während jede `HomecomingSequence` frisch beginnt. Reload beendet diese Erinnerung;
+es entsteht kein zusätzlicher Browserspeicher. Sprachwechsel übersetzen die feste
+Auswahl, beeinflussen aber weder Auswahl noch Erinnerung. Raumtexte beschreiben
+die Einrichtung; ereignisbezogene Schadensreaktionen gehören zur separaten Aufgabe.
 Die Startfreigabe ist getrennt vom Rundenmodell; „Neue Runde“ erhält sie, Reload
 zeigt wieder die Einführung. R ist eine versteckte Debug-Eingabe.
 

@@ -310,4 +310,36 @@ export const en: Record<keyof typeof de, string> = {
   restart: 'Restart',
   pixelSLivingRoomUseArrow:
     "Pixel's living room. Use arrow keys to move and climb, Space to jump. Click the room to focus.",
+  saraInnocentLook: 'There you are. You’ve certainly practised that innocent look.',
+  saraYourVersion: 'I’ll sit down first. Then you can tell me your side of the story.',
+  saraLittleHousemate: 'Hello, little housemate. Was it terribly boring without me?',
+  saraRoomHasCharacter: 'This room definitely has your personal touch now.',
+  saraTimeWellUsed: 'I was only out for a bit. You clearly made the most of it.',
+  saraDesignMeeting: 'Next time, let’s discuss your decorating ideas beforehand.',
+  saraPurringAnswers: 'I have a few questions. Purring won’t answer all of them.',
+  saraDeepBreath: 'Pixel. Let’s take a deep breath. Me first.',
+  saraQuietThenBroom: 'Right. We need a quiet moment. And then a broom.',
+  saraLoveAndDecisions: 'I love you. We’re still going to talk about today’s decisions.',
+  saraLivingRoomTrio: 'Sofa, window, cat. Just how I like our living room.',
+  saraLivingRoomSeat: 'Is my spot on the sofa still free? I’ll join you, then.',
+  saraLivingRoomLookout: 'Keeping an eye on everything from the living room again, hm?',
+  saraLivingRoomIdeas: 'Our living room is small. Plenty of room for your ideas, apparently.',
+  saraLivingRoomProgramme: 'You seem to have your own plans between the sofa and the window.',
+  saraLivingRoomPlans: 'I wanted to sit here and relax. You apparently had other plans.',
+  saraLivingRoomProject:
+    'The living room was meant to be my place to unwind, Pixel. Not your big project.',
+  saraLivingRoomPerspective: 'I’m sure it looks less dramatic from the sofa. Come on, let’s talk.',
+  saraLivingRoomRules: 'We both live here. The house rules are still more than suggestions.',
+  saraCozyTwoSofas: 'Two sofas, and your favourite seat is still right in the way.',
+  saraCozySeat: 'The reading corner looks cosy. Is there room for me on one of the sofas?',
+  saraCozyBooksAndCat:
+    'Books, cushions and a very contented cat. That’s how I like the reading corner.',
+  saraCozyStillBored: 'Two sofas, a reading corner — and you were still bored?',
+  saraCozyEntertainment: 'You seem to have mistaken my reading corner for today’s entertainment.',
+  saraCozyReadYourFace:
+    'I was going to settle down with a book. I’ll have to read your face first.',
+  saraCozyAdventure:
+    'The reading corner was meant for quiet chapters. You’re apparently writing adventures.',
+  saraCozyPlayground: 'Two sofas don’t turn the flat into an adventure playground, Pixel.',
+  saraCozyThisChapter: 'I wanted to open a book. Now we need to talk about this chapter first.',
 };

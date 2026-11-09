@@ -60,6 +60,27 @@ Content verwendet nur Schlüssel aus [dem Asset-Katalog](../game/assets/definiti
 
 Die Versionsangabe im normalen Seitenfooter stammt beim Build aus der zentralen `package.json`. Das Jahr wird zur Laufzeit ermittelt. Die Anzeige ist eine Build-Version, kein zusätzlicher Veröffentlichungsmechanismus; Release Please pflegt dieselbe Versionsquelle.
 
+## Saras Dialogvarianten
+
+`sara-reactions.ts` hält `SARA_DIALOGUE` für allgemeine Sätze je Ärgerstufe und
+`SARA_ROOM_DIALOGUE` für Ergänzungen pro `RoomDefinition.id`. Zur Auswahl stehen
+die allgemeinen und die raumspezifischen Zeilen gemeinsam. Eine unbekannte Raum-ID
+nutzt nur den allgemeinen Pool; fehlende Stufen und leere Pools haben einen sicheren
+Fallback. Raumtexte passen zur fest definierten Einrichtung und setzen keine
+konkrete Schadensaktion voraus.
+
+Neue Sätze in `src/i18n/de.ts` und `src/i18n/en.ts` unter demselben Schlüssel
+ergänzen, dann im passenden Pool über `copy('schluessel')` referenzieren. Die
+kanonische deutsche Fassung bleibt unabhängig von der Anzeigesprache. Keine
+Szenenänderung ist für zusätzliche Sätze nötig. Doppelte und leere Zeilen werden
+bei der Auswahl bereinigt; bei mehreren Varianten wird die letzte Zeile derselben
+Raum-/Ärgerstufe während der laufenden Spielsitzung vermieden.
+
+Im Dev-Spiel `/play.html?room=cozy-remix` für die Leseecke wählen. Mit **F2** lassen
+sich Chaoswerte und Heimkehrphasen reproduzierbar prüfen. Ein explizites
+DEV-Szenario setzt dafür die Dialogerinnerung zurück; normale Rundenneustarts
+behalten sie. Die Raumvorschau bleibt auf DEV/E2E beschränkt.
+
 ## Hauptziel pro Raum
 
 `RoomDefinition.goal` enthält genau ein festes Ziel: ID, `kind: toy`,
