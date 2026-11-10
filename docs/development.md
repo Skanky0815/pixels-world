@@ -113,6 +113,23 @@ Quellen und Generierungsprompts stehen bei den
 Die DEV-Seite bleibt aus Produktions- und E2E-Builds ausgeschlossen. Ihre
 128×128-Porträts verwendet auch das Spiel; die Generatorquellen bleiben im Repository.
 
+## Charme-Bewegungen abstimmen
+
+`/charm-preview.html` ist der isolierte Bewegungsentwurf für #251. Sara und Pixel
+stehen an den echten Heimkehrankern. Eine Annäherung läuft einmal, anschließend
+bleibt die Bewegung ohne feste Endzeit in ihrer Schleife. „Nächste Spieleraktion“
+führt zum Sitzplatz zurück; eine neue gelungene Aktion übernimmt die gerade
+sichtbare Position für ihren Übergang. Reset, Pause, Nahansicht, Fokusverlust und
+reduzierte Bewegung lassen sich unabhängig von der Spielrunde ausprobieren.
+
+Die vorhandene Versöhnung kennt Schnurren bei Treffern, Anschmiegen nach einer
+geschafften Folge und Streicheln im Finale. Beine-Umstreichen und Köpfchen geben
+sind vorgeschlagene visuelle Varianten des Anschmiegens. Pfote und Bauch bleiben
+optionale Posenproben; insbesondere das gedrehte Sitzbild ersetzt keine fertigen
+Bauch-Frames. Alle Quellen sind unverändert. Die linke Dialogfläche ist ein
+Layoutvorschlag, der rechts beide Figuren frei lässt. Steuerung, Herzvergabe und
+Zeitlimits des Spiels sind hier nicht aktiv. HTML und Module bleiben DEV-only.
+
 ## Einzelne Objekte ausprobieren
 
 Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.
