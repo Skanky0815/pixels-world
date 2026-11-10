@@ -3,12 +3,15 @@ import { t } from '../../i18n/locale.ts';
 import type { GameHud } from './GameHud';
 import type { ReconciliationView } from './ReconciliationView';
 import type { ResultViewSnapshot } from './RoundResultView';
+import { DIALOGUE_PORTRAITS } from '../assets/dialogue-portraits';
+import type { DialoguePortrait } from '../domain/dialogue-portrait';
 interface Readout {
   readonly started: boolean;
   readonly hud: ReturnType<GameHud['snapshot']>;
   readonly goal: string;
   readonly homecoming: string;
   readonly dialogue: string;
+  readonly portrait: DialoguePortrait | null;
   readonly charmStage: string;
   readonly charm: ReturnType<ReconciliationView['readableText']>;
   readonly result: ResultViewSnapshot;
@@ -29,6 +32,7 @@ export class MobileReadout {
   private readonly hint = document.createElement('p');
   private readonly key = document.createElement('p');
   private readonly timer = document.createElement('progress');
+  private readonly portrait = document.createElement('img');
   // eslint-disable-next-line max-lines-per-function -- Die rein lesende DOM-Ansicht bindet Textknoten und Lebensdauer gemeinsam an den Spielbereich.
   constructor() {
     this.hud.className = 'mobile-hud';
@@ -42,12 +46,20 @@ export class MobileReadout {
     this.panel.className = 'mobile-dialogue';
     this.panel.setAttribute('aria-label', t('gameDialogue'));
     this.panel.hidden = true;
+    this.portrait.className = 'mobile-portrait';
+    this.portrait.alt = '';
+    this.portrait.hidden = true;
+    this.portrait.addEventListener('error', () => {
+      this.portrait.hidden = true;
+    });
+    this.message.className = 'mobile-message';
     this.quote.className = 'mobile-quote';
     this.key.className = 'mobile-key';
     this.hint.className = 'mobile-hint';
     this.timer.max = 1;
     this.timer.setAttribute('aria-label', t('timeLeftForInput'));
     this.panel.append(
+      this.portrait,
       this.message,
       this.resultCard.root,
       this.quote,
@@ -73,12 +85,27 @@ export class MobileReadout {
     const text = panelText(state);
 
     this.panel.hidden = !text.message;
+    this.renderPortrait(text.portrait);
     setText(this.message, text.message);
     setText(this.quote, text.quote);
     setText(this.hint, text.hint);
     setText(this.key, text.key);
     this.timer.hidden = state.charmStage !== 'input';
     this.timer.value = state.remaining;
+  }
+
+  private renderPortrait(id: DialoguePortrait | null) {
+    const url = id ? DIALOGUE_PORTRAITS[id] : undefined;
+
+    if (this.portrait.getAttribute('src') !== url) {
+      this.portrait.hidden = !url;
+
+      if (url) this.portrait.src = url;
+      else this.portrait.removeAttribute('src');
+    }
+
+    this.portrait.dataset.speaker = id?.startsWith('sara-') ? 'sara' : 'pixel';
+    this.portrait.dataset.portrait = id ?? '';
   }
 
   destroy() {
@@ -99,6 +126,7 @@ function panelText(s: Readout) {
       quote: s.result.quoteText,
       hint: t('newRoundStartsTheNextGame'),
       key: '',
+      portrait: s.result.portrait,
     };
 
   if (!['waiting', 'complete', 'failed'].includes(s.charmStage))
@@ -116,10 +144,11 @@ function panelText(s: Readout) {
       quote: lines[1] ?? '',
       hint: touchHint(lines[2] ?? ''),
       key: '',
+      portrait: s.portrait,
     };
   }
 
-  return { message: '', quote: '', hint: '', key: '' };
+  return { message: '', quote: '', hint: '', key: '', portrait: null };
 }
 
 function touchHint(text: string) {

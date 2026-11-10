@@ -4,6 +4,7 @@ import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
 import type { RoundResult } from '../domain/round-result';
 import { drawResultHearts } from './result-hearts';
+import { DialoguePortrait, placeDialogueText } from './DialoguePortrait';
 export type ResultViewSnapshot = ReturnType<RoundResultView['snapshot']>;
 /** Scene-owned result card; the outcome and all values remain domain decisions. */
 export class RoundResultView {
@@ -19,6 +20,7 @@ export class RoundResultView {
   private readonly quote: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
   private result: RoundResult | null = null;
+  private readonly portrait: DialoguePortrait;
   // eslint-disable-next-line max-lines-per-function -- Titel, hervorgehobener Ausgang und zwei Ergebnisspalten bilden eine gemeinsame deklarative Karte.
   constructor(scene: Phaser.Scene, width: number) {
     this.root = scene.add.container(0, 0).setDepth(16).setVisible(false);
@@ -39,8 +41,10 @@ export class RoundResultView {
       wordWrap: { width: width - 128 },
     });
     this.hint = scene.add.text(width - 60, 400, '', style(13)).setOrigin(1, 1);
+    this.portrait = new DialoguePortrait(scene, 104, 358);
     this.dialogue = scene.add.container(0, 0, [
       panel,
+      this.portrait.image,
       this.title,
       this.headline,
       this.chaos,
@@ -81,6 +85,10 @@ export class RoundResultView {
       `${t('resultGoal', { v0: t(result.goalReached ? 'reached' : 'notReached') })} · ${t('difficultyLabel')}: ${t(DIFFICULTY_LABELS[result.difficulty])}`,
     );
     this.quote.setText(t('saraLabel049', { v0: result.closingLine }));
+    const textX = this.portrait.render(success ? 'sara-friendly' : 'sara-annoyed') ? 164 : 64;
+
+    placeDialogueText(this.quote, textX, this.hint.x - textX - 4);
+    this.goal.setX(textX);
     this.hint.setText(t('spaceNewRound'));
   }
 
@@ -105,6 +113,8 @@ export class RoundResultView {
       ].join('\n'),
       quoteText: this.quote.text,
       hint: this.hint.text,
+      portrait:
+        this.result.outcome === 'success' ? ('sara-friendly' as const) : ('sara-annoyed' as const),
     });
   }
 

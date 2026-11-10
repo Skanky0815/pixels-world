@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pixel & Sara · Dialogporträts</title>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">DEV · #133 · PORTRÄT- UND LAYOUTENTWURF</p>
+      <h1>Ein Blick sagt auch etwas.</h1>
+      <p>
+        Die Bilder der Landingpage sind die Master. Sara bekommt passende Ausdrücke dazu; Pixel
+        bleibt zunächst sein unschuldiges Original. Hier vergleichen wir die freigegebenen Porträts
+        in verschiedenen Größen und mit unterschiedlichen Textlängen.
+      </p>
+      <div class="portrait-controls">
+        <label>Figur und Ausdruck<select id="expression"></select></label>
+        <label
+          >Desktop-Größe<select id="portrait-size">
+            <option value="64">64 Pixel · dezent</option>
+            <option value="80" selected>80 Pixel · ausgewogen</option>
+            <option value="96">96 Pixel · präsent</option>
+          </select></label
+        >
+        <label
+          >Sprache<select id="language">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+          </select></label
+        >
+        <label class="check"><input type="checkbox" id="long-text" /> Langen Text prüfen</label>
+        <label class="check"
+          ><input type="checkbox" id="no-portrait" /> Fallback ohne Porträt</label
+        >
+      </div>
+      <section
+        aria-label="Master und Ausdrucksvarianten"
+        class="portrait-gallery"
+        id="gallery"
+      ></section>
+      <p id="selection-note" class="note" aria-live="polite"></p>
+      <div class="portrait-layouts">
+        <article>
+          <h2>Desktop · im Dialog</h2>
+          <div class="desktop-scroll">
+            <div class="game-scene desktop-scene">
+              <div class="sample-dialogue">
+                <img class="dialogue-portrait" alt="" />
+                <div class="sample-copy">
+                  <p class="sample-speaker"></p>
+                  <p class="sample-quote"></p>
+                  <p class="sample-hint"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="phone-article">
+          <h2>Handy · 48 Pixel</h2>
+          <div class="phone-frame">
+            <div class="phone-hud">Pixel’s World <span>Eine kleine Dialogprobe.</span></div>
+            <div class="game-scene phone-scene">
+              <div
+                class="sample-dialogue"
+                tabindex="0"
+                aria-label="Dialog, bei langem Text scrollbar"
+              >
+                <img class="dialogue-portrait" alt="" />
+                <div class="sample-copy">
+                  <p class="sample-speaker"></p>
+                  <p class="sample-quote"></p>
+                  <p class="sample-hint"></p>
+                </div>
+              </div>
+            </div>
+            <div class="phone-actions">
+              <span aria-hidden="true">←　↑　↓　→</span
+              ><button type="button" id="next-expression">Weiter</button>
+            </div>
+          </div>
+          <p class="note">
+            Text kann innerhalb der Box scrollen. Die Aktion bleibt außerhalb erreichbar.
+          </p>
+        </article>
+      </div>
+      <p class="note">
+        Statischer Layoutentwurf mit vorhandener Zimmeraufnahme. Die Porträts sind keine
+        Spielzustände; die Weiter-Taste wechselt hier nur den Entwurf.
+      </p>
+      <p class="note"><a href="/play.html">Zum aktuellen Spiel</a></p>
+    </main>
+    <script type="module" src="/src/dev/portrait-preview.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "mode": "identity-preserve",
+  "purpose": "Issue #133 dialogue portraits; approved style and inward-facing Sara",
+  "masters": {
+    "sara": "../team/sara-portrait-v1.png",
+    "pixel": "../team/pixel-portrait-v3.png"
+  },
+  "originals": "Landing-page masters remain unchanged and are used directly for neutral Sara and Pixel.",
+  "variants": [
+    {
+      "character": "Sara",
+      "expression": "annoyed",
+      "source": "sources/sara-annoyed-draft-v1.png",
+      "prompt": "Use case: identity-preserve. Edit target: the attached APPROVED Sara landing-page portrait, sara-portrait-v1.png. Produce ONE square transparent pixel-art bust portrait for a small game dialogue. Change ONLY her facial expression to mildly annoyed/exasperated: slightly lowered eyebrows, a dry sideways look through the glasses, a small closed straight mouth. Preserve her exact identity, adult chibi face shape, green eyes, chunky black rectangular glasses, blonde hair with dark roots, high ponytail and flyaways, black hoodie with pale drawstrings, head angle, crop, scale and placement. Keep all hair, clothing, silhouette, outlines and non-face pixels as close to the master as possible. Match the original chunky low-resolution pixel grid, compact warm palette and crisp square pixels. It should read like an expression frame of the SAME existing portrait, not a newly designed character. No new props, hands, symbols, tears, blush, red angry face, text, border, background or watermark. True transparent exterior alpha. Entire ponytail and bust fit inside the same framing. Design at the same 64x64 logical-pixel scale as the master, no smooth high-resolution illustration."
+    },
+    {
+      "character": "Sara",
+      "expression": "surprised",
+      "source": "sources/sara-surprised-draft-v1.png",
+      "prompt": "Use case: identity-preserve. Edit target: the attached APPROVED Sara landing-page portrait, sara-portrait-v1.png. Produce ONE square transparent pixel-art bust portrait for a small game dialogue. Change ONLY her facial expression to surprised by the cat's chaos: lifted eyebrows, slightly wider green eyes behind the glasses, a tiny open O-shaped mouth. Preserve her exact identity, adult chibi face shape, chunky black rectangular glasses, blonde hair with dark roots, high ponytail and flyaways, black hoodie with pale drawstrings, head angle, crop, scale and placement. Keep all hair, clothing, silhouette, outlines and non-face pixels as close to the master as possible. Match the original chunky low-resolution pixel grid, compact warm palette and crisp square pixels. It should read like an expression frame of the SAME existing portrait, not a newly designed character. No new props, hands, symbols, speech bubbles, blush, text, border, background or watermark. True transparent exterior alpha. Entire ponytail and bust fit inside the same framing. Design at the same 64x64 logical-pixel scale as the master, no smooth high-resolution illustration."
+    },
+    {
+      "character": "Sara",
+      "expression": "friendly",
+      "source": "sources/sara-friendly-draft-v1.png",
+      "prompt": "Use case: identity-preserve. Edit target: the attached APPROVED Sara landing-page portrait, sara-portrait-v1.png. Produce ONE square transparent pixel-art bust portrait for a small game dialogue. Change ONLY her facial expression to gently reconciled/friendly: relaxed eyebrows, soft warm green eyes behind the glasses, a small affectionate closed-mouth smile, calm relief. Preserve her exact identity, adult chibi face shape, chunky black rectangular glasses, blonde hair with dark roots, high ponytail and flyaways, black hoodie with pale drawstrings, head angle, crop, scale and placement. Keep all hair, clothing, silhouette, outlines and non-face pixels as close to the master as possible. Match the original chunky low-resolution pixel grid, compact warm palette and crisp square pixels. It should read like an expression frame of the SAME existing portrait, not a newly designed character. No new props, hands, hearts, symbols, excessive blush, text, border, background or watermark. True transparent exterior alpha. Entire ponytail and bust fit inside the same framing. Design at the same 64x64 logical-pixel scale as the master, no smooth high-resolution illustration."
+    }
+  ],
+  "preview": "/portrait-preview.html",
+  "runtimeExport": "node tools/prepare-dialogue-portraits.mjs; 128x128 nearest-neighbour exports; original masters reused directly; Sara mirrored at display time",
+  "sourceFacts": {
+    "assets/team/sara-portrait-v1.png": {
+      "sha256": "dbe773a5722006d01fb3f07c974952aaf924d8750e7f734a8dfd81952f85f0e6",
+      "width": 128,
+      "height": 128,
+      "transparentPixels": 9445,
+      "opaquePixels": 12
+    },
+    "assets/team/pixel-portrait-v3.png": {
+      "sha256": "424de8a5c94bb512206338016e7673af6c02ff0f26f8bfdca908cbd77c371d86",
+      "width": 128,
+      "height": 128,
+      "transparentPixels": 9881,
+      "opaquePixels": 35
+    },
+    "assets/dialogue-portraits/sources/sara-annoyed-draft-v1.png": {
+      "sha256": "26b3363dd301a7327e6ef7855bd08ba0407b7244aaaa569bdf33edd9b685aa40",
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 918183,
+      "opaquePixels": 1856
+    },
+    "assets/dialogue-portraits/sources/sara-surprised-draft-v1.png": {
+      "sha256": "8cde84259d2e83edf9749e13f2ab880c04dcab62ea22bffc4d8942195086e2b1",
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 920078,
+      "opaquePixels": 1960
+    },
+    "assets/dialogue-portraits/sources/sara-friendly-draft-v1.png": {
+      "sha256": "fe21aa7af4054331ceb35328731c461b981764f456add83b0c0ec1d01d34beab",
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 915325,
+      "opaquePixels": 2130
+    }
+  }
+}
