@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { test, expect } from './support';
 import { PIXEL_ANIMATIONS } from '../../src/game/actors/pixel-animations';
 import { SARA_CLIPS } from '../../src/game/actors/sara-animations';
+import { CHARM_COMPARISON_CLIPS } from '../../src/dev/pixel-compare-charm';
 
 async function openViewer(page: Page) {
   await page.goto('http://127.0.0.1:4176/animation-compare.html');
@@ -15,7 +16,7 @@ test('DEV-Vorschau enthält alle Posen in genau einer Box pro Figur', async ({ p
   await page.locator('#pause').click();
 
   for (const [name, clips] of [
-    ['Pixel', PIXEL_ANIMATIONS],
+    ['Pixel', { ...PIXEL_ANIMATIONS, ...CHARM_COMPARISON_CLIPS }],
     ['Sara', SARA_CLIPS],
   ] as const) {
     const card = page.locator(`article[data-character="${name.toLowerCase()}"]`);
@@ -29,12 +30,13 @@ test('DEV-Vorschau enthält alle Posen in genau einer Box pro Figur', async ({ p
     ).toEqual(Object.keys(clips));
 
     for (const [key, clip] of Object.entries(clips)) {
+      const frames =
+        'poses' in clip ? clip.poses.map((pose: { frame: number }) => pose.frame) : clip.frames;
+
       await select.selectOption(key);
-      await expect(card.locator('output')).toContainText(`Frame ${clip.frames[0]}`);
+      await expect(card.locator('output')).toContainText(`Frame ${frames[0]}`);
       await page.getByRole('button', { name: `${name} ein Frame weiter`, exact: true }).click();
-      await expect(card.locator('output')).toContainText(
-        `Frame ${clip.frames[1 % clip.frames.length]}`,
-      );
+      await expect(card.locator('output')).toContainText(`Frame ${frames[1 % frames.length]}`);
     }
   }
 

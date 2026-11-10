@@ -127,6 +127,9 @@ geschafften Folge und Streicheln im Finale. Beine-Umstreichen und Köpfchen gebe
 sind vorgeschlagene visuelle Varianten des Anschmiegens. Pfote und Bauch bleiben
 optionale Posenproben. Kopf und Bauch verwenden neue Frames aus
 `assets/pixel/charm-v1/`; Herkunft und Exportvertrag stehen dort beim Asset.
+Auch `/animation-compare.html` bietet die fünf Charme-Schleifen in der Pixel-Auswahl,
+mit Größenvergleich, Pause und Einzelschritt. Beide Ansichten teilen dieselben Posen
+und Schleifenzeiten; die Annäherung bleibt der Wohnzimmer-Vorschau vorbehalten.
 Die bisherigen Master und Bewegungs-Sheets bleiben unverändert. Die linke Dialogfläche ist ein
 Layoutvorschlag, der rechts beide Figuren frei lässt. Steuerung, Herzvergabe und
 Zeitlimits des Spiels sind hier nicht aktiv. HTML und Module bleiben DEV-only.

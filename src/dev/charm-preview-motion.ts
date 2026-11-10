@@ -215,7 +215,6 @@ function actionPose(
       return {
         ...IDLE,
         x: x + press * 3,
-        scale: 2.5,
         frame: [20, 21, 22, 21][Math.floor(phase * 4)],
       };
     case 'roll':
