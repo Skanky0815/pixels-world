@@ -60,9 +60,15 @@ export class BookToppling {
   }
 
   releaseSupport() {
-    if (this.phase === 'falling' || this.phase === 'fallen') return;
+    this.knockOver();
+  }
+
+  knockOver() {
+    if (this.phase === 'falling' || this.phase === 'fallen') return false;
     this.phase = 'falling';
     this.elapsed = 0;
+
+    return true;
   }
 
   snapshot() {

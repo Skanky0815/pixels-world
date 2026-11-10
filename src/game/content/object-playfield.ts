@@ -10,6 +10,7 @@ import {
   type Bounds,
 } from '../interactions/contracts';
 import type { Vase } from '../objects/Vase';
+import type { BookStack } from '../objects/BookStack';
 import type { buildObjects } from './build-objects';
 import type { RoomDefinition } from './definitions';
 import { drawRoom } from './draw-room';
@@ -71,7 +72,9 @@ export function connectObjectPhysics(
 
   for (const vase of objects.vases) {
     scene.physics.add.collider(vase.collider, platforms, (_object, surface) => {
-      if (surface === floor) damage(vase.breakOnFloor());
+      if (surface !== floor) return;
+      transferVaseImpact(vase, objects.books);
+      damage(vase.breakOnFloor());
     });
     scene.physics.add.collider(pixel.collider, vase.collider, () => pushVase(pixel, vase));
   }
@@ -96,7 +99,11 @@ export function advanceObjectInteractions(
 ) {
   updateShelves(shelves, pixel, time, damage, [...objects.vases, ...objects.books]);
 
-  for (const vase of objects.vases) vase.updateFall();
+  for (const vase of objects.vases) {
+    vase.updateFall();
+    transferVaseImpact(vase, objects.books);
+  }
+
   const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));
 
   pixel.move(input, time, delta, surface?.climbArea);
@@ -118,6 +125,12 @@ export function advanceObjectInteractions(
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
+}
+
+function transferVaseImpact(vase: Vase, books: readonly BookStack[]) {
+  const impact = vase.impact;
+
+  for (const stack of books) stack.knockOver(impact);
 }
 
 // eslint-disable-next-line max-lines-per-function -- Der Einsturz gibt direkt aufliegende Vasen und Bücher für ihren vorhandenen Fallablauf frei; keine künstlichen Zusatzschäden.

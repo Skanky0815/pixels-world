@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import { DamageHistory } from '../domain/chaos-event';
+import { hitsBooks, type VaseImpact } from '../domain/object-impact';
 import { BookToppling, type BookRules } from '../interactions/book-toppling';
 import {
   overlaps,
@@ -26,6 +27,7 @@ export class BookStack {
   private readonly graphic: Phaser.GameObjects.Container;
   private readonly art: BookArt;
   private drop: { from: number; elapsed: number; duration: number } | null = null;
+  private toppledBy: string | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -59,6 +61,13 @@ export class BookStack {
 
   private draw() {
     this.art.render(this.model.snapshot());
+  }
+
+  knockOver(impact: VaseImpact) {
+    const bounds = { x: this.config.x - 24, y: this.graphic.y - 36, width: 48, height: 36 };
+
+    if (!hitsBooks(impact, bounds) || !this.model.knockOver()) return;
+    this.toppledBy = impact.sourceId;
   }
 
   // eslint-disable-next-line max-lines-per-function -- Nur ein tatsächlich aufliegender Stapel verliert seine Auflage; ein bereits zerstreuter Stapel zählt dadurch keinen zweiten Schaden.
@@ -111,6 +120,7 @@ export class BookStack {
       supportY: this.config.supportY,
       y: this.graphic.y,
       dropping: this.drop !== null,
+      toppledBy: this.toppledBy,
     };
   }
 
@@ -118,6 +128,7 @@ export class BookStack {
     this.model.reset();
     this.history.reset();
     this.drop = null;
+    this.toppledBy = null;
     this.graphic.y = this.config.supportY;
     this.draw();
   }

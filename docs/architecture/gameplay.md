@@ -55,6 +55,15 @@ Objektinteraktion mit `LivingRoomScene`; Rundenuhr, Ziel und Heimkehr bleiben
 außerhalb dieses gemeinsamen Schritts. Der Playground besitzt seinen eigenen
 Score und entsorgt seine Ressourcen beim Szenenwechsel.
 
+Eine bewegte oder fallende Vase kann bei echter Rechteckberührung einen
+Bücherstapel umkippen. `object-impact.ts` prüft Kontakt und Bewegung; der
+Objektadapter übernimmt den normalen Bücherfall statt sofort Punkte zu vergeben.
+Der Boden-Callback prüft die Kette noch vor dem Vasenbruch. Bücher lösen keine
+weiteren Stöße aus: Die Kette bleibt gerichtet und endet nach einem Schritt.
+Bereits fallende oder umgefallene Stapel nehmen keinen zweiten Stoß an.
+Pause friert beide Abläufe ein; Reset entfernt auch die beobachtbare Herkunft
+`toppledBy`. Regale geben ihre Auflagen weiterhin über den bestehenden Weg frei.
+
 Der DEV-Debugdialog erhält nur innerhalb der Dev-Build-Grenze einen
 szenengebundenen Port. Szenarien initialisieren frische Domain-Modelle mit
 validierten Werten und einer lokalen Zufallsquelle; Vorwärtsschritte benutzen

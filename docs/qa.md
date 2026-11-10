@@ -184,6 +184,11 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
 - Vorhang greifen, hoch-/hinabklettern, rutschen, abspringen und wieder lösen.
   Kratzen/Knabbern starten im Stillstand und brechen bei Bewegung/Sprung ab.
   Vasen zählen erst beim Bodenbruch; gleicher Schaden zählt nicht doppelt.
+- Im Wohnzimmer mit Raumseed `books-5` über den Vorhang rechts aufs mittlere Regal
+  springen und die Vase nach links schieben. Sie kippt beim Fallen die Bücher
+  auf dem unteren Regal um. Beide Schäden zählen je einmal; andere Regale und
+  Wege bleiben bestehen. Mitten im Bücherfall pausieren und neu starten:
+  keine nachgeholten Punkte, Vase und Bücher stehen wieder am Ausgangsort.
 - Ballziel ohne Schaden erreichen und alternativ Timer ablaufen lassen. Sara
   kommt, Pixel steigt von Möbeln herunter und setzt sich. Score/Welt bleiben
   eingefroren; Texte warten auf frische Bestätigung.

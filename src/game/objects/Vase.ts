@@ -3,6 +3,7 @@ import type Phaser from 'phaser';
 import { ASSETS } from '../assets/definitions';
 import { assertObjectId, chaosEvent, DamageHistory } from '../domain/chaos-event';
 import type { Bounds, Destructible, ObjectLifecycle } from '../interactions/contracts';
+import type { VaseImpact } from '../domain/object-impact';
 
 export type VaseState = 'resting' | 'moving' | 'falling' | 'broken';
 export interface VaseConfig {
@@ -123,6 +124,18 @@ export class Vase implements Destructible, ObjectLifecycle {
 
   damageSnapshot() {
     return this.history.snapshot();
+  }
+
+  get impact(): VaseImpact {
+    const body = this.collider.body as Phaser.Physics.Arcade.Body;
+
+    return Object.freeze({
+      sourceId: this.id,
+      state: this.phase,
+      bounds: Object.freeze({ x: body.left, y: body.top, width: body.width, height: body.height }),
+      velocityX: body.velocity.x,
+      velocityY: body.velocity.y,
+    });
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der flache Vasen-Beobachtungsvertrag bleibt vollständig an einer Stelle sichtbar.
