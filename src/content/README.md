@@ -346,8 +346,10 @@ DE-/EN-Fluff, Saras Kommentar und die Erfolgsbedingung vor. Erst ein vom
 Chaossystem akzeptiertes Aufprallereignis sendet `album-discovered` mit
 `entryId`, `objectId` und `eventId`; Spawn und Reset entdecken nichts.
 Der nur lesbare E2E-Snapshot zeigt das letzte Ereignis als `albumDiscovery`.
-Das gemeinsame Album übernimmt die dauerhafte Sammlung und dedupliziert nach
-stabiler Album-ID; die einzelnen Objektmechaniken speichern keinen eigenen Fortschritt.
+`album-discovered` beschreibt zunächst nur einen vorläufigen Fund. Die Szene
+bestätigt die nach stabiler Album-ID deduplizierten Funde erst bei Erreichen der
+Rundenauswertung; vorherige Neustarts oder Reloads speichern sie nicht.
+Die einzelnen Objektmechaniken speichern keinen eigenen Fortschritt.
 
 ## Teppich und Haarballen
 
@@ -382,7 +384,7 @@ Teppich-PNG wird wiederverwendet, die große Haarballenquelle nicht gebündelt.
 und Teppich. `album/carpet.ts` enthält Asset, stabile ID, DE-/EN-Fluff und Saras
 Kommentar. Nur akzeptierter tatsächlicher Schaden sendet `album-discovered`;
 Spawn, Abbruch und Runden-Reset erzeugen keinen Fund. Die gemeinsame Sammlung
-übernimmt Persistenz und Deduplication.
+übernimmt Persistenz und Deduplication erst bei regulär erreichter Rundenauswertung.
 
 ## Album der Schandtaten
 
@@ -398,7 +400,7 @@ Die beiden Wohnzimmer-Varianten teilen das Kapitel `living-room`. Weitere Räume
 können dieselbe ID verwenden, ohne den Gesamtzähler zu erhöhen. Noch nicht mit
 Einträgen belegte Raum-Tabs zeigen einen Leerzustand und zählen keine Platzhalter.
 Unentdeckte Plätze zeigen ausschließlich `?` und neutrale zugängliche Beschriftungen;
-Name, Bild und Texte werden erst nach Freischaltung in den Dialog eingefügt.
+Name, Bild und Texte werden erst nach Freischaltung am Rundenende in den Dialog eingefügt.
 `previewOnly` kennzeichnet Varianten, die ausschließlich in DEV-/E2E-Räumen
 erreichbar sind. Sie fehlen im veröffentlichten Album und dessen Zählern, bleiben
 aber mit ihren stabilen IDs in Entwicklungsvorschauen sammelbar.

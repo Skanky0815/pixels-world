@@ -17,6 +17,8 @@ export class RoundResultView {
   private readonly reconciliation: Phaser.GameObjects.Text;
   private readonly hearts: Phaser.GameObjects.Graphics;
   private readonly goal: Phaser.GameObjects.Text;
+  private readonly discoveries: Phaser.GameObjects.Text;
+  private newDiscoveries = 0;
   private readonly quote: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
   private result: RoundResult | null = null;
@@ -34,6 +36,7 @@ export class RoundResultView {
     this.reconciliation = scene.add.text(width / 2 + 20, 215, '', style(16));
     this.hearts = scene.add.graphics().setScale(1.75);
     this.goal = scene.add.text(64, 315, '', style(13));
+    this.discoveries = scene.add.text(64, 285, '', { ...style(14), color: '#c8dfa0' });
     this.quote = scene.add.text(64, 344, '', {
       ...style(14),
       fontStyle: 'italic',
@@ -51,6 +54,7 @@ export class RoundResultView {
       this.reconciliation,
       this.hearts,
       this.goal,
+      this.discoveries,
       this.quote,
       this.hint,
     ]);
@@ -58,8 +62,9 @@ export class RoundResultView {
     this.root.add(this.dialogue);
   }
 
-  render(result: RoundResult | null) {
+  render(result: RoundResult | null, newDiscoveries = 0) {
     this.result = result;
+    this.newDiscoveries = newDiscoveries;
     this.root.setVisible(result !== null);
 
     if (result) this.renderText(result);
@@ -70,6 +75,7 @@ export class RoundResultView {
     const success = result.outcome === 'success';
 
     this.title.setText(t('roundResult'));
+    this.discoveries.setText(t('resultAlbumDiscoveries', { count: this.newDiscoveries }));
     this.headline.setText(resultHeadline(result));
     this.headline.setColor(success ? '#c8dfa0' : '#efb69d');
     this.chaos.setText(t('resultChaosDetails', { v0: result.score, v1: result.reaction }));
@@ -107,11 +113,14 @@ export class RoundResultView {
       reconciliationText: this.reconciliation.text,
       heartsText: this.heartsText(),
       goalText: this.goal.text,
+      newDiscoveries: this.newDiscoveries,
+      albumText: this.discoveries.text,
       summaryText: [
         this.chaos.text,
         this.reconciliation.text,
         this.heartsText(),
         this.goal.text,
+        this.discoveries.text,
       ].join('\n'),
       quoteText: this.quote.text,
       hint: this.hint.text,

@@ -1,6 +1,7 @@
 import type { Carpet } from './game/objects/Carpet';
 import type { WallPicture } from './game/objects/WallPicture';
 import type { AlbumDiscovery } from './content/album/discovery';
+import type { RoundAlbum } from './game/album/round';
 import type { WallPlacement } from './game/content/wall-slots';
 import type { Shelf } from './game/objects/Shelf';
 import type { BookStack } from './game/objects/BookStack';
@@ -21,6 +22,7 @@ export interface GameTestState {
   readonly carpets: readonly ReturnType<Carpet['snapshot']>[];
   readonly pictures: readonly ReturnType<WallPicture['snapshot']>[];
   readonly albumDiscovery: AlbumDiscovery | null;
+  readonly album: ReturnType<RoundAlbum['snapshot']>;
   readonly wallPlacements: readonly WallPlacement[];
   readonly books: readonly ReturnType<BookStack['snapshot']>[];
   readonly shelves: readonly ReturnType<Shelf['snapshot']>[];

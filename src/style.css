@@ -708,6 +708,11 @@ kbd {
   color: #d4b488;
   font-size: 12px;
 }
+.mobile-result .result-discoveries {
+  grid-column: 1 / -1;
+  color: #c8dfa0;
+  font-size: 14px;
+}
 @media (any-pointer: coarse) {
   .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
     max-height: 100%;

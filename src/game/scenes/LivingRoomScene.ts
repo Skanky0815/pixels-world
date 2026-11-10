@@ -5,6 +5,7 @@ import { BallPlay, ballPlayPose, ballPlayPlacement } from '../domain/ball-play';
 import { motionPreferences } from '../../settings/motion';
 import { preloadCarpetArt } from '../assets/carpet-art';
 import { albumCollection } from '../../settings/album';
+import { RoundAlbum } from '../album/round';
 import { discoverAlbum } from '../../content/album';
 import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
@@ -109,6 +110,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private objects: ObjectLifecycle[] = [];
   private shelves: Shelf[] = [];
   private lastAlbumDiscovery: AlbumDiscovery | null = null;
+  private roundAlbum = new RoundAlbum(albumCollection);
   private destructibles: Destructible[] = [];
 
   private room: ResolvedRoom;
@@ -196,6 +198,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private initializeRound() {
     this.physics.disableUpdate();
     this.chaos.reset();
+    this.roundAlbum = new RoundAlbum(albumCollection);
     this.peacefulGoal = new PeacefulGoal();
     this.reactionDamage.reset();
     this.random = undefined;
@@ -323,6 +326,7 @@ export class LivingRoomScene extends Phaser.Scene {
             wallPlacements: this.room.definition.wallPlacements ?? [],
             shelves: this.shelves.map((shelf) => shelf.snapshot()),
             albumDiscovery: this.lastAlbumDiscovery,
+            album: this.roundAlbum.snapshot(),
             carpets: this.built.carpets.map((carpet) => carpet.snapshot()),
             pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
@@ -522,7 +526,7 @@ export class LivingRoomScene extends Phaser.Scene {
     const discovery = discoverAlbum(event, entry.definition.variant);
 
     if (!discovery) return;
-    albumCollection.unlock(discovery.entryId);
+    this.roundAlbum.record(discovery.entryId);
     this.lastAlbumDiscovery = discovery;
     this.events.emit('album-discovered', discovery);
   }
@@ -843,7 +847,7 @@ export class LivingRoomScene extends Phaser.Scene {
       this.difficulty,
     );
 
-    this.resultView.render(result);
+    this.resultView.render(result, this.roundAlbum.confirm(result).length);
     this.controls.showRestart(result !== null);
   }
 

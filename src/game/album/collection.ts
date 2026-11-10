@@ -22,11 +22,23 @@ export class AlbumCollection {
   }
 
   unlock(id: string) {
-    if (!this.ids.has(id) || this.found.has(id)) return false;
-    this.found.add(id);
+    return this.unlockAll([id]).length > 0;
+  }
+
+  canUnlock(id: string) {
+    return this.ids.has(id) && !this.found.has(id);
+  }
+
+  /** One complete snapshot, one write and one notification for a finished round. */
+  unlockAll(ids: Iterable<string>) {
+    const added = [...new Set(ids)].filter((id) => this.canUnlock(id));
+
+    if (!added.length) return Object.freeze(added);
+
+    for (const id of added) this.found.add(id);
     this.changed();
 
-    return true;
+    return Object.freeze(added);
   }
 
   reset() {

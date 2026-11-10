@@ -10,6 +10,7 @@ export class MobileResultCard {
   private readonly reconciliation = document.createElement('p');
   private readonly hearts = document.createElement('span');
   private readonly goal = document.createElement('p');
+  private readonly discoveries = document.createElement('p');
   private heartState = '';
 
   // eslint-disable-next-line max-lines-per-function -- Die kompakte DOM-Karte hält Ausgang, zwei Spalten und Zielstatus gemeinsam sichtbar.
@@ -21,11 +22,12 @@ export class MobileResultCard {
     this.reconciliation.className = 'result-reconciliation';
     this.hearts.className = 'result-hearts';
     this.goal.className = 'result-goal';
+    this.discoveries.className = 'result-discoveries';
     const charm = document.createElement('div');
 
     charm.className = 'result-charm';
     charm.append(this.reconciliation, this.hearts);
-    this.root.append(this.headline, this.chaos, charm, this.goal);
+    this.root.append(this.headline, this.chaos, charm, this.discoveries, this.goal);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die unveränderlichen Ergebniswerte werden ohne HTML-Interpolation gemeinsam übertragen.
@@ -46,6 +48,7 @@ export class MobileResultCard {
       t('resultHearts', { v0: result.hearts, v1: result.required }),
     );
     this.goal.textContent = result.goalText;
+    this.discoveries.textContent = result.albumText;
   }
 
   private renderHearts(earned: number, required: number) {
