@@ -24,7 +24,7 @@ Vite bündelt sie als getrennte HTML-Einstiege. Die lokalen PNG-Aufnahmen in
 `album.png` zeigt den Album-Dialog des Produktionsbuilds nach echtem Kratzen am
 Sofa: eine bestätigte Entdeckung, übrige Plätze geheim. Für eine neue Aufnahme ein frisches
 Browserprofil verwenden, die Runde starten und neben das Sofa laufen. Nach der
-ersten Schandtat die Runde einschließlich Heimkehr und beliebigem Versöhnungsausgang
+ersten Schandtat die Runde einschließlich Heimkehr und erfolgreicher Versöhnung
 bis zur Auswertung abschließen; erst dann das Buchsymbol im Spielkopf öffnen. Bei 1280×800 nur den
 Album-Dialog aufnehmen; der Screenshot wird unverändert eingebunden.
 

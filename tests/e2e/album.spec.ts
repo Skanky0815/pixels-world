@@ -88,10 +88,50 @@ for (const mobile of [false, true]) {
       await expect(page.locator('.pause-menu')).toBeHidden();
       expect((await state(page)).started).toBe(false);
     });
+    test('Gescheitertes Minispiel verwirft neue Funde und bewahrt bestätigte Einträge @smoke', async ({
+      page,
+    }) => {
+      await page.addInitScript(() => {
+        if (!localStorage.getItem('pixels-world.album'))
+          localStorage.setItem(
+            'pixels-world.album',
+            JSON.stringify({ version: 1, discovered: ['vase.blue'] }),
+          );
+      });
+      await scratch(page);
+      expect((await state(page)).album.pending).toEqual(['couch.cozy']);
+      const result = await finishAlbumRound(page, false);
+
+      expect(result.outcome).toBe('failed');
+      expect(result.newDiscoveries).toBe(0);
+      expect(result.albumText).toBe('Neue Album-Einträge: 0 · Versöhnung nicht geschafft.');
+      expect((await state(page)).album).toEqual({ pending: [], confirmed: [], completed: true });
+      expect(
+        await page.evaluate(
+          () => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered,
+        ),
+      ).toEqual(['vase.blue']);
+
+      if (mobile) {
+        await page.locator('.result-discoveries').scrollIntoViewIfNeeded();
+        await expect(page.locator('.result-discoveries')).toHaveText(result.albumText);
+      }
+
+      await test
+        .info()
+        .attach('album-failed-result', { body: await page.screenshot(), contentType: 'image/png' });
+      await page.locator('.album-toggle').click();
+      await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+      await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
+      await page.reload();
+      await waitForGame(page);
+      await page.locator('[data-start-album]').click();
+      await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+    });
   });
 }
 
-test('Erst die Auswertung deckt ein Objekt auf; Pause, Reset, Reload, Sprache und Album-Löschen @smoke', async ({
+test('Erst erfolgreiche Versöhnung deckt ein Objekt auf; Pause, Reset, Reload, Sprache und Album-Löschen @smoke', async ({
   page,
 }) => {
   await scratch(page);
@@ -107,9 +147,9 @@ test('Erst die Auswertung deckt ein Objekt auf; Pause, Reset, Reload, Sprache un
   expect((await state(page)).round).toEqual(before.round);
   await album.locator('[data-action="close"]').click();
   await page.locator('[data-pause-resume]').click();
-  const result = await finishAlbumRound(page);
+  const result = await finishAlbumRound(page, true);
 
-  expect(result.outcome).toBe('failed');
+  expect(result.outcome).toBe('success');
   expect(result.newDiscoveries).toBe(1);
   expect(result.albumText).toBe('Neue Album-Einträge: 1');
   await openFromMenu(page);
@@ -262,7 +302,7 @@ test.describe('Mobile Buchseiten', () => {
     page,
   }) => {
     await scratch(page);
-    await finishAlbumRound(page);
+    await finishAlbumRound(page, true);
     await page.locator('.album-toggle').click();
     const album = page.locator('.album-dialog');
 

@@ -713,6 +713,9 @@ kbd {
   color: #c8dfa0;
   font-size: 14px;
 }
+.mobile-result[data-outcome='failed'] .result-discoveries {
+  color: #d4b488;
+}
 @media (any-pointer: coarse) {
   .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
     max-height: 100%;

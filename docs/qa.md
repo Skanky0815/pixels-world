@@ -192,9 +192,9 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
   Minispiel oder Herzen. DE/EN und Touch prüfen; bereits ein Kratzen oder ein
   Timer-Ende ohne Ziel behält den regulären Versöhnungsablauf.
 - Neue Album-Funde bleiben während Chaos, Heimkehr und Versöhnung geheim.
-  Erst die Auswertung bestätigt sie gemeinsam und zeigt ihre Anzahl; erfolgreiche
-  und gescheiterte Versöhnung zählen gleichermaßen. Neustart/Reload davor verwirft
-  nur Vormerkungen, vorhandene Einträge bleiben erhalten. Mehrere Varianten,
+  Erst die Auswertung nach erfolgreicher Versöhnung bestätigt sie gemeinsam und
+  zeigt ihre Anzahl. Gescheiterte Versöhnung verwirft neue Funde auch mit Teilherzen.
+  Neustart/Reload davor verwirft nur Vormerkungen, vorhandene Einträge bleiben erhalten. Mehrere Varianten,
   bekannte Einträge, DE/EN und blockierten Speicher prüfen.
 - Versöhnung: Lesepause, nächste Pfeiltaste, richtige/falsche/zu späte Eingaben,
   begrenzte Versuche, Erfolg und Scheitern. Ergebnis bleibt stabil; „Neue Runde“

@@ -75,7 +75,7 @@ export class RoundResultView {
     const success = result.outcome === 'success';
 
     this.title.setText(t('roundResult'));
-    this.discoveries.setText(t('resultAlbumDiscoveries', { count: this.newDiscoveries }));
+    this.renderDiscoveries(result);
     this.headline.setText(resultHeadline(result));
     this.headline.setColor(success ? '#c8dfa0' : '#efb69d');
     this.chaos.setText(t('resultChaosDetails', { v0: result.score, v1: result.reaction }));
@@ -98,6 +98,15 @@ export class RoundResultView {
     placeDialogueText(this.quote, textX, this.hint.x - textX - 4);
     this.goal.setX(textX);
     this.hint.setText(t('spaceNewRound'));
+  }
+
+  private renderDiscoveries(result: RoundResult) {
+    const failed = result.outcome === 'failed';
+    const caption = failed
+      ? t('resultAlbumNotSaved')
+      : t('resultAlbumDiscoveries', { count: this.newDiscoveries });
+
+    this.discoveries.setText(caption).setColor(failed ? '#d4b488' : '#c8dfa0');
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der skalare Vertrag teilt dieselben sichtbaren Texte mit der mobilen Karte und dem unveränderlichen Beobachter.

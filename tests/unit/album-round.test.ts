@@ -115,7 +115,7 @@ test('Rundenabschluss übernimmt alle Funde mit genau einem Schreibvorgang und e
   assert.equal(round.snapshot().completed, true);
 });
 
-test('Erfolg und Scheitern mit null, einem oder mehreren Herzen bestätigen dieselben Entdeckungen', () => {
+test('Nur vollständige Versöhnung bestätigt Funde; Scheitern verwirft sie auch mit Teilherzen', () => {
   for (const [score, success, partial, hearts] of [
     [0, true, 0, 1],
     [25, true, 0, 2],
@@ -123,14 +123,23 @@ test('Erfolg und Scheitern mit null, einem oder mehreren Herzen bestätigen dies
     [25, false, 0, 0],
     [60, false, 1, 1],
   ] as const) {
-    const collection = new AlbumCollection(ids, memory());
+    const storage = memory(JSON.stringify({ version: 1, discovered: ['couch.cozy'] }));
+    const collection = new AlbumCollection(ids, storage);
     const round = new RoundAlbum(collection);
     const result = finish(game(score), success, partial);
 
     round.record('vase.blue');
     assert.ok(result);
     assert.equal(result.hearts, hearts);
-    assert.deepEqual(round.confirm(result), ['vase.blue']);
+    assert.deepEqual(round.confirm(result), success ? ['vase.blue'] : []);
+    assert.deepEqual(
+      collection.snapshot().discovered,
+      success ? ['couch.cozy', 'vase.blue'] : ['couch.cozy'],
+    );
+    assert.deepEqual(round.snapshot().pending, []);
+    assert.equal(storage.writes(), success ? 1 : 0);
+
+    if (!success) assert.deepEqual(round.confirm(finish(game(), true)), []);
   }
 });
 
@@ -153,7 +162,7 @@ test('Bereits bestätigte Varianten zählen nicht erneut, auch bei konkurrierend
 
   round.record('vase.blue');
   collection.unlock('vase.blue');
-  assert.deepEqual(round.confirm(finish(game(), false)), []);
+  assert.deepEqual(round.confirm(finish(game(), true)), []);
   assert.equal(storage.writes(), 1);
   assert.deepEqual(new RoundAlbum(collection).confirm(finish(game(), true)), []);
   assert.equal(storage.writes(), 1);
@@ -165,7 +174,7 @@ test('Migration, geschützter neuerer Speicher und blockierter Storage bleiben e
   const round = new RoundAlbum(migrated);
 
   round.record('vase.blue');
-  round.confirm(finish(game(), false));
+  round.confirm(finish(game(), true));
   assert.deepEqual(new AlbumCollection(ids, old).snapshot().discovered, [
     'couch.cozy',
     'vase.blue',
@@ -185,7 +194,7 @@ test('Migration, geschützter neuerer Speicher und blockierter Storage bleiben e
   const session = new RoundAlbum(blocked);
 
   session.record('vase.blue');
-  assert.deepEqual(session.confirm(finish(game(), false)), ['vase.blue']);
+  assert.deepEqual(session.confirm(finish(game(), true)), ['vase.blue']);
   assert.equal(blocked.snapshot().storage, 'unavailable');
   assert.equal(ALBUM_STORAGE_KEY, 'pixels-world.album');
 });

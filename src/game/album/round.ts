@@ -20,12 +20,14 @@ export class RoundAlbum {
     return true;
   }
 
+  /** Resolve once: success commits the batch, failed reconciliation discards it. */
   confirm(result: RoundResult | null) {
     if (!result) return EMPTY;
 
     if (this.confirmed) return this.confirmed;
     this.confirmed = EMPTY;
-    this.confirmed = this.collection.unlockAll(this.pending);
+
+    if (result.outcome === 'success') this.confirmed = this.collection.unlockAll(this.pending);
     this.pending.clear();
 
     return this.confirmed;

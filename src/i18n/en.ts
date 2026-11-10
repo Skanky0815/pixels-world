@@ -27,7 +27,7 @@ export const en: Record<keyof typeof de, string> = {
   albumOverall: 'Overall: {found} of {total}',
   albumUnknown: 'Undiscovered entry {number}',
   albumSecret: 'Still a secret',
-  albumHint: 'Finish a round to reveal new mischief in your album.',
+  albumHint: 'Make up with Sara to reveal new mischief in your album.',
   albumChoose: 'Pixel’s evidence',
   albumDiscovered: 'DISCOVERED',
   albumSoon: 'later',
@@ -99,7 +99,7 @@ export const en: Record<keyof typeof de, string> = {
   landingAlbumDescription:
     'Pixel’s mischief gets its own book. Discover new entries as you play, with pictures, cheeky comments and little stories. Anything you haven’t discovered stays a secret.',
   landingAlbumStorage:
-    'After completed rounds, your discoveries stay in this browser – even when you start a new round.',
+    'After successful reconciliation, your discoveries stay in this browser – even when you start a new round.',
   landingAlbumPlay: 'Collect some mischief →',
   landingAlbumAlt: 'The open album with a discovered couch and entries that are still secret.',
   landingAlbumCaption: 'One piece of evidence secured. The rest is waiting for Pixel.',
@@ -231,6 +231,7 @@ export const en: Record<keyof typeof de, string> = {
   resultReconciliation: 'Making amends\n{v0}',
   resultGoal: 'Main goal: {v0}',
   resultAlbumDiscoveries: 'New album entries: {count}',
+  resultAlbumNotSaved: 'New album entries: 0 · Reconciliation failed.',
   resultHearts: '{v0} of {v1} hearts',
   spaceNewRound: '␣: Start a new round',
   rNewRound: 'Start a new round',

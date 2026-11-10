@@ -288,13 +288,16 @@ Nach erfolgreichem `ChaosScore.awardEvent` sammelt `RoundAlbum` neue Entdeckunge
 nur im Speicher der laufenden Szene, dedupliziert nach stabiler Album-ID. Diese
 Vormerkungen gelangen weder in `AlbumCollection.snapshot()` noch in den Storage
 oder die Albumansicht. Neustart, Abbruch und Reload verwerfen sie.
-Erst ein nichtleeres `roundResult` bestätigt die Runde: Heimkehr und Auswertung
-sind erreicht, unabhängig von erfolgreicher oder gescheiterter Versöhnung und
-Herzanzahl. Auch der friedliche Abschluss ist regulär, erzeugt aber keine Funde.
-Einmalig übergibt `RoundAlbum.confirm` alle IDs an `AlbumCollection.unlockAll`;
+Erst ein nichtleeres `roundResult` mit `outcome: 'success'` bestätigt die Funde:
+Heimkehr, erfolgreiche Versöhnung und Auswertung sind erreicht. Bei gescheiterter
+Versöhnung werden alle Vormerkungen verworfen, auch mit bereits verdienten
+Teilherzen; bestätigte Einträge bleiben erhalten. Der friedliche Abschluss
+bleibt ohne Minispiel positiv, erzeugt aber keine Funde.
+Bei Erfolg übergibt `RoundAlbum.confirm` einmalig alle IDs an `AlbumCollection.unlockAll`;
 ein vollständiger Speichervorgang und eine Benachrichtigung übernehmen den Batch.
 Bereits bekannte IDs zählen nicht erneut. Wiederholtes Rendern und Sprachwechsel
-schreiben nicht erneut. Die Auswertung zeigt die Anzahl tatsächlich neuer Einträge.
+schreiben nicht erneut. Die Auswertung zeigt die Anzahl tatsächlich neuer Einträge
+oder bei Scheitern ausdrücklich, warum keine neuen Einträge gespeichert wurden.
 Künftige Freischaltungen lesen ausschließlich die bestätigte Sammlung; Skins
 werden hier nicht implementiert. Der nur lesbare E2E-Vertrag zeigt getrennte,
 eingefrorene `pending`-/`confirmed`-Listen unter `album`.
