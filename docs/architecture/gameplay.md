@@ -281,9 +281,27 @@ Balancings.
 `discovered`; Version 0 mit `unlocked` wird migriert. Fremde IDs und Duplikate zählen
 nicht. Korrupte Daten führen zu einem leeren Album mit Hinweis, blockierter Speicher
 zu sitzungsweitem Fortschritt. Neuere Speicherversionen werden bis zu einem bewusst
-bestätigten Album-Reset nicht überschrieben. Ein Runden-Reset löscht die Sammlung nicht.
+bestätigten Album-Reset nicht überschrieben. Ein Runden-Reset löscht bestätigte
+Einträge nicht.
 
-Die Szene übernimmt Entdeckungen erst nach erfolgreichem `ChaosScore.awardEvent`.
+Nach erfolgreichem `ChaosScore.awardEvent` sammelt `RoundAlbum` neue Entdeckungen
+nur im Speicher der laufenden Szene, dedupliziert nach stabiler Album-ID. Diese
+Vormerkungen gelangen weder in `AlbumCollection.snapshot()` noch in den Storage
+oder die Albumansicht. Neustart, Abbruch und Reload verwerfen sie.
+Erst ein nichtleeres `roundResult` mit `outcome: 'success'` bestätigt die Funde:
+Heimkehr, erfolgreiche Versöhnung und Auswertung sind erreicht. Bei gescheiterter
+Versöhnung werden alle Vormerkungen verworfen, auch mit bereits verdienten
+Teilherzen; bestätigte Einträge bleiben erhalten. Der friedliche Abschluss
+bleibt ohne Minispiel positiv, erzeugt aber keine Funde.
+Bei Erfolg übergibt `RoundAlbum.confirm` einmalig alle IDs an `AlbumCollection.unlockAll`;
+ein vollständiger Speichervorgang und eine Benachrichtigung übernehmen den Batch.
+Bereits bekannte IDs zählen nicht erneut. Wiederholtes Rendern und Sprachwechsel
+schreiben nicht erneut. Die Auswertung zeigt die Anzahl tatsächlich neuer Einträge
+oder bei Scheitern ausdrücklich, warum keine neuen Einträge gespeichert wurden.
+Künftige Freischaltungen lesen ausschließlich die bestätigte Sammlung; Skins
+werden hier nicht implementiert. Der nur lesbare E2E-Vertrag zeigt getrennte,
+eingefrorene `pending`-/`confirmed`-Listen unter `album`.
+
 Der szenengebundene `AlbumView` zeigt das freigegebene Buchlayout als nativen Dialog.
 Einführung und Pause-Menü öffnen dasselbe Album, pausieren dabei das Spiel und lösen
 gehaltene Eingaben. Beim Schließen wird der vorherige Menü-/Pausenzustand respektiert.

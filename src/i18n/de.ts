@@ -26,13 +26,14 @@ export const de = {
   albumOverall: 'Insgesamt: {found} von {total}',
   albumUnknown: 'Unentdeckter Eintrag {number}',
   albumSecret: 'Noch ein Geheimnis',
-  albumHint: 'Erst eine erfolgreiche Schandtat enthüllt das Objekt.',
+  albumHint: 'Versöhne dich mit Sara, um neue Schandtaten im Album zu enthüllen.',
   albumChoose: 'Pixels Beweisstücke',
   albumDiscovered: 'ENTDECKT',
   albumSoon: 'später',
   albumEmptyRoom: 'Dieser Raum hat noch keine Album-Einträge.',
   albumReset: 'Album zurücksetzen',
-  albumResetQuestion: 'Alle Entdeckungen im Album löschen? Die laufende Runde bleibt erhalten.',
+  albumResetQuestion:
+    'Alle bestätigten Entdeckungen im Album löschen? Die laufende Runde bleibt erhalten.',
   albumResetConfirm: 'Entdeckungen löschen',
   albumCancel: 'Abbrechen',
   albumStorageUnavailable:
@@ -99,7 +100,7 @@ export const de = {
   landingAlbumDescription:
     'Pixels Unfug bekommt ein eigenes Buch. Entdecke beim Spielen neue Einträge mit Bildern, frechen Kommentaren und kleinen Geschichten. Was noch unentdeckt ist, bleibt ein Geheimnis.',
   landingAlbumStorage:
-    'Deine Entdeckungen bleiben in diesem Browser erhalten – auch nach einer neuen Runde.',
+    'Nach erfolgreicher Versöhnung bleiben deine Entdeckungen in diesem Browser erhalten – auch nach einer neuen Runde.',
   landingAlbumPlay: 'Schandtaten sammeln →',
   landingAlbumAlt:
     'Das aufgeschlagene Album mit einem entdeckten Sofa und noch geheimen Einträgen.',
@@ -230,6 +231,8 @@ export const de = {
   resultChaosDetails: 'Chaospunkte: {v0}\nSaras Reaktion: {v1}',
   resultReconciliation: 'Versöhnung\n{v0}',
   resultGoal: 'Hauptziel: {v0}',
+  resultAlbumDiscoveries: 'Neue Album-Einträge: {count}',
+  resultAlbumNotSaved: 'Neue Album-Einträge: 0 · Versöhnung nicht geschafft.',
   resultHearts: '{v0} von {v1} Herzen',
   spaceNewRound: '␣: Neue Runde starten',
   rNewRound: 'Neue Runde starten',

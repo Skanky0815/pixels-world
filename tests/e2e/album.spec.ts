@@ -7,11 +7,15 @@ import {
   state,
   until,
   besideCouch,
+  besidePlant,
+  holdUntil,
   reset,
   waitForGame,
   waitForLoadingScreen,
 } from './support';
 import { openPause } from './pause-support';
+import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
+import { finishAlbumRound } from './album-support';
 import type { Page } from '@playwright/test';
 
 async function openFromMenu(page: Page) {
@@ -21,7 +25,8 @@ async function openFromMenu(page: Page) {
 }
 
 async function scratch(page: Page) {
-  await start(page);
+  await seedRoundRandom(page);
+  await start(page, '/?round-profile=fast');
   await besideCouch(page);
   await until(page, (s) => s.couch.damage === 1);
 }
@@ -83,23 +88,77 @@ for (const mobile of [false, true]) {
       await expect(page.locator('.pause-menu')).toBeHidden();
       expect((await state(page)).started).toBe(false);
     });
+    test('Gescheitertes Minispiel verwirft neue Funde und bewahrt bestätigte Einträge @smoke', async ({
+      page,
+    }) => {
+      await page.addInitScript(() => {
+        if (!localStorage.getItem('pixels-world.album'))
+          localStorage.setItem(
+            'pixels-world.album',
+            JSON.stringify({ version: 1, discovered: ['vase.blue'] }),
+          );
+      });
+      await scratch(page);
+      expect((await state(page)).album.pending).toEqual(['couch.cozy']);
+      const result = await finishAlbumRound(page, false);
+
+      expect(result.outcome).toBe('failed');
+      expect(result.newDiscoveries).toBe(0);
+      expect(result.albumText).toBe('Neue Album-Einträge: 0 · Versöhnung nicht geschafft.');
+      expect((await state(page)).album).toEqual({ pending: [], confirmed: [], completed: true });
+      expect(
+        await page.evaluate(
+          () => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered,
+        ),
+      ).toEqual(['vase.blue']);
+
+      if (mobile) {
+        await page.locator('.result-discoveries').scrollIntoViewIfNeeded();
+        await expect(page.locator('.result-discoveries')).toHaveText(result.albumText);
+      }
+
+      await test
+        .info()
+        .attach('album-failed-result', { body: await page.screenshot(), contentType: 'image/png' });
+      await page.locator('.album-toggle').click();
+      await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+      await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
+      await page.reload();
+      await waitForGame(page);
+      await page.locator('[data-start-album]').click();
+      await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+    });
   });
 }
 
-test('Echter Schaden deckt ein Objekt auf; Pause, Reset, Reload, Sprache und Album-Löschen @smoke', async ({
+test('Erst erfolgreiche Versöhnung deckt ein Objekt auf; Pause, Reset, Reload, Sprache und Album-Löschen @smoke', async ({
   page,
 }) => {
   await scratch(page);
   await openFromMenu(page);
   const album = page.locator('.album-dialog');
 
+  await expect(album.locator('.album-overall')).toHaveText('Insgesamt: 0 von 14');
+  await expect(album.locator('img')).toHaveCount(0);
+  expect((await state(page)).album).toMatchObject({ pending: ['couch.cozy'], completed: false });
+  const before = await state(page);
+
+  await page.clock.runFor(2000);
+  expect((await state(page)).round).toEqual(before.round);
+  await album.locator('[data-action="close"]').click();
+  await page.locator('[data-pause-resume]').click();
+  const result = await finishAlbumRound(page, true);
+
+  expect(result.outcome).toBe('success');
+  expect(result.newDiscoveries).toBe(1);
+  expect(result.albumText).toBe('Neue Album-Einträge: 1');
+  await openFromMenu(page);
   await expect(album.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
   await expect(album.locator('.album-story')).toContainText('Das gemütliche Sofa');
   await expect(album.locator('.album-tile:disabled')).toHaveCount(8);
   await expect(album.locator('.album-story img')).toHaveAttribute('alt', 'Das gemütliche Sofa');
   const paused = await state(page);
 
-  expect(paused.chaos.score).toBe(3);
   await page.clock.runFor(3000);
   expect((await state(page)).round).toEqual(paused.round);
   expect((await state(page)).chaos).toEqual(paused.chaos);
@@ -143,6 +202,7 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
     }),
   );
   await scratch(page);
+  await finishAlbumRound(page, true);
   await openFromMenu(page);
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
   await expect(page.locator('.album-dialog footer [role="status"]')).toContainText(
@@ -153,6 +213,64 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
   await reset(page);
   await openFromMenu(page);
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+});
+
+test('Neustart und Reload verwerfen Vormerkungen und behalten vorhandene Album-Einträge', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    if (!localStorage.getItem('pixels-world.album'))
+      localStorage.setItem(
+        'pixels-world.album',
+        JSON.stringify({ version: 1, discovered: ['vase.blue'] }),
+      );
+  });
+  await scratch(page);
+  expect((await state(page)).album.pending).toEqual(['couch.cozy']);
+  await reset(page);
+  expect((await state(page)).album.pending).toEqual([]);
+  await besideCouch(page);
+  await until(page, (s) => s.couch.damage === 1);
+  await page.reload();
+  await waitForGame(page);
+  expect((await state(page)).album.pending).toEqual([]);
+  expect(
+    await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
+  ).toEqual(['vase.blue']);
+  await page.locator('[data-start-album]').click();
+  await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+  await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
+});
+
+test('Mehrere Funde bleiben bis nach Heimkehr geheim und werden gemeinsam genau einmal bestätigt', async ({
+  page,
+}) => {
+  await scratch(page);
+  await besidePlant(page);
+  await until(page, (s) => s.plant.damage === 1);
+  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 45);
+  expect((await state(page)).album.pending).toEqual(['couch.cozy', 'plant.catgrass']);
+  await useIdleFrames(page);
+  await advanceRoundTo(page, (await state(page)).round.returnAtMs);
+  await until(page, (s) => s.homecoming.stage === 'dialogue', 500);
+  expect((await state(page)).album.completed).toBe(false);
+  expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();
+  const result = await finishAlbumRound(page, true);
+
+  expect(result.newDiscoveries).toBe(2);
+  await page.clock.runFor(3000);
+  expect((await state(page)).result?.newDiscoveries).toBe(2);
+  expect((await state(page)).album).toEqual({
+    pending: [],
+    confirmed: ['couch.cozy', 'plant.catgrass'],
+    completed: true,
+  });
+  expect(
+    await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
+  ).toEqual(['couch.cozy', 'plant.catgrass']);
+  await test
+    .info()
+    .attach('album-round-result', { body: await page.screenshot(), contentType: 'image/png' });
 });
 
 test('Korrupte Album-Daten blockieren weder Einführung noch Sammlung', async ({ page }) => {
@@ -184,6 +302,7 @@ test.describe('Mobile Buchseiten', () => {
     page,
   }) => {
     await scratch(page);
+    await finishAlbumRound(page, true);
     await page.locator('.album-toggle').click();
     const album = page.locator('.album-dialog');
 
