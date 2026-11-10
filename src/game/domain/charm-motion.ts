@@ -195,7 +195,7 @@ function actionPose(
         y: press * 3,
         frame: 5 + (Math.floor(phase * 10) % 5),
         faceLeft: Math.cos(phase * Math.PI * 2) < 0,
-        behindSara: phase < 0.5,
+        behindSara: Math.cos(phase * Math.PI * 2) < 0,
       };
     case 'headbutt':
       return {

@@ -10,6 +10,25 @@ import {
 
 const actions = Object.keys(CHARM_ACTIONS) as CharmAction[];
 
+// eslint-disable-next-line max-lines-per-function -- Eine volle Runde prüft an beiden Seiten der Wendepunkte Laufrichtung und räumliche Reihenfolge gemeinsam.
+test('Umstreichen läuft nach rechts vor Sara und nach links hinter ihr', () => {
+  const model = new CharmMotion();
+
+  model.trigger('rub');
+  model.advance(CHARM_ACTIONS.rub.approach + 50);
+
+  for (let index = 0; index < 28; index++) {
+    const before = model.pose();
+
+    model.advance(1);
+    const movingLeft = model.pose().x < before.x;
+
+    assert.equal(before.behindSara, movingLeft);
+    assert.equal(before.faceLeft, movingLeft);
+    model.advance(99);
+  }
+});
+
 // eslint-disable-next-line max-lines-per-function -- Jede Variante muss nach ihrer einmaligen Annäherung unbegrenzt und periodisch aktiv bleiben.
 test('Charme-Schleifen enden nicht nach einer festen Dauer und wiederholen den Auftakt nicht', () => {
   for (const action of actions) {
