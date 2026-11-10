@@ -122,6 +122,19 @@ Alle Modelle bleiben Phaser-/DOM-unabhängig. Zufallsquellen sind injizierbar;
 Auswahl und Snapshots sind eingefroren. Ansichten besitzen weder eigene Spieluhren
 noch verzögerte Übergänge, die nach einem Neustart weiterlaufen könnten.
 
+`PeacefulGoal` erkennt ausschließlich einen erreichten Hauptziel-Abschluss ohne
+registrierte Schadensobjekte und mit finalem Score null. `ChaosScore.count`
+berücksichtigt auch Schadensereignisse ohne Punkte; ein Timer-Ende reicht nicht.
+Beim Fund erscheint sofort ein freundlicher Sara-Satz neben dem unveränderten
+Ballspiel. Die Auswahl bleibt bis zur bestätigten Heimkehr erhalten und wiederholt
+sich beim nächsten Durchlauf desselben Raum-/Zielpaars nicht unmittelbar.
+Die Erinnerung lebt nur in der Szene über Neustarts, nicht im Browser-Speicher.
+Dieser Abschluss überspringt `Reconciliation` vollständig und führt nach der
+Bestätigung in eine positive Auswertung ohne verdiente oder geforderte Herzen.
+Schäden und Timer-Abschlüsse verwenden weiterhin den regulären Ablauf.
+DE/EN-Inhalte liegen im vorhandenen Sprachkatalog, die Varianten-IDs in
+`content/peaceful-goal.ts`; Punkte, Zielzustand und Album werden nicht verändert.
+
 `sara-dialogue.ts` kombiniert allgemeine und zur Raum-ID passende Inhalte aus
 `content/sara-reactions.ts`. Unbekannte Räume nutzen den allgemeinen Pool;
 fehlende/leere Stufen erhalten eine gültige allgemeine Ersatzzeile. Bereinigung

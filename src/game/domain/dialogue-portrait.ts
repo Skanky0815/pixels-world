@@ -5,6 +5,12 @@ export type DialoguePortrait =
   'sara-neutral' | 'sara-surprised' | 'sara-annoyed' | 'sara-friendly' | 'pixel-neutral';
 
 export function homecomingPortrait(snapshot: HomecomingSnapshot): DialoguePortrait | null {
+  if (snapshot.selection?.peaceful) return 'sara-friendly';
+
+  return regularHomecomingPortrait(snapshot);
+}
+
+function regularHomecomingPortrait(snapshot: HomecomingSnapshot): DialoguePortrait | null {
   if (snapshot.stage === 'waiting') return null;
 
   if (snapshot.stage === 'complete') return 'pixel-neutral';

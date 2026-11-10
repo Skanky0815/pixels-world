@@ -14,6 +14,7 @@ interface ReactionContext {
   readonly roomId?: string;
   readonly memory?: DialogueMemory;
   readonly damage?: ReactionDamageFact | null;
+  readonly welcome?: string;
 }
 
 // eslint-disable-next-line max-lines-per-function -- Eingabeprüfung und unveränderliche Auswahl bilden einen atomaren Vertrag mit genau einer Zufallsziehung.
@@ -24,11 +25,7 @@ export function selectReaction(
 ) {
   if (!Number.isSafeInteger(score) || score < 0) throw new Error('Invalid final chaos score');
   const anger = angerFor(score).id;
-  const dialogue = selectSaraDialogue(anger, random(), {
-    roomId: context.roomId,
-    previousDialogue: context.memory?.previous(context.roomId, anger),
-    damageTopic: context.damage?.topic,
-  });
+  const dialogue = reactionDialogue(anger, random, context);
 
   return Object.freeze({
     score,
@@ -36,7 +33,24 @@ export function selectReaction(
     animationKey: SARA_ANIMATIONS[anger],
     dialogue,
     damage: context.damage ? Object.freeze({ ...context.damage }) : null,
+    peaceful: context.welcome !== undefined,
   });
+}
+
+// eslint-disable-next-line max-lines-per-function -- Begrüßung und regulärer Raum-/Schadenskontext teilen eine einzige Dialogauswahl.
+function reactionDialogue(
+  anger: ReturnType<typeof angerFor>['id'],
+  random: () => number,
+  context: ReactionContext,
+) {
+  return (
+    context.welcome ??
+    selectSaraDialogue(anger, random(), {
+      roomId: context.roomId,
+      previousDialogue: context.memory?.previous(context.roomId, anger),
+      damageTopic: context.damage?.topic,
+    })
+  );
 }
 
 /** Pure one-shot sequence, driven by active frame time and explicit confirmation; no engine or timer callbacks. */
@@ -50,16 +64,28 @@ export class HomecomingSequence {
     this.context = context;
   }
 
-  start(score: number, random: () => number = Math.random, damage = this.context.damage) {
+  // eslint-disable-next-line max-lines-per-function -- Die einmalige Auswahl mit optionaler Begrüßung wird gemeinsam gespeichert und erinnert.
+  start(
+    score: number,
+    random: () => number = Math.random,
+    damage = this.context.damage,
+    welcome?: string,
+  ) {
     if (this.selection) return false;
-    this.selection = selectReaction(score, random, { ...this.context, damage });
+    this.selection = selectReaction(score, random, { ...this.context, damage, welcome });
+
+    this.rememberSelection();
+
+    return true;
+  }
+
+  private rememberSelection() {
+    if (!this.selection || this.selection.peaceful) return;
     this.context.memory?.remember(
       this.context.roomId,
       this.selection.anger,
       this.selection.dialogue,
     );
-
-    return true;
   }
 
   advance(deltaMs: number) {

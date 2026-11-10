@@ -22,6 +22,7 @@ export class SaraReturnView {
   private readonly hint: Phaser.GameObjects.Text;
   private readonly message: Phaser.GameObjects.Text;
   private readonly portrait: DialoguePortrait;
+  private readonly dialogue: Phaser.GameObjects.Container;
   private selectedPortrait: PortraitId | null = null;
   private key: SaraAnimation = SARA_ANIMATIONS.idle;
   // eslint-disable-next-line max-lines-per-function -- Der deklarative Aufbau hält Tür, Figur und Dialogpanel mit ihrer gemeinsamen Raumgeometrie zusammen.
@@ -63,6 +64,7 @@ export class SaraReturnView {
     ]);
 
     this.removeCompactListener = compactVisibility(dialogue);
+    this.dialogue = dialogue;
     this.root.add([...door, this.actor, dialogue]);
   }
 
@@ -76,10 +78,13 @@ export class SaraReturnView {
       .play(SARA_ANIMATIONS.idle);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Figur, Dialogposition und Text werden atomar aus derselben Heimkehrphase präsentiert.
   render(snapshot: HomecomingSnapshot, canContinue = false) {
     const positions = homecomingPositions(this.layout.width);
 
     this.root.setVisible(snapshot.stage !== 'waiting');
+    this.actor.setVisible(true);
+    this.dialogue.setY(0);
     this.play(snapshot.animationKey);
     this.actor.x =
       positions.saraStartX + snapshot.entryProgress * (positions.saraEndX - positions.saraStartX);
@@ -88,7 +93,11 @@ export class SaraReturnView {
   }
 
   private renderPortrait(snapshot: HomecomingSnapshot) {
-    this.selectedPortrait = homecomingPortrait(snapshot);
+    this.layoutPortrait(homecomingPortrait(snapshot));
+  }
+
+  private layoutPortrait(id: PortraitId | null) {
+    this.selectedPortrait = id;
     const textX = this.portrait.render(this.selectedPortrait) ? 160 : 60;
 
     placeDialogueText(this.message, textX, this.layout.width - textX - 60);
@@ -96,13 +105,27 @@ export class SaraReturnView {
   }
 
   private renderText(snapshot: HomecomingSnapshot, canContinue: boolean) {
-    this.caption = messageFor(snapshot, canContinue);
-    const dialogue = snapshot.stage === 'dialogue';
+    this.presentCaption(
+      messageFor(snapshot, canContinue),
+      snapshot.stage === 'dialogue' || !!snapshot.selection?.peaceful,
+    );
+  }
+
+  private presentCaption(caption: string, dialogue: boolean) {
+    this.caption = caption;
     const lines = this.caption.split('\n');
 
     this.message.setText(dialogue ? lines[0] : this.caption);
     this.quote.setText(dialogue ? t('caption', { v0: lines[1] }) : '');
     this.hint.setText(dialogue ? lines[2] : '');
+  }
+
+  renderWelcome(line: string) {
+    this.root.setVisible(true);
+    this.actor.setVisible(false);
+    this.dialogue.setY(140);
+    this.presentCaption(t('saraLabel', { v0: line, v1: '' }), true);
+    this.layoutPortrait('sara-friendly');
   }
 
   private play(key: SaraAnimation) {
@@ -162,6 +185,8 @@ function registerAnimations(scene: Phaser.Scene) {
 
 function messageFor(snapshot: HomecomingSnapshot, canContinue: boolean) {
   if (snapshot.stage === 'waiting') return '';
+
+  if (snapshot.selection?.peaceful) return dialogueMessage(snapshot, canContinue);
 
   if (snapshot.stage === 'entering') return t('saraTheDoorOpens');
 

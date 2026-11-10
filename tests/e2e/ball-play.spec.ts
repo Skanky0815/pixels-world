@@ -12,7 +12,8 @@ test('Ballfund: hin und zurück, Drehungen, Pause und Fokus; Heimkehr erst danac
   const found = await state(page);
 
   expect(found.homecoming.stage).toBe('waiting');
-  expect(found.sara.visible).toBe(false);
+  expect(found.sara.visible).toBe(true);
+  expect(found.sara.portrait.texture).toBe('sara-friendly');
   await until(page, (s) => s.ballPlay.elapsedMs >= 1600);
   const right = await state(page);
 
@@ -89,6 +90,9 @@ test.describe('Ballspiel mit Touch', () => {
       // eslint-disable-next-line max-lines-per-function -- Der schadenfreie Touch-Weg und die anschließende sichtbare Animation bilden einen echten Nutzerablauf.
     }) => {
       await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' });
+
+      if (reduced)
+        await page.addInitScript(() => localStorage.setItem('pixels-world.language', 'en'));
       const touch = await startTouch(page);
 
       await touch.press('right');
@@ -110,6 +114,20 @@ test.describe('Ballspiel mit Touch', () => {
       const playing = await state(page);
 
       expect(playing.chaos.score).toBe(0);
+      await expect(page.locator('.mobile-portrait')).toHaveAttribute(
+        'data-portrait',
+        'sara-friendly',
+      );
+      await expect(page.locator('.mobile-quote')).not.toBeEmpty();
+      await expect(page.locator('.mobile-dialogue')).toHaveAttribute('data-placement', 'welcome');
+      expect(
+        await page
+          .locator('.mobile-dialogue')
+          .evaluate(
+            (panel) =>
+              panel.getBoundingClientRect().top - panel.parentElement!.getBoundingClientRect().top,
+          ),
+      ).toBeGreaterThan(60);
       expect(playing.homecoming.stage).toBe('waiting');
       expect(playing.goalView.ballX).toBe(reduced ? found.goalView.ballX : 898);
 
@@ -119,6 +137,25 @@ test.describe('Ballspiel mit Touch', () => {
         .attach('ballspiel-touch', { body: await page.screenshot(), contentType: 'image/png' });
       await until(page, (s) => !s.ballPlay.active);
       expect((await state(page)).homecoming.stage).toBe('entering');
+      await until(
+        page,
+        (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated',
+        500,
+      );
+      await touch.tap('jump');
+      await until(page, (s) => s.result !== null);
+      const ended = await state(page);
+
+      expect(ended.reconciliation.stage).toBe('waiting');
+      expect(ended.result?.peaceful).toBe(true);
+      await expect(page.locator('.mobile-result .result-hearts')).toBeHidden();
+      await expect(page.locator('.result-headline')).toHaveText(
+        reduced ? 'Just a lovely day!' : 'Einfach ein schöner Tag!',
+      );
+      await test.info().attach('peaceful-touch-result', {
+        body: await page.screenshot(),
+        contentType: 'image/png',
+      });
     });
   }
 });

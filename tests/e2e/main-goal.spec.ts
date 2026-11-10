@@ -57,6 +57,20 @@ for (const difficulty of DIFFICULTIES) {
         500,
       );
       expect((await state(page)).homecoming.selection?.score).toBe(0);
+      expect((await state(page)).homecoming.selection?.peaceful).toBe(true);
+      await page.keyboard.down('Space');
+      await until(page, (s) => s.result !== null);
+      await page.keyboard.up('Space');
+      const result = await state(page);
+
+      expect(result.reconciliation.stage).toBe('waiting');
+      expect(result.result).toMatchObject({
+        peaceful: true,
+        outcome: 'success',
+        difficulty,
+        hearts: 0,
+        required: 0,
+      });
       await test
         .info()
         .attach('ziel-erreicht', { body: await page.screenshot(), contentType: 'image/png' });

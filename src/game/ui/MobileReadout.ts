@@ -12,6 +12,7 @@ interface Readout {
   readonly homecoming: string;
   readonly dialogue: string;
   readonly portrait: DialoguePortrait | null;
+  readonly welcome: boolean;
   readonly charmStage: string;
   readonly charm: ReturnType<ReconciliationView['readableText']>;
   readonly result: ResultViewSnapshot;
@@ -85,6 +86,7 @@ export class MobileReadout {
     const text = panelText(state);
 
     this.panel.hidden = !text.message;
+    this.panel.dataset.placement = state.welcome ? 'welcome' : 'dialogue';
     this.renderPortrait(text.portrait);
     setText(this.message, text.message);
     setText(this.quote, text.quote);

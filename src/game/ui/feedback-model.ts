@@ -10,6 +10,7 @@ export interface FeedbackState {
   readonly round: RoundSnapshot;
   readonly charm: ReconciliationSnapshot;
   readonly outcome: 'success' | 'failed' | null;
+  readonly peaceful?: boolean;
 }
 export interface FeedbackMessage {
   readonly id: number;
@@ -48,8 +49,8 @@ export class FeedbackModel {
   }
 
   private observePhase(state: FeedbackState) {
-    const phase = state.started ? (state.outcome ?? state.round.phase) : 'intro';
-    const tone = phase === 'failed' ? 'negative' : phase === 'success' ? 'positive' : 'phase';
+    const phase = state.started ? feedbackPhase(state) : 'intro';
+    const tone = phaseTone(phase);
 
     if (phase === this.phase) return;
     this.phase = phase;
@@ -89,6 +90,18 @@ export class FeedbackModel {
       >,
     });
   }
+}
+
+function phaseTone(phase: string) {
+  if (phase === 'failed') return 'negative';
+
+  return ['success', 'peaceful'].includes(phase) ? 'positive' : 'phase';
+}
+
+function feedbackPhase(state: FeedbackState) {
+  if (state.peaceful && state.outcome) return 'peaceful';
+
+  return state.outcome ?? state.round.phase;
 }
 
 function charmFeedback(
