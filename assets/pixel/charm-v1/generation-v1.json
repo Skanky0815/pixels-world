@@ -1,0 +1,68 @@
+{
+  "generator": "OpenAI built-in image_gen",
+  "references": [
+    "../pixel-idle-master.png",
+    "../pixel-sheet-preview.png"
+  ],
+  "sources": [
+    {
+      "action": "headbutt",
+      "file": "headbutt-source-v1.png",
+      "prompt": "Use case: identity-preserve. Asset type: transparent pixel-art sprite animation sheet for Pixel's World. Input image 1 is the APPROVED 32x32 Pixel idle master: preserve this exact cat identity, grey-brown tabby stripes, cream muzzle/chest, green eyes, pink nose and inner ears, dark pixel outline, compact cute proportions and chunky 32px-game pixel language. Input image 2 is a supporting reference of existing animation frames; match its proportions and palette, not its layout. Create NEW anatomically drawn poses, not rotated or stretched copies of the sitting sprite. Layout: exactly SIX separated full-body cat sprites in a clean regular THREE-COLUMN by TWO-ROW arrangement, read left to right then top to bottom. Equal-size cells, same character scale in every cell, generous completely transparent gutters, no clipping, feet/tail/ears fully included. Keep each sprite visually equivalent to a roughly 40x32 logical-pixel cat inside a 48x48 logical-pixel cell, enlarged with crisp square pixels; no fine anti-aliased illustration. Transparent exterior alpha, no drawn checkerboard, no floor, shadows, lines, borders, labels, arrows, text, hearts, sparkles, other characters or props. The sprites must be easy to extract as six disconnected alpha silhouettes. Same fixed side-on camera in every cell. Primary request: SIX frames of affectionate KÖPFCHEN GEBEN / head bunting, FACING RIGHT toward Sara's leg just beyond the right edge of the cat. Four paws stay on the SAME ground baseline; body remains compact and steady. Frame 1: neutral standing brace, head turned slightly right, eyes open. Frame 2: neck stretches forward a little, eyes softly close, forehead tips toward the imaginary contact. Frame 3: forward/down forehead contact, ears relaxed slightly back, nose points slightly down-right. Frame 4: gentle sustained forehead press, neck tucked and crown extended clearly farther right, closed content eyes. Frame 5: release the pressure halfway, head still near the contact, eyes closed. Frame 6: relaxed return toward the original braced posture with a soft blink. This must read as a cat rubbing its crown against a human shin, not chewing, eating, scratching, walking or bowing its whole torso. Keep the same spine, rump, planted paw positions, tail and fur pattern across all frames; only the head/neck/ears move by a few logical pixels."
+    },
+    {
+      "action": "belly",
+      "file": "belly-source-v1.png",
+      "prompt": "Use case: identity-preserve. Asset type: transparent pixel-art sprite animation sheet for Pixel's World. Input image 1 is the APPROVED 32x32 Pixel idle master: preserve this exact cat identity, grey-brown tabby stripes, cream muzzle/chest, green eyes, pink nose and inner ears, dark pixel outline, compact cute proportions and chunky 32px-game pixel language. Input image 2 is a supporting reference of existing animation frames; match its proportions and palette, not its layout. Create NEW anatomically drawn poses, not rotated or stretched copies of the sitting sprite. Layout: exactly SIX separated full-body cat sprites in a clean regular THREE-COLUMN by TWO-ROW arrangement, read left to right then top to bottom. Equal-size cells, same character scale in every cell, generous completely transparent gutters, no clipping, feet/tail/ears fully included. Keep each sprite visually equivalent to a roughly 40x32 logical-pixel cat inside a 48x48 logical-pixel cell, enlarged with crisp square pixels; no fine anti-aliased illustration. Transparent exterior alpha, no drawn checkerboard, no floor, shadows, lines, borders, labels, arrows, text, hearts, sparkles, other characters or props. The sprites must be easy to extract as six disconnected alpha silhouettes. Same fixed side-on camera in every cell. Primary request: SIX frames of rolling down and showing the belly, then lying contentedly ON THE BACK. This is a living relaxed cat, not a sleeping upright cat rotated 180 degrees. Head stays toward the RIGHT side of the body, tail toward the LEFT. Frame 1: lowering onto the right side, four legs drawing in. Frame 2: halfway rolling from side to back, cream chest becoming visible, hind feet relaxing upward. Frame 3: fully on the back with fluffy cream belly/chest facing the viewer/upward, two front paws softly curled above the chest and two hind legs relaxed, happy half-closed green eyes, tail resting on the ground to the left. Frame 4: same on-back pose, tiny relaxed belly exhale and eyes closed. Frame 5: same on-back pose, very slight inhale and a small front-paw wiggle. Frame 6: same on-back pose, content little blink. Frames 3-6 must form a subtle seamless breathing loop WITHOUT continuing to roll or moving across the ground. Use believable feline anatomy: exactly four legs total, no human torso, no exposed pink skin, no standing pose upside-down, no wheels or circular spinning. Rolling body naturally becomes wider and lower than the standing master but the head must remain the SAME size. Fur is fluffy cream on the chest/belly with the master's grey-brown tabby flanks and striped tail."
+    }
+  ],
+  "export": {
+    "command": "node tools/prepare-charm-sprites.mjs",
+    "file": "charm-sheet-v1.png",
+    "cell": 48,
+    "columns": 6,
+    "rows": 2,
+    "baseline": 46,
+    "maxWidth": 42,
+    "maxHeight": 30,
+    "alignment": "Common per-action scale; fixed left inset 3 and baseline 46. Nearest neighbour; source RGBA samples retained; alpha-component threshold 32."
+  },
+  "frames": {
+    "headbutt": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "belly": {
+      "lower": 6,
+      "side": 7,
+      "back": 8,
+      "exhale": 9,
+      "inhale": 10,
+      "blink": 11
+    }
+  },
+  "originals": "Approved idle master and original movement sheet remain unchanged.",
+  "purpose": "New belly/headbutt frames for the local #251 choreography preview.",
+  "files": {
+    "headbutt-source-v1.png": {
+      "sha256": "e844c40826e15005b7577bbe0e00bc96ae7ba03adee00d4cf4999cb0af58063c",
+      "width": 1536,
+      "height": 1024
+    },
+    "belly-source-v1.png": {
+      "sha256": "bae1af1c490935323bbd0b6fa7f0bf950ecc6f3545250e18f4b1b98276fc1796",
+      "width": 1536,
+      "height": 1024
+    },
+    "charm-sheet-v1.png": {
+      "sha256": "d4501265118d38aeae56c9d5800527b81953f724050becc9c3a1ccf939c5c504",
+      "width": 288,
+      "height": 96
+    }
+  },
+  "masterSha256": "507848bd46873fda35560c3031785afd2ebc05ba91790c25e0323bd28b40ef68"
+}

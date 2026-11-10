@@ -14,6 +14,7 @@ import { preloadPictureArt } from '../game/assets/picture-art';
 import { preloadBookArt } from '../game/assets/book-art';
 import { preloadCarpetArt } from '../game/assets/carpet-art';
 import { spriteUrl } from '../game/assets/urls';
+import charmSheet from '../../assets/pixel/charm-v1/charm-sheet-v1.png?url';
 import { SARA_SPRITE } from '../game/actors/sara-animations';
 import { homecomingPositions } from '../game/content/homecoming-layout';
 import {
@@ -49,6 +50,7 @@ export class CharmPreview extends Phaser.Scene {
     ])
       load(this);
     this.load.spritesheet('pixel', spriteUrl('pixel'), { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('pixel-charm', charmSheet, { frameWidth: 48, frameHeight: 48 });
     this.load.spritesheet('sara', spriteUrl('sara'), { frameWidth: 64, frameHeight: 96 });
   }
 
@@ -184,10 +186,11 @@ export class CharmPreview extends Phaser.Scene {
     const pose = this.motion.pose(this.reduced);
     const snapshot = this.motion.snapshot();
     const radians = (pose.angle * Math.PI) / 180;
-    const elevation = 16 * pose.scale * (Math.abs(Math.sin(radians)) + Math.abs(Math.cos(radians)));
+    const elevation =
+      (pose.cell / 2) * pose.scale * (Math.abs(Math.sin(radians)) + Math.abs(Math.cos(radians)));
 
     this.pixel
-      .setFrame(pose.frame)
+      .setTexture(pose.sheet === 'charm' ? 'pixel-charm' : 'pixel', pose.frame)
       .setScale(pose.scale, pose.scale * pose.stretch)
       .setPosition(this.positions.pixelSeatX + pose.x, 468 - elevation - pose.y)
       .setAngle(pose.angle)

@@ -125,8 +125,9 @@ reduzierte Bewegung lassen sich unabhängig von der Spielrunde ausprobieren.
 Die vorhandene Versöhnung kennt Schnurren bei Treffern, Anschmiegen nach einer
 geschafften Folge und Streicheln im Finale. Beine-Umstreichen und Köpfchen geben
 sind vorgeschlagene visuelle Varianten des Anschmiegens. Pfote und Bauch bleiben
-optionale Posenproben; insbesondere das gedrehte Sitzbild ersetzt keine fertigen
-Bauch-Frames. Alle Quellen sind unverändert. Die linke Dialogfläche ist ein
+optionale Posenproben. Kopf und Bauch verwenden neue Frames aus
+`assets/pixel/charm-v1/`; Herkunft und Exportvertrag stehen dort beim Asset.
+Die bisherigen Master und Bewegungs-Sheets bleiben unverändert. Die linke Dialogfläche ist ein
 Layoutvorschlag, der rechts beide Figuren frei lässt. Steuerung, Herzvergabe und
 Zeitlimits des Spiels sind hier nicht aktiv. HTML und Module bleiben DEV-only.
 

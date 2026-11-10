@@ -29,7 +29,7 @@ export const CHARM_PREVIEW_ACTIONS = {
   },
   roll: {
     label: 'Bauch zeigen',
-    moment: 'Optionale Lageprobe; eigene Bauch-Frames fehlen noch',
+    moment: 'Neue Frames: Hinlegen, Rückenlage und ruhiges Atmen',
     approach: 1500,
     cycle: 2400,
     x: 10,
@@ -43,6 +43,8 @@ export interface CharmPreviewPose {
   readonly angle: number;
   readonly scale: number;
   readonly stretch: number;
+  readonly sheet: 'pixel' | 'charm';
+  readonly cell: 32 | 48;
   readonly frame: number;
   readonly faceLeft: boolean;
   readonly behindSara: boolean;
@@ -53,11 +55,12 @@ const IDLE: CharmPreviewPose = {
   angle: 0,
   scale: 2,
   stretch: 1,
+  sheet: 'pixel',
+  cell: 32,
   frame: 0,
   faceLeft: false,
   behindSara: false,
 };
-const RELEASE_MS = 500;
 
 /** DEV-only choreography. No timers, inputs, score or reconciliation state are changed. */
 export class CharmPreviewMotion {
@@ -91,13 +94,13 @@ export class CharmPreviewMotion {
     if (!Number.isFinite(delta) || delta <= 0) return;
     this.elapsed += delta;
 
-    if (this.releasing && this.elapsed >= RELEASE_MS) this.reset();
+    if (this.releasing && this.elapsed >= releaseDuration(this.from)) this.reset();
   }
 
   pose(reduced = false): CharmPreviewPose {
-    if (reduced) return { ...IDLE, frame: this.action === 'purr' ? 2 : 0 };
+    if (reduced) return reducedPose(this.action);
 
-    if (this.releasing) return blend(this.from, IDLE, this.elapsed / RELEASE_MS);
+    if (this.releasing) return releasePose(this.from, this.elapsed);
 
     if (!this.action) return IDLE;
     const config = CHARM_PREVIEW_ACTIONS[this.action];
@@ -150,12 +153,23 @@ function approach(
   from: CharmPreviewPose,
 ): CharmPreviewPose {
   const config = CHARM_PREVIEW_ACTIONS[action];
-  const pose = blend(from, loop(action, 0), elapsed / config.approach);
+  const travel = action === 'roll' ? 700 : config.approach;
+  const pose = blend(from, loop(action, 0), elapsed / travel);
   const walking = Math.abs(pose.x - config.x) > 2;
+
+  if (action === 'roll' && elapsed >= 700)
+    return {
+      ...pose,
+      frame: 6 + Math.min(2, Math.floor((elapsed - 700) / 266)),
+      behindSara: false,
+    };
 
   return {
     ...pose,
+    sheet: walking ? 'pixel' : pose.sheet,
+    cell: walking ? 32 : pose.cell,
     frame: walking ? 5 + (Math.floor(elapsed / 100) % 5) : pose.frame,
+    faceLeft: walking ? config.x < from.x : pose.faceLeft,
     behindSara: false,
   };
 }
@@ -169,7 +183,7 @@ function loop(action: CharmPreviewAction, elapsed: number): CharmPreviewPose {
   return actionPose(action, config.x, phase, wave, press);
 }
 
-// eslint-disable-next-line max-lines-per-function, complexity -- Die fünf ausdrücklich als Entwurf gekennzeichneten Bewegungen teilen dieselbe periodische Phase und Pfotenbasis.
+// eslint-disable-next-line max-lines-per-function -- Die fünf ausdrücklich als Entwurf gekennzeichneten Bewegungen teilen dieselbe periodische Phase und Pfotenbasis.
 function actionPose(
   action: CharmPreviewAction,
   x: number,
@@ -190,10 +204,10 @@ function actionPose(
     case 'headbutt':
       return {
         ...IDLE,
-        x: x + press * 7,
-        y: press * 2,
-        angle: -press * 4,
-        frame: phase > 0.2 && phase < 0.8 ? 2 : 0,
+        x: x + press * 2,
+        sheet: 'charm',
+        cell: 48,
+        frame: [0, 1, 2, 3, 3, 4, 1, 0][Math.floor(phase * 8)],
       };
     case 'purr':
       return { ...IDLE, x, frame: phase > 0.12 && phase < 0.85 ? 2 : 0, stretch: 1 + wave * 0.018 };
@@ -205,6 +219,45 @@ function actionPose(
         frame: [20, 21, 22, 21][Math.floor(phase * 4)],
       };
     case 'roll':
-      return { ...IDLE, x, angle: 180 + wave * 4, frame: 2, stretch: 1 + wave * 0.012 };
+      return {
+        ...IDLE,
+        x,
+        sheet: 'charm',
+        cell: 48,
+        frame: [8, 9, 10, 9, 11, 9][Math.floor(phase * 6)],
+      };
   }
+}
+
+function reducedPose(action: CharmPreviewAction | null): CharmPreviewPose {
+  if (action === 'roll') return { ...IDLE, sheet: 'charm', cell: 48, frame: 8 };
+
+  if (action === 'headbutt') return { ...IDLE, sheet: 'charm', cell: 48, frame: 3 };
+
+  return { ...IDLE, frame: action === 'purr' ? 2 : 0 };
+}
+
+function releaseDuration(from: CharmPreviewPose) {
+  return from.sheet === 'charm' && from.frame >= 6 ? 1100 : 500;
+}
+
+// eslint-disable-next-line max-lines-per-function -- Aufrichten wird einmal rückwärts aus den echten Bauch-Frames gezeigt, anschließend läuft Pixel zum Sitzanker zurück.
+function releasePose(from: CharmPreviewPose, elapsed: number): CharmPreviewPose {
+  const belly = from.sheet === 'charm' && from.frame >= 6;
+  const rise = belly ? 650 : from.sheet === 'charm' ? 180 : 0;
+
+  if (elapsed < rise) {
+    const index = Math.min(2, Math.floor((elapsed / rise) * 3));
+
+    return { ...from, frame: belly ? [8, 7, 6][index] : [4, 1, 0][index], angle: 0, y: 0 };
+  }
+
+  const pose = blend(from, IDLE, (elapsed - rise) / (releaseDuration(from) - rise));
+  const walking = Math.abs(pose.x) > 1;
+
+  return {
+    ...pose,
+    frame: walking ? 5 + (Math.floor(elapsed / 100) % 5) : 0,
+    faceLeft: walking && from.x > 0,
+  };
 }

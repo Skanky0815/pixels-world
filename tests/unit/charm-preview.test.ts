@@ -1,5 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { PNG } from 'pngjs';
 import {
   CharmPreviewMotion,
   CHARM_PREVIEW_ACTIONS,
@@ -82,4 +84,71 @@ test('Ungültige Zeit und alte Bewegung können eine zurückgesetzte Vorschau ni
   model.advance(30_000);
   assert.equal(model.snapshot().action, null);
   assert.equal(model.pose().frame, 0);
+});
+
+// eslint-disable-next-line max-lines-per-function -- Beide neuen Animationen müssen echte Atlas-Frames statt gedrehter oder gestreckter Sitzbilder verwenden.
+test('Kopf und Bauch verwenden eigene Frames mit ruhender Bildausrichtung', () => {
+  const head = new CharmPreviewMotion();
+
+  head.trigger('headbutt');
+  head.advance(800);
+  const frames = new Set<number>();
+
+  for (let index = 0; index < 8; index++) {
+    const pose = head.pose();
+
+    assert.equal(pose.sheet, 'charm');
+    assert.equal(pose.cell, 48);
+    assert.equal(pose.angle, 0);
+    frames.add(pose.frame);
+    head.advance(225);
+  }
+
+  assert.ok(frames.size >= 4);
+  const belly = new CharmPreviewMotion();
+
+  belly.trigger('roll');
+  belly.advance(700);
+  assert.equal(belly.pose().frame, 6);
+  belly.advance(300);
+  assert.equal(belly.pose().frame, 7);
+  belly.advance(600);
+  assert.equal(belly.pose().sheet, 'charm');
+  assert.equal(belly.pose().angle, 0);
+  assert.ok(belly.pose().frame >= 8);
+  belly.release();
+  belly.advance(220);
+  assert.equal(belly.pose().frame, 7);
+  belly.advance(220);
+  assert.equal(belly.pose().frame, 6);
+  belly.advance(660);
+  assert.equal(belly.snapshot().phase, 'idle');
+});
+
+// eslint-disable-next-line max-lines-per-function -- Alle zwölf gelieferten Zeichnungen müssen vollständig, transparent gerahmt und am gemeinsamen Bodenanker lesbar bleiben.
+test('Charme-Atlas enthält zwölf vollständige 48er-Zellen ohne abgeschnittene Pfoten', () => {
+  const sheet = PNG.sync.read(
+    readFileSync(new URL('../../assets/pixel/charm-v1/charm-sheet-v1.png', import.meta.url)),
+  );
+
+  assert.deepEqual([sheet.width, sheet.height], [288, 96]);
+
+  for (let frame = 0; frame < 12; frame++) {
+    let pixels = 0;
+    let bottom = 0;
+
+    for (let offset = 0; offset < 48 * 48; offset++) {
+      const x = offset % 48,
+        y = Math.floor(offset / 48);
+      const index = ((Math.floor(frame / 6) * 48 + y) * sheet.width + (frame % 6) * 48 + x) * 4;
+
+      if (sheet.data[index + 3] <= 32) continue;
+      pixels++;
+      bottom = Math.max(bottom, y);
+      assert.ok(x >= 3 && x <= 44);
+    }
+
+    assert.ok(pixels >= 150);
+    assert.equal(bottom, 46);
+  }
 });
