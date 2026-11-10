@@ -187,6 +187,10 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
 - Ballziel ohne Schaden erreichen und alternativ Timer ablaufen lassen. Sara
   kommt, Pixel steigt von Möbeln herunter und setzt sich. Score/Welt bleiben
   eingefroren; Texte warten auf frische Bestätigung.
+- Bei völlig schadensfreiem Ballfund erscheint sofort ein herzlicher
+  Sara-Satz. Nach Heimkehr und Bestätigung folgt die positive Auswertung ohne
+  Minispiel oder Herzen. DE/EN und Touch prüfen; bereits ein Kratzen oder ein
+  Timer-Ende ohne Ziel behält den regulären Versöhnungsablauf.
 - Versöhnung: Lesepause, nächste Pfeiltaste, richtige/falsche/zu späte Eingaben,
   begrenzte Versuche, Erfolg und Scheitern. Ergebnis bleibt stabil; „Neue Runde“
   funktioniert mit Maus/Touch. Debug-R setzt den kompletten Durchlauf zurück.

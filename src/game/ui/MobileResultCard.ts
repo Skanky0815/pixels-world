@@ -38,6 +38,7 @@ export class MobileResultCard {
     this.chaos.textContent = result.chaosText;
     this.reconciliation.textContent = result.reconciliationText;
     this.renderHearts(result.hearts, result.required);
+    this.hearts.hidden = result.peaceful;
     this.hearts.dataset.count = String(result.required);
     this.hearts.setAttribute('role', 'img');
     this.hearts.setAttribute(

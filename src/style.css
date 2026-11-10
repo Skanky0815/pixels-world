@@ -700,6 +700,9 @@ kbd {
   width: 22px;
   height: 22px;
 }
+.mobile-result .result-hearts[hidden] {
+  display: none;
+}
 .mobile-result .result-goal {
   grid-column: 1 / -1;
   color: #d4b488;
@@ -708,6 +711,10 @@ kbd {
 @media (any-pointer: coarse) {
   .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
     max-height: 100%;
+    bottom: 0;
+  }
+  .mobile-dialogue[data-placement='welcome']:not([hidden]) {
+    top: auto;
     bottom: 0;
   }
 }

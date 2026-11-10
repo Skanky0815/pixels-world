@@ -70,11 +70,13 @@ export class RoundResultView {
     const success = result.outcome === 'success';
 
     this.title.setText(t('roundResult'));
-    this.headline.setText(t(success ? 'resultFriendsAgain' : 'resultStillInTrouble'));
+    this.headline.setText(resultHeadline(result));
     this.headline.setColor(success ? '#c8dfa0' : '#efb69d');
     this.chaos.setText(t('resultChaosDetails', { v0: result.score, v1: result.reaction }));
     this.reconciliation.setText(
-      t('resultReconciliation', { v0: t(success ? 'success' : 'failed') }),
+      result.peaceful
+        ? t('peacefulResultStatus')
+        : t('resultReconciliation', { v0: t(success ? 'success' : 'failed') }),
     );
     drawResultHearts(this.hearts, result.hearts, result.required, success ? 0xe7a6a6 : 0xd4b488);
     this.hearts.setPosition(
@@ -126,10 +128,16 @@ export class RoundResultView {
   private heartsText() {
     const result = this.result;
 
-    if (!result) return '';
+    if (!result || result.peaceful) return '';
 
     return '♥'.repeat(result.hearts) + '♡'.repeat(result.required - result.hearts);
   }
+}
+
+function resultHeadline(result: RoundResult) {
+  if (result.peaceful) return t('peacefulResultTitle');
+
+  return t(result.outcome === 'success' ? 'resultFriendsAgain' : 'resultStillInTrouble');
 }
 
 function style(size: number) {

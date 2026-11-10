@@ -26,7 +26,9 @@ import { GameFeedback } from '../ui/GameFeedback';
 import { PauseMenu } from '../ui/PauseMenu';
 import { GameAudio } from '../ui/GameAudio';
 import type { DebugScenario } from '../../dev/game-debug-model';
-import { onLanguageChange } from '../../i18n/locale';
+import { onLanguageChange, copy } from '../../i18n/locale';
+import { PeacefulGoal } from '../domain/peaceful-goal';
+import type { PeacefulGoalLine } from '../../content/peaceful-goal';
 import { MobileReadout } from '../ui/MobileReadout';
 import { MainGoal } from '../domain/main-goal';
 import { GoalView } from '../ui/GoalView';
@@ -86,6 +88,8 @@ export class LivingRoomScene extends Phaser.Scene {
   private charmView!: ReconciliationView;
   private homecoming!: HomecomingSequence;
   private readonly dialogueMemory = new DialogueMemory();
+  private peacefulGoal = new PeacefulGoal();
+  private readonly previousPeaceful = new Map<string, PeacefulGoalLine>();
   private readonly reactionDamage = new ReactionDamage();
   private sara!: SaraReturnView;
   private returning!: PixelReturnController;
@@ -192,6 +196,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private initializeRound() {
     this.physics.disableUpdate();
     this.chaos.reset();
+    this.peacefulGoal = new PeacefulGoal();
     this.reactionDamage.reset();
     this.random = undefined;
     this.round = this.createRound();
@@ -557,9 +562,13 @@ export class LivingRoomScene extends Phaser.Scene {
       hud: this.hud.snapshot(),
       feedback: this.feedback.readable(),
       goal: this.goalView.snapshot().text,
-      homecoming: this.homecoming.snapshot().stage,
+      homecoming:
+        this.peacefulGoal.snapshot().line && this.ballPlay.snapshot().active
+          ? 'dialogue'
+          : this.homecoming.snapshot().stage,
       dialogue: this.sara.snapshot().dialogueText,
       portrait: this.sara.portraitId(),
+      welcome: this.ballPlay.snapshot().active && !!this.peacefulGoal.snapshot().line,
       charmStage: this.charm.snapshot().stage,
       charm: this.charmView.readableText(),
       result: this.resultView.snapshot(),
@@ -569,7 +578,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private refreshLanguage() {
     this.renderHud();
-    this.sara.render(this.homecoming.snapshot(), this.returning.snapshot().stage === 'seated');
+    this.renderSara();
     this.charmView.render(this.charm.snapshot());
     this.renderResult();
     this.goalView.render(this.goal.snapshot(), this.started);
@@ -645,6 +654,7 @@ export class LivingRoomScene extends Phaser.Scene {
       round: this.round.snapshot(),
       charm: this.charm.snapshot(),
       outcome: this.resultView.snapshot()?.outcome ?? null,
+      peaceful: this.resultView.snapshot()?.peaceful,
     });
   }
 
@@ -665,9 +675,36 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private finishRound() {
     this.goal.finish(this.round.snapshot().endReason ?? 'timer');
+    this.beginPeacefulGoal();
 
     if (this.round.snapshot().endReason === 'goal') this.beginBallPlay();
     else this.startHomecoming();
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Einmaliger Trigger, raumbezogene Erinnerung und sofortige Darstellung bleiben gemeinsam sichtbar.
+  private beginPeacefulGoal() {
+    const key = `${this.room.definition.id}/${this.room.goal.id}`;
+
+    if (
+      !this.peacefulGoal.start(
+        this.round.snapshot(),
+        this.chaos.count,
+        this.random,
+        this.previousPeaceful.get(key),
+      )
+    )
+      return;
+    const line = this.peacefulGoal.snapshot().line;
+
+    if (line) this.previousPeaceful.set(key, line);
+    this.renderSara();
+  }
+
+  private renderSara() {
+    const line = this.peacefulGoal.snapshot().line;
+
+    if (line && this.homecoming.snapshot().stage === 'waiting') this.sara.renderWelcome(copy(line));
+    else this.sara.render(this.homecoming.snapshot(), this.returning.snapshot().stage === 'seated');
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die echte Zielfläche bestimmt die sichere rein visuelle Bewegung auf demselben Regal.
@@ -734,7 +771,14 @@ export class LivingRoomScene extends Phaser.Scene {
     if (score === null) return;
     this.goal.finish(this.round.snapshot().endReason ?? 'timer');
     this.goalView.render(this.goal.snapshot(), true);
-    this.homecoming.start(score, this.random, this.reactionDamage.snapshot());
+    const welcome = this.peacefulGoal.snapshot().line;
+
+    this.homecoming.start(
+      score,
+      this.random,
+      this.reactionDamage.snapshot(),
+      welcome ? copy(welcome) : undefined,
+    );
     this.beginPixelReturn();
     this.sara.render(this.homecoming.snapshot());
     this.syncActivity();
@@ -796,6 +840,7 @@ export class LivingRoomScene extends Phaser.Scene {
       this.round.snapshot(),
       this.homecoming.snapshot(),
       this.charm.snapshot(),
+      this.difficulty,
     );
 
     this.resultView.render(result);
@@ -812,13 +857,14 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (snapshot.stage !== 'entering' && snapshot.stage !== 'waiting') this.round.startReaction();
 
-    if (snapshot.stage === 'complete') {
+    if (snapshot.stage === 'complete' && !snapshot.selection?.peaceful) {
       this.round.startReconciliation();
       this.charm.start(snapshot.selection?.score ?? 0, this.difficulty);
       this.charmView.render(this.charm.snapshot());
     }
 
     this.sara.render(snapshot, this.returning.snapshot().stage === 'seated');
+    this.renderResult();
     this.renderHud();
   }
 
