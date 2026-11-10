@@ -136,8 +136,10 @@ Startzeit, Seed und Zielphase neu auf. Phasen und Timer rückwärts zu ändern
 beginnt bewusst einen frischen Durchlauf. Der Chaoswert ist synthetisch; die
 Dialogerinnerung wird für reproduzierbare Seeds geleert. Normale Rundenneustarts
 behalten dagegen die letzte Zeile je Raum-/Ärgerstufe während der Spielsitzung.
-Gegenstände bleiben zunächst unbeschädigt. Heimkehr und Reaktion verwenden
-bestehende Übergänge. Für Versöhnung und Ergebnis geht Pixel zunächst selbst
+Gegenstände bleiben zunächst unbeschädigt. Ohne echte Schadensereignisse verwenden
+Heimkehr und Reaktion die allgemeinen/raumbezogenen Dialoge. Konkrete Reaktionen
+lassen sich durch reguläres Beschädigen eines Objekts und anschließendes Vorspulen
+mit **Rundentimer +10 Sekunden** prüfen. Für Versöhnung und Ergebnis geht Pixel zunächst selbst
 zu Sara; danach laufen Bestätigung und gegebenenfalls das echte Minispiel über
 seine vorhandenen APIs. Es gibt keine direkten Herz-/Ergebnissetter.
 

@@ -209,6 +209,13 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
   bleiben erhalten. Auf schmalem Touch-Bildschirm muss auch die längste Zeile
   vollständig lesbar bleiben. F2-Szenarien mit identischem Seed bleiben absichtlich
   wiederholbar; Reload startet die Dialogerinnerung neu.
+- Sofa zerkratzen, Vorhang einreißen, Topf umkippen, Vase zerbrechen oder Regal
+  einstürzen lassen: Sara kommentiert einen tatsächlich geschehenen Vorfall,
+  passend zur Gesamtärgerstufe. Bei mehreren Schäden hat Einsturz Vorrang vor
+  Vasenbruch, Pflanze, Vorhang und Sofa. Sprachwechsel und Lesepause ändern die
+  Auswahl nicht. Neustart entfernt den vorherigen Vorfall; ohne passenden Schaden
+  bleiben die allgemeinen/raumbezogenen Dialoge erhalten. Auch lange konkrete
+  Texte müssen im schmalen Touch-Layout vollständig lesbar bleiben.
 - Produktions-/Pages-Build: eigene Ressourcen, kein Testobserver, erreichbare
   Rechtsseiten; verlinkte Spielversion passt zum Release. Entwicklung/Preview
   ohne Release-Kontext zeigen nur die Versionsnummer. Für die gezielte Prüfung

@@ -344,4 +344,38 @@ export const de = {
   saraCozyPlayground: 'Zwei Sofas machen aus der Wohnung noch keinen Abenteuerspielplatz, Pixel.',
   saraCozyThisChapter:
     'Ich wollte ein Buch aufschlagen. Jetzt müssen wir erst über dieses Kapitel reden.',
+  saraDamageSofa0: 'Ein paar Kratzspuren am Sofa, hm? Dein Autogramm erkenne ich.',
+  saraDamageSofa1: 'Das Sofa trägt jetzt deine Handschrift. Komm, setz dich erst mal zu mir.',
+  saraDamageSofa2: 'Die Krallenpflege war also wichtiger als der Sofabezug.',
+  saraDamageSofa3: 'Das Sofa war nicht als Kratzbaum gedacht. Auch nicht als sehr gemütlicher.',
+  saraDamageSofa4: 'Das Sofa hat schon genug abbekommen. Für heute bleiben die Krallen drin.',
+  saraDamageSofa5: 'Ich sehe die Kratzspuren am Sofa, Pixel. Jetzt ist erst mal Pause.',
+  saraDamageCurtain0: 'Du hast dem Vorhang eine kleine Katzen-Signatur verpasst.',
+  saraDamageCurtain1: 'Der Vorhang hat einen Riss. Du übst wohl Luftzirkulation, hm?',
+  saraDamageCurtain2: 'Da ist ein neuer Riss im Vorhang. Ich hatte keine Änderungen bestellt.',
+  saraDamageCurtain3: 'Der Vorhang sollte am Fenster hängen. Deine Krallen hatten andere Pläne.',
+  saraDamageCurtain4: 'Im Vorhang ist ein Riss. Wir beenden das Kletterprogramm für heute.',
+  saraDamageCurtain5:
+    'Der Riss im Vorhang ist nicht zu übersehen. Jetzt kommen wir erst mal zur Ruhe.',
+  saraDamagePlant0: 'Da liegt ein Blumentopf. Du schaust, als wäre das Absicht gewesen.',
+  saraDamagePlant1: 'Der Topf ist umgekippt. Dein Katzengras wollte bestimmt nicht umziehen.',
+  saraDamagePlant2: 'Der Topf ist umgekippt. Die Erde gehört eigentlich hinein.',
+  saraDamagePlant3: 'Ich wollte das Katzengras gießen. Jetzt muss ich erst den Topf aufstellen.',
+  saraDamagePlant4:
+    'Der Topf liegt da, die Erde auch. Du hilfst wenigstens mit einem unschuldigen Blick.',
+  saraDamagePlant5:
+    'Die Pflanze hat für heute genug Abenteuer erlebt. Wir stellen den Topf wieder hin.',
+  saraDamageVase0: 'Eine Vase weniger. Du nennst das bestimmt mehr Platz.',
+  saraDamageVase1: 'Die Vase ist kaputt. Bleib bitte mit den Pfoten von den Scherben weg.',
+  saraDamageVase2: 'Die Vase war als Deko gedacht. Nicht als Scherbenvorrat.',
+  saraDamageVase3: 'Ich sehe die zerbrochene Vase. Dein Blick klebt sie leider nicht zusammen.',
+  saraDamageVase4: 'Zwischen den Scherben wird nicht mehr gespielt. Jetzt räume ich erst mal auf.',
+  saraDamageVase5: 'Die Vase ist zerbrochen, Pixel. Das wird heute kein Diskussionsthema mehr.',
+  saraDamageShelf0: 'Das Regal ist eingestürzt. Die nächste Kletterpause ist wohl fällig.',
+  saraDamageShelf1: 'Das Regal liegt unten. Ich nehme an, deine Belastungsprobe ist abgeschlossen.',
+  saraDamageShelf2: 'Ein eingestürztes Regal. Deine Idee von Innenarchitektur wird mir zu lebhaft.',
+  saraDamageShelf3: 'Das Regal ist zusammengebrochen. Das war keine Einladung zum Belastungstest.',
+  saraDamageShelf4: 'Das Regal ist eingestürzt. Jetzt bleiben wir beide erst mal auf dem Boden.',
+  saraDamageShelf5:
+    'Regal kaputt, Sachen unten. Für heute hat die Schwerkraft genug Unterstützung bekommen.',
 } as const;

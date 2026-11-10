@@ -59,6 +59,7 @@ import { PlayActivity } from '../input/play-activity';
 import { GameHud } from '../ui/GameHud';
 import { HomecomingSequence } from '../domain/homecoming';
 import { DialogueMemory } from '../domain/sara-dialogue';
+import { ReactionDamage } from '../domain/reaction-damage';
 import { SaraReturnView } from '../ui/SaraReturnView';
 import { roundConfigForPage } from '../input/round-profile';
 import { homecomingPositions } from '../content/homecoming-layout';
@@ -84,6 +85,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private charmView!: ReconciliationView;
   private homecoming!: HomecomingSequence;
   private readonly dialogueMemory = new DialogueMemory();
+  private readonly reactionDamage = new ReactionDamage();
   private sara!: SaraReturnView;
   private returning!: PixelReturnController;
   private returnTime = 0;
@@ -188,6 +190,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private initializeRound() {
     this.physics.disableUpdate();
     this.chaos.reset();
+    this.reactionDamage.reset();
     this.random = undefined;
     this.round = this.createRound();
     this.homecoming = new HomecomingSequence({
@@ -491,9 +494,18 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private processDamage(event: ChaosEvent | undefined) {
     if (!this.canPlay() || !event || !this.chaos.awardEvent(event)) return;
+    this.reactionDamage.record(event, this.damagedObjectKind(event.objectId));
     this.audio.playDamage(event);
     this.events.emit('object-damaged', event);
     this.discoverAlbum(event);
+  }
+
+  private damagedObjectKind(objectId: string) {
+    const entry = this.built.entries.find((entry) => entry.object.id === objectId);
+
+    if (entry) return entry.definition.kind;
+
+    return this.shelves.some((shelf) => shelf.id === objectId) ? 'shelf' : undefined;
   }
 
   private discoverAlbum(event: ChaosEvent) {
@@ -719,7 +731,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (score === null) return;
     this.goal.finish(this.round.snapshot().endReason ?? 'timer');
     this.goalView.render(this.goal.snapshot(), true);
-    this.homecoming.start(score, this.random);
+    this.homecoming.start(score, this.random, this.reactionDamage.snapshot());
     this.beginPixelReturn();
     this.sara.render(this.homecoming.snapshot());
     this.syncActivity();
