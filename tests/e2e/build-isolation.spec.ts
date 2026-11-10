@@ -66,6 +66,9 @@ test(
     for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175/pixels-world']) {
       for (const path of [
         '/animation-compare.html',
+        '/portrait-preview.html',
+        '/src/dev/portrait-preview.ts',
+        '/src/dev/portrait-preview.css',
         '/ball-play-preview.html',
         '/src/dev/ball-play-preview.ts',
         '/src/dev/BallPlayPreview.ts',

@@ -38,10 +38,12 @@ class LoadingScreen {
   }
 
   // eslint-disable-next-line max-lines-per-function -- Fortschritt, Fehler und Abmeldung teilen die Lebensdauer eines echten Phaser-Ladevorgangs.
-  track(loader: Phaser.Loader.LoaderPlugin) {
+  track(loader: Phaser.Loader.LoaderPlugin, optionalFiles: readonly string[] = []) {
     if (!this.root?.isConnected) return;
     const progress = (value: number) => this.progress(value);
-    const error = () => this.fail();
+    const error = (file: Phaser.Loader.File) => {
+      if (!optionalFiles.includes(file.key)) this.fail();
+    };
 
     loader.on('progress', progress);
     loader.on('loaderror', error);

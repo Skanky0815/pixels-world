@@ -1,0 +1,209 @@
+.portrait-card[data-speaker='SARA'] img,
+.sample-dialogue[data-speaker='SARA'] .dialogue-portrait {
+  transform: scaleX(-1);
+}
+
+.portrait-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 20px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+.portrait-controls .check {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+.portrait-controls input[type='checkbox'] {
+  width: 18px;
+  min-height: 18px;
+  margin: 0;
+}
+.portrait-controls select {
+  margin-bottom: 0;
+}
+.portrait-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+.portrait-card {
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  padding: 12px;
+  min-width: 0;
+}
+.portrait-card[aria-pressed='true'] {
+  border: 2px solid #e4c182;
+  background: #594638;
+}
+.portrait-card img {
+  width: 128px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  image-rendering: pixelated;
+}
+.portrait-card span {
+  font-size: 13px;
+  text-align: center;
+}
+.portrait-card small {
+  color: #d0b99a;
+  font-size: 11px;
+}
+.portrait-layouts {
+  display: grid;
+  gap: 24px;
+}
+.portrait-layouts article {
+  padding: 16px;
+}
+.desktop-scroll {
+  overflow-x: auto;
+}
+.game-scene {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #b48b63 url('../../assets/landing/living-room.png') center / 100% 100% no-repeat;
+  container-type: inline-size;
+  image-rendering: pixelated;
+}
+.desktop-scene {
+  min-width: 640px;
+  --portrait-width: 8.33333cqw;
+}
+.sample-dialogue {
+  position: absolute;
+  top: 24.45%;
+  left: 4.1667%;
+  right: 4.1667%;
+  display: grid;
+  grid-template-columns: var(--portrait-width) minmax(0, 1fr);
+  gap: 1.66667cqw;
+  padding: 1.66667cqw;
+  color: #fff1cf;
+  background: rgb(64 58 53 / 97%);
+  border: 2px solid #d4b488;
+  font-family: 'Courier New', monospace;
+}
+.dialogue-portrait {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+  align-self: start;
+}
+.sample-copy {
+  min-width: 0;
+}
+.sample-copy p {
+  max-width: none;
+  margin: 0;
+}
+.sample-speaker {
+  font-size: 1.4583cqw;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+.sample-quote {
+  color: #e4c182;
+  font-size: 1.6667cqw;
+  line-height: 1.4;
+  font-weight: bold;
+  padding: 0.6cqw 0 1cqw;
+}
+.sample-hint {
+  font-size: 1.4583cqw;
+  line-height: 1.3;
+  text-align: right;
+}
+.sample-dialogue[data-fallback='true'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.sample-dialogue[data-fallback='true'] .dialogue-portrait {
+  display: none;
+}
+.phone-frame {
+  max-width: 390px;
+  margin: auto;
+  background: #30292d;
+  border: 1px solid #8d745c;
+  padding: 10px;
+}
+.phone-hud {
+  padding: 8px 0 14px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+.phone-hud span {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: normal;
+  color: #c9b497;
+}
+.phone-scene {
+  --portrait-width: 48px;
+}
+.phone-scene .sample-dialogue {
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  gap: 8px;
+  padding: 10px;
+  max-height: calc(100% - 52px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.phone-scene .sample-speaker {
+  font-size: 12px;
+}
+.phone-scene .sample-quote {
+  font-size: 14px;
+  padding: 5px 0 8px;
+}
+.phone-scene .sample-hint {
+  font-size: 12px;
+}
+.phone-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0 2px;
+}
+.phone-actions span {
+  color: #d0b99a;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.phone-actions button {
+  flex: 1;
+}
+.phone-article > .note {
+  font-size: 12px;
+  max-width: 390px;
+  margin: 12px auto 0;
+}
+@media (min-width: 1200px) {
+  main {
+    max-width: 1440px;
+  }
+  .portrait-layouts {
+    grid-template-columns: minmax(0, 1fr) 390px;
+  }
+}
+@media (max-width: 640px) {
+  .portrait-controls {
+    grid-template-columns: 1fr;
+  }
+  .portrait-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .portrait-layouts article {
+    padding: 10px;
+  }
+}

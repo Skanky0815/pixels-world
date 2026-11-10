@@ -31,7 +31,11 @@ export interface GameTestState {
   readonly difficulty: Difficulty;
   readonly intro: { readonly visible: boolean };
   readonly result: ResultViewSnapshot;
-  readonly charmDisplay: { readonly heartsText: string; readonly canvasTextVisible: boolean };
+  readonly charmDisplay: {
+    readonly heartsText: string;
+    readonly canvasTextVisible: boolean;
+    readonly portrait: Readonly<{ visible: boolean; texture: string; flipped: boolean }>;
+  };
   readonly reconciliation: ReconciliationSnapshot;
   readonly round: RoundSnapshot;
   readonly homecoming: HomecomingSnapshot;
@@ -47,6 +51,7 @@ export interface GameTestState {
     readonly originY: number;
     readonly dialogueText: string;
     readonly canvasTextVisible: boolean;
+    readonly portrait: Readonly<{ visible: boolean; texture: string; flipped: boolean }>;
   };
   readonly active: boolean;
   readonly feedback: ReturnType<GameFeedback['snapshot']>;

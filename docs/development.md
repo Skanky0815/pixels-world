@@ -27,6 +27,14 @@ Browserprofil verwenden, die Runde starten, neben das Sofa laufen und nach der
 ersten Schandtat das Buchsymbol im Spielkopf öffnen. Bei 1280×800 nur den
 Album-Dialog aufnehmen; der Screenshot wird unverändert eingebunden.
 
+`pixel-and-sara.png` zeigt den Produktionsbuild nach Sofa-Kratzen und Saras
+Heimkehr, mit ihrem gespiegelten Dialogporträt und Pixel neben ihr. Für eine neue
+Aufnahme bei 1280×800 die Runde starten, kurz nach rechts zum Sofa laufen und
+auf eine Kratzaktion warten. Danach bis zur Heimkehr und Pixels Ankunft warten,
+den Dialog noch nicht bestätigen und nur das Canvas aufnehmen. Browser-Uhr und
+ein Start-Seed dürfen die Aufnahme reproduzierbar machen; Spielzustand oder
+Bildinhalt werden nicht nachträglich verändert.
+
 Für ein Handy im selben Netz:
 
 ```sh
@@ -91,6 +99,18 @@ Abstimmung. Die isolierte Szene erzeugt weder Hauptziel noch Punkte oder Heimkeh
 Vorschau und Spiel verwenden das gemeinsame Zeitprofil in `game/domain/ball-play.ts`.
 Der freigegebene Ablauf dauert 4,2 Sekunden. HTML und
 DEV-Module sind keine Build-Einstiegspunkte und fehlen im Produktionsbuild.
+
+## Dialogporträts vergleichen
+
+`/portrait-preview.html` zeigt einen statischen Stil- und Layoutentwurf für #133.
+Die Team-Porträts der Landingpage sind die unveränderten Master für Sara und Pixel.
+Drei zusätzliche Sara-Ausdrücke lassen sich in Desktop- und Handygröße mit deutschen
+oder englischen Texten vergleichen. Größenwahl, langer Text und der Fallback ohne
+Porträt helfen bei der Abstimmung. Die Weiter-Taste wechselt nur die Vorschau.
+Quellen und Generierungsprompts stehen bei den
+[Porträtentwürfen](../assets/dialogue-portraits/README.md).
+Die DEV-Seite bleibt aus Produktions- und E2E-Builds ausgeschlossen. Ihre
+128×128-Porträts verwendet auch das Spiel; die Generatorquellen bleiben im Repository.
 
 ## Einzelne Objekte ausprobieren
 

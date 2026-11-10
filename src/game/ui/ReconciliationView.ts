@@ -1,5 +1,7 @@
 import { t } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
+import { DialoguePortrait, placeDialogueText } from './DialoguePortrait';
+import { charmPortrait } from '../domain/dialogue-portrait';
 import type Phaser from 'phaser';
 import { ARROW_LABELS, CHARM_LINES } from '../../content/reconciliation';
 import type { ReconciliationSnapshot } from '../domain/reconciliation';
@@ -18,6 +20,8 @@ export class ReconciliationView {
   private readonly timeTrack: Phaser.GameObjects.Rectangle;
   private readonly heartLabel: Phaser.GameObjects.Text;
   private readonly hearts: Phaser.GameObjects.Rectangle;
+  private readonly portrait: DialoguePortrait;
+  private selectedPortrait: ReturnType<typeof charmPortrait> = null;
   // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau trennt Lesetext, große Tastenkachel, zugehörige Zeit und Herzfortschritt räumlich.
   constructor(scene: Phaser.Scene, width: number, floorY: number) {
     this.root = scene.add.container(0, 0).setDepth(14).setVisible(false);
@@ -43,8 +47,10 @@ export class ReconciliationView {
     this.affection = scene.add
       .text(homecomingPositions(width).pixelSeatX, floorY - 120, '', style(18))
       .setOrigin(0.5);
+    this.portrait = new DialoguePortrait(scene, 100, 180);
     const dialogue = scene.add.container(0, 0, [
       panel,
+      this.portrait.image,
       this.message,
       this.quote,
       this.hint,
@@ -64,10 +70,20 @@ export class ReconciliationView {
   render(snapshot: ReconciliationSnapshot) {
     this.root.setVisible(!['waiting', 'complete', 'failed'].includes(snapshot.stage));
     this.renderText(charmText(snapshot));
+    this.renderPortrait(snapshot);
     this.hearts.width = 200 * snapshot.progress;
     this.heartLabel.setText(heartText(snapshot));
     this.renderKey(snapshot);
     this.affection.setText(affectionText(snapshot));
+  }
+
+  private renderPortrait(snapshot: ReconciliationSnapshot) {
+    this.selectedPortrait = charmPortrait(snapshot);
+    const textX = this.portrait.render(this.selectedPortrait) ? 160 : 60;
+
+    placeDialogueText(this.message, textX, this.hint.x - textX);
+    placeDialogueText(this.quote, textX, this.hint.x - textX);
+    this.quote.setY(this.message.y + this.message.height + 8);
   }
 
   private renderText(text: string) {
@@ -99,6 +115,7 @@ export class ReconciliationView {
       hint: this.hint.text,
       key: this.key.visible ? this.key.text : '',
       hearts: this.heartLabel.text,
+      portrait: this.selectedPortrait,
     };
   }
 
@@ -106,6 +123,7 @@ export class ReconciliationView {
     return Object.freeze({
       heartsText: this.heartLabel.text,
       canvasTextVisible: this.root.visible && this.message.parentContainer.visible,
+      portrait: this.portrait.snapshot(),
     });
   }
 

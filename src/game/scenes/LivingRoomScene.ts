@@ -1,5 +1,6 @@
 import { loadingScreen } from '../../loading-screen';
 import { preloadObjectAudio } from '../assets/object-audio';
+import { preloadDialoguePortraits, DIALOGUE_PORTRAITS } from '../assets/dialogue-portraits';
 import { BallPlay, ballPlayPose, ballPlayPlacement } from '../domain/ball-play';
 import { motionPreferences } from '../../settings/motion';
 import { preloadCarpetArt } from '../assets/carpet-art';
@@ -117,8 +118,9 @@ export class LivingRoomScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
   preload() {
-    loadingScreen.track(this.load);
+    loadingScreen.track(this.load, Object.keys(DIALOGUE_PORTRAITS));
     preloadObjectAudio(this);
+    preloadDialoguePortraits(this);
     preloadVaseArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
@@ -557,6 +559,7 @@ export class LivingRoomScene extends Phaser.Scene {
       goal: this.goalView.snapshot().text,
       homecoming: this.homecoming.snapshot().stage,
       dialogue: this.sara.snapshot().dialogueText,
+      portrait: this.sara.portraitId(),
       charmStage: this.charm.snapshot().stage,
       charm: this.charmView.readableText(),
       result: this.resultView.snapshot(),

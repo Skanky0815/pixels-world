@@ -1,7 +1,31 @@
 import { test, expect, type Page } from '@playwright/test';
+import { start, state, until } from './support';
+import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
 
 const loader = '#loading-screen';
 const progress = '#loading-progress';
+
+test('Fehlendes optionales Porträt blockiert weder Start noch Heimkehrdialog', async ({
+  page,
+  // eslint-disable-next-line max-lines-per-function -- Absichtlicher Bildfehler durchläuft den echten Loader und Heimkehrdialog ohne Zustandsschreiber.
+}) => {
+  await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
+  await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
+  await seedRoundRandom(page);
+  await page.route('**/assets/sara-portrait-v1-*.png', (route) =>
+    route.fulfill({ status: 503, body: 'Expected missing optional portrait' }),
+  );
+  await start(page, '/?round-profile=fast');
+  await useIdleFrames(page);
+  await advanceRoundTo(page, (await state(page)).round.returnAtMs);
+  await until(page, (s) => s.homecoming.stage === 'dialogue', 500);
+  const sara = (await state(page)).sara;
+
+  expect(sara.portrait.visible).toBe(false);
+  expect(sara.canvasTextVisible).toBe(true);
+  expect(sara.dialogueText).toContain('SARA');
+  await expect(page.locator('#loading-screen')).toHaveCount(0);
+});
 
 function latch() {
   let release!: () => void;

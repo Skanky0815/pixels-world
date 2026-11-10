@@ -113,7 +113,8 @@ export const en: Record<keyof typeof de, string> = {
   landingCharmTitle: 'Turn on the charm',
   landingCharm:
     'When Sara gets home, put on your sweetest face. Win her heart back with a short arrow-key sequence.',
-  landingSaraAlt: 'Sara is home and comments on the chaos while Pixel walks over to her.',
+  landingSaraAlt:
+    'Sara comments on the scratched sofa with her portrait in the dialogue; Pixel sits beside her.',
   landingSaraCaption: 'Who could stay angry at that face? Right?',
   landingCastEyebrow: 'PIXEL & SARA',
   landingCastTitle: 'A great team. Mostly.',

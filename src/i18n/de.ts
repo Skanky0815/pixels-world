@@ -115,7 +115,8 @@ export const de = {
   landingCharmTitle: 'Charme zeigen',
   landingCharm:
     'Wenn Sara heimkommt, ist dein liebster Blick gefragt. Gewinne mit einer kleinen Pfeiltastenfolge ihr Herz zurück.',
-  landingSaraAlt: 'Sara ist heimgekommen und kommentiert das Chaos; Pixel geht zu ihr.',
+  landingSaraAlt:
+    'Sara kommentiert das zerkratzte Sofa mit ihrem Porträt im Dialog; Pixel sitzt neben ihr.',
   landingSaraCaption: 'Für diesen Blick kann man doch nicht böse sein. Oder?',
   landingCastEyebrow: 'PIXEL & SARA',
   landingCastTitle: 'Ein gutes Team. Meistens.',

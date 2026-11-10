@@ -1,5 +1,10 @@
 import { t } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
+import { DialoguePortrait, placeDialogueText } from './DialoguePortrait';
+import {
+  homecomingPortrait,
+  type DialoguePortrait as PortraitId,
+} from '../domain/dialogue-portrait';
 import type Phaser from 'phaser';
 import type { HomecomingSnapshot, SaraAnimation } from '../domain/homecoming';
 import { SARA_ANIMATIONS } from '../../content/sara-reactions';
@@ -16,6 +21,8 @@ export class SaraReturnView {
   private readonly quote: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
   private readonly message: Phaser.GameObjects.Text;
+  private readonly portrait: DialoguePortrait;
+  private selectedPortrait: PortraitId | null = null;
   private key: SaraAnimation = SARA_ANIMATIONS.idle;
   // eslint-disable-next-line max-lines-per-function -- Der deklarative Aufbau hält Tür, Figur und Dialogpanel mit ihrer gemeinsamen Raumgeometrie zusammen.
   constructor(
@@ -46,7 +53,14 @@ export class SaraReturnView {
       wordWrap: { width: width - 120 },
     });
     this.hint = scene.add.text(width - 60, 232, '', this.textStyle(14)).setOrigin(1, 1);
-    const dialogue = scene.add.container(0, 0, [panel, this.message, this.quote, this.hint]);
+    this.portrait = new DialoguePortrait(scene, 100, 188);
+    const dialogue = scene.add.container(0, 0, [
+      panel,
+      this.portrait.image,
+      this.message,
+      this.quote,
+      this.hint,
+    ]);
 
     this.removeCompactListener = compactVisibility(dialogue);
     this.root.add([...door, this.actor, dialogue]);
@@ -70,6 +84,15 @@ export class SaraReturnView {
     this.actor.x =
       positions.saraStartX + snapshot.entryProgress * (positions.saraEndX - positions.saraStartX);
     this.renderText(snapshot, canContinue);
+    this.renderPortrait(snapshot);
+  }
+
+  private renderPortrait(snapshot: HomecomingSnapshot) {
+    this.selectedPortrait = homecomingPortrait(snapshot);
+    const textX = this.portrait.render(this.selectedPortrait) ? 160 : 60;
+
+    placeDialogueText(this.message, textX, this.layout.width - textX - 60);
+    placeDialogueText(this.quote, textX, this.layout.width - textX - 60);
   }
 
   private renderText(snapshot: HomecomingSnapshot, canContinue: boolean) {
@@ -93,6 +116,10 @@ export class SaraReturnView {
     else this.actor.anims.resume();
   }
 
+  portraitId() {
+    return this.selectedPortrait;
+  }
+
   private textStyle(size: number) {
     return { fontFamily: 'monospace', fontSize: `${size}px`, color: '#fff1cf' };
   }
@@ -110,6 +137,7 @@ export class SaraReturnView {
       originY: this.actor.originY,
       dialogueText: this.caption,
       canvasTextVisible: this.root.visible && this.message.parentContainer.visible,
+      portrait: this.portrait.snapshot(),
     };
   }
 
