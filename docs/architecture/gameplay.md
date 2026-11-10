@@ -115,6 +115,17 @@ Wertung emittiert `object-damaged`; die Domain vergibt selbst keine Punkte.
 - `Reconciliation`: Lesepause, Vorbereitung, frische Pfeile, Feedback und terminaler
   Erfolg/Misserfolg. Nur der nächste Pfeil wird beobachtbar; mehrere gleichzeitig
   sind mehrdeutig. Versuchsbudget und Hilfe gelten pro zu verdienendem Herz.
+- `CharmPresentation` beobachtet tatsächliche Übergänge der Versöhnung, ohne ihre
+  Eingaben oder Fristen zu ändern. Richtige Pfeile wechseln Schnurren/Pfötchen,
+  abgeschlossene Folgen Umstreichen/Köpfchen; das Finale zeigt den Bauch.
+  `CharmMotion` führt Annäherung einmal aus und hält die Schleife bis zur nächsten
+  Spieleraktion. Fehler und Fortfahren lösen die Pose; beim Ergebnis bleibt die
+  finale Bauchpose aktiv. Ein Neustart verwirft das szeneneigene Modell.
+  Pixel verändert dafür nur sein sichtbares Sprite, nie den eingefrorenen Körper.
+  Beim Umstreichen läuft er nach rechts vor Sara und nach links hinter ihr;
+  Blickrichtung und Zeichentiefe wechseln gemeinsam an den Wendepunkten.
+  Reduzierte Bewegung verwendet statische Posen. Raum- und Vergleichsvorschau
+  teilen dieselbe Choreografie; das Spiel lädt ausschließlich das kompakte Atlas.
 - `roundResult`: unveränderliche Ableitung aus den terminalen Snapshots. Finaler
   Score, ursprüngliche Reaktion, Ziel und Versöhnung bleiben getrennte Aussagen.
 

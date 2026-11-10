@@ -1,0 +1,54 @@
+.charm-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) repeat(3, auto);
+  align-items: end;
+  gap: 12px;
+}
+.charm-controls label {
+  margin: 0;
+}
+.charm-controls select {
+  margin: 0;
+}
+.charm-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.charm-check input {
+  width: 20px;
+}
+#charm-stage {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #403a35;
+}
+#motion-status {
+  font-variant-numeric: tabular-nums;
+}
+details {
+  margin-top: 20px;
+  line-height: 1.6;
+}
+summary {
+  cursor: pointer;
+  color: #e9be82;
+}
+@media (max-width: 800px) {
+  .charm-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+  .charm-controls label {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 420px) {
+  .charm-controls {
+    grid-template-columns: 1fr;
+  }
+  article {
+    padding: 8px;
+  }
+}

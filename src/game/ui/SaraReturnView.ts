@@ -85,6 +85,7 @@ export class SaraReturnView {
     this.root.setVisible(snapshot.stage !== 'waiting');
     this.actor.setVisible(true);
     this.dialogue.setY(0);
+    this.dialogue.setAlpha(snapshot.stage === 'complete' ? 0 : 1);
     this.play(snapshot.animationKey);
     this.actor.x =
       positions.saraStartX + snapshot.entryProgress * (positions.saraEndX - positions.saraStartX);
@@ -159,7 +160,7 @@ export class SaraReturnView {
       displayHeight: this.actor.displayHeight,
       originY: this.actor.originY,
       dialogueText: this.caption,
-      canvasTextVisible: this.root.visible && this.message.parentContainer.visible,
+      canvasTextVisible: this.root.visible && this.dialogue.visible && this.dialogue.alpha > 0,
       portrait: this.portrait.snapshot(),
     };
   }

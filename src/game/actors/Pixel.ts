@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import { PIXEL_ANIMATIONS, pixelAnimation } from './pixel-animations';
 import { CURTAIN_SLIDE } from '../interactions/curtain-sliding';
 import type { InputState } from '../input/input-state';
+import type { CharmPose } from '../domain/charm-motion';
 
 import type { Bounds, GroundAction } from '../interactions/contracts';
 type Activity = GroundAction | 'climbing' | 'sliding';
@@ -117,6 +118,18 @@ export class Pixel {
 
     body.reset(x, this.sprite.y);
     this.visual.setDepth(1);
+  }
+
+  /** Only the visible sprite follows charm poses; physics and regular animations stay untouched. */
+  presentCharm(pose: CharmPose) {
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+
+    this.visual
+      .setTexture(pose.sheet === 'charm' ? 'pixel-charm' : 'pixel', pose.frame)
+      .setScale(pose.scale, pose.scale * pose.stretch)
+      .setPosition(body.center.x + pose.x, body.bottom - (pose.cell * pose.scale) / 2 - pose.y)
+      .setFlipX(pose.faceLeft)
+      .setDepth(pose.behindSara ? 11 : 13);
   }
 
   move(input: InputState, time: number, delta: number, area: Bounds | undefined) {
@@ -293,6 +306,8 @@ export class Pixel {
       displayWidth: this.visual.displayWidth,
       displayHeight: this.visual.displayHeight,
       visualX: this.visual.x,
+      visualY: this.visual.y,
+      visualTexture: this.visual.texture.key,
       visualFrame: Number(this.visual.frame.name),
       visualFlipX: this.visual.flipX,
       velocityX: body.velocity.x,

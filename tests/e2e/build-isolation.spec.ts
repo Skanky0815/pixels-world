@@ -58,6 +58,7 @@ test(
       expect(source).not.toContain('Vergleichsansicht unvollständig');
       expect(source).not.toContain('InteractablePlayground');
       expect(source).not.toContain('BallPlayPreview');
+      expect(source).not.toContain('Charme-Vorschau fehlt');
       expect(source).not.toContain('GameDebug');
       expect(source).not.toContain('dev-scenario');
       expect(source).not.toContain('Ladefortschritt in der Vorschau');
@@ -66,6 +67,11 @@ test(
     for (const base of ['http://127.0.0.1:4174', 'http://127.0.0.1:4175/pixels-world']) {
       for (const path of [
         '/animation-compare.html',
+        '/charm-preview.html',
+        '/src/dev/charm-preview.ts',
+        '/src/dev/charm-preview.css',
+        '/src/dev/CharmPreview.ts',
+        '/src/dev/pixel-compare-charm.ts',
         '/portrait-preview.html',
         '/src/dev/portrait-preview.ts',
         '/src/dev/portrait-preview.css',

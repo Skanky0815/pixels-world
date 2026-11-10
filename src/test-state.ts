@@ -16,6 +16,7 @@ import type { ReconciliationSnapshot } from './game/domain/reconciliation';
 import type { RoundSnapshot } from './game/domain/round-controller';
 import type { HomecomingSnapshot, SaraAnimation } from './game/domain/homecoming';
 import type { PixelReturnSnapshot } from './game/domain/pixel-return';
+import type { CharmPresentation } from './game/domain/charm-presentation';
 
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
@@ -39,6 +40,7 @@ export interface GameTestState {
     readonly portrait: Readonly<{ visible: boolean; texture: string; flipped: boolean }>;
   };
   readonly reconciliation: ReconciliationSnapshot;
+  readonly charmMotion: ReturnType<CharmPresentation['snapshot']>;
   readonly round: RoundSnapshot;
   readonly homecoming: HomecomingSnapshot;
   readonly pixelReturn: PixelReturnSnapshot;
@@ -166,6 +168,8 @@ export interface GameTestState {
   } | null;
   readonly pixel: {
     readonly visualX: number;
+    readonly visualY: number;
+    readonly visualTexture: string;
     readonly visualFrame: number;
     readonly visualFlipX: boolean;
     readonly animation: string | null;
