@@ -1,6 +1,6 @@
 import charmSheetUrl from '../../assets/pixel/charm-v1/charm-sheet-v1.png?url';
 import { CHARM_COMPARISON_CLIPS } from './pixel-compare-charm';
-import type { CharmPreviewAction } from './charm-preview-motion';
+import type { CharmAction } from '../game/domain/charm-motion';
 import sheetUrl from '../../assets/pixel/pixel-sheet.png?url';
 import { PIXEL_ANIMATIONS } from '../game/actors/pixel-animations';
 import { PreviewPlayback, previewControls } from './preview-playback';
@@ -211,7 +211,7 @@ function drawSprite(
 
 // eslint-disable-next-line max-lines-per-function -- Die Raumvorschau liefert Frame, Raster und Körpermaß; beide Atlanten teilen denselben Fußanker.
 function drawCharm(panel: Panel, index: number) {
-  const clip = CHARM_COMPARISON_CLIPS[panel.animation as CharmPreviewAction];
+  const clip = CHARM_COMPARISON_CLIPS[panel.animation as CharmAction];
   const pose = clip.poses[index];
   const ctx = panel.context;
   const columns = pose.sheet === 'charm' ? 6 : 5;

@@ -1,14 +1,10 @@
-import {
-  CHARM_PREVIEW_ACTIONS,
-  CharmPreviewMotion,
-  type CharmPreviewAction,
-} from './charm-preview-motion';
+import { CHARM_ACTIONS, CharmMotion, type CharmAction } from '../game/domain/charm-motion';
 
 /** Show the same looping poses as the room preview, without replaying the approach. */
 // eslint-disable-next-line max-lines-per-function -- Eine gemeinsame Abtastung erhält die originalen Posen und Schleifenzeiten statt einer zweiten Animationsdefinition.
-export function charmComparisonClip(action: CharmPreviewAction) {
-  const motion = new CharmPreviewMotion();
-  const config = CHARM_PREVIEW_ACTIONS[action];
+export function charmComparisonClip(action: CharmAction) {
+  const motion = new CharmMotion();
+  const config = CHARM_ACTIONS[action];
 
   motion.trigger(action);
   motion.advance(config.approach);

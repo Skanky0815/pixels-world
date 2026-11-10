@@ -18,9 +18,10 @@ vierfach vergrößerte Vorschau-Sheet gehören nicht in ein Laufzeitbundle.
 - Frame 6: Hinlegen; 7: Seitenlage; 8: Rückenlage.
 - Frames 8–11: ruhiges Bauch-Atmen, Pfötchen und Blinzeln in Rückenlage.
 
-Die lokale `/charm-preview.html` verwendet die neuen Kopf-/Bauch-Frames ohne
+Spiel und lokale `/charm-preview.html` verwenden die neuen Kopf-/Bauch-Frames ohne
 Drehen des Sitzbilds. Beim Fortfahren richtet sich Pixel einmal über die
 umgekehrten Bauchposen auf und läuft zum Sitzanker. Die Schleife selbst endet
-erst durch eine weitere Aktion. Die reguläre Spielintegration ist noch nicht
-Teil dieses Bewegungsentwurfs. Die 48×48-Zelle gibt nur Platz für die Zeichnung;
+erst durch eine weitere Aktion. Die Spielzuordnung steht in
+`src/game/domain/charm-presentation.ts`; Vorschau und Spiel teilen die Choreografie.
+Die 48×48-Zelle gibt nur Platz für die Zeichnung;
 das reguläre Bewegungs-Sheet und die Kollisionsmaße bleiben unverändert.

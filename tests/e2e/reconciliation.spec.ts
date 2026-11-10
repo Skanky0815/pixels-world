@@ -96,6 +96,10 @@ test(
     expect(complete.objects).toEqual(frozen.objects);
     expect(complete.pixel.x).toBeCloseTo(frozen.pixel.x, 1);
     expect(complete.reconciliation.progress).toBe(1);
+    expect(complete.sara.canvasTextVisible).toBe(false);
+    expect(complete.charmMotion).toMatchObject({ action: 'roll', phase: 'loop' });
+    expect(complete.pixel.visualTexture).toBe('pixel-charm');
+    expect(complete.pixel.displayWidth).toBe(96);
     await expectResult(page, 'success');
     expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.reconciliation))).toBe(
       true,
@@ -126,15 +130,18 @@ test(
 
     expect(first.step).toBe(1);
     await page.clock.runFor(800);
+    expect((await state(page)).charmMotion.action).toBe('purr');
     await page.keyboard.down(keys[expected]);
     await page.clock.runFor(100);
     expect((await state(page)).reconciliation.step).toBe(1);
     await page.keyboard.up(keys[expected]);
     await page.evaluate(() => window.dispatchEvent(new Event('blur')));
     const paused = (await state(page)).reconciliation;
+    const pausedMotion = (await state(page)).charmMotion;
 
     await page.clock.runFor(5000);
     expect((await state(page)).reconciliation).toEqual(paused);
+    expect((await state(page)).charmMotion).toEqual(pausedMotion);
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
     await page.clock.runFor(100);
     await page.evaluate(() => {
@@ -155,6 +162,7 @@ test(
       successes: 0,
       failures: 0,
     });
+    expect((await state(page)).charmMotion.action).toBeNull();
   },
 );
 
@@ -227,4 +235,52 @@ async function expectFreshRound(page: Page) {
   expect(fresh.pixel.x).toBeCloseTo(110, 0);
   expect(fresh.homecoming.stage).toBe('waiting');
   expect(fresh.pixelReturn.stage).toBe('waiting');
+}
+
+for (const width of [390, 1024]) {
+  test(`Charme-Animationen sind bei ${width}px sichtbar und bleiben ohne Bewegung statisch`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Beide Gerätegrößen durchlaufen echte Treffer, Pfötchen, Bauchpose und die statische Bewegungsalternative.
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await enterCharm(page);
+    const seated = (await state(page)).pixel;
+
+    await correctArrow(page);
+    expect((await state(page)).charmMotion.action).toBe('purr');
+    await correctArrow(page);
+    expect((await state(page)).charmMotion.action).toBe('paw');
+    expect((await state(page)).pixel.displayWidth).toBe(64);
+    await correctArrow(page);
+    await until(page, (s) => s.charmMotion.phase === 'loop', 100);
+    const belly = await state(page);
+
+    expect(belly.charmMotion.action).toBe('roll');
+    expect(belly.pixel.visualTexture).toBe('pixel-charm');
+    expect(belly.pixel.visualFrame).toBeGreaterThanOrEqual(8);
+    expect(belly.pixel.x).toBe(seated.x);
+    expect(belly.pixel.bottom).toBe(seated.bottom);
+    expect(belly.pixel.visualX + belly.pixel.displayWidth / 2).toBeLessThan(belly.room.width);
+    await test
+      .info()
+      .attach(`charme-${width}px`, { body: await page.screenshot(), contentType: 'image/png' });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.clock.runFor(100);
+    const reduced = (await state(page)).pixel;
+
+    await page.clock.runFor(5000);
+    const held = (await state(page)).pixel;
+
+    expect([held.visualFrame, held.visualX, held.visualY, held.displayHeight]).toEqual([
+      reduced.visualFrame,
+      reduced.visualX,
+      reduced.visualY,
+      reduced.displayHeight,
+    ]);
+    expect(held.visualFrame).toBe(8);
+    expect((await state(page)).reconciliation.stage).toBe('complete');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
 }

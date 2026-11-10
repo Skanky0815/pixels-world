@@ -1,4 +1,4 @@
-export const CHARM_PREVIEW_ACTIONS = {
+export const CHARM_ACTIONS = {
   rub: {
     label: 'Um die Beine streichen',
     moment: 'Anschmiegen nach einer geschafften Folge',
@@ -36,8 +36,8 @@ export const CHARM_PREVIEW_ACTIONS = {
   },
 } as const;
 
-export type CharmPreviewAction = keyof typeof CHARM_PREVIEW_ACTIONS;
-export interface CharmPreviewPose {
+export type CharmAction = keyof typeof CHARM_ACTIONS;
+export interface CharmPose {
   readonly x: number;
   readonly y: number;
   readonly angle: number;
@@ -49,7 +49,7 @@ export interface CharmPreviewPose {
   readonly faceLeft: boolean;
   readonly behindSara: boolean;
 }
-const IDLE: CharmPreviewPose = {
+const IDLE: CharmPose = {
   x: 0,
   y: 0,
   angle: 0,
@@ -62,14 +62,14 @@ const IDLE: CharmPreviewPose = {
   behindSara: false,
 };
 
-/** DEV-only choreography. No timers, inputs, score or reconciliation state are changed. */
-export class CharmPreviewMotion {
-  private action: CharmPreviewAction | null = null;
+/** Presentation choreography. No inputs, score or reconciliation state are changed. */
+export class CharmMotion {
+  private action: CharmAction | null = null;
   private elapsed = 0;
   private releasing = false;
-  private from: CharmPreviewPose = IDLE;
+  private from: CharmPose = IDLE;
 
-  trigger(action: CharmPreviewAction, reduced = false) {
+  trigger(action: CharmAction, reduced = false) {
     this.from = this.pose(reduced);
     this.action = action;
     this.elapsed = 0;
@@ -97,13 +97,13 @@ export class CharmPreviewMotion {
     if (this.releasing && this.elapsed >= releaseDuration(this.from)) this.reset();
   }
 
-  pose(reduced = false): CharmPreviewPose {
+  pose(reduced = false): CharmPose {
     if (reduced) return reducedPose(this.action);
 
     if (this.releasing) return releasePose(this.from, this.elapsed);
 
     if (!this.action) return IDLE;
-    const config = CHARM_PREVIEW_ACTIONS[this.action];
+    const config = CHARM_ACTIONS[this.action];
 
     if (this.elapsed < config.approach) return approach(this.action, this.elapsed, this.from);
 
@@ -119,7 +119,7 @@ export class CharmPreviewMotion {
 
     if (!this.action) return 'idle' as const;
 
-    return this.elapsed < CHARM_PREVIEW_ACTIONS[this.action].approach
+    return this.elapsed < CHARM_ACTIONS[this.action].approach
       ? ('approach' as const)
       : ('loop' as const);
   }
@@ -132,7 +132,7 @@ function ease(value: number) {
 }
 
 // eslint-disable-next-line max-lines-per-function -- Die vollständige skalare Pose wird ohne Positionssprung gemeinsam interpoliert.
-function blend(from: CharmPreviewPose, to: CharmPreviewPose, progress: number): CharmPreviewPose {
+function blend(from: CharmPose, to: CharmPose, progress: number): CharmPose {
   const t = ease(progress);
   const mix = (a: number, b: number) => a + (b - a) * t;
 
@@ -147,12 +147,8 @@ function blend(from: CharmPreviewPose, to: CharmPreviewPose, progress: number): 
 }
 
 // eslint-disable-next-line max-lines-per-function -- Einmalige Annäherung und Laufpose benutzen denselben kontinuierlichen Übergang zur Schleife.
-function approach(
-  action: CharmPreviewAction,
-  elapsed: number,
-  from: CharmPreviewPose,
-): CharmPreviewPose {
-  const config = CHARM_PREVIEW_ACTIONS[action];
+function approach(action: CharmAction, elapsed: number, from: CharmPose): CharmPose {
+  const config = CHARM_ACTIONS[action];
   const travel = action === 'roll' ? 700 : config.approach;
   const pose = blend(from, loop(action, 0), elapsed / travel);
   const walking = Math.abs(pose.x - config.x) > 2;
@@ -174,8 +170,8 @@ function approach(
   };
 }
 
-function loop(action: CharmPreviewAction, elapsed: number): CharmPreviewPose {
-  const config = CHARM_PREVIEW_ACTIONS[action];
+function loop(action: CharmAction, elapsed: number): CharmPose {
+  const config = CHARM_ACTIONS[action];
   const phase = (elapsed % config.cycle) / config.cycle;
   const wave = Math.sin(phase * Math.PI * 2);
   const press = (1 - Math.cos(phase * Math.PI * 2)) / 2;
@@ -185,12 +181,12 @@ function loop(action: CharmPreviewAction, elapsed: number): CharmPreviewPose {
 
 // eslint-disable-next-line max-lines-per-function -- Die fünf ausdrücklich als Entwurf gekennzeichneten Bewegungen teilen dieselbe periodische Phase und Pfotenbasis.
 function actionPose(
-  action: CharmPreviewAction,
+  action: CharmAction,
   x: number,
   phase: number,
   wave: number,
   press: number,
-): CharmPreviewPose {
+): CharmPose {
   switch (action) {
     case 'rub':
       return {
@@ -228,7 +224,7 @@ function actionPose(
   }
 }
 
-function reducedPose(action: CharmPreviewAction | null): CharmPreviewPose {
+function reducedPose(action: CharmAction | null): CharmPose {
   if (action === 'roll') return { ...IDLE, sheet: 'charm', cell: 48, frame: 8 };
 
   if (action === 'headbutt') return { ...IDLE, sheet: 'charm', cell: 48, frame: 3 };
@@ -236,12 +232,12 @@ function reducedPose(action: CharmPreviewAction | null): CharmPreviewPose {
   return { ...IDLE, frame: action === 'purr' ? 2 : 0 };
 }
 
-function releaseDuration(from: CharmPreviewPose) {
+function releaseDuration(from: CharmPose) {
   return from.sheet === 'charm' && from.frame >= 6 ? 1100 : 500;
 }
 
 // eslint-disable-next-line max-lines-per-function -- Aufrichten wird einmal rückwärts aus den echten Bauch-Frames gezeigt, anschließend läuft Pixel zum Sitzanker zurück.
-function releasePose(from: CharmPreviewPose, elapsed: number): CharmPreviewPose {
+function releasePose(from: CharmPose, elapsed: number): CharmPose {
   const belly = from.sheet === 'charm' && from.frame >= 6;
   const rise = belly ? 650 : from.sheet === 'charm' ? 180 : 0;
 

@@ -17,15 +17,11 @@ import { spriteUrl } from '../game/assets/urls';
 import charmSheet from '../../assets/pixel/charm-v1/charm-sheet-v1.png?url';
 import { SARA_SPRITE } from '../game/actors/sara-animations';
 import { homecomingPositions } from '../game/content/homecoming-layout';
-import {
-  CHARM_PREVIEW_ACTIONS,
-  CharmPreviewMotion,
-  type CharmPreviewAction,
-} from './charm-preview-motion';
+import { CHARM_ACTIONS, CharmMotion, type CharmAction } from '../game/domain/charm-motion';
 
 /** Isolated pose/layout proposal; no live reconciliation, input timer or game actor is created. */
 export class CharmPreview extends Phaser.Scene {
-  private readonly motion = new CharmPreviewMotion();
+  private readonly motion = new CharmMotion();
   private pixel!: Phaser.GameObjects.Sprite;
   private sara!: Phaser.GameObjects.Sprite;
   private panel!: Phaser.GameObjects.Container;
@@ -115,10 +111,10 @@ export class CharmPreview extends Phaser.Scene {
       element(id).addEventListener(event, action, { signal: abort.signal });
     const select = element<HTMLSelectElement>('charm-action');
 
-    for (const [key, action] of Object.entries(CHARM_PREVIEW_ACTIONS))
+    for (const [key, action] of Object.entries(CHARM_ACTIONS))
       select.add(new Option(action.label, key));
-    bind('charm-action', 'change', () => this.trigger(select.value as CharmPreviewAction));
-    bind('trigger', 'click', () => this.trigger(select.value as CharmPreviewAction));
+    bind('charm-action', 'change', () => this.trigger(select.value as CharmAction));
+    bind('trigger', 'click', () => this.trigger(select.value as CharmAction));
     bind('continue', 'click', () => {
       this.motion.release(this.reduced);
       this.playing = true;
@@ -166,11 +162,11 @@ export class CharmPreview extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => abort.abort());
   }
 
-  private trigger(action: CharmPreviewAction) {
+  private trigger(action: CharmAction) {
     this.motion.trigger(action, this.reduced);
     this.playing = true;
     element('action-note').textContent =
-      `${CHARM_PREVIEW_ACTIONS[action].label} · ${CHARM_PREVIEW_ACTIONS[action].moment}`;
+      `${CHARM_ACTIONS[action].label} · ${CHARM_ACTIONS[action].moment}`;
     this.renderMoment();
   }
 

@@ -124,8 +124,9 @@ reduzierte Bewegung lassen sich unabhängig von der Spielrunde ausprobieren.
 
 Die vorhandene Versöhnung kennt Schnurren bei Treffern, Anschmiegen nach einer
 geschafften Folge und Streicheln im Finale. Beine-Umstreichen und Köpfchen geben
-sind vorgeschlagene visuelle Varianten des Anschmiegens. Pfote und Bauch bleiben
-optionale Posenproben. Kopf und Bauch verwenden neue Frames aus
+sind visuelle Varianten des Anschmiegens. Das Spiel zeigt Schnurren und Pfötchen
+abwechselnd nach richtigen Pfeilen, Umstreichen und Köpfchen nach geschafften
+Folgen und Bauchzeigen im Finale. Kopf und Bauch verwenden neue Frames aus
 `assets/pixel/charm-v1/`; Herkunft und Exportvertrag stehen dort beim Asset.
 Auch `/animation-compare.html` bietet die fünf Charme-Schleifen in der Pixel-Auswahl,
 mit Größenvergleich, Pause und Einzelschritt. Beide Ansichten teilen dieselben Posen

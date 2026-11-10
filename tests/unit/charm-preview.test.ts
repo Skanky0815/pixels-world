@@ -3,18 +3,18 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
 import {
-  CharmPreviewMotion,
-  CHARM_PREVIEW_ACTIONS,
-  type CharmPreviewAction,
-} from '../../src/dev/charm-preview-motion.ts';
+  CharmMotion,
+  CHARM_ACTIONS,
+  type CharmAction,
+} from '../../src/game/domain/charm-motion.ts';
 
-const actions = Object.keys(CHARM_PREVIEW_ACTIONS) as CharmPreviewAction[];
+const actions = Object.keys(CHARM_ACTIONS) as CharmAction[];
 
 // eslint-disable-next-line max-lines-per-function -- Jede Variante muss nach ihrer einmaligen Annäherung unbegrenzt und periodisch aktiv bleiben.
 test('Charme-Schleifen enden nicht nach einer festen Dauer und wiederholen den Auftakt nicht', () => {
   for (const action of actions) {
-    const model = new CharmPreviewMotion();
-    const config = CHARM_PREVIEW_ACTIONS[action];
+    const model = new CharmMotion();
+    const config = CHARM_ACTIONS[action];
 
     model.trigger(action);
     assert.equal(model.snapshot().phase, 'approach');
@@ -32,7 +32,7 @@ test('Charme-Schleifen enden nicht nach einer festen Dauer und wiederholen den A
 
 // eslint-disable-next-line max-lines-per-function -- Wechsel, ausdrückliches Fortfahren und Abbruch starten an der gerade sichtbaren Position.
 test('Neue Aktion und Fortfahren übernehmen die sichtbare Pose ohne Positionssprung', () => {
-  const model = new CharmPreviewMotion();
+  const model = new CharmMotion();
 
   model.trigger('rub');
   model.advance(1950);
@@ -60,7 +60,7 @@ test('Neue Aktion und Fortfahren übernehmen die sichtbare Pose ohne Positionssp
 // eslint-disable-next-line max-lines-per-function -- Alle Aktionsvarianten teilen dieselbe statische Bewegungsalternative.
 test('Reduzierte Bewegung bleibt trotz fortlaufender Schleife statisch', () => {
   for (const action of actions) {
-    const model = new CharmPreviewMotion();
+    const model = new CharmMotion();
 
     model.trigger(action, true);
     const pose = model.pose(true);
@@ -74,7 +74,7 @@ test('Reduzierte Bewegung bleibt trotz fortlaufender Schleife statisch', () => {
 });
 
 test('Ungültige Zeit und alte Bewegung können eine zurückgesetzte Vorschau nicht reaktivieren', () => {
-  const model = new CharmPreviewMotion();
+  const model = new CharmMotion();
 
   model.trigger('paw');
 
@@ -88,7 +88,7 @@ test('Ungültige Zeit und alte Bewegung können eine zurückgesetzte Vorschau ni
 
 // eslint-disable-next-line max-lines-per-function -- Beide neuen Animationen müssen echte Atlas-Frames statt gedrehter oder gestreckter Sitzbilder verwenden.
 test('Kopf und Bauch verwenden eigene Frames mit ruhender Bildausrichtung', () => {
-  const head = new CharmPreviewMotion();
+  const head = new CharmMotion();
 
   head.trigger('headbutt');
   head.advance(800);
@@ -105,7 +105,7 @@ test('Kopf und Bauch verwenden eigene Frames mit ruhender Bildausrichtung', () =
   }
 
   assert.ok(frames.size >= 4);
-  const belly = new CharmPreviewMotion();
+  const belly = new CharmMotion();
 
   belly.trigger('roll');
   belly.advance(700);

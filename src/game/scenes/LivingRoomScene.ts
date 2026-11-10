@@ -37,6 +37,8 @@ import { StartScreen } from '../ui/StartScreen';
 import { roundResult } from '../domain/round-result';
 import { RoundResultView } from '../ui/RoundResultView';
 import { Reconciliation } from '../domain/reconciliation';
+import { CharmPresentation } from '../domain/charm-presentation';
+import { preloadCharmArt } from '../assets/charm-art';
 import { ReconciliationView } from '../ui/ReconciliationView';
 import Phaser from 'phaser';
 import { ASSETS } from '../assets/definitions';
@@ -85,6 +87,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private pixel!: Pixel;
   private round!: RoundController;
   private charm!: Reconciliation;
+  private charmPresentation!: CharmPresentation;
   private resultView!: RoundResultView;
   private charmView!: ReconciliationView;
   private homecoming!: HomecomingSequence;
@@ -126,6 +129,7 @@ export class LivingRoomScene extends Phaser.Scene {
   preload() {
     loadingScreen.track(this.load, Object.keys(DIALOGUE_PORTRAITS));
     preloadObjectAudio(this);
+    preloadCharmArt(this);
     preloadDialoguePortraits(this);
     preloadVaseArt(this);
     preloadCarpetArt(this);
@@ -208,6 +212,7 @@ export class LivingRoomScene extends Phaser.Scene {
       memory: this.dialogueMemory,
     });
     this.charm = new Reconciliation(this.random);
+    this.charmPresentation = new CharmPresentation();
     this.returnTime = 0;
     this.goal = new MainGoal(this.room.goal);
   }
@@ -352,6 +357,7 @@ export class LivingRoomScene extends Phaser.Scene {
             homecoming: this.homecoming.snapshot(),
             reconciliation: this.charm.snapshot(),
             charmDisplay: this.charmView.snapshot(),
+            charmMotion: this.charmPresentation.snapshot(),
             result: this.resultView.snapshot(),
             pixelReturn: this.returning.snapshot(),
             sara: this.sara.snapshot(),
@@ -472,6 +478,8 @@ export class LivingRoomScene extends Phaser.Scene {
     const unsubscribe = onLanguageChange(() => this.refreshLanguage());
     const unsubscribeMotion = motionPreferences.subscribe(() => {
       if (this.ballPlay.snapshot().active) this.renderBallPlay();
+
+      if (this.round.snapshot().phase === 'reconciliation') this.renderCharmMotion();
     });
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribeMotion);
@@ -831,12 +839,22 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private advanceCharm(input: InputState, elapsed: number) {
+    const before = this.charm.snapshot();
+
     this.charm.advance(elapsed);
 
     if (input.confirmPressed) this.charm.confirm();
     this.charm.input(input.arrows);
+    this.charmPresentation.update(before, this.charm.snapshot(), elapsed);
+    this.renderCharmMotion();
     this.charmView.render(this.charm.snapshot());
     this.renderResult();
+  }
+
+  private renderCharmMotion() {
+    this.pixel.presentCharm(
+      this.charmPresentation.motion.pose(motionPreferences.snapshot().reduced),
+    );
   }
 
   private renderResult() {

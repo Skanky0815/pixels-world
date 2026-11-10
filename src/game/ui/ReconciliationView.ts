@@ -25,27 +25,33 @@ export class ReconciliationView {
   // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau trennt Lesetext, große Tastenkachel, zugehörige Zeit und Herzfortschritt räumlich.
   constructor(scene: Phaser.Scene, width: number, floorY: number) {
     this.root = scene.add.container(0, 0).setDepth(14).setVisible(false);
-    const panel = scene.add.rectangle(width / 2, 235, width - 80, 218, 0x403a35, 1);
+    const panelWidth = Math.min(width - 80, 610);
+    const right = 40 + panelWidth;
+    const keyX = 40 + panelWidth * 0.72;
+    const panel = scene.add.rectangle(40 + panelWidth / 2, 235, panelWidth, 218, 0x403a35, 1);
 
     panel.setStrokeStyle(2, 0xd4b488);
-    this.message = scene.add.text(60, 140, '', { ...style(16), wordWrap: { width: width - 120 } });
+    this.message = scene.add.text(60, 140, '', {
+      ...style(16),
+      wordWrap: { width: panelWidth - 40 },
+    });
     this.quote = scene.add.text(60, 188, '', {
       ...style(16),
       fontStyle: 'italic',
       color: '#e4c182',
-      wordWrap: { width: width - 120 },
+      wordWrap: { width: panelWidth - 40 },
     });
-    this.hint = scene.add.text(width - 60, 330, '', style(14)).setOrigin(1, 1);
-    this.tile = scene.add.rectangle(width / 2, 242, 100, 100, 0x615047).setStrokeStyle(3, 0xe4c182);
-    this.key = scene.add.text(width / 2, 242, '', style(76)).setOrigin(0.5);
-    this.timeTrack = scene.add.rectangle(width / 2 - 70, 306, 140, 8, 0x66554e).setOrigin(0, 0.5);
-    this.timer = scene.add.rectangle(width / 2 - 70, 306, 1, 8, 0xe4c182).setOrigin(0, 0.5);
+    this.hint = scene.add.text(right - 20, 330, '', style(14)).setOrigin(1, 1);
+    this.tile = scene.add.rectangle(keyX, 242, 100, 100, 0x615047).setStrokeStyle(3, 0xe4c182);
+    this.key = scene.add.text(keyX, 242, '', style(76)).setOrigin(0.5);
+    this.timeTrack = scene.add.rectangle(keyX - 70, 306, 140, 8, 0x66554e).setOrigin(0, 0.5);
+    this.timer = scene.add.rectangle(keyX - 70, 306, 1, 8, 0xe4c182).setOrigin(0, 0.5);
     const heartTrack = scene.add.rectangle(60, 331, 200, 8, 0x66554e).setOrigin(0, 0.5);
 
     this.heartLabel = scene.add.text(60, 311, '', style(12));
     this.hearts = scene.add.rectangle(60, 331, 1, 8, 0xd99b9c).setOrigin(0, 0.5);
     this.affection = scene.add
-      .text(homecomingPositions(width).pixelSeatX, floorY - 120, '', style(18))
+      .text(homecomingPositions(width).pixelSeatX, floorY - 238, '', style(18))
       .setOrigin(0.5);
     this.portrait = new DialoguePortrait(scene, 100, 180);
     const dialogue = scene.add.container(0, 0, [
