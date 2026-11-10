@@ -134,6 +134,8 @@ Heimkehr genau einmal aus.
 **Szenario neu starten** setzt die aktuelle Runde mit gewähltem Chaoswert,
 Startzeit, Seed und Zielphase neu auf. Phasen und Timer rückwärts zu ändern
 beginnt bewusst einen frischen Durchlauf. Der Chaoswert ist synthetisch; die
+Dialogerinnerung wird für reproduzierbare Seeds geleert. Normale Rundenneustarts
+behalten dagegen die letzte Zeile je Raum-/Ärgerstufe während der Spielsitzung.
 Gegenstände bleiben zunächst unbeschädigt. Heimkehr und Reaktion verwenden
 bestehende Übergänge. Für Versöhnung und Ergebnis geht Pixel zunächst selbst
 zu Sara; danach laufen Bestätigung und gegebenenfalls das echte Minispiel über

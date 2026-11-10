@@ -1,4 +1,5 @@
-import { SARA_ANIMATIONS, SARA_DIALOGUE } from '../../content/sara-reactions.ts';
+import { SARA_ANIMATIONS } from '../../content/sara-reactions.ts';
+import { selectSaraDialogue, type DialogueMemory } from './sara-dialogue.ts';
 import { angerFor } from './chaos.ts';
 
 export const HOMECOMING_TIMING = { entering: 1200, reacting: 900 } as const;
@@ -8,27 +9,30 @@ export type HomecomingStage = 'waiting' | 'entering' | 'reacting' | 'dialogue' |
 export type SaraAnimation = (typeof SARA_ANIMATIONS)[keyof typeof SARA_ANIMATIONS];
 export type ReactionSelection = ReturnType<typeof selectReaction>;
 export type HomecomingSnapshot = ReturnType<HomecomingSequence['snapshot']>;
+interface ReactionContext {
+  readonly roomId?: string;
+  readonly memory?: DialogueMemory;
+}
 
 // eslint-disable-next-line max-lines-per-function -- Eingabeprüfung und unveränderliche Auswahl bilden einen atomaren Vertrag mit genau einer Zufallsziehung.
-export function selectReaction(score: number, random: () => number = Math.random) {
+export function selectReaction(
+  score: number,
+  random: () => number = Math.random,
+  context: ReactionContext = {},
+) {
   if (!Number.isSafeInteger(score) || score < 0) throw new Error('Invalid final chaos score');
   const anger = angerFor(score).id;
-  const pool = SARA_DIALOGUE[anger];
-  const index = chooseIndex(pool.length, random());
+  const dialogue = selectSaraDialogue(anger, random(), {
+    roomId: context.roomId,
+    previousDialogue: context.memory?.previous(context.roomId, anger),
+  });
 
   return Object.freeze({
     score,
     anger,
     animationKey: SARA_ANIMATIONS[anger],
-    dialogue: pool[index],
+    dialogue,
   });
-}
-
-function chooseIndex(length: number, sample: number) {
-  if (!Number.isFinite(sample) || sample < 0 || sample > 1)
-    throw new Error('Invalid random sample');
-
-  return Math.min(length - 1, Math.floor(sample * length));
 }
 
 /** Pure one-shot sequence, driven by active frame time and explicit confirmation; no engine or timer callbacks. */
@@ -36,10 +40,20 @@ export class HomecomingSequence {
   private selection: ReactionSelection | null = null;
   private elapsedMs = 0;
   private confirmed = false;
+  private readonly context: ReactionContext;
+
+  constructor(context: ReactionContext = {}) {
+    this.context = context;
+  }
 
   start(score: number, random: () => number = Math.random) {
     if (this.selection) return false;
-    this.selection = selectReaction(score, random);
+    this.selection = selectReaction(score, random, this.context);
+    this.context.memory?.remember(
+      this.context.roomId,
+      this.selection.anger,
+      this.selection.dialogue,
+    );
 
     return true;
   }

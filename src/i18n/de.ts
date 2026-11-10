@@ -310,4 +310,38 @@ export const de = {
   restart: 'Neustart',
   pixelSLivingRoomUseArrow:
     'Pixels Wohnzimmer. Pfeiltasten zum Laufen und Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',
+  saraInnocentLook: 'Da bist du ja. Den unschuldigen Blick hast du jedenfalls geübt.',
+  saraYourVersion: 'Ich setze mich erst mal. Du erzählst mir dann deine Version.',
+  saraLittleHousemate: 'Hallo, kleiner Mitbewohner. War’s ohne mich sehr langweilig?',
+  saraRoomHasCharacter: 'Der Raum hat jetzt eindeutig deine persönliche Note.',
+  saraTimeWellUsed: 'Ich war kurz weg. Du hast die Zeit offenbar genutzt.',
+  saraDesignMeeting: 'Beim nächsten Mal besprechen wir deine Einrichtungsideen vorher.',
+  saraPurringAnswers: 'Ich habe ein paar Fragen. Dein Schnurren beantwortet sie nicht alle.',
+  saraDeepBreath: 'Pixel. Einmal tief durchatmen. Ich zuerst.',
+  saraQuietThenBroom: 'Ich sehe schon: Wir brauchen jetzt Ruhe. Und anschließend einen Besen.',
+  saraLoveAndDecisions: 'Ich liebe dich. Über deine heutigen Entscheidungen reden wir trotzdem.',
+  saraLivingRoomTrio: 'Sofa, Fenster, Katze. So mag ich unser Wohnzimmer.',
+  saraLivingRoomSeat: 'Mein Sofaplatz ist noch frei? Dann komme ich dazu.',
+  saraLivingRoomLookout: 'Du hast vom Wohnzimmer aus wieder alles im Blick, hm?',
+  saraLivingRoomIdeas: 'Unser Wohnzimmer ist klein. Für deine Ideen reicht es offenbar.',
+  saraLivingRoomProgramme: 'Zwischen Sofa und Fenster hast du wohl dein eigenes Programm.',
+  saraLivingRoomPlans: 'Ich wollte hier gemütlich sitzen. Du hattest offenbar andere Pläne.',
+  saraLivingRoomProject:
+    'Das Wohnzimmer sollte mein Feierabend sein, Pixel. Nicht dein Großprojekt.',
+  saraLivingRoomPerspective:
+    'Vom Sofa aus sieht das alles bestimmt harmloser aus. Komm, wir reden.',
+  saraLivingRoomRules: 'Hier wohnen wir beide. Die Hausordnung ist trotzdem keine Empfehlung.',
+  saraCozyTwoSofas: 'Zwei Sofas und du sitzt trotzdem am liebsten mitten im Weg.',
+  saraCozySeat: 'Die Leseecke sieht gemütlich aus. Ist auf einem Sofa noch Platz für mich?',
+  saraCozyBooksAndCat:
+    'Bücher, Kissen und ein sehr zufriedener Kater. So gefällt mir die Leseecke.',
+  saraCozyStillBored: 'Zwei Sofas, eine Leseecke – und dir war trotzdem langweilig?',
+  saraCozyEntertainment: 'Du hast meine Leseecke heute wohl als Beschäftigungsangebot verstanden.',
+  saraCozyReadYourFace:
+    'Zum Buch wollte ich es mir gemütlich machen. Jetzt lese ich erst mal deinen Blick.',
+  saraCozyAdventure:
+    'Die Leseecke war für ruhige Kapitel gedacht. Du schreibst offenbar Abenteuer.',
+  saraCozyPlayground: 'Zwei Sofas machen aus der Wohnung noch keinen Abenteuerspielplatz, Pixel.',
+  saraCozyThisChapter:
+    'Ich wollte ein Buch aufschlagen. Jetzt müssen wir erst über dieses Kapitel reden.',
 } as const;
