@@ -69,6 +69,15 @@ nutzt nur den allgemeinen Pool; fehlende Stufen und leere Pools haben einen sich
 Fallback. Raumtexte passen zur fest definierten Einrichtung und setzen keine
 konkrete Schadensaktion voraus.
 
+`SARA_DAMAGE_RULES` verbindet tatsächliche Objekt-/Ereignispaare mit einem
+Dialogthema und dessen Priorität. `SARA_DAMAGE_DIALOGUE` enthält die zugehörigen
+Zeilen je Gesamtärgerstufe. Ein erkannter Vorfall verwendet diesen Pool bevorzugt;
+ohne passenden Pool bleiben die allgemeinen/raumbezogenen Varianten erhalten.
+Einsturz steht vor Vasenbruch, gekippter Pflanze, Vorhangriss und Sofakratzen.
+Weitere Themen benötigen einen passenden Eintrag in Regeln und Textkatalog,
+keine Abhängigkeit der Objektadapter von der Dialoglogik. Auch bei hohem Gesamtscore
+darf ein Satz nur den tatsächlich gemeldeten Schaden behaupten.
+
 Neue Sätze in `src/i18n/de.ts` und `src/i18n/en.ts` unter demselben Schlüssel
 ergänzen, dann im passenden Pool über `copy('schluessel')` referenzieren. Die
 kanonische deutsche Fassung bleibt unabhängig von der Anzeigesprache. Keine
@@ -80,6 +89,10 @@ Im Dev-Spiel `/play.html?room=cozy-remix` für die Leseecke wählen. Mit **F2** 
 sich Chaoswerte und Heimkehrphasen reproduzierbar prüfen. Ein explizites
 DEV-Szenario setzt dafür die Dialogerinnerung zurück; normale Rundenneustarts
 behalten sie. Die Raumvorschau bleibt auf DEV/E2E beschränkt.
+
+Ein synthetischer F2-Chaoswert erzeugt keinen konkreten Schaden. Für die
+Schadensdialoge erst regulär ein Objekt beschädigen und anschließend über
+**Rundentimer +10 Sekunden** die echte Heimkehr auslösen.
 
 ## Hauptziel pro Raum
 

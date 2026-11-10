@@ -1,6 +1,7 @@
 import { SARA_ANIMATIONS } from '../../content/sara-reactions.ts';
 import { selectSaraDialogue, type DialogueMemory } from './sara-dialogue.ts';
 import { angerFor } from './chaos.ts';
+import type { ReactionDamageFact } from './reaction-damage.ts';
 
 export const HOMECOMING_TIMING = { entering: 1200, reacting: 900 } as const;
 const DIALOGUE_AT_MS = HOMECOMING_TIMING.entering + HOMECOMING_TIMING.reacting;
@@ -12,6 +13,7 @@ export type HomecomingSnapshot = ReturnType<HomecomingSequence['snapshot']>;
 interface ReactionContext {
   readonly roomId?: string;
   readonly memory?: DialogueMemory;
+  readonly damage?: ReactionDamageFact | null;
 }
 
 // eslint-disable-next-line max-lines-per-function -- Eingabeprüfung und unveränderliche Auswahl bilden einen atomaren Vertrag mit genau einer Zufallsziehung.
@@ -25,6 +27,7 @@ export function selectReaction(
   const dialogue = selectSaraDialogue(anger, random(), {
     roomId: context.roomId,
     previousDialogue: context.memory?.previous(context.roomId, anger),
+    damageTopic: context.damage?.topic,
   });
 
   return Object.freeze({
@@ -32,6 +35,7 @@ export function selectReaction(
     anger,
     animationKey: SARA_ANIMATIONS[anger],
     dialogue,
+    damage: context.damage ? Object.freeze({ ...context.damage }) : null,
   });
 }
 
@@ -46,9 +50,9 @@ export class HomecomingSequence {
     this.context = context;
   }
 
-  start(score: number, random: () => number = Math.random) {
+  start(score: number, random: () => number = Math.random, damage = this.context.damage) {
     if (this.selection) return false;
-    this.selection = selectReaction(score, random, this.context);
+    this.selection = selectReaction(score, random, { ...this.context, damage });
     this.context.memory?.remember(
       this.context.roomId,
       this.selection.anger,

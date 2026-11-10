@@ -131,7 +131,24 @@ Zeile derselben Raum-/Ärgerstufe wird ausgeschlossen, solange Alternativen best
 während jede `HomecomingSequence` frisch beginnt. Reload beendet diese Erinnerung;
 es entsteht kein zusätzlicher Browserspeicher. Sprachwechsel übersetzen die feste
 Auswahl, beeinflussen aber weder Auswahl noch Erinnerung. Raumtexte beschreiben
-die Einrichtung; ereignisbezogene Schadensreaktionen gehören zur separaten Aufgabe.
+die Einrichtung und bleiben der Rückfall für Runden ohne passenden Schadenskontext.
+
+`ReactionDamage` erhält ausschließlich vom Score akzeptierte Ereignisse mit dem
+Objekttyp aus dem bestehenden Instanzregister. Die datengetriebenen Paare in
+`SARA_DAMAGE_RULES` erkennen Sofa-Kratzen, Vorhangrisse, umgekippte Pflanzen,
+Vasenbruch und Regaleinsturz. Gespeichert wird nur der auffälligste Vorfall:
+Einsturz vor Vasenbruch, gekippter Pflanze, Vorhangriss und Sofakratzen. Bei
+gleicher Priorität entscheiden Schadensstufe und anschließend die stabile Objekt-ID.
+Die Reihenfolge der Meldungen oder spätere kleinere Schäden ändern das Ergebnis
+nicht. Dieser Verbraucher vergibt keine Punkte und zählt keine Schäden erneut.
+
+Die Heimkehr kopiert den ausgewählten Vorfall zusammen mit dem finalen Score in
+ihre eingefrorene Auswahl. `SARA_DAMAGE_DIALOGUE` liefert dafür Zeilen derselben
+Gesamtärgerstufe; ein passender Schadenspool hat Vorrang vor allgemeinen/raumbezogenen
+Zeilen. Fehlende, leere oder unbekannte Schadenspools nutzen weiterhin den bisherigen
+Fallback. Es bleibt bei einer Zufallsziehung und derselben Wiederholungsvermeidung.
+Ein Rundenneustart leert nur den Schadenskontext, nicht die Dialogerinnerung.
+
 Die Startfreigabe ist getrennt vom Rundenmodell; „Neue Runde“ erhält sie, Reload
 zeigt wieder die Einführung. R ist eine versteckte Debug-Eingabe.
 
