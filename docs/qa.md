@@ -149,9 +149,10 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   Nach Schaden neu öffnen, zwischen DE/EN wechseln und Rundenneustart/Reload prüfen.
   Album-Reset erst nach Bestätigung; Abbrechen erhält die Sammlung. Auf schmalen
   Bildschirmen müssen beide Buchseiten und alle Aktionen durch Scrollen erreichbar sein.
-  Im Handy-Querformat auch die unterste Kachelreihe öffnen und Seiten wechseln:
-  Kacheln und Navigation dürfen nicht überlappen. Mit geöffnetem Eintrag drehen;
-  Auswahl und Seite bleiben erhalten. Notch und Home-Leiste freihalten sowie
+  Im Handy-Querformat sechs Kacheln in zwei Reihen ohne Scrollen anzeigen; auch
+  die unterste Reihe öffnen und Seiten wechseln. Kacheln und Navigation dürfen
+  nicht überlappen. Mit geöffnetem Eintrag auf der letzten Seite drehen;
+  der Eintrag bleibt erhalten und die Seitenaufteilung passt sich an. Notch und Home-Leiste freihalten sowie
   Reset-Abbruch, leere Kapitel und Schließen nach dem Scrollen prüfen.
 
 Die Tablet-Szenarien laufen regulär in Chromium; `test:e2e:tablet:webkit` prüft

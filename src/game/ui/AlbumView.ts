@@ -18,6 +18,8 @@ import './album.css';
 export class AlbumView {
   private readonly root = document.createElement('dialog');
   private readonly abort = new AbortController();
+  private readonly compact = window.matchMedia('(max-height: 550px) and (orientation: landscape)');
+  private pageSize = this.compact.matches ? 6 : ALBUM_PAGE_SIZE;
   private readonly entries: readonly AlbumEntry[] = albumEntries(
     import.meta.env.DEV || import.meta.env.MODE === 'e2e',
   );
@@ -36,6 +38,7 @@ export class AlbumView {
     document.body.append(this.root);
     const options = { signal: this.abort.signal };
 
+    this.compact.addEventListener('change', () => this.resizePages(), options);
     this.root.addEventListener('click', (event) => this.click(event), options);
     this.root.addEventListener(
       'cancel',
@@ -71,6 +74,15 @@ export class AlbumView {
     if (this.opened) this.render();
   }
 
+  private resizePages() {
+    const selected = this.visibleEntries().findIndex((entry) => entry.id === this.selected);
+    const anchor = this.detail && selected >= 0 ? selected : this.page * this.pageSize;
+
+    this.pageSize = this.compact.matches ? 6 : ALBUM_PAGE_SIZE;
+    this.page = Math.floor(anchor / this.pageSize);
+    this.refresh();
+  }
+
   private visibleEntries() {
     return this.entries.filter((entry) => entry.rooms.includes(this.room));
   }
@@ -90,8 +102,7 @@ export class AlbumView {
     this.selected = selected?.id;
     this.root.setAttribute('aria-label', t('albumTitle'));
     this.root.dataset.detail = String(this.detail);
-    this.root.innerHTML = `<header class="popup-heading">${closeButtonMarkup(t('albumClose'), 'data-action="close" data-focus="close"')}<div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2></div></header>
-      <p class="album-overall">${t('albumOverall', { found: found.size, total: this.entries.length })}</p>
+    this.root.innerHTML = `<header class="popup-heading">${closeButtonMarkup(t('albumClose'), 'data-action="close" data-focus="close"')}<div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${t('albumOverall', { found: found.size, total: this.entries.length })}</p></div></header>
       ${albumTabs(this.room, this.entries)}
       <div id="album-room" role="tabpanel" aria-labelledby="album-tab-${this.room}">${this.roomMarkup(entries, found, selected)}</div>
       <footer>${this.resetMarkup()}${this.storageMessage(snapshot.storage)}</footer>`;
@@ -108,11 +119,11 @@ export class AlbumView {
     if (!entries.length)
       return `<section class="album-empty"><h3>${escape(roomName(this.room))}</h3><p>${t('albumEmptyRoom')}</p></section>`;
     const count = entries.filter((entry) => found.has(entry.id)).length;
-    const pages = Math.ceil(entries.length / ALBUM_PAGE_SIZE);
+    const pages = Math.ceil(entries.length / this.pageSize);
 
     this.page = Math.max(0, Math.min(this.page, pages - 1));
-    const offset = this.page * ALBUM_PAGE_SIZE;
-    const tiles = entries.slice(offset, offset + ALBUM_PAGE_SIZE);
+    const offset = this.page * this.pageSize;
+    const tiles = entries.slice(offset, offset + this.pageSize);
 
     return `<div class="album-spread">${albumPage(selected)}<section class="album-index"><div class="album-index-header"><h3>${escape(roomName(this.room))}</h3><p class="album-progress" aria-live="polite">${t('albumProgress', { found: count, total: entries.length })}</p></div><div class="album-grid">${tiles.map((entry, index) => albumTile(entry, index + offset, found, selected?.id)).join('')}</div>${albumPagination(this.page, pages)}</section></div>`;
   }

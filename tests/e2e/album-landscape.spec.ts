@@ -34,33 +34,9 @@ async function expectSeparateNavigation(page: Page) {
   const tile = (await album.locator('.album-tile').last().boundingBox())!;
   const navigation = (await album.locator('.album-pagination').boundingBox())!;
 
-  expect(tile.y + tile.height).toBeLessThanOrEqual(navigation.y);
-}
-
-async function swipeAlbumUp(page: Page) {
-  const album = page.locator('.album-dialog');
-  const box = (await album.boundingBox())!;
-  const touch = await page.context().newCDPSession(page);
-  const x = box.x + box.width / 2;
-  const y = box.y + box.height - 30;
-
-  await touch.send('Input.dispatchTouchEvent', {
-    type: 'touchStart',
-    touchPoints: [{ x, y, id: 1 }],
-  });
-
-  for (let step = 1; step <= 6; step++) {
-    await touch.send('Input.dispatchTouchEvent', {
-      type: 'touchMove',
-      touchPoints: [{ x, y: y - step * 24, id: 1 }],
-    });
-    await page.clock.runFor(32);
-  }
-
-  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-  await page.clock.runFor(100);
-  expect(await album.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
-  await touch.detach();
+  expect(tile.y + tile.height <= navigation.y || navigation.y + navigation.height <= tile.y).toBe(
+    true,
+  );
 }
 
 test.describe('Album im Smartphone-Querformat', () => {
@@ -81,9 +57,15 @@ test.describe('Album im Smartphone-Querformat', () => {
 
       await expectBoundedAlbum(page);
       await expectSeparateNavigation(page);
-      await swipeAlbumUp(page);
+      await expect(album.locator('.album-tile')).toHaveCount(6);
+      expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+      expect(
+        await album
+          .locator('.album-index')
+          .evaluate((el) => el.scrollHeight <= el.clientHeight + 1),
+      ).toBe(true);
       await album.getByRole('button', { name: 'Nächste Seite', exact: true }).tap();
-      await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 2');
+      await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 3');
       await album.getByRole('button', { name: 'Vorige Seite', exact: true }).tap();
       const tile = album.locator('.album-tile').last();
       const selected = (await tile.getAttribute('aria-label'))!;
@@ -103,6 +85,18 @@ test.describe('Album im Smartphone-Querformat', () => {
       await expect(album.locator('.album-overall')).toHaveText(
         `Insgesamt: ${savedEntries.length} von ${savedEntries.length}`,
       );
+
+      if (viewport.height === 320) {
+        await album.locator('[data-action="reset"]').tap();
+        await album.locator('[data-action="confirm"]').tap();
+        await expect(album.locator('.album-tile:disabled')).toHaveCount(6);
+        expect(
+          await album
+            .locator('.album-index')
+            .evaluate((el) => el.scrollHeight <= el.clientHeight + 1),
+        ).toBe(true);
+      }
+
       await test
         .info()
         .attach('album-querformat', { body: await page.screenshot(), contentType: 'image/png' });
@@ -141,9 +135,14 @@ test.describe('Album im Smartphone-Querformat', () => {
       await expect(album.locator('.album-story')).toHaveAttribute('aria-label', 'Die blaue Vase');
       await expect(album.locator('.album-story')).toBeVisible();
       await album.getByRole('button', { name: 'Zur Übersicht', exact: true }).tap();
-      await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 2');
+      await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 3');
       await expectSeparateNavigation(page);
-      await album.getByRole('button', { name: 'Die blaue Vase', exact: true }).tap();
+      await album.getByRole('button', { name: 'Nächste Seite', exact: true }).tap();
+      await expect(album.locator('.album-pagination')).toContainText('Seite 3 von 3');
+      const lastTile = album.locator('.album-tile').last();
+      const selected = (await lastTile.getAttribute('aria-label'))!;
+
+      await lastTile.tap();
       await page.setViewportSize({ width: 390, height: 844 });
       await device.send('Emulation.setSafeAreaInsetsOverride', {
         insets: { top: 44, left: 0, right: 0, bottom: 34 },
@@ -152,7 +151,7 @@ test.describe('Album im Smartphone-Querformat', () => {
       box = (await album.boundingBox())!;
       expect(box.y).toBeGreaterThanOrEqual(44);
       expect(box.y + box.height).toBeLessThanOrEqual(844 - 34);
-      await expect(album.locator('.album-story')).toHaveAttribute('aria-label', 'Die blaue Vase');
+      await expect(album.locator('.album-story')).toHaveAttribute('aria-label', selected);
       await album.getByRole('button', { name: 'Zur Übersicht', exact: true }).tap();
       await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 2');
       await album.locator('[data-action="close"]').tap();

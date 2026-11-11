@@ -326,7 +326,7 @@ test.describe('Mobile Buchseiten', () => {
     expect(box!.y).toBeGreaterThanOrEqual(0);
     expect(box!.y + box!.height).toBeLessThanOrEqual(390);
     await album.getByRole('button', { name: 'Nächste Seite', exact: true }).click();
-    await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 2');
+    await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 3');
     await album.locator('[data-action="close"]').click();
     await expect(album).toBeHidden();
     await expect(page.locator('.pause-menu')).toBeHidden();

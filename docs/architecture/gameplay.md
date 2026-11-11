@@ -359,11 +359,14 @@ Tabs wechseln nur das Kapitel; Tastatur und Touch bedienen dieselbe Ansicht, DE/
 wechseln die Darstellung ohne Änderung der Entdeckungen. Listener und Dialog werden
 beim Szenen-Shutdown entfernt. Die Sammlung selbst bleibt über Szenen hinweg erhalten.
 
-Auf niedrigen Bildschirmen scrollt das Album als Ganzes, statt das Kachelraster
-unter die Seitenwechsel-Tasten zu drücken. Desktop und Tablet behalten die
-begrenzte Doppelseite mit innen scrollbaren Buchseiten. Dialoggröße und Position
-berücksichtigen die dynamische Viewporthöhe und die Safe Areas; eine Drehung
-ändert weder ausgewählten Eintrag noch Seite.
+Im niedrigen Querformat zeigt die Übersicht sechs Einträge als zwei Reihen mit
+je drei Kacheln. Seitenwechsel stehen neben dem Kapitelzähler, Zurücksetzen und
+Schließen in der Kopfzeile; die Übersicht passt ohne Scrollen. Andere Ansichten
+zeigen neun Einträge pro Seite. Beim Größenwechsel bleibt der ausgewählte Eintrag
+beziehungsweise der erste Eintrag der bisherigen Seite auf der neuen Seite;
+dadurch kann sich die Seitenzahl ändern. Desktop und Tablet behalten die begrenzte
+Doppelseite. Detailtexte und längere Bestätigungen bleiben bei Bedarf scrollbar.
+Dialoggröße und Position berücksichtigen dynamische Viewporthöhe und Safe Areas.
 
 ## Objektgeräusche
 
