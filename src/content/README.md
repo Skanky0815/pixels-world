@@ -14,6 +14,41 @@ Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `pl
 
 `RoomDefinition` enthält logische Abmessungen, Boden, Spawn, Plattformen, Instanzen, HUD-Hinweisposition und statische Dekoration. Dekoration besteht aus Rechtecken, Texten und bekannten Bildmodulen (`kind: 'image'`, `asset`, `bounds`). Kleine TypeScript-Helfer im Beispiel erzeugen daraus wiederholte statische Daten; es werden keine Gameplay-Callbacks gespeichert.
 
+## Neue Objekte: gegenseitige Einwirkungen planen
+
+**Entwicklungsregel und Soll-Verhalten:** Jedes Spielobjekt ist als mögliche Quelle
+und als Ziel von Einwirkungen anderer Objekte zu berücksichtigen. Das gilt auch
+für zwei Instanzen desselben Typs, etwa Vase gegen Vase. Direkter Kontakt mit Pixel
+ist dafür keine Voraussetzung. Der allgemeine Ausbau wird in
+[#135](https://github.com/Skanky0815/pixels-world/issues/135) verfolgt; dieser Vertrag
+ist noch nicht für alle Objektpaare implementiert.
+
+Im Issue eines neuen Objekts oder einer neuen Variante festhalten:
+
+- **Ausgehende Wirkung:** Welche Kontakte beim Schieben, Rollen, Fallen oder
+  Umkippen können andere Spielobjekte beeinflussen?
+- **Eingehende Wirkung:** Wie reagiert es auf andere vorhandene Objekttypen und
+  weitere Instanzen seines eigenen Typs? Auch aufliegende Gegenstände berücksichtigen.
+- **Passende Reaktion:** Kontaktart/-stärke, Eigenschaften und Zustand bestimmen
+  Wackeln, Verschieben, Rollen, Kippen oder Bruch. Standfestigkeit oder eine bewusst
+  ausbleibende Wirkung begründen. Nicht jede Berührung bedeutet Schaden.
+- **Gemeinsame Regeln:** Keine dauerhafte Liste einzeln erlaubter Objektpaare
+  aufbauen. Bestehende Kontakt-, Zustands-, Schadens- und Auflagenmechaniken
+  wiederverwenden; neue Typen über gemeinsame Regeln anschließen. Eine vollständige
+  Physiksimulation ist dafür keine Voraussetzung.
+- **Nachweis:** Eingehende und ausgehende Wirkungen, gleichartige Paare sowie leichte
+  und starke Kontakte prüfen. Rückwirkungen und wiederholte Kontakte dürfen keine
+  endlosen Ketten oder doppelten Schadensereignisse erzeugen. Pause, Neustart mitten
+  in einer Kette und Szenenwechsel räumen alle betroffenen Zustände korrekt auf.
+
+Ein tatsächlicher neuer Schadenszustand verwendet das vorhandene Punkte- und
+Album-System; bloßer Kontakt erzeugt keine zusätzliche Wertung. Physische Reaktionen
+lösen nicht automatisch besondere Pixel-Aktionen wie Schreck, Panik, Hauptziel oder
+Easter Egg aus. Friedliche Zielerreichung und erreichbare Laufwege bleiben erhalten.
+
+Die Objekt-Issues verweisen auf #135 und konkretisieren diesen Vertrag für ihren
+Gegenstand. Die Feature-Vorlage fragt die Wechselwirkungen bereits bei der Planung ab.
+
 ## Spawn-Profile für Slots
 
 Jede Objektvorlage besitzt ein typisiertes `spawn`-Profil im bestehenden Katalog:
