@@ -25,6 +25,15 @@ body:
       label: Auswirkungen auf Spiel oder Bedienung (optional)
       description: Wie könnte man die Idee im Spiel bemerken oder verwenden?
   - type: textarea
+    id: object_interactions
+    attributes:
+      label: Wechselwirkungen mit anderen Gegenständen (bei neuen Objekten)
+      description: >-
+        Wie kann der Gegenstand andere beeinflussen und selbst beeinflusst werden?
+        Auch gleiche Gegenstände und leichte/starke Kontakte bedenken;
+        nicht jede Berührung muss Schaden verursachen. Siehe #135.
+      placeholder: Zum Beispiel eine fallende Tasse, die einen anderen Gegenstand anstößt. Was passiert beim sanften Schieben, Rollen oder einem starken Aufprall? Welche Dinge bleiben standfest?
+  - type: textarea
     id: examples
     attributes:
       label: Bilder, Skizzen oder Beispiele (optional)
