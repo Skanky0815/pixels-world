@@ -37,6 +37,7 @@ test(
     await waitForLoadingScreen(page);
     await expect(page.locator('canvas')).toBeVisible();
     expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
+    expect(await page.evaluate(() => '__visualFaultDraws' in window)).toBe(false);
     await expect(page.locator('.start-screen')).toBeVisible();
     await page.keyboard.press('F2');
     await expect(page.locator('.game-debug, .game-debug-toggle')).toHaveCount(0);
@@ -53,6 +54,7 @@ test(
       const source = await response.text();
 
       expect(source).not.toContain('__pixelTest');
+      expect(source).not.toContain('__visualFaultDraws');
       expect(source).not.toContain('round-profile');
       expect(source).not.toContain('__E2E_ROUND_CONFIG__');
       expect(source).not.toContain('Vergleichsansicht unvollständig');

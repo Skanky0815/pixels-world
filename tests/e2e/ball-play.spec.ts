@@ -1,66 +1,74 @@
 import { test, expect, start, until, state, reset } from './support';
 import { climbToBall } from './goal-support';
 import { startTouch } from './touch-support';
+import { expectCharacterView, prepareCharacterView } from './character-visuals';
 
-test('Ballfund: hin und zurück, Drehungen, Pause und Fokus; Heimkehr erst danach', async ({
-  page,
-  // eslint-disable-next-line max-lines-per-function -- Der vollständige sichtbare Spielmoment wird mit realem Fund, Browserfokus und Menü geprüft.
-}) => {
-  await start(page);
-  await climbToBall(page);
-  await until(page, (s) => s.ballPlay.active);
-  const found = await state(page);
-
-  expect(found.homecoming.stage).toBe('waiting');
-  expect(found.sara.visible).toBe(true);
-  expect(found.sara.portrait.texture).toBe('sara-friendly');
-  await until(page, (s) => s.ballPlay.elapsedMs >= 1600);
-  const right = await state(page);
-
-  expect(right.goalView.ballX).toBeGreaterThan(found.goalView.ballX + 40);
-  // Phaser normalizes the six-radian roll into [-π, π].
-  expect(right.goalView.ballRotation).toBeCloseTo(6 - 2 * Math.PI, 4);
-  expect(right.pixel.visualFlipX).toBe(false);
-  await page.keyboard.press('Escape');
-  const paused = await state(page);
-
-  await page.clock.runFor(1500);
-  expect((await state(page)).ballPlay).toEqual(paused.ballPlay);
-  expect((await state(page)).pixel).toEqual(paused.pixel);
-  expect((await state(page)).goalView).toEqual(paused.goalView);
-  await page.getByLabel('Bewegung reduzieren', { exact: true }).check();
-  expect((await state(page)).goalView.ballX).toBe(found.goalView.ballX);
-  await page.getByLabel('Bewegung reduzieren', { exact: true }).uncheck();
-  expect((await state(page)).goalView.ballX).toBe(right.goalView.ballX);
-  await page.keyboard.press('Escape');
-  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
-  const unfocused = await state(page);
-
-  await page.clock.runFor(1500);
-  expect((await state(page)).ballPlay).toEqual(unfocused.ballPlay);
-  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-  await until(page, (s) => s.ballPlay.elapsedMs >= 2800);
-  const left = await state(page);
-
-  expect(left.goalView.ballX).toBe(found.goalView.ballX);
-  expect(left.pixel.visualFlipX).toBe(true);
-  expect(left.homecoming.stage).toBe('waiting');
-  expect(left.round).toEqual(found.round);
-  expect(left.objects).toEqual(found.objects);
-  expect(left.chaos).toEqual(found.chaos);
-  await until(page, (s) => !s.ballPlay.active);
-  const finished = await state(page);
-
-  expect(finished.ballPlay.elapsedMs).toBe(4200);
-  expect(finished.homecoming.stage).toBe('entering');
-  expect(finished.pixel.x).toBeCloseTo(finished.pixel.visualX, 0);
-  await until(
+test(
+  'Ballfund: hin und zurück, Drehungen, Pause und Fokus; Heimkehr erst danach',
+  { tag: '@smoke' },
+  async ({
     page,
-    (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated',
-    500,
-  );
-  expect((await state(page)).ballPlay.elapsedMs).toBe(4200);
-});
+    // eslint-disable-next-line max-lines-per-function -- Der vollständige sichtbare Spielmoment wird mit realem Fund, Browserfokus und Menü geprüft.
+  }) => {
+    await prepareCharacterView(page);
+    await start(page);
+    await climbToBall(page);
+    await until(page, (s) => s.ballPlay.active);
+    const found = await state(page);
+
+    expect(found.homecoming.stage).toBe('waiting');
+    expect(found.sara.visible).toBe(true);
+    expect(found.sara.portrait.texture).toBe('sara-friendly');
+    await until(page, (s) => s.ballPlay.phase === 'tap-right' && s.pixel.visualFrame === 20, 8);
+    await expectCharacterView(page, 'pixel-ball.png', { x: 800, y: 62, width: 136, height: 104 });
+    await until(page, (s) => s.ballPlay.elapsedMs >= 1600);
+    const right = await state(page);
+
+    expect(right.goalView.ballX).toBeGreaterThan(found.goalView.ballX + 40);
+    // Phaser normalizes the six-radian roll into [-π, π].
+    expect(right.goalView.ballRotation).toBeCloseTo(6 - 2 * Math.PI, 4);
+    expect(right.pixel.visualFlipX).toBe(false);
+    await page.keyboard.press('Escape');
+    const paused = await state(page);
+
+    await page.clock.runFor(1500);
+    expect((await state(page)).ballPlay).toEqual(paused.ballPlay);
+    expect((await state(page)).pixel).toEqual(paused.pixel);
+    expect((await state(page)).goalView).toEqual(paused.goalView);
+    await page.getByLabel('Bewegung reduzieren', { exact: true }).check();
+    expect((await state(page)).goalView.ballX).toBe(found.goalView.ballX);
+    await page.getByLabel('Bewegung reduzieren', { exact: true }).uncheck();
+    expect((await state(page)).goalView.ballX).toBe(right.goalView.ballX);
+    await page.keyboard.press('Escape');
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    const unfocused = await state(page);
+
+    await page.clock.runFor(1500);
+    expect((await state(page)).ballPlay).toEqual(unfocused.ballPlay);
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await until(page, (s) => s.ballPlay.elapsedMs >= 2800);
+    const left = await state(page);
+
+    expect(left.goalView.ballX).toBe(found.goalView.ballX);
+    expect(left.pixel.visualFlipX).toBe(true);
+    expect(left.homecoming.stage).toBe('waiting');
+    expect(left.round).toEqual(found.round);
+    expect(left.objects).toEqual(found.objects);
+    expect(left.chaos).toEqual(found.chaos);
+    await until(page, (s) => !s.ballPlay.active);
+    const finished = await state(page);
+
+    expect(finished.ballPlay.elapsedMs).toBe(4200);
+    expect(finished.homecoming.stage).toBe('entering');
+    expect(finished.pixel.x).toBeCloseTo(finished.pixel.visualX, 0);
+    await until(
+      page,
+      (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated',
+      500,
+    );
+    expect((await state(page)).ballPlay.elapsedMs).toBe(4200);
+  },
+);
 
 test('Neustart während des Ballspiels entfernt den Ablauf und seine spätere Heimkehr', async ({
   page,

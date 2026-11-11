@@ -1,5 +1,6 @@
 import { test, expect, state, start, until, reset, besideCouch } from './support';
-import { advanceRoundTo, seedRoundRandom, useIdleFrames } from './round-clock';
+import { advanceRoundTo, useIdleFrames } from './round-clock';
+import { expectCharacterView, prepareCharacterView } from './character-visuals';
 import { FAST_ROUND_CONFIG } from '../../tools/e2e-timing';
 import { ROUND_CONFIG } from '../../src/game/domain/round-controller';
 import { SARA_CLIPS } from '../../src/game/actors/sara-animations';
@@ -9,10 +10,10 @@ const timing = fullRound ? ROUND_CONFIG : FAST_ROUND_CONFIG;
 
 test(
   'Der Rundentimer führt ohne Zeithinweise zur einmaligen Heimkehr und friert Chaos ein',
-  { tag: fullRound ? '@slow' : '@fast' },
+  { tag: [fullRound ? '@slow' : '@fast', '@smoke'] },
   // eslint-disable-next-line max-lines-per-function -- Das vollständige Rundenszenario behält Vorbereitung, echte Eingaben und gemeinsame Zustandsprüfungen zusammen.
   async ({ page }) => {
-    await seedRoundRandom(page);
+    await prepareCharacterView(page);
     await start(page, fullRound ? '/' : '/?round-profile=fast');
     await besideCouch(page);
     await until(page, (s) => s.couch.damage > 0);
@@ -103,6 +104,13 @@ test(
     expect(seated.pixel.animation).toBe('idle');
     expect(seated.pixel.flipX).toBe(false);
     expect(seated.sara.dialogueText).toContain('␣: Weiter');
+    await until(page, (s) => s.pixel.visualFrame === 0, 8);
+    await expectCharacterView(page, 'sara-homecoming.png', {
+      x: 730,
+      y: 280,
+      width: 200,
+      height: 200,
+    });
     await page.clock.runFor(10_000);
     expect((await state(page)).homecoming).toEqual(seated.homecoming);
     await page.keyboard.down('Space');

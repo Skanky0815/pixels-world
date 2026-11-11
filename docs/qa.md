@@ -71,6 +71,47 @@ gestarteten Stabilitätsprüfung. Bei Browser-Updates die Mehrfinger-Freigabe in
 `touch-support.ts` mitprüfen: Der verwendete CDP-Pfad gibt einzelne Kontakte per
 gezieltem `touchEnd` frei.
 
+## Gezielte Charakter-Bildvergleiche
+
+Die bestehenden Ballspiel- und Heimkehrabläufe vergleichen feste Ausschnitte der
+tatsächlichen Browseransicht: Pixel mit dem Ball sowie Sara mit Pixel nach der
+Heimkehr. Seed, Viewport, DPR und beobachtete Pose sind festgelegt; die pausierte
+Browser-Uhr hält den erreichten Frame. Die Ausschnitte folgen festen Weltgrenzen,
+nicht einer möglicherweise falsch positionierten Figur. Zustands-, Eingabe- und
+Layoutprüfungen bleiben zusätzlich bestehen.
+
+Playwright vergleicht mit den eingecheckten PNGs unter `*.spec.ts-snapshots`.
+Es sind keine abweichenden Pixel zugelassen (`maxDiffPixels: 0`, `threshold: 0`).
+Referenzen für Chromium auf macOS und Linux sind getrennt. Linux-Bilder mit dem
+im [QA-Workflow](../.github/workflows/qa.yml) festgeschriebenen Browser-Image auf
+`linux/amd64` erzeugen und überprüfen; bei Browser-Updates auch die Referenzen
+visuell prüfen. Normale Läufe verwenden `updateSnapshots: 'none'`: fehlende oder
+abweichende Referenzen schlagen fehl und werden nicht automatisch freigegeben.
+
+```sh
+# Bewusste Aktualisierung: beide neuen Bilder und ihren Diff vor Commit prüfen.
+npm run test:e2e -- tests/e2e/round.spec.ts tests/e2e/ball-play.spec.ts --grep 'Der Rundentimer|Ballfund:' --update-snapshots
+# Ohne Aktualisierung prüfen, auch mehrfach und mit Produktionszeiten:
+E2E_FULL_ROUND=1 npm run test:e2e -- tests/e2e/round.spec.ts tests/e2e/ball-play.spec.ts --grep 'Der Rundentimer|Ballfund:' --repeat-each=3
+```
+
+Zwei ausdrücklich aktivierte Gegenproben verändern ausschließlich die
+Canvas-Zeichenaufrufe im Testbrowser: fehlendes Sara-Sprite oder um 35 Prozent
+vergrößerte Pixel-Grafik. Der Test bestätigt zuerst, dass die Einspritzung
+tatsächlich gegriffen hat, und muss anschließend **am Bildvergleich fehlschlagen**.
+Die Proben dürfen nicht zusammen mit einer Referenzaktualisierung laufen und
+gelangen nicht in den Produktionsbuild.
+
+```sh
+E2E_VISUAL_FAULT=missing-sara npm run test:e2e -- tests/e2e/round.spec.ts --grep 'Der Rundentimer'
+E2E_VISUAL_FAULT=pixel-size npm run test:e2e -- tests/e2e/ball-play.spec.ts --grep 'Ballfund:'
+```
+
+Ergebnisbilder und Diffs gehören zur Review. Die `Bildvergleich:`-Schritte im
+Playwright-Bericht zeigen den Zusatzaufwand; es entstehen keine zusätzlichen
+vollständigen Spielrunden. Beide Fälle gehören zur PR-Smoke-Auswahl und zur
+vollständigen Release-QA. Grundlage: [Playwright-Bildvergleiche](https://playwright.dev/docs/test-snapshots).
+
 ## CI und Runnerverbrauch
 
 Maßgeblich ist [.github/workflows/qa.yml](../.github/workflows/qa.yml):

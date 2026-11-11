@@ -5,6 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
+  updateSnapshots: 'none',
   // CI parallelizes across runners; software rendering needs an uncontended worker.
   workers: process.env.CI ? 1 : 2,
   timeout: 60_000,
@@ -16,6 +17,7 @@ export default defineConfig({
   ],
   use: {
     baseURL: 'http://127.0.0.1:4174',
+    deviceScaleFactor: 1,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
