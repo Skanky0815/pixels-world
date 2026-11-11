@@ -153,7 +153,8 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   Bildschirmen müssen beide Buchseiten und alle Aktionen durch Scrollen erreichbar sein.
   Im Handy-Querformat sechs Kacheln in zwei Reihen ohne Scrollen anzeigen; auch
   die unterste Reihe öffnen und Seiten wechseln. In der Detailansicht stehen
-  Bild und Name links, Beschreibung und Saras Kommentar rechts; alle aktuellen
+  Bild und Name links, Beschreibung und Saras Kommentar rechts sowie „Zur Übersicht“
+  unten rechts; alle aktuellen
   Einträge müssen auf Deutsch und Englisch ohne Scrollen lesbar sein. Kacheln und Navigation dürfen
   nicht überlappen. Mit geöffnetem Eintrag auf der letzten Seite drehen;
   der Eintrag bleibt erhalten und die Seitenaufteilung passt sich an. Notch und Home-Leiste freihalten sowie

@@ -47,10 +47,14 @@ async function expectDetailFits(page: Page) {
   const copy = (await story.locator('.album-story-copy').boundingBox())!;
   const bounds = (await story.boundingBox())!;
   const image = (await story.locator('img').boundingBox())!;
+  const back = (await story.locator('[data-action="overview"]').boundingBox())!;
 
   expect(picture.x + picture.width).toBeLessThanOrEqual(copy.x);
   expect(copy.y).toBeGreaterThanOrEqual(bounds.y);
   expect(copy.y + copy.height).toBeLessThanOrEqual(bounds.y + bounds.height);
+  expect(copy.y + copy.height).toBeLessThanOrEqual(back.y);
+  expect(back.x + back.width).toBeCloseTo(bounds.x + bounds.width - 8, 0);
+  expect(back.y + back.height).toBeCloseTo(bounds.y + bounds.height - 8, 0);
   expect(image.height).toBeGreaterThanOrEqual(24);
   expect(await story.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
   expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);

@@ -719,20 +719,22 @@
   .album-dialog[data-detail='true'] .album-story {
     display: grid;
     grid-template-columns: minmax(130px, 32%) minmax(0, 1fr);
-    grid-template-rows: 44px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 44px;
     gap: 6px 12px;
   }
   .album-story > .album-eyebrow {
     display: none;
   }
   .album-story .album-overview {
-    grid-column: 1;
-    grid-row: 1;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    align-self: end;
     font-size: 12px;
   }
   .album-story figure {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 1 / -1;
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -754,7 +756,7 @@
   }
   .album-story-copy {
     grid-column: 2;
-    grid-row: 1 / -1;
+    grid-row: 1;
     align-self: center;
     min-width: 0;
     gap: 8px;
