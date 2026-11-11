@@ -118,10 +118,21 @@ test('Objektkontakt: fallendes Regal kippt Pflanze ohne Knabbern; Reset mitten i
   await start(page, '/?room=impact-shelf');
   await middleShelf(page);
   await jump(page);
-  await jump(page);
+  await page.keyboard.down('Space');
+  await until(page, (s) => !s.pixel.grounded);
+  await page.keyboard.up('Space');
   await until(
     page,
     (s) => s.shelves.find((shelf) => shelf.id === 'middle-shelf')?.state === 'collapsed',
+    16,
+  );
+  await until(
+    page,
+    (s) => s.shelves.find((shelf) => shelf.id === 'lower-shelf')?.state === 'collapsed',
+    16,
+  );
+  expect((await state(page)).shelves.find((shelf) => shelf.id === 'lower-shelf')?.enabled).toBe(
+    false,
   );
   await until(page, (s) => s.plant.state === 'tipped');
   const tipped = await state(page);

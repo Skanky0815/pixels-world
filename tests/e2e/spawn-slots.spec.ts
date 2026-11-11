@@ -73,7 +73,7 @@ test('Belegtes Slotregal stürzt ein; Vasen fallen selbständig, brechen einmal 
 
   expect(chained).toHaveLength(1);
   expect(chained[0]).toMatchObject({ state: 'fallen', events: 1 });
-  expect(slots.some((vase) => vase.id === chained[0].toppledBy)).toBe(true);
+  expect(['lower-shelf', ...slots.map((vase) => vase.id)]).toContain(chained[0].toppledBy);
   expect(broken.shelves[0]).toMatchObject({ state: 'collapsed', enabled: false });
   expect(broken.chaos.score).toBe(
     12 +

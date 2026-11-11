@@ -25,6 +25,7 @@ export class Vase implements Destructible, ObjectLifecycle {
   readonly collider: Phaser.Physics.Arcade.Image;
   private phase: VaseState = 'resting';
   private fallSpeed = 0;
+  private awaitingDrop = false;
   private readonly history = new DamageHistory();
   private readonly shards: Phaser.GameObjects.Container;
   private readonly config: VaseConfig;
@@ -64,8 +65,9 @@ export class Vase implements Destructible, ObjectLifecycle {
   releaseSupport(shelf: Bounds) {
     const body = this.collider.body as Phaser.Physics.Arcade.Body;
 
-    if (this.phase !== 'resting' || !onShelf(body, shelf)) return;
+    if (this.phase === 'broken' || !onShelf(body, shelf)) return;
     this.phase = 'moving';
+    this.awaitingDrop = true;
     this.collider.setImmovable(false);
     body.setAllowGravity(true);
   }
@@ -91,6 +93,10 @@ export class Vase implements Destructible, ObjectLifecycle {
   }
 
   private settle(body: Phaser.Physics.Arcade.Body) {
+    if (body.velocity.y > 0) this.awaitingDrop = false;
+
+    if (this.awaitingDrop) return;
+
     if (body.blocked.down && Math.abs(body.velocity.x) < 1 && body.velocity.y === 0) {
       this.phase = 'resting';
       this.collider.setVelocityX(0);
@@ -234,6 +240,7 @@ export class Vase implements Destructible, ObjectLifecycle {
   reset() {
     this.phase = 'resting';
     this.fallSpeed = 0;
+    this.awaitingDrop = false;
     this.history.reset();
     this.scene.tweens.killTweensOf(this.shards.list);
     this.shards.removeAll(true);

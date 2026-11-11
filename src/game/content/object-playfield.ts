@@ -114,14 +114,10 @@ export function advanceObjectInteractions(
   damage: Damage,
   shelves: readonly Shelf[] = [],
 ) {
-  updateShelves(
-    shelves,
-    pixel,
-    time,
-    damage,
-    [...objects.vases, ...objects.books],
-    objects.impacts,
-  );
+  updateShelves(shelves, pixel, time, damage);
+  const supported = [...objects.vases, ...objects.books];
+
+  releaseShelves(shelves, supported, objects.impacts);
 
   for (const vase of objects.vases) {
     vase.updateFall();
@@ -146,30 +142,28 @@ export function advanceObjectInteractions(
 
   damage(interaction.event);
   objects.impacts.advance([...objects.entries.map((entry) => entry.object), ...shelves], delta);
+  releaseShelves(shelves, supported, objects.impacts);
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
 }
 
-// eslint-disable-next-line max-lines-per-function -- Der Einsturz gibt direkt aufliegende Vasen und Bücher für ihren vorhandenen Fallablauf frei; keine künstlichen Zusatzschäden.
-function updateShelves(
+function updateShelves(shelves: readonly Shelf[], pixel: Pixel, time: number, damage: Damage) {
+  for (const shelf of shelves) damage(shelf.update(pixel.snapshot(), time));
+}
+
+// eslint-disable-next-line max-lines-per-function -- Beide Kontaktphasen geben jede verlorene Auflage genau einmal frei, auch bei einem Fremdtreffer im letzten Rundenframe.
+function releaseShelves(
   shelves: readonly Shelf[],
-  pixel: Pixel,
-  time: number,
-  damage: Damage,
   supported: readonly (ImpactActor & { releaseSupport(surface: Bounds): void })[],
   impacts: ImpactWorld,
 ) {
   for (const shelf of shelves) {
-    const enabled = shelf.snapshot().enabled;
-    const event = shelf.update(pixel.snapshot(), time);
+    if (!shelf.consumeSupportLoss()) continue;
 
-    damage(event);
-
-    if (enabled && !shelf.snapshot().enabled)
-      for (const object of supported) {
-        impacts.inheritSupport(shelf, object);
-        object.releaseSupport(shelf.bounds);
-      }
+    for (const object of supported) {
+      impacts.inheritSupport(shelf, object);
+      object.releaseSupport(shelf.bounds);
+    }
   }
 }
