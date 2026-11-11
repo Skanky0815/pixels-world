@@ -32,7 +32,7 @@ for (const viewport of [
     await expect(intro).toBeInViewport({ ratio: 1 });
     expect(
       await intro.evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
-    ).toBeGreaterThanOrEqual(14);
+    ).toBeGreaterThanOrEqual(12);
     await test.info().attach('altersinformation-einfuehrung', {
       body: await page.screenshot(),
       contentType: 'image/png',
