@@ -18,10 +18,11 @@ for (const viewport of [
     await expect(landing).toBeVisible();
     await page.getByRole('button', { name: 'English', exact: true }).click();
     await expect(landing).toContainText('Age rating by the provider');
+    await expect(landing.locator('.age-number')).toHaveText('6');
     await page.goto('/play.html');
     const loading = page.locator('#loading-screen .age-rating');
 
-    await expect(loading).toContainText('Ages 6+');
+    await expect(loading).toContainText('Ages 6');
     await expect(loading).toBeInViewport({ ratio: 1 });
     await waitForLoadingScreen(page);
     const intro = page.locator('main > footer .age-rating');
