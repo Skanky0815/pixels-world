@@ -4,7 +4,7 @@
     calc(100vw - max(24px, env(safe-area-inset-left)) - max(24px, env(safe-area-inset-right)))
   );
   max-height: calc(
-    100dvh - max(24px, env(safe-area-inset-top)) - max(24px, env(safe-area-inset-bottom))
+    100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom))
   );
   overflow: auto;
   overscroll-behavior: contain;
@@ -367,7 +367,12 @@
     1120px,
     calc(100vw - max(16px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right)))
   );
-  height: min(740px, calc(100dvh - 48px));
+  height: min(
+    740px,
+    calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)))
+  );
+  inset: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   padding: 20px;
   overflow: hidden;
 }
@@ -438,7 +443,7 @@
 }
 .album-grid {
   flex: 1;
-  min-height: 95px;
+  min-height: 150px;
   max-height: 300px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(44px, 1fr));
@@ -536,6 +541,21 @@
 @media (max-height: 550px) {
   .album-dialog {
     padding: 10px;
+    overflow-y: auto;
+  }
+  .album-dialog #album-room {
+    flex: none;
+  }
+  .album-spread,
+  .album-empty {
+    height: auto;
+  }
+  .album-story,
+  .album-index {
+    overflow: visible;
+  }
+  .album-grid {
+    flex: none;
   }
   .album-dialog header .album-eyebrow {
     display: none;

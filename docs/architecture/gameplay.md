@@ -359,6 +359,12 @@ Tabs wechseln nur das Kapitel; Tastatur und Touch bedienen dieselbe Ansicht, DE/
 wechseln die Darstellung ohne Änderung der Entdeckungen. Listener und Dialog werden
 beim Szenen-Shutdown entfernt. Die Sammlung selbst bleibt über Szenen hinweg erhalten.
 
+Auf niedrigen Bildschirmen scrollt das Album als Ganzes, statt das Kachelraster
+unter die Seitenwechsel-Tasten zu drücken. Desktop und Tablet behalten die
+begrenzte Doppelseite mit innen scrollbaren Buchseiten. Dialoggröße und Position
+berücksichtigen die dynamische Viewporthöhe und die Safe Areas; eine Drehung
+ändert weder ausgewählten Eintrag noch Seite.
+
 ## Objektgeräusche
 
 Wohnzimmer-Geräusche werden nach akzeptierten Schadensereignissen ausgelöst;
