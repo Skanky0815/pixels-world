@@ -322,7 +322,7 @@ kbd {
 .mobile-hud[hidden] {
   display: none;
 }
-@media (any-pointer: coarse) {
+@media (any-pointer: coarse), (max-width: 1024px) {
   body:has(#play-area) {
     min-height: 100svh;
     padding-top: max(8px, env(safe-area-inset-top));
@@ -447,7 +447,7 @@ kbd {
     margin-top: 4px;
   }
 }
-@media (any-pointer: coarse) {
+@media (any-pointer: coarse), (max-width: 1024px) {
   .mobile-dialogue progress {
     display: block;
     width: min(180px, 100%);
@@ -459,7 +459,7 @@ kbd {
     display: none;
   }
 }
-@media (any-pointer: coarse) {
+@media (any-pointer: coarse), (max-width: 1024px) {
   .mobile-dialogue:not([hidden]) {
     bottom: auto;
     max-height: calc(100% - 64px);
@@ -501,7 +501,7 @@ kbd {
 .mobile-portrait[data-speaker='sara'] {
   transform: scaleX(-1);
 }
-@media (any-pointer: coarse) {
+@media (any-pointer: coarse), (max-width: 1024px) {
   .mobile-dialogue:has(.mobile-key:not(:empty)) .mobile-portrait {
     grid-column: 1;
     grid-row: 1;
@@ -716,7 +716,7 @@ kbd {
 .mobile-result[data-outcome='failed'] .result-discoveries {
   color: #d4b488;
 }
-@media (any-pointer: coarse) {
+@media (any-pointer: coarse), (max-width: 1024px) {
   .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
     max-height: 100%;
     bottom: 0;
@@ -757,4 +757,61 @@ kbd {
   font-size: 10px;
   line-height: 1.5;
   overflow-wrap: anywhere;
+}
+
+/* Narrow mouse windows keep readable status beside the room, without touch sidebars. */
+@media (max-width: 1024px) and (orientation: landscape) {
+  @media not all and (any-pointer: coarse) {
+    body:has(#play-area) {
+      padding: 8px 12px;
+    }
+    main:has(#play-area) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 160px;
+      gap: 8px;
+      align-items: center;
+    }
+    main:has(#play-area) > header {
+      grid-column: 1 / -1;
+      margin: 0;
+    }
+    main:has(#play-area) .eyebrow,
+    main:has(#play-area) h1 span,
+    main:has(#play-area) .badge,
+    main:has(#play-area) footer .hint {
+      display: none;
+    }
+    main:has(#play-area) h1 {
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+    #play-area {
+      display: contents;
+    }
+    #play-area #game {
+      grid-column: 1;
+      grid-row: 2;
+      width: min(100%, calc((100svh - 160px) * var(--room-ratio, 1.777778)));
+      justify-self: center;
+    }
+    .mobile-hud {
+      grid-column: 2;
+      grid-row: 2;
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+    .mobile-hud .mobile-goal {
+      font-size: 12px;
+    }
+    main:has(#play-area) footer {
+      grid-column: 1 / -1;
+      margin: 0;
+      font-size: 11px;
+      gap: 4px;
+    }
+    main:has(#play-area) .build-info {
+      font-size: 10px;
+    }
+  }
 }

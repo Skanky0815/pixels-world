@@ -300,3 +300,9 @@ Leertaste oder „Los geht’s!“ übersprungen werden. Vorher ist diese Aktion
 verfügbar; gehaltene Tasten werden nicht nachträglich als Freigabe gewertet.
 Der Button-Platz ist von Beginn an reserviert. Das Fortsetzen zeigt die Einführung
 und startet nicht mit derselben Eingabe schon die Runde.
+
+Schmale Maus-/Tastaturfenster (568×320 und 390×844) zusätzlich ohne Touch prüfen:
+HUD und Dialoge bleiben lesbar, Touch-Tasten bleiben verborgen. Während Saras
+Dialog, Charme und Ergebnis zwischen schmal und breit wechseln: genau eine
+Textansicht, vollständiges Zimmer, unveränderte Runde. Pause, Sprache und
+Neustart müssen weiterhin funktionieren.

@@ -19,10 +19,15 @@ Darstellungsdaten vorhandener Ansichten und zeigt HUD, Dialoge, Eingabezeit und
 Ergebnis unabhängig von der Raumskalierung in CSS-Pixeln. Lange Texte scrollen
 innerhalb ihrer Box. Canvas-Zielmarker und Figuren bleiben Teil des Zimmers.
 
-Bei einem beim Start erkannten groben Zeiger (`any-pointer: coarse`) verwendet Phaser
-Canvas 2D. Sonst bleibt `AUTO` mit WebGL bzw. Canvas-Fallback erhalten. Ein
-Rendererwechsel während einer Runde ist nicht nötig. Auch Hybridgeräte mit
-grobem Zeiger erhalten deshalb Canvas 2D. Rotation verändert nur das Layout.
+Die DOM-Texte gelten für grobe Zeiger (`any-pointer: coarse`) sowie Fenster bis
+1024 CSS-Pixel Breite, unabhängig von der Eingabemethode. Größere Mausfenster
+zeigen weiterhin die Canvas-Texte; beide Ansichten wechseln gemeinsam.
+
+Seit #259 verwendet das Spiel durchgehend Canvas 2D. Der zuvor nur auf Touch
+vermiedene WebGL-Befund trat auch im schmalen Mausfenster mit DOM-Dialog auf.
+Auch ein breit gestartetes Fenster kann während derselben Runde schmal werden;
+eine Auswahl nur beim Start würde diesen Übergang nicht absichern. Deshalb
+bleibt der Renderer über Größenwechsel hinweg gleich, ohne Szenenneustart.
 
 ## Alternativen und Grenzen
 

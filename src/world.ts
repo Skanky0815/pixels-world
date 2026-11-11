@@ -38,7 +38,8 @@ if (gameHost) {
 }
 
 new Phaser.Game({
-  type: matchMedia('(any-pointer: coarse)').matches ? Phaser.CANVAS : Phaser.AUTO,
+  // A desktop window can enable DOM dialogue by resizing during the round.
+  type: Phaser.CANVAS,
   parent: 'game',
   callbacks: { postBoot: observeGameHost },
   width: room.definition.width,

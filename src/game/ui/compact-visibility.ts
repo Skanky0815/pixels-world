@@ -1,6 +1,6 @@
-/** Keep the desktop canvas labels; compact devices read the same data in CSS pixels. */
+/** Keep the desktop canvas labels; touch and narrow windows read the same data in CSS pixels. */
 export function compactVisibility(target: { setVisible(visible: boolean): unknown }) {
-  const media = matchMedia('(any-pointer: coarse)');
+  const media = matchMedia('(any-pointer: coarse), (max-width: 1024px)');
   const update = () => target.setVisible(!media.matches);
 
   update();
