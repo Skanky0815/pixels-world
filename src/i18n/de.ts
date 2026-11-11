@@ -393,4 +393,7 @@ export const de = {
   saraDamageShelf4: 'Das Regal ist eingestürzt. Jetzt bleiben wir beide erst mal auf dem Boden.',
   saraDamageShelf5:
     'Regal kaputt, Sachen unten. Für heute hat die Schwerkraft genug Unterstützung bekommen.',
+  ageRatingPrefix: 'Ab ',
+  ageRatingSuffix: ' Jahren · Einstufung durch den Anbieter',
+  ageRatingReasons: ' · Leichter Zeitdruck · Cartoon-Sachschäden',
 } as const;

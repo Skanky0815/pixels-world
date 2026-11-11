@@ -24,6 +24,11 @@ sind dafür deaktiviert. Bei mehreren Änderungen bestimmt der größte nötige
 Versionssprung den Vorschlag; die Prüfung erfolgt weiterhin im Versions-PR.
 Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
 
+Vor dem nächsten öffentlichen Release ist außerdem die
+[Prüfliste zu Jugendschutz und Speicherung](legal/phase2-review.md#vor-dem-release-prüfen)
+aus #252 abzuarbeiten; die Anbieter-Einstufung gehört in Ricos normales PR-Review. Grüne technische
+QA ersetzt diese Prüfung nicht.
+
 ## Englische Release Notes ohne Doppeleinträge
 
 Release Please ist die einzige Quelle für Changelog und GitHub-Release-Text.

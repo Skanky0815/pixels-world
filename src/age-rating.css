@@ -1,0 +1,35 @@
+footer .age-rating {
+  flex-basis: 100%;
+  margin: 0;
+  color: #d2bfa7;
+  font:
+    12px/1.4 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.loading-age-footer {
+  position: fixed;
+  inset: auto 0 0;
+  display: block;
+  margin: 0;
+  padding: 8px 12px;
+  background: #241f29;
+  text-align: center;
+}
+#loading-screen {
+  padding-bottom: 112px;
+}
+
+footer .age-rating span {
+  margin: 0;
+  color: inherit;
+}
+
+.age-number {
+  color: #edc37c;
+  font-size: 1.25em;
+  font-weight: 700;
+}
