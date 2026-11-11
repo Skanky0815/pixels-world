@@ -179,11 +179,15 @@ test('Erst erfolgreiche Versöhnung deckt ein Objekt auf; Pause, Reset, Reload, 
   await waitForGame(page);
   await page.locator('[data-start-album]').click();
   await expect(page.locator('.album-overall')).toHaveText('Overall: 1 of 14');
-  await page.locator('.album-dialog [data-action="reset"]').click();
-  await page.locator('.album-dialog [data-action="cancel"]').click();
-  await expect(page.locator('.album-overall')).toHaveText('Overall: 1 of 14');
-  await page.locator('.album-dialog [data-action="reset"]').click();
-  await page.locator('.album-dialog [data-action="confirm"]').click();
+  await page.locator('.album-dialog [data-action="close"]').click();
+  await openPause(page);
+  await page.locator('.pause-menu [data-album-reset="ask"]').click();
+  await page.locator('.pause-menu [data-album-reset="cancel"]').click();
+  await expect(page.locator('.pause-menu [data-album-reset="ask"]')).toBeVisible();
+  await page.locator('.pause-menu [data-album-reset="ask"]').click();
+  await page.locator('.pause-menu [data-album-reset="confirm"]').click();
+  await page.locator('[data-pause-resume]').click();
+  await page.locator('[data-start-album]').click();
   await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
   await expect(page.locator('.album-dialog img')).toHaveCount(0);
   await page.reload();
@@ -325,7 +329,8 @@ test.describe('Mobile Buchseiten', () => {
 
     expect(box!.y).toBeGreaterThanOrEqual(0);
     expect(box!.y + box!.height).toBeLessThanOrEqual(390);
-    expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+    await album.getByRole('button', { name: 'Nächste Seite', exact: true }).click();
+    await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 3');
     await album.locator('[data-action="close"]').click();
     await expect(album).toBeHidden();
     await expect(page.locator('.pause-menu')).toBeHidden();

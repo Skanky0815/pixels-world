@@ -6,6 +6,7 @@ import { t, onLanguageChange, type TextKey } from '../../i18n/locale';
 import { createLanguageSetting } from '../../i18n/language-setting';
 import { audioPreferences, type AudioLevels } from '../../settings/audio';
 import './pause-menu.css';
+import { AlbumResetSetting } from './AlbumResetSetting';
 import { AlbumView } from './AlbumView';
 import { actionButton, configureAction } from './game-action';
 
@@ -24,6 +25,7 @@ interface PauseActions {
 
 export class PauseMenu {
   private readonly album: AlbumView;
+  private readonly albumReset: AlbumResetSetting;
   private readonly root = document.createElement('dialog');
   private readonly toggle = document.createElement('button');
   private readonly albumToggle = document.createElement('button');
@@ -47,6 +49,7 @@ export class PauseMenu {
     });
     this.root.className = 'pause-menu';
     this.root.innerHTML = markup();
+    this.albumReset = new AlbumResetSetting(this.element('[data-pause-album-reset]'));
     this.toggle.type = 'button';
     this.toggle.className = 'pause-toggle';
     configureAction(this.toggle, 'options');
@@ -136,6 +139,7 @@ export class PauseMenu {
     if (this.opened || document.querySelector('dialog[open]')) return;
     this.actions.pause(true);
     this.refresh();
+    this.albumReset.clearConfirmation();
     this.root.showModal();
   }
 
@@ -224,6 +228,7 @@ export class PauseMenu {
 
   destroy() {
     this.album.destroy();
+    this.albumReset.destroy();
     this.abort.abort();
     this.removeSubscriptions();
     this.removeLanguage();
@@ -253,6 +258,7 @@ function markup() {
     </section>
     <section><label class="motion-setting"><input type="checkbox" data-reduce-motion><span data-menu-text="reduceMotion"></span></label>
       <p data-system-motion data-menu-text="systemMotion" hidden></p></section>
+    <section data-pause-album-reset></section>
     <div class="pause-actions">${actionButton('album', 'data-pause-album')}
       <button type="button" class="ui-button" data-pause-restart data-menu-text="newRoundLabel"></button>
       <a class="ui-button" href="./" data-menu-text="quitGame"></a></div>`;

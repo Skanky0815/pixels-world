@@ -359,6 +359,24 @@ Tabs wechseln nur das Kapitel; Tastatur und Touch bedienen dieselbe Ansicht, DE/
 wechseln die Darstellung ohne Änderung der Entdeckungen. Listener und Dialog werden
 beim Szenen-Shutdown entfernt. Die Sammlung selbst bleibt über Szenen hinweg erhalten.
 
+Im niedrigen Querformat zeigt die Übersicht sechs Einträge als zwei Reihen mit
+je drei Kacheln. Seitenwechsel stehen neben dem Kapitelzähler, Schließen in der
+Kopfzeile; die Übersicht passt ohne Scrollen. Andere Ansichten
+zeigen neun Einträge pro Seite. Beim Größenwechsel bleibt der ausgewählte Eintrag
+beziehungsweise der erste Eintrag der bisherigen Seite auf der neuen Seite;
+dadurch kann sich die Seitenzahl ändern. Desktop und Tablet behalten die begrenzte
+Doppelseite. Im niedrigen Querformat stehen auch in der Detailansicht Bild und
+Name links, Beschreibung und Saras Kommentar rechts sowie „Zur Übersicht“ unten
+rechts; die vorhandenen deutschen
+und englischen Einträge passen ohne Scrollen. In anderen Ansichten bleiben
+Detailtexte bei Bedarf scrollbar, ebenso längere Speicherhinweise.
+Dialoggröße und Position berücksichtigen dynamische Viewporthöhe und Safe Areas.
+
+`AlbumResetSetting` liegt ausschließlich in den Optionen. Löschen erfordert dort
+eine ausdrückliche Bestätigung; Abbrechen oder Schließen erhält die Sammlung.
+Erneutes Öffnen beginnt ohne ausstehende Bestätigung. Zurücksetzen betrifft nur
+bestätigte Funde, nicht die laufende Runde oder ihre vorgemerkten Entdeckungen.
+
 ## Objektgeräusche
 
 Wohnzimmer-Geräusche werden nach akzeptierten Schadensereignissen ausgelöst;

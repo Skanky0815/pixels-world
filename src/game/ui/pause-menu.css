@@ -89,3 +89,9 @@
   font-size: 13px;
   line-height: 1.45;
 }
+
+.pause-menu .album-reset-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
