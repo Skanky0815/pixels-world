@@ -55,14 +55,36 @@ Objektinteraktion mit `LivingRoomScene`; Rundenuhr, Ziel und Heimkehr bleiben
 außerhalb dieses gemeinsamen Schritts. Der Playground besitzt seinen eigenen
 Score und entsorgt seine Ressourcen beim Szenenwechsel.
 
-Eine bewegte oder fallende Vase kann bei echter Rechteckberührung einen
-Bücherstapel umkippen. `object-impact.ts` prüft Kontakt und Bewegung; der
-Objektadapter übernimmt den normalen Bücherfall statt sofort Punkte zu vergeben.
-Der Boden-Callback prüft die Kette noch vor dem Vasenbruch. Bücher lösen keine
-weiteren Stöße aus: Die Kette bleibt gerichtet und endet nach einem Schritt.
-Bereits fallende oder umgefallene Stapel nehmen keinen zweiten Stoß an.
-Pause friert beide Abläufe ein; Reset entfernt auch die beobachtbare Herkunft
-`toppledBy`. Regale geben ihre Auflagen weiterhin über den bestehenden Weg frei.
+`ImpactWorld` verarbeitet die Kontakte aller vorhandenen Objektadapter und Regale
+über `impactBody()` und `receiveImpact()`. Die Adapter liefern aktuelle räumliche
+Bounds, Masse, Materialverhalten und Bewegung; die gemeinsame Logik enthält keine
+Whitelist von Objektpaaren. Relative swept AABBs erkennen auch schnelle Fallwege,
+ohne die gesamte Hüllbox einer diagonalen Bewegung als Treffer zu behandeln.
+Parallele Bewegung und bloßes Aufliegen zählen nicht als neuer Stoß.
+
+| Objekt   | Ausgehende Wirkung                                               | Reaktion auf Fremdtreffer                                         |
+| -------- | ---------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Vase     | Rollen, Schieben und Fall; Arcade-Kontakt auch mit anderen Vasen | Leicht: weiterrollen; stark: Bruch am Kontaktpunkt                |
+| Bücher   | Kippen, Streuen und Auflagenverlust                              | Bei ausreichendem Stoß normaler einmaliger Bücherfall             |
+| Pflanze  | Kippender Topf kann Nachbarn berühren                            | Leichtes Wackeln oder Kippen/Erde; keine erfundenen Knabberpunkte |
+| Wandbild | Tatsächlicher animierter Fallweg                                 | Schiefhängen oder Ablösen; Wertung beim eigenen Aufprall          |
+| Regal    | Sichtbarer Fall der Bruchstücke und Verlust der Auflage          | Lastimpuls; sehr schwere Treffer zerstören instabile Regale       |
+| Sofa     | Standfester, gepolsterter Gegenkontakt                           | Gibt optisch leicht nach; kein automatisches Kratzen              |
+| Vorhang  | Weicher Gegenkontakt                                             | Schwingt aus; Krallenrisse bleiben Pixels Kletteraktion           |
+| Teppich  | Flacher, weicher Gegenkontakt                                    | Bleibt liegen; Fremdtreffer lösen keinen Haarballen aus           |
+
+Die letzten drei Objekte sind bewusst standfest bzw. nachgiebig statt frei bewegte
+Geschosse. Stabile Zielregale widerstehen auch schweren Treffern. Kein Fremdtreffer
+löst ein Hauptziel oder eine andere besondere Pixel-Aktion aus.
+
+Ein Kontakt wird pro Berührungsphase einmal verarbeitet. Weiterbewegte Objekte
+übernehmen den kausalen Stoßpfad; ein Pfad besucht kein Objekt zweimal. Damit bleiben
+Verzweigungen möglich und Rückkopplungen begrenzt. Die vorhandenen Schadensmodelle
+und Ereignis-IDs sichern zusätzlich die einmalige Wertung je Zustandsänderung.
+Die Welt und alle Bewegungsproben gehören zur Szene: Pause liefert kein Delta,
+Neustart/Szenenwechsel erzeugen neue Modelle und Kontaktzustände. Der Boden-Callback
+wertet den letzten Kontakt noch vor dem Vasenbruch aus; bereits zerbrochene Vasen
+wirken nicht weiter als unsichtbare Geschosse.
 
 Der DEV-Debugdialog erhält nur innerhalb der Dev-Build-Grenze einen
 szenengebundenen Port. Szenarien initialisieren frische Domain-Modelle mit

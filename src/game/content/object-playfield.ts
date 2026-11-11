@@ -1,3 +1,4 @@
+import type { ImpactActor, ImpactWorld } from '../domain/impact-world';
 import { Shelf } from '../objects/Shelf';
 import type Phaser from 'phaser';
 import type { Pixel } from '../actors/Pixel';
@@ -10,7 +11,6 @@ import {
   type Bounds,
 } from '../interactions/contracts';
 import type { Vase } from '../objects/Vase';
-import type { BookStack } from '../objects/BookStack';
 import type { buildObjects } from './build-objects';
 import type { RoomDefinition } from './definitions';
 import { drawRoom } from './draw-room';
@@ -67,17 +67,34 @@ export function connectObjectPhysics(
   floor: Phaser.GameObjects.Rectangle,
   damage: Damage,
 ) {
+  objects.impacts.setDamage((event) => damage(event));
+
   for (const couch of objects.couches) platforms.add(couch.platform);
   scene.physics.add.collider(pixel.collider, platforms);
 
   for (const vase of objects.vases) {
     scene.physics.add.collider(vase.collider, platforms, (_object, surface) => {
-      if (surface !== floor) return;
-      transferVaseImpact(vase, objects.books);
-      damage(vase.breakOnFloor());
+      objects.impacts.collide(vase);
+
+      if (surface === floor) damage(vase.landOnFloor());
+      else vase.landOnSurface();
     });
     scene.physics.add.collider(pixel.collider, vase.collider, () => pushVase(pixel, vase));
   }
+
+  connectVases(scene, objects);
+}
+
+function connectVases(scene: Phaser.Scene, objects: Objects) {
+  for (let a = 0; a < objects.vases.length; a++)
+    for (let b = a + 1; b < objects.vases.length; b++) {
+      const first = objects.vases[a],
+        second = objects.vases[b];
+
+      scene.physics.add.collider(first.collider, second.collider, () =>
+        objects.impacts.collide(first, second),
+      );
+    }
 }
 
 function pushVase(pixel: Pixel, vase: Vase) {
@@ -97,11 +114,17 @@ export function advanceObjectInteractions(
   damage: Damage,
   shelves: readonly Shelf[] = [],
 ) {
-  updateShelves(shelves, pixel, time, damage, [...objects.vases, ...objects.books]);
+  updateShelves(
+    shelves,
+    pixel,
+    time,
+    damage,
+    [...objects.vases, ...objects.books],
+    objects.impacts,
+  );
 
   for (const vase of objects.vases) {
     vase.updateFall();
-    transferVaseImpact(vase, objects.books);
   }
 
   const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));
@@ -122,15 +145,10 @@ export function advanceObjectInteractions(
   const interaction = updateGroundInteractions(objects.ground, context);
 
   damage(interaction.event);
+  objects.impacts.advance([...objects.entries.map((entry) => entry.object), ...shelves], delta);
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
-}
-
-function transferVaseImpact(vase: Vase, books: readonly BookStack[]) {
-  const impact = vase.impact;
-
-  for (const stack of books) stack.knockOver(impact);
 }
 
 // eslint-disable-next-line max-lines-per-function -- Der Einsturz gibt direkt aufliegende Vasen und Bücher für ihren vorhandenen Fallablauf frei; keine künstlichen Zusatzschäden.
@@ -139,14 +157,19 @@ function updateShelves(
   pixel: Pixel,
   time: number,
   damage: Damage,
-  supported: readonly { releaseSupport(surface: Bounds): void }[],
+  supported: readonly (ImpactActor & { releaseSupport(surface: Bounds): void })[],
+  impacts: ImpactWorld,
 ) {
   for (const shelf of shelves) {
+    const enabled = shelf.snapshot().enabled;
     const event = shelf.update(pixel.snapshot(), time);
 
     damage(event);
 
-    if (event?.kind === 'collapse')
-      for (const object of supported) object.releaseSupport(shelf.bounds);
+    if (enabled && !shelf.snapshot().enabled)
+      for (const object of supported) {
+        impacts.inheritSupport(shelf, object);
+        object.releaseSupport(shelf.bounds);
+      }
   }
 }

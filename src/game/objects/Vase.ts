@@ -1,9 +1,10 @@
 import { VASE_SHARD_FAMILY, type VaseAppearance } from '../assets/vase-appearance';
 import type Phaser from 'phaser';
+import { motionPreferences } from '../../settings/motion';
 import { ASSETS } from '../assets/definitions';
 import { assertObjectId, chaosEvent, DamageHistory } from '../domain/chaos-event';
 import type { Bounds, Destructible, ObjectLifecycle } from '../interactions/contracts';
-import type { VaseImpact } from '../domain/object-impact';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 
 export type VaseState = 'resting' | 'moving' | 'falling' | 'broken';
 export interface VaseConfig {
@@ -23,6 +24,7 @@ export class Vase implements Destructible, ObjectLifecycle {
   readonly maximumScore: number;
   readonly collider: Phaser.Physics.Arcade.Image;
   private phase: VaseState = 'resting';
+  private fallSpeed = 0;
   private readonly history = new DamageHistory();
   private readonly shards: Phaser.GameObjects.Container;
   private readonly config: VaseConfig;
@@ -56,6 +58,7 @@ export class Vase implements Destructible, ObjectLifecycle {
     this.collider.setImmovable(false);
     (this.collider.body as Phaser.Physics.Arcade.Body).setAllowGravity(true);
     this.collider.setVelocityX(direction * 170);
+    this.spin(direction * 80);
   }
 
   releaseSupport(shelf: Bounds) {
@@ -67,14 +70,94 @@ export class Vase implements Destructible, ObjectLifecycle {
     body.setAllowGravity(true);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Fallen, Ausrollen und reduzierte Drehbewegung teilen denselben aktiven Körperschritt.
   updateFall() {
     if (this.phase === 'resting' || this.phase === 'broken') return;
     const body = this.collider.body as Phaser.Physics.Arcade.Body;
 
+    this.fallSpeed = Math.max(this.fallSpeed, body.velocity.y);
+
+    this.settle(body);
+    this.spin(body.velocity.x * 0.8);
+
     if (body.velocity.y > 40 && body.bottom > this.config.shelfY + 8) {
       this.phase = 'falling';
-      this.collider.setAngularVelocity(Math.sign(body.velocity.x || 1) * 100);
+      this.spin(Math.sign(body.velocity.x || 1) * 100);
     }
+  }
+
+  private spin(speed: number) {
+    this.collider.setAngularVelocity(motionPreferences.snapshot().reduced ? 0 : speed);
+  }
+
+  private settle(body: Phaser.Physics.Arcade.Body) {
+    if (body.blocked.down && Math.abs(body.velocity.x) < 1 && body.velocity.y === 0) {
+      this.phase = 'resting';
+      this.collider.setVelocityX(0);
+      this.fallSpeed = 0;
+    }
+  }
+
+  landOnFloor() {
+    if (this.fallSpeed < 180) {
+      this.fallSpeed = 0;
+
+      return;
+    }
+
+    this.fallSpeed = 0;
+
+    return this.breakOnFloor();
+  }
+
+  landOnSurface() {
+    this.fallSpeed = 0;
+
+    if (this.phase === 'falling') this.phase = 'moving';
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    const body = this.collider.body as Phaser.Physics.Arcade.Body;
+
+    return {
+      id: this.id,
+      bounds: { x: body.left, y: body.top, width: body.width, height: body.height },
+      mass: 1,
+      enabled: this.phase !== 'broken',
+      moving: this.phase !== 'resting' && this.phase !== 'broken',
+      surface: 'solid',
+      velocityX: body.velocity.x,
+      velocityY: body.velocity.y || this.fallSpeed,
+    };
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Leichter Gegenstoß dämpft, ein normaler Stoß rollt die Vase weiter, erst ein starker Treffer zerbricht sie.
+  receiveImpact(hit: ImpactHit) {
+    if (!this.acceptsImpact(hit)) return [];
+    this.phase = 'moving';
+
+    if (hit.power >= 260) {
+      const event = this.breakOnFloor();
+
+      return event ? [event] : [];
+    }
+
+    this.collider.setImmovable(false);
+    (this.collider.body as Phaser.Physics.Arcade.Body).setAllowGravity(true);
+    const velocity =
+      (hit.counter ? -hit.direction : hit.direction) *
+      Math.min(220, hit.speed) *
+      (hit.counter ? 0.55 : 0.65);
+
+    this.collider.setVelocityX(velocity);
+    this.spin(velocity * 0.8);
+
+    return [];
+  }
+
+  private acceptsImpact(hit: ImpactHit) {
+    return this.phase !== 'broken' && hit.power >= 30 && (!hit.counter || hit.power >= 140);
   }
 
   breakOnFloor() {
@@ -113,7 +196,7 @@ export class Vase implements Destructible, ObjectLifecycle {
   private createShard(index: number) {
     const appearance = this.config.appearance;
     const x = this.collider.x,
-      y = this.config.floorY - 3;
+      y = Math.min(this.config.floorY - 3, this.collider.y);
 
     return appearance
       ? this.scene.add
@@ -124,18 +207,6 @@ export class Vase implements Destructible, ObjectLifecycle {
 
   damageSnapshot() {
     return this.history.snapshot();
-  }
-
-  get impact(): VaseImpact {
-    const body = this.collider.body as Phaser.Physics.Arcade.Body;
-
-    return Object.freeze({
-      sourceId: this.id,
-      state: this.phase,
-      bounds: Object.freeze({ x: body.left, y: body.top, width: body.width, height: body.height }),
-      velocityX: body.velocity.x,
-      velocityY: body.velocity.y,
-    });
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der flache Vasen-Beobachtungsvertrag bleibt vollständig an einer Stelle sichtbar.
@@ -154,12 +225,15 @@ export class Vase implements Destructible, ObjectLifecycle {
       velocityX: body.velocity.x,
       velocityY: body.velocity.y,
       state: this.phase,
+      angle: this.collider.angle,
       points: this.config.points,
     };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Darstellung, Kollisionskörper und Fallenergie werden gemeinsam auf den Spawnzustand zurückgesetzt.
   reset() {
     this.phase = 'resting';
+    this.fallSpeed = 0;
     this.history.reset();
     this.scene.tweens.killTweensOf(this.shards.list);
     this.shards.removeAll(true);

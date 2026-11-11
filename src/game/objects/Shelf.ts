@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import type { RoomDefinition, Decoration } from '../content/definitions';
 import type { InteractionContext } from '../interactions/contracts';
 import { DamageHistory } from '../domain/chaos-event';
@@ -12,6 +13,8 @@ export class Shelf {
   readonly id: string;
   readonly platform: Phaser.GameObjects.Rectangle;
   private wobbleStartedAt: number | null = null;
+  private collapseStartedAt: number | null = null;
+  private fallProgress = 0;
   private readonly model: ShelfStability;
   private readonly history = new DamageHistory();
   private readonly graphic: Phaser.GameObjects.Container;
@@ -62,7 +65,14 @@ export class Shelf {
 
     if (state === 'collapsed') {
       (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable = false;
-      this.graphic.setAngle(0).setY(this.floorY - this.art.debrisBottom);
+      this.collapseStartedAt ??= time;
+      this.fallProgress = Math.min(1, (time - this.collapseStartedAt) / 550);
+      this.graphic
+        .setAngle(0)
+        .setY(
+          this.bounds.y +
+            (this.floorY - this.art.debrisBottom - this.bounds.y) * this.fallProgress ** 2,
+        );
     } else
       this.graphic.setAngle(
         state === 'intact' || this.wobbleStartedAt === null
@@ -71,6 +81,39 @@ export class Shelf {
       );
 
     return event;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    const collapsed = this.model.snapshot().state === 'collapsed';
+
+    return {
+      id: this.id,
+      mass: 6,
+      enabled: true,
+      surface: 'solid',
+      moving: collapsed && this.fallProgress < 1,
+      bounds: { ...this.bounds, y: this.graphic.y, height: this.art.boardHeight },
+    };
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Ein schwerer Einsturz kann beide noch offenen Schadensstufen liefern; leichte Last bleibt eine einzelne Belastung.
+  receiveImpact(hit: ImpactHit) {
+    this.wobbleStartedAt = hit.time;
+
+    if (hit.power >= 1800) {
+      const events = this.model.collapse();
+
+      for (const event of events) this.history.record(event);
+
+      return events;
+    }
+
+    const event = hit.power >= 600 ? this.model.impact() : undefined;
+
+    if (event) this.history.record(event);
+
+    return event ? [event] : [];
   }
 
   private warn(before: string, after: string) {
@@ -102,6 +145,8 @@ export class Shelf {
       boardHeight: this.art.boardHeight,
       debrisBoardHeight: this.art.debrisBoardHeight,
       angle: this.graphic.angle,
+      y: this.graphic.y,
+      fallProgress: this.fallProgress,
       enabled: (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable,
     };
   }
@@ -118,6 +163,8 @@ export class Shelf {
   reset() {
     this.model.reset();
     this.wobbleStartedAt = null;
+    this.collapseStartedAt = null;
+    this.fallProgress = 0;
     this.history.reset();
     (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable = true;
     this.graphic.setAngle(0).setY(this.definition.bounds.y);

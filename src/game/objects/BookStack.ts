@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import { DamageHistory } from '../domain/chaos-event';
-import { hitsBooks, type VaseImpact } from '../domain/object-impact';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import { BookToppling, type BookRules } from '../interactions/book-toppling';
 import {
   overlaps,
@@ -63,13 +63,6 @@ export class BookStack {
     this.art.render(this.model.snapshot());
   }
 
-  knockOver(impact: VaseImpact) {
-    const bounds = { x: this.config.x - 24, y: this.graphic.y - 36, width: 48, height: 36 };
-
-    if (!hitsBooks(impact, bounds) || !this.model.knockOver()) return;
-    this.toppledBy = impact.sourceId;
-  }
-
   // eslint-disable-next-line max-lines-per-function -- Nur ein tatsächlich aufliegender Stapel verliert seine Auflage; ein bereits zerstreuter Stapel zählt dadurch keinen zweiten Schaden.
   releaseSupport(surface: Bounds) {
     if (
@@ -101,6 +94,29 @@ export class BookStack {
     this.drop = null;
 
     return true;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    const s = this.model.snapshot();
+    const width = s.state === 'fallen' ? 96 : s.state === 'falling' ? 48 + 48 * s.progress : 48;
+
+    return {
+      id: this.id,
+      bounds: { x: this.config.x - width / 2, y: this.graphic.y - 36, width, height: 36 },
+      mass: 2,
+      enabled: true,
+      moving: s.state === 'falling' || this.drop !== null,
+      surface: 'loose',
+      velocityX: s.state === 'falling' ? 90 : 0,
+      velocityY: this.drop ? 180 : 0,
+    };
+  }
+
+  receiveImpact(hit: ImpactHit) {
+    if (hit.power >= 60 && this.model.knockOver()) this.toppledBy = hit.sourceId;
+
+    return [];
   }
 
   damageSnapshot() {

@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import { PictureFalling, type PictureRules } from '../interactions/picture-falling';
 import {
   overlaps,
@@ -80,6 +81,26 @@ export class WallPicture implements Interactable, Destructible {
       .setDisplaySize(area.width, height)
       .setAngle(angle + shake)
       .setY(startY + (this.config.floorY - bottomExtent - startY) * p * p);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    const b = this.art.getBounds();
+
+    return {
+      id: this.id,
+      mass: 1.5,
+      enabled: true,
+      surface: 'loose',
+      moving: this.model.snapshot().state === 'falling',
+      bounds: { x: b.x, y: b.y, width: b.width, height: b.height },
+    };
+  }
+
+  receiveImpact(hit: ImpactHit) {
+    if (hit.power >= 35) this.model.impact(hit.power >= 180);
+
+    return [];
   }
 
   damageSnapshot() {
