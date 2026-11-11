@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.4.0](https://github.com/Skanky0815/pixels-world/compare/v0.3.0...v0.4.0) (2026-11-11)
+
+
+### Features
+
+* **album:** save discoveries after successful reconciliation ([304979f](https://github.com/Skanky0815/pixels-world/commit/304979fda3f9edc697a2bdb9195e9d697704e194)), closes [#238](https://github.com/Skanky0815/pixels-world/issues/238)
+* **audio:** add living room and Pixel action sounds ([ce01ead](https://github.com/Skanky0815/pixels-world/commit/ce01eaddddda9a4bd141f12bd10db45837b37bbf)), closes [#237](https://github.com/Skanky0815/pixels-world/issues/237)
+* **chaos:** support shared object impacts and chain reactions ([be5dce4](https://github.com/Skanky0815/pixels-world/commit/be5dce441dd75b0d7b922c2ab502049419064788)), closes [#135](https://github.com/Skanky0815/pixels-world/issues/135)
+* **charm:** animate Pixel's reconciliation actions ([15be05d](https://github.com/Skanky0815/pixels-world/commit/15be05d0d57ce480027335de4d3934e3094f52ab)), closes [#251](https://github.com/Skanky0815/pixels-world/issues/251)
+* **dialogue:** add expressive character portraits ([ea0503d](https://github.com/Skanky0815/pixels-world/commit/ea0503d1fbc4f6fd62ca65a62be0edc374650eb9)), closes [#133](https://github.com/Skanky0815/pixels-world/issues/133)
+* **dialogue:** react to notable damage during homecoming ([f17ca98](https://github.com/Skanky0815/pixels-world/commit/f17ca9899fdc03b3c8945713c70d25e595d54a90)), closes [#134](https://github.com/Skanky0815/pixels-world/issues/134)
+* **dialogue:** vary Sara reactions with room context ([757f9ef](https://github.com/Skanky0815/pixels-world/commit/757f9eff9d7c7328791b2f8028a397c3f3a97805)), closes [#132](https://github.com/Skanky0815/pixels-world/issues/132)
+* **gameplay:** animate Pixel playing with the favorite ball ([4f683d7](https://github.com/Skanky0815/pixels-world/commit/4f683d7469ebf27ac51385a2297c8695abadcd87)), closes [#186](https://github.com/Skanky0815/pixels-world/issues/186)
+* **goal:** celebrate damage-free runs without reconciliation ([804cb2e](https://github.com/Skanky0815/pixels-world/commit/804cb2e1fd32940cdbd5f7237e0ca00e49087f20)), closes [#249](https://github.com/Skanky0815/pixels-world/issues/249)
+* **legal:** add provider age information to page footers ([8d4657d](https://github.com/Skanky0815/pixels-world/commit/8d4657d902e4298e60ffc0e74389f07ab23e8a17)), closes [#252](https://github.com/Skanky0815/pixels-world/issues/252)
+* **loading:** add animated loading screen with real progress ([bebed30](https://github.com/Skanky0815/pixels-world/commit/bebed308e44e497ba7b389e953696e4696b4b18b)), closes [#240](https://github.com/Skanky0815/pixels-world/issues/240)
+
+
+### Bug Fixes
+
+* **album:** fit mobile landscape pages and item details ([629761d](https://github.com/Skanky0815/pixels-world/commit/629761dd4ea560c5f23694431932834bf55f73d8)), closes [#242](https://github.com/Skanky0815/pixels-world/issues/242)
+* **ui:** keep narrow desktop game text readable ([ad29c26](https://github.com/Skanky0815/pixels-world/commit/ad29c26489e68fbe71283df7d8f410fbbf212f59)), closes [#259](https://github.com/Skanky0815/pixels-world/issues/259)
+
+
+### Documentation
+
+* **objects:** define shared object interaction requirements ([30a6d13](https://github.com/Skanky0815/pixels-world/commit/30a6d138b76cd7fdb8579e6d08afa4f030034841)), closes [#135](https://github.com/Skanky0815/pixels-world/issues/135)
+
 ## [0.3.0](https://github.com/Skanky0815/pixels-world/compare/v0.2.0...v0.3.0) (2026-11-08)
 
 
