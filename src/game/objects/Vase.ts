@@ -4,6 +4,7 @@ import { motionPreferences } from '../../settings/motion';
 import { ASSETS } from '../assets/definitions';
 import { assertObjectId, chaosEvent, DamageHistory } from '../domain/chaos-event';
 import type { Bounds, Destructible, ObjectLifecycle } from '../interactions/contracts';
+import { overlaps, type InteractionContext } from '../interactions/contracts';
 import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 
 export type VaseState = 'resting' | 'moving' | 'falling' | 'broken';
@@ -26,6 +27,7 @@ export class Vase implements Destructible, ObjectLifecycle {
   private phase: VaseState = 'resting';
   private fallSpeed = 0;
   private awaitingDrop = false;
+  private pixelPassing = false;
   private readonly history = new DamageHistory();
   private readonly shards: Phaser.GameObjects.Container;
   private readonly config: VaseConfig;
@@ -64,9 +66,16 @@ export class Vase implements Destructible, ObjectLifecycle {
 
   topple(direction: number) {
     this.push(direction);
+    this.pixelPassing = true;
 
     if (this.phase !== 'broken')
       this.collider.setAngle(motionPreferences.snapshot().reduced ? 0 : direction * 65);
+  }
+
+  allowsPixelCollision(pixel: InteractionContext['pixel']) {
+    if (this.pixelPassing && !overlaps(pixel, this.impactBody().bounds)) this.pixelPassing = false;
+
+    return !this.pixelPassing;
   }
 
   releaseSupport(shelf: Bounds) {
@@ -80,7 +89,9 @@ export class Vase implements Destructible, ObjectLifecycle {
   }
 
   // eslint-disable-next-line max-lines-per-function -- Fallen, Ausrollen und reduzierte Drehbewegung teilen denselben aktiven Körperschritt.
-  updateFall() {
+  updateFall(pixel: InteractionContext['pixel']) {
+    this.allowsPixelCollision(pixel);
+
     if (this.phase === 'resting' || this.phase === 'broken') return;
     const body = this.collider.body as Phaser.Physics.Arcade.Body;
 
@@ -248,6 +259,7 @@ export class Vase implements Destructible, ObjectLifecycle {
     this.phase = 'resting';
     this.fallSpeed = 0;
     this.awaitingDrop = false;
+    this.pixelPassing = false;
     this.history.reset();
     this.scene.tweens.killTweensOf(this.shards.list);
     this.shards.removeAll(true);

@@ -79,7 +79,12 @@ export function connectObjectPhysics(
       if (surface === floor) damage(vase.landOnFloor());
       else vase.landOnSurface();
     });
-    scene.physics.add.collider(pixel.collider, vase.collider, () => pushVase(pixel, vase));
+    scene.physics.add.collider(
+      pixel.collider,
+      vase.collider,
+      () => pushVase(pixel, vase),
+      () => vase.allowsPixelCollision(pixel.snapshot()),
+    );
   }
 
   connectVases(scene, objects);
@@ -99,8 +104,10 @@ function connectVases(scene: Phaser.Scene, objects: Objects) {
 
 function pushVase(pixel: Pixel, vase: Vase) {
   const body = vase.collider.body as Phaser.Physics.Arcade.Body;
+  const pixelBody = pixel.collider.body as Phaser.Physics.Arcade.Body;
 
-  if (body.touching.up && !body.wasTouching.up) vase.topple(pixel.x < vase.collider.x ? 1 : -1);
+  if (body.touching.up && pixelBody.bottom <= body.top + 1)
+    vase.topple(pixel.x < vase.collider.x ? 1 : -1);
 
   if (body.touching.left || body.touching.right) vase.push(pixel.x < vase.collider.x ? 1 : -1);
 }
@@ -122,7 +129,7 @@ export function advanceObjectInteractions(
   releaseShelves(shelves, supported, objects.impacts);
 
   for (const vase of objects.vases) {
-    vase.updateFall();
+    vase.updateFall(pixel.snapshot());
   }
 
   const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));

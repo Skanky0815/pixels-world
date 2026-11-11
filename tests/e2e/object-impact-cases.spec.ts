@@ -170,6 +170,34 @@ test('Objektkontakt: kippende Bücher stoßen eine Vase ohne direkten Pixelkonta
   await page.keyboard.up('ArrowDown');
 });
 
+async function expectSmoothDrop(page: Page) {
+  const initial = await state(page);
+  let previous = initial.pixel.bottom;
+  let departed = false;
+
+  for (let frame = 0; frame < 20; frame++) {
+    await page.clock.runFor(16);
+    const snapshot = await state(page);
+
+    const { pixel } = snapshot;
+
+    if (!departed && pixel.bottom === initial.pixel.bottom) continue;
+    departed = true;
+
+    expect(pixel.bottom).toBeGreaterThanOrEqual(previous);
+
+    if (pixel.bottom < 467) {
+      expect(pixel.grounded).toBe(false);
+      expect(pixel.animation).not.toBe('land');
+      expect(pixel.velocityY).toBeGreaterThan(0);
+    }
+
+    previous = pixel.bottom;
+  }
+
+  expect((await state(page)).pixel.bottom).toBe(468);
+}
+
 for (const direction of [1, -1])
   test(
     `Pixel landet auf Vase: kippt und rollt nach ${direction > 0 ? 'rechts' : 'links'}`,
@@ -214,11 +242,12 @@ for (const direction of [1, -1])
       await page.clock.runFor(1000);
       expect((await state(page)).vases).toEqual(paused);
       await page.keyboard.press('Escape');
-      await page.clock.runFor(160);
+      await expectSmoothDrop(page);
       const rolled = (await state(page)).vases.find((v) => v.id === 'landing-vase')!;
 
       expect((rolled.x - vase.x) * direction).toBeGreaterThan(10);
       expect(rolled.state).not.toBe('broken');
+      expect(Math.abs(rolled.velocityX)).toBeLessThan(Math.abs(vase.velocityX));
       expect((await state(page)).chaos.score).toBe(0);
       await test
         .info()

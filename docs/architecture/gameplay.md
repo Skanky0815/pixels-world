@@ -66,6 +66,9 @@ Landet Pixel von oben auf einer Vase, kippt sie von ihm weg und rollt
 los; seitliches Anschubsen bleibt möglich. Der Landekontakt gibt einmal pro
 Berührungsphase einen Impuls und allein noch keine Schadenspunkte. Reduzierte
 Bewegung unterdrückt das sichtbare Kippen und Drehen, nicht die physische Bewegung.
+Nach dem Kippen wird nur der Kontakt zwischen Pixel und dieser Vase bis zum
+räumlichen Lösen ausgesetzt. Dadurch hält die rollende Vase Pixel nicht mehr
+abwechselnd fest und lässt ihn fallen; andere Objektkontakte bleiben aktiv.
 
 | Objekt   | Ausgehende Wirkung                                               | Reaktion auf Fremdtreffer                                         |
 | -------- | ---------------------------------------------------------------- | ----------------------------------------------------------------- |
