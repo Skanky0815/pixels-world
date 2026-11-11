@@ -8,6 +8,7 @@ for (const viewport of [
 ]) {
   test(`Altersinformation ohne Scrollen: ${viewport.width}×${viewport.height}`, async ({
     page,
+    // eslint-disable-next-line max-lines-per-function -- Sichtbare Einstufung, Sprachwechsel und drei Einstiege bleiben als ein zusammenhängender Browserablauf lesbar.
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
