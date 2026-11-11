@@ -78,7 +78,12 @@ test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren'
   await page.clock.runFor(1200);
   expect((await state(page)).curtain.events).toBe(grounded.curtain.events);
   expect((await state(page)).curtain.state).toBe('detached');
-  await holdUntil(page, ['ArrowUp'], (s) => s.curtain.state === 'climbing' && s.pixel.y < 420);
+  await holdUntil(
+    page,
+    ['ArrowUp'],
+    (s) => s.curtain.state === 'climbing' && s.pixel.climbing && s.pixel.y < 350,
+  );
+  expect((await state(page)).pixel.gravity).toBe(false);
   await reset(page);
   expect((await state(page)).curtain).toMatchObject({
     marks: [],

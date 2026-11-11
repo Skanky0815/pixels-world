@@ -13,15 +13,41 @@ import {
 } from './support';
 
 test(
-  'Pfeiltasten bewegen Pixel; Boden und Raumgrenze halten ihn auf',
+  'Pfeiltasten bewegen Pixel; Idle, Laufzyklus, Boden und Raumgrenze bleiben stabil',
   { tag: '@smoke' },
-  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
-  async ({ page }) => {
+  // eslint-disable-next-line max-lines-per-function -- Derselbe Hin-/Rückweg prüft reale Bewegung, Laufdarstellung, Audio und anschließenden Neustart gemeinsam.
+  async ({ page }, testInfo) => {
     await recordAudio(page);
     await start(page);
     await expectAudio(page, 1, 0);
-    await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x > 150);
+    await until(page, (s) => s.pixel.animation === 'idle' && s.pixel.animationFrame === 0);
+    expect((await state(page)).pixel.texture).toBe('pixel');
+    await until(page, (s) => s.pixel.animationFrame === 2);
+    await until(page, (s) => s.pixel.animationFrame === 0);
+    await holdUntil(page, ['ArrowRight'], (s) => s.pixel.animation === 'walk' && s.pixel.x > 150);
     await expectActiveAudio(page, 1, true);
+    expect((await state(page)).pixel.flipX).toBe(false);
+    expect((await state(page)).pixel).toMatchObject({
+      displayWidth: 64,
+      displayHeight: 64,
+      bodyWidth: 52,
+      bodyHeight: 52,
+    });
+    await page.keyboard.down('ArrowRight');
+
+    try {
+      const frame = (await state(page)).pixel.animationFrame;
+
+      await until(page, (s) => s.pixel.animationFrame !== frame);
+      const screenshot = testInfo.outputPath('pixel-walking.png');
+
+      await page.screenshot({ path: screenshot, fullPage: true });
+      await testInfo.attach('Pixel läuft im Raum', { path: screenshot, contentType: 'image/png' });
+    } finally {
+      await page.keyboard.up('ArrowRight');
+    }
+
+    await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.animation === 'walk' && s.pixel.flipX);
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.left <= 0.1);
     await framesPass(page);
     await expectActiveAudio(page, 1, false);
@@ -31,6 +57,8 @@ test(
     expect(pixel.grounded).toBe(true);
     expect(pixel.bottom).toBeCloseTo(468, 0);
     expect(pixel.velocityY).toBe(0);
+    await reset(page);
+    expect((await state(page)).pixel.animation).toBe('idle');
   },
 );
 
@@ -135,42 +163,6 @@ test('Klettern kollidiert mit Regalunterseite und Boden', async ({ page }) => {
   } finally {
     await page.keyboard.up('ArrowDown');
   }
-});
-
-test('Pixel: bestätigter Idle, Blinzeln und seitlicher Laufzyklus in beiden Richtungen', async ({
-  page,
-  // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
-}, testInfo) => {
-  await start(page);
-  await until(page, (s) => s.pixel.animation === 'idle' && s.pixel.animationFrame === 0);
-  expect((await state(page)).pixel.texture).toBe('pixel');
-  await until(page, (s) => s.pixel.animationFrame === 2);
-  await until(page, (s) => s.pixel.animationFrame === 0);
-  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.animation === 'walk' && s.pixel.x > 145);
-  expect((await state(page)).pixel.flipX).toBe(false);
-  expect((await state(page)).pixel).toMatchObject({
-    displayWidth: 64,
-    displayHeight: 64,
-    bodyWidth: 52,
-    bodyHeight: 52,
-  });
-  await page.keyboard.down('ArrowRight');
-
-  try {
-    const frame = (await state(page)).pixel.animationFrame;
-
-    await until(page, (s) => s.pixel.animationFrame !== frame);
-    const screenshot = testInfo.outputPath('pixel-walking.png');
-
-    await page.screenshot({ path: screenshot, fullPage: true });
-    await testInfo.attach('Pixel läuft im Raum', { path: screenshot, contentType: 'image/png' });
-  } finally {
-    await page.keyboard.up('ArrowRight');
-  }
-
-  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.animation === 'walk' && s.pixel.flipX);
-  await reset(page);
-  expect((await state(page)).pixel.animation).toBe('idle');
 });
 
 test('Pixel: Sprung, Scheitelpunkt, Fall, Landung und Klettern in Rückansicht', async ({
