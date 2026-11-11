@@ -235,7 +235,11 @@ aktualisiert Phasers FIT-Skalierung nach Größenänderungen des CSS-Spielfenste
 auch wenn das Grid erst nach dem Browser-Resize-Ereignis seine Größe erreicht.
 Beim Zerstören des Spiels wird der Observer entfernt.
 Szeneneigene DOM- und MediaQuery-Ressourcen werden beim Shutdown entsorgt.
-Touch-Geräte starten mit Canvas 2D, Desktop mit AUTO:
+Grobe Zeiger und Fenster bis 1024 CSS-Pixel Breite zeigen lesbare DOM-Texte;
+breite Mausfenster verwenden die bisherigen Canvas-Texte. Die Umschaltung
+aktiviert keine Touch-Steuerung auf Mausgeräten. Das Spiel verwendet Canvas 2D
+auch auf Desktop, damit ein Größenwechsel mit DOM-Dialog keinen Rendererwechsel
+oder Szenenneustart benötigt:
 [ADR 0002](../adr/0002-mobile-text-rendering.md).
 
 Sprite-Quellen, Palette, Raster und Exporte liegen bei
