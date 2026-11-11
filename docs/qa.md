@@ -49,6 +49,12 @@ Es gibt keine Spielzustandssetter und keine für Tests exponierten Phaser-Objekt
 `window.__pixelTest` ist ausschließlich im E2E-Build ein unveränderlicher Observer;
 seine Abwesenheit im Produktionsbuild wird im Browser geprüft.
 
+Reine Album-Layoutfälle dürfen vor dem Start bestätigte Einträge im regulären
+Browser-Speicher vorbereiten. Die echte Freischaltung nach erfolgreicher
+Versöhnung sowie das Verwerfen bei Scheitern bleiben eigene Durchläufe.
+Pause und Fortsetzen für die Layoutprüfung in einer noch aktiven Runde prüfen,
+damit ein bereits abgeschlossener Rundentimer keine fehlende Pause verdeckt.
+
 Die pausierte Playwright-Uhr wird mit `clock.runFor` schrittweise weitergeführt.
 Runnerlatenz darf gehaltene Eingaben nicht verlängern. Die langen Rundenszenarien
 verwenden nach ihrer Vorbereitung gröbere RAF-Schritte; das ersetzt keine
