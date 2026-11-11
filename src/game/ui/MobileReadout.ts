@@ -154,5 +154,7 @@ function panelText(s: Readout) {
 }
 
 function touchHint(text: string) {
-  return text.replace(t('space'), t('continue'));
+  return matchMedia('(any-pointer: coarse)').matches
+    ? text.replace(t('space'), t('continue'))
+    : text;
 }

@@ -87,6 +87,7 @@ test(
     await page.setViewportSize({ width: 568, height: 320 });
     await changeLanguage(page, 'en');
     await expect(page.locator('.mobile-dialogue')).toBeVisible();
+    await expect(page.locator('.mobile-hint')).toContainText('␣:');
     await visibleRoomBelowDialogue(page);
     await test.info().attach('schmales-mausfenster-dialog', {
       body: await page.screenshot({ fullPage: true }),
