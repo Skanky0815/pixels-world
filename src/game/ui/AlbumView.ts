@@ -28,7 +28,6 @@ export class AlbumView {
   private readonly language: () => void;
   private room: AlbumRoom = 'living-room';
   private selected?: string;
-  private confirming = false;
   private page = 0;
   private detail = false;
 
@@ -60,7 +59,6 @@ export class AlbumView {
 
   open() {
     if (this.opened) return;
-    this.confirming = false;
     this.render();
     this.root.showModal();
   }
@@ -71,6 +69,8 @@ export class AlbumView {
   }
 
   private refresh() {
+    if (!albumCollection.snapshot().discovered.length) this.detail = false;
+
     if (this.opened) this.render();
   }
 
@@ -102,10 +102,12 @@ export class AlbumView {
     this.selected = selected?.id;
     this.root.setAttribute('aria-label', t('albumTitle'));
     this.root.dataset.detail = String(this.detail);
+    const message = this.storageMessage(snapshot.storage);
+
     this.root.innerHTML = `<header class="popup-heading">${closeButtonMarkup(t('albumClose'), 'data-action="close" data-focus="close"')}<div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${t('albumOverall', { found: found.size, total: this.entries.length })}</p></div></header>
       ${albumTabs(this.room, this.entries)}
       <div id="album-room" role="tabpanel" aria-labelledby="album-tab-${this.room}">${this.roomMarkup(entries, found, selected)}</div>
-      <footer>${this.resetMarkup()}${this.storageMessage(snapshot.storage)}</footer>`;
+      ${message ? `<footer>${message}</footer>` : ''}`;
 
     if (focus) this.root.querySelector<HTMLElement>(`[data-focus="${focus}"]`)?.focus();
   }
@@ -138,14 +140,7 @@ export class AlbumView {
     return status in key ? `<p role="status">${t(key[status as keyof typeof key])}</p>` : '';
   }
 
-  private resetMarkup() {
-    if (!this.confirming)
-      return `<button type="button" class="ui-button" data-action="reset" data-focus="reset">${t('albumReset')}</button>`;
-
-    return `<p id="album-reset-question" role="status">${t('albumResetQuestion')}</p><div class="album-reset-actions"><button type="button" class="ui-button" data-action="confirm" data-focus="confirm" aria-describedby="album-reset-question">${t('albumResetConfirm')}</button><button type="button" class="ui-button" data-action="cancel" data-focus="cancel">${t('albumCancel')}</button></div>`;
-  }
-
-  // eslint-disable-next-line max-lines-per-function -- Delegierte Aktionen dürfen ausschließlich Kapitel, Auswahl und ausdrücklich bestätigten Album-Reset ändern.
+  // eslint-disable-next-line max-lines-per-function -- Delegierte Aktionen ändern nur Kapitel und Auswahl oder schließen die Ansicht.
   private click(event: MouseEvent) {
     const target =
       event.target instanceof Element ? event.target.closest<HTMLButtonElement>('button') : null;
@@ -164,7 +159,6 @@ export class AlbumView {
 
     this.selectEntry(target.dataset.entry);
 
-    this.confirming = false;
     this.render();
     const back = this.root.querySelector<HTMLElement>('.album-overview');
 
@@ -180,7 +174,7 @@ export class AlbumView {
     this.detail = true;
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Bestätigter Reset, Dialogschluss und Fokuswiederherstellung bleiben ein zusammenhängender Bedienablauf.
+  // eslint-disable-next-line max-lines-per-function -- Dialogschluss, Übersicht und Seitenwechsel teilen denselben Aktionspfad.
   private action(action: string) {
     if (action === 'close') {
       this.close();
@@ -194,20 +188,7 @@ export class AlbumView {
       return;
     }
 
-    if (this.pageAction(action)) return;
-
-    if (action === 'confirm' && this.confirming) {
-      this.detail = false;
-      albumCollection.reset();
-    }
-
-    this.confirming = action === 'reset';
-    this.render();
-    this.root
-      .querySelector<HTMLElement>(
-        this.confirming ? '[data-action="cancel"]' : '[data-action="reset"]',
-      )
-      ?.focus();
+    this.pageAction(action);
   }
 
   private overview() {

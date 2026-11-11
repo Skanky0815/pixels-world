@@ -147,7 +147,9 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   oberste Album. Raum-Tabs und Gesamt-/Kapitelzähler prüfen. Vor einer echten
   Schadensaktion dürfen weder Bilder noch Namen unbekannter Objekte sichtbar sein.
   Nach Schaden neu öffnen, zwischen DE/EN wechseln und Rundenneustart/Reload prüfen.
-  Album-Reset erst nach Bestätigung; Abbrechen erhält die Sammlung. Auf schmalen
+  Album-Reset ausschließlich in den Optionen und erst nach Bestätigung; Abbrechen
+  oder Schließen erhält die Sammlung. Nach erneutem Öffnen darf keine alte
+  Bestätigung fortbestehen; Runde, Punkte und vorgemerkte Funde bleiben erhalten. Auf schmalen
   Bildschirmen müssen beide Buchseiten und alle Aktionen durch Scrollen erreichbar sein.
   Im Handy-Querformat sechs Kacheln in zwei Reihen ohne Scrollen anzeigen; auch
   die unterste Reihe öffnen und Seiten wechseln. Kacheln und Navigation dürfen

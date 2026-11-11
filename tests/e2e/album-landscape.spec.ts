@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function -- Zusammenhängende Bedienwege prüfen Geometrie, echte Touch-Aktionen und erhaltene Auswahl gemeinsam. */
 import type { Page } from '@playwright/test';
 import { albumEntries } from '../../src/content/album/index';
+import { openPause } from './pause-support';
 import { test, expect, loadIntro } from './support';
 
 const savedEntries = albumEntries(true).map((entry) => entry.id);
@@ -48,7 +49,7 @@ test.describe('Album im Smartphone-Querformat', () => {
     { width: 568, height: 320 },
     { width: 740, height: 300 },
   ]) {
-    test(`${viewport.width}×${viewport.height}: Kacheln, Seiten, Kapitel und Reset bleiben erreichbar`, async ({
+    test(`${viewport.width}×${viewport.height}: Sechs Kacheln, Seiten und Kapitel passen ohne Scrollen`, async ({
       page,
     }) => {
       await page.setViewportSize(viewport);
@@ -79,30 +80,33 @@ test.describe('Album im Smartphone-Querformat', () => {
         'Dieser Raum hat noch keine Album-Einträge.',
       );
       await album.getByRole('tab', { name: 'Wohnzimmer', exact: true }).tap();
-      await album.locator('[data-action="reset"]').tap();
-      await expect(album.locator('#album-reset-question')).toBeVisible();
-      await album.locator('[data-action="cancel"]').tap();
-      await expect(album.locator('.album-overall')).toHaveText(
-        `Insgesamt: ${savedEntries.length} von ${savedEntries.length}`,
-      );
-
-      if (viewport.height === 320) {
-        await album.locator('[data-action="reset"]').tap();
-        await album.locator('[data-action="confirm"]').tap();
-        await expect(album.locator('.album-tile:disabled')).toHaveCount(6);
-        expect(
-          await album
-            .locator('.album-index')
-            .evaluate((el) => el.scrollHeight <= el.clientHeight + 1),
-        ).toBe(true);
-      }
-
+      await expect(
+        album.getByRole('button', { name: 'Album zurücksetzen', exact: true }),
+      ).toHaveCount(0);
       await test
         .info()
         .attach('album-querformat', { body: await page.screenshot(), contentType: 'image/png' });
       await album.locator('[data-action="close"]').tap();
       await expect(album).toBeHidden();
       await expect(page.locator('.start-screen')).toBeVisible();
+
+      if (viewport.height === 320) {
+        await openPause(page);
+        const options = page.locator('.pause-menu');
+
+        await options.locator('[data-album-reset="ask"]').tap();
+        await options.locator('[data-album-reset="confirm"]').tap();
+        await options.locator('[data-pause-resume]').tap();
+        await page.locator('[data-start-album]').tap();
+        await expect(album.locator('.album-tile:disabled')).toHaveCount(6);
+        expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+        expect(
+          await album
+            .locator('.album-index')
+            .evaluate((el) => el.scrollHeight <= el.clientHeight + 1),
+        ).toBe(true);
+        await album.locator('[data-action="close"]').tap();
+      }
     });
   }
 

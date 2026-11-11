@@ -360,13 +360,18 @@ wechseln die Darstellung ohne Änderung der Entdeckungen. Listener und Dialog we
 beim Szenen-Shutdown entfernt. Die Sammlung selbst bleibt über Szenen hinweg erhalten.
 
 Im niedrigen Querformat zeigt die Übersicht sechs Einträge als zwei Reihen mit
-je drei Kacheln. Seitenwechsel stehen neben dem Kapitelzähler, Zurücksetzen und
-Schließen in der Kopfzeile; die Übersicht passt ohne Scrollen. Andere Ansichten
+je drei Kacheln. Seitenwechsel stehen neben dem Kapitelzähler, Schließen in der
+Kopfzeile; die Übersicht passt ohne Scrollen. Andere Ansichten
 zeigen neun Einträge pro Seite. Beim Größenwechsel bleibt der ausgewählte Eintrag
 beziehungsweise der erste Eintrag der bisherigen Seite auf der neuen Seite;
 dadurch kann sich die Seitenzahl ändern. Desktop und Tablet behalten die begrenzte
-Doppelseite. Detailtexte und längere Bestätigungen bleiben bei Bedarf scrollbar.
+Doppelseite. Detailtexte und Speicherhinweise bleiben bei Bedarf scrollbar.
 Dialoggröße und Position berücksichtigen dynamische Viewporthöhe und Safe Areas.
+
+`AlbumResetSetting` liegt ausschließlich in den Optionen. Löschen erfordert dort
+eine ausdrückliche Bestätigung; Abbrechen oder Schließen erhält die Sammlung.
+Erneutes Öffnen beginnt ohne ausstehende Bestätigung. Zurücksetzen betrifft nur
+bestätigte Funde, nicht die laufende Runde oder ihre vorgemerkten Entdeckungen.
 
 ## Objektgeräusche
 
