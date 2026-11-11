@@ -43,6 +43,16 @@ fremde Server werden nicht übernommen. Der persönliche Dev-Server bleibt unabh
 
 ## Browser-Vertrag und Rundenprofile
 
+Vollständige Runden prüfen die zentralen Übergänge bis zum Ergebnis: erfolgreiche
+und gescheiterte Versöhnung, friedlicher Fund und Touch-Bedienung. Varianten von
+Grafiken, Punkten, Seeds und Schwierigkeiten werden vollständig in den vorhandenen
+Content-/Modelltests geprüft. Im Browser bleiben repräsentative Szenenaufbauten,
+reale Kontakte, Grafik-/Audioanbindung, Eingaben, Speicher und Layoutgrenzen.
+Reine UI-Prüfungen benötigen keinen erneut erspielten Rundenabschluss. Bei einer
+Reduktion muss jede bisher einzigartige Prüfung einer konkreten verbleibenden
+Browser- oder Modellprüfung zugeordnet sein; weniger Fallnamen allein sind kein
+Nachweis für gleichwertige Abdeckung oder eine kürzere Laufzeit.
+
 Specs unter [tests/e2e](../tests/e2e/) verwenden die gemeinsame Gesundheits-/Clock-
 Fixture aus `support.ts`, echte Tastatur-/Pointer-Eingaben und eigene Browserkontexte.
 Es gibt keine Spielzustandssetter und keine für Tests exponierten Phaser-Objekte.

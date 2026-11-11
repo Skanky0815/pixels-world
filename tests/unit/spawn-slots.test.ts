@@ -6,6 +6,7 @@ import { COZY_REMIX } from '../../src/content/rooms/cozy-remix.ts';
 import { OBJECTS } from '../../src/content/objects/catalog.ts';
 import { difficultyRoom } from '../../src/content/difficulty.ts';
 import { populateSpawnSlots } from '../../src/game/content/spawn-slots.ts';
+import { resolveRoom } from '../../src/game/content/resolve-room.ts';
 import type { RoomDefinition } from '../../src/game/content/definitions.ts';
 
 const Random = createRequire(import.meta.url)(
@@ -26,6 +27,34 @@ function populate(
 
 const spawned = (room: RoomDefinition) =>
   room.objects.filter((o) => o.id.startsWith('lower-shelf:'));
+
+// eslint-disable-next-line max-lines-per-function -- Alle sechs ehemaligen Browser-Konfigurationen prüfen Slotanzahl, Zusatzregale und aufgelöste Mittelauflage gemeinsam.
+test('Slotfixture materialisiert beide Räume und alle Grade vollständig und reproduzierbar', () => {
+  for (const source of [LIVING_ROOM, COZY_REMIX]) {
+    for (const difficulty of ['easy', 'normal', 'hard'] as const) {
+      const room = populate(source, difficulty, 'slots-172');
+      const resolved = resolveRoom(room, OBJECTS);
+
+      assert.equal(spawned(room).length, { easy: 1, normal: 2, hard: 3 }[difficulty]);
+      assert.equal(
+        room.objects.filter((o) => o.id.startsWith('difficulty-shelf-')).length,
+        difficulty === 'hard' ? 4 : 0,
+      );
+      assert.equal(room.wallPlacements?.length, difficulty === 'hard' ? 2 : 1);
+      const middle = resolved.objects.filter((o) => o.id.startsWith('middle-shelf:'));
+
+      assert.equal(middle.length, difficulty === 'easy' ? 0 : 1);
+
+      if (difficulty !== 'easy') {
+        assert.ok(middle[0].kind === 'vase');
+        assert.equal(middle[0].config.x, 646);
+      }
+
+      assert.deepEqual(room, populate(source, difficulty, 'slots-172'));
+      assert.deepEqual(resolved, resolveRoom(populate(source, difficulty, 'slots-172'), OBJECTS));
+    }
+  }
+});
 
 // eslint-disable-next-line max-lines-per-function -- Zusammengehörige Validierung, Platzierung oder Testschritte bleiben als atomarer Ablauf lesbar.
 function withSlots(

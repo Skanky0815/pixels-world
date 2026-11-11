@@ -26,3 +26,21 @@ test('Neue registrierte Variante braucht keine eigene Playground-Implementierung
   assert.throws(() => playgroundRoom('missing'), /Unknown playground variant/);
   assert.throws(() => playgroundRoom('toString'), /Unknown playground variant/);
 });
+
+// eslint-disable-next-line max-lines-per-function -- Gemeinsame Bruchphysik bleibt im Browser; die vollständige Variantenmatrix schützt die real aufgelösten Werte und Grafiken.
+test('Alle Vasenvarianten erhalten ihren eigenen Wert und ihre Grafik bei gleicher Auflage', () => {
+  for (const [variant, appearance, points] of [
+    ['small-vase', 'terracotta', 25],
+    ['blue-vase', 'blue', 35],
+    ['heirloom-vase', 'gold', 40],
+    ['mellow-vase', 'mellow', 15],
+  ] as const) {
+    const object = playgroundRoom(variant).objects[0];
+
+    assert.ok(object.kind === 'vase');
+    assert.equal(object.config.appearance, appearance);
+    assert.equal(object.config.points, points);
+    assert.equal(object.config.shelfY, 330);
+    assert.equal(object.config.floorY, 468);
+  }
+});

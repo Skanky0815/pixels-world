@@ -206,40 +206,41 @@ test('Playground: Vorhangtextur, acht getrennte Risse und Reset', async ({
   expect((await tearSnapshot(page)).marks).toEqual([]);
 });
 
-for (const variant of ['small-vase', 'blue-vase', 'heirloom-vase', 'mellow-vase'] as const) {
-  test(`Playground: ${variant} vom Regal schieben, eigene Textur und Scherben zurücksetzen`, async ({
-    page,
-    // eslint-disable-next-line max-lines-per-function -- Reale Auswahl, Bruch und Reset prüfen Textur, Physik und Splitter-Lebensdauer gemeinsam.
-  }) => {
-    await loadPlayground(page, variant);
-    expect((await snapshot(page)).object).toMatchObject({
-      texture: `vase-${OBJECTS[variant].appearance}`,
-      bodyWidth: 18,
-      bodyHeight: 28,
-      shards: 0,
-    });
-    await page.keyboard.down('ArrowRight');
-    await untilPlayground(page, (s) => s.object.state === 'broken');
-    await page.keyboard.up('ArrowRight');
-    const state = await snapshot(page);
+// Alle Varianten/Texturen: Katalogwechsel unten; gemeinsame Bruchphysik hier.
+test('Playground: Vase vom Regal schieben, Scherben und wiederholten Bruch zurücksetzen', async ({
+  page,
+  // eslint-disable-next-line max-lines-per-function -- Reale Auswahl, Bruch und Reset prüfen Textur, Physik und Splitter-Lebensdauer gemeinsam.
+}) => {
+  const variant = 'heirloom-vase';
 
-    expect(state.object).toMatchObject({ shards: 7 });
-    expect(state.events).toHaveLength(1);
-    expect(state.events[0]).toMatchObject({ kind: 'break', value: OBJECTS[variant].points });
-    expect(state.score).toBe(OBJECTS[variant].points);
-    await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
-    await untilPlayground(page, (s) => s.generation > state.generation && s.pixel.grounded);
-    expect(await snapshot(page)).toMatchObject({
-      score: 0,
-      events: [],
-      object: { state: 'resting', shards: 0 },
-    });
-    await page.keyboard.down('ArrowRight');
-    await untilPlayground(page, (s) => s.object.state === 'broken');
-    await page.keyboard.up('ArrowRight');
-    expect((await snapshot(page)).events).toHaveLength(1);
+  await loadPlayground(page, variant);
+  expect((await snapshot(page)).object).toMatchObject({
+    texture: `vase-${OBJECTS[variant].appearance}`,
+    bodyWidth: 18,
+    bodyHeight: 28,
+    shards: 0,
   });
-}
+  await page.keyboard.down('ArrowRight');
+  await untilPlayground(page, (s) => s.object.state === 'broken');
+  await page.keyboard.up('ArrowRight');
+  const state = await snapshot(page);
+
+  expect(state.object).toMatchObject({ shards: 7 });
+  expect(state.events).toHaveLength(1);
+  expect(state.events[0]).toMatchObject({ kind: 'break', value: OBJECTS[variant].points });
+  expect(state.score).toBe(OBJECTS[variant].points);
+  await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
+  await untilPlayground(page, (s) => s.generation > state.generation && s.pixel.grounded);
+  expect(await snapshot(page)).toMatchObject({
+    score: 0,
+    events: [],
+    object: { state: 'resting', shards: 0 },
+  });
+  await page.keyboard.down('ArrowRight');
+  await untilPlayground(page, (s) => s.object.state === 'broken');
+  await page.keyboard.up('ArrowRight');
+  expect((await snapshot(page)).events).toHaveLength(1);
+});
 
 test('Playground: alle Varianten und wiederholte Wechsel behalten stabile Ressourcen', async ({
   page,
@@ -261,6 +262,22 @@ test('Playground: alle Varianten und wiederholte Wechsel behalten stabile Ressou
       expect(state.score).toBe(0);
       expect(state.events).toEqual([]);
       expect(state.resources.objects).toBe(1);
+      const definition = OBJECTS[variant as keyof typeof OBJECTS];
+
+      if (definition.kind === 'vase')
+        expect(state.object).toMatchObject({
+          texture: `vase-${definition.appearance}`,
+          bodyWidth: 18,
+          bodyHeight: 28,
+          shards: 0,
+        });
+
+      if (definition.kind === 'picture')
+        expect(state.object).toMatchObject({
+          texture: `picture-${definition.appearance}`,
+          state: 'straight',
+          damage: 0,
+        });
 
       if (resources.has(variant)) expect(state.resources).toEqual(resources.get(variant));
       resources.set(variant, state.resources);

@@ -5,7 +5,7 @@ import { PNG } from 'pngjs';
 import { OBJECTS } from '../../src/content/objects/catalog.ts';
 import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
 import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import { VASE_APPEARANCES } from '../../src/game/assets/vase-appearance.ts';
+import { VASE_APPEARANCES, VASE_SHARD_FAMILY } from '../../src/game/assets/vase-appearance.ts';
 
 function art(name: string) {
   return PNG.sync.read(
@@ -40,6 +40,16 @@ test('Alle drei Farbgruppen besitzen transparente kleine Scherben', () => {
     assert.deepEqual([png.width, png.height], [8, 8]);
     assert.ok(alpha.includes(0) && alpha.some((a) => a > 0));
   }
+});
+
+test('Jede Vasengrafik besitzt eine vorhandene Scherbenfamilie, Mellow verwendet Terrakotta', () => {
+  for (const appearance of VASE_APPEARANCES) {
+    const shards = art(`vase-${VASE_SHARD_FAMILY[appearance]}-shard`);
+
+    assert.deepEqual([shards.width, shards.height], [8, 8]);
+  }
+
+  assert.equal(VASE_SHARD_FAMILY.mellow, 'terracotta');
 });
 
 // eslint-disable-next-line max-lines-per-function -- Optionale Grafik und alter Farbvertrag werden gemeinsam gegen die Content-Auflösung geprüft.

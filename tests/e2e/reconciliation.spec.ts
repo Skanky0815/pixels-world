@@ -1,4 +1,4 @@
-import { test, expect, start, state, until, reset, besideCouch } from './support';
+import { test, expect, start, state, until, reset, besideCouch, waitForGame } from './support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
 import type { Page } from '@playwright/test';
 
@@ -166,30 +166,59 @@ test(
   },
 );
 
-// eslint-disable-next-line max-lines-per-function -- Zwei gescheiterte Versuche prüfen terminales Ergebnis, unveränderte Welt und vollständigen Neustart.
-test('Charme scheitert nach zwei Versuchen am selben Herz', { tag }, async ({ page }) => {
-  await enterCharm(page);
-  const frozen = await state(page);
+test(
+  'Charme scheitert nach zwei Versuchen und verwirft nur neue Album-Funde',
+  { tag: [tag, '@smoke'] },
+  // eslint-disable-next-line max-lines-per-function -- Zwei gescheiterte Versuche prüfen Welt-Freeze, Album-Speicherschutz, Ergebnis und Neustart gemeinsam.
+  async ({ page }) => {
+    await page.addInitScript(() => {
+      if (!localStorage.getItem('pixels-world.album'))
+        localStorage.setItem(
+          'pixels-world.album',
+          JSON.stringify({ version: 1, discovered: ['vase.blue'] }),
+        );
+    });
+    await enterCharm(page, true);
+    expect((await state(page)).album.pending).toEqual(['couch.cozy']);
+    const frozen = await state(page);
 
-  await until(page, (s) => s.reconciliation.feedback === 'timeout', 100);
-  expect((await state(page)).reconciliation.attemptsLeft).toBe(1);
-  await continueCharm(page);
-  await until(page, (s) => s.reconciliation.stage === 'failed', 100);
-  const failed = await state(page);
+    await until(page, (s) => s.reconciliation.feedback === 'timeout', 100);
+    expect((await state(page)).reconciliation.attemptsLeft).toBe(1);
+    await continueCharm(page);
+    await until(page, (s) => s.reconciliation.stage === 'failed', 100);
+    const failed = await state(page);
 
-  await page.clock.runFor(5000);
-  expect((await state(page)).reconciliation).toEqual(failed.reconciliation);
-  expect(failed.chaos).toEqual(frozen.chaos);
-  expect(failed.objects).toEqual(frozen.objects);
-  await expectResult(page, 'failed');
-  await test
-    .info()
-    .attach('versoehnung-gescheitert', { body: await page.screenshot(), contentType: 'image/png' });
-  await continueCharm(page);
-  await until(page, (s) => s.generation > failed.generation);
-  expect((await state(page)).reconciliation).toMatchObject({ stage: 'waiting', attemptsLeft: 2 });
-  await expectFreshRound(page);
-});
+    await page.clock.runFor(5000);
+    expect((await state(page)).reconciliation).toEqual(failed.reconciliation);
+    expect(failed.chaos).toEqual(frozen.chaos);
+    expect(failed.objects).toEqual(frozen.objects);
+    await expectResult(page, 'failed');
+    expect(failed.result).toMatchObject({
+      newDiscoveries: 0,
+      albumText: 'Neue Album-Einträge: 0 · Versöhnung nicht geschafft.',
+    });
+    expect((await state(page)).album).toEqual({ pending: [], confirmed: [], completed: true });
+    expect(
+      await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
+    ).toEqual(['vase.blue']);
+    await page.locator('.album-toggle').click();
+    await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+    await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
+    await page.locator('.album-dialog [data-action="close"]').click();
+    await test.info().attach('versoehnung-gescheitert', {
+      body: await page.screenshot(),
+      contentType: 'image/png',
+    });
+    await continueCharm(page);
+    await until(page, (s) => s.generation > failed.generation);
+    expect((await state(page)).reconciliation).toMatchObject({ stage: 'waiting', attemptsLeft: 2 });
+    await expectFreshRound(page);
+    await page.reload();
+    await waitForGame(page);
+    await page.locator('[data-start-album]').click();
+    await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+  },
+);
 
 // eslint-disable-next-line max-lines-per-function -- Sichtbare Ergebniswerte, Unveränderlichkeit und stabiler Abschluss werden zusammen geprüft.
 async function expectResult(page: Page, outcome: 'success' | 'failed') {

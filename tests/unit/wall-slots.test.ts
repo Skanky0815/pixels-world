@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
 import { COZY_REMIX } from '../../src/content/rooms/cozy-remix.ts';
 import { OBJECTS } from '../../src/content/objects/catalog.ts';
+import { PICTURE_ALBUM } from '../../src/content/album/pictures.ts';
 import { difficultyRoom } from '../../src/content/difficulty.ts';
 import { populateSpawnSlots } from '../../src/game/content/spawn-slots.ts';
 import { resolveRoom } from '../../src/game/content/resolve-room.ts';
@@ -12,6 +13,44 @@ import type { ObjectCatalog, RoomDefinition } from '../../src/game/content/defin
 const Random = createRequire(import.meta.url)(
   'phaser/src/math/random-data-generator/RandomDataGenerator.js',
 ) as new (seeds: string[]) => { frac(): number };
+
+// eslint-disable-next-line max-lines-per-function -- Die bisherige Browser-Motivmatrix prüft jetzt die echte Seed-/Slot-/Resolverpipeline ohne wiederholte Sprungabläufe.
+test('Alle Bildmotive werden in beiden Räumen mit stabiler Textur, Regel und Album-ID aufgelöst', () => {
+  for (const [room, fixtures] of [
+    [
+      LIVING_ROOM,
+      [
+        ['pixel-portrait', 'pictures-4'],
+        ['berlin-tower', 'pictures-7'],
+        ['cozy-nook', 'pictures-2'],
+      ],
+    ],
+    [
+      COZY_REMIX,
+      [
+        ['pixel-portrait', 'pictures-1'],
+        ['berlin-tower', 'pictures-0'],
+        ['cozy-nook', 'pictures-3'],
+      ],
+    ],
+  ] as const) {
+    for (const [variant, seed] of fixtures) {
+      const populated = populate(room, 'normal', seed);
+      const picture = resolveRoom(populated, OBJECTS).objects.find((o) => o.id === 'wall:sofa');
+
+      assert.ok(picture?.kind === 'picture');
+      assert.equal(picture.variant, variant);
+      assert.equal(`picture-${picture.config.appearance}`, PICTURE_ALBUM[variant].asset);
+      assert.deepEqual(picture.config.rules, OBJECTS[variant].rules);
+      assert.deepEqual(
+        picture.config.area,
+        populated.wallPlacements?.find((p) => p.id === picture.id)?.bounds,
+      );
+      assert.equal(OBJECTS[variant].album, PICTURE_ALBUM[variant]);
+      assert.deepEqual(populated, populate(room, 'normal', seed));
+    }
+  }
+});
 
 // eslint-disable-next-line max-lines-per-function -- Der Helfer verbindet den echten Phaser-RNG mit der gesamten Content-Pipeline.
 function populate(
