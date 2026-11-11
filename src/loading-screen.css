@@ -213,3 +213,48 @@
     transform: rotate(360deg);
   }
 }
+
+/* Keep the loading controls above the age footer in short landscape windows. */
+@media (max-height: 400px) and (orientation: landscape) {
+  #loading-screen {
+    padding: 8px 12px 80px;
+  }
+  .loading-card {
+    display: grid;
+    grid-template-columns: 128px minmax(0, 1fr);
+    gap: 4px 12px;
+    padding: 12px;
+    text-align: left;
+  }
+  .loading-brand,
+  .loading-actions {
+    grid-column: 1 / -1;
+  }
+  .loading-stage {
+    grid-column: 1;
+    grid-row: 2 / 6;
+    margin: 0;
+  }
+  #loading-title,
+  #loading-status,
+  #loading-progress,
+  #loading-percent {
+    grid-column: 2;
+    margin: 0;
+  }
+  #loading-title {
+    font-size: 16px;
+  }
+  #loading-status {
+    min-height: 4.2em;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .loading-actions {
+    min-height: 44px;
+  }
+  #loading-skip,
+  #loading-retry {
+    margin: 0;
+  }
+}

@@ -56,8 +56,8 @@ allgemeinen Telemedienpflicht verwechselt werden.
 Das [KJM-Infoblatt](https://www.kjm-online.de/fileadmin/user_upload/KJM/Themen/Technischer_Jugendmedienschutz/KJM_Infosheet_Kennzeichnungspflicht_2026.pdf)
 erlaubt die Einstufung durch den Anbieter grundsätzlich ohne externe Prüfung.
 Textform ist möglich; Alter und Gründe sollen gut lesbar vor dem Inhalt erscheinen.
-Die Umsetzung verwendet deshalb eine eigene Textkennzeichnung auf Landingpage,
-Ladeseite und am Anfang der Einführung, kein USK-Logo und keine behauptete
+Die Umsetzung verwendet deshalb eine eigene Textkennzeichnung in den Footern der öffentlichen Seiten
+und am unteren Rand der Ladeseite vor Spielbeginn, kein USK-Logo und keine behauptete
 behördliche Freigabe. Diese Anbieter-Einstufung ist von einer USK-Prüfung zu
 unterscheiden. Der Betreiber muss ihre inhaltliche Begründung vor Veröffentlichung
 prüfen und übernehmen.

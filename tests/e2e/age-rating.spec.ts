@@ -6,16 +6,16 @@ for (const viewport of [
   { width: 568, height: 320 },
   { width: 1024, height: 768 },
 ]) {
-  test(`Altersinformation ohne Scrollen: ${viewport.width}×${viewport.height}`, async ({
+  test(`Altersinformation im Footer und vor Spielbeginn: ${viewport.width}×${viewport.height}`, async ({
     page,
-    // eslint-disable-next-line max-lines-per-function -- Sichtbare Einstufung, Sprachwechsel und drei Einstiege bleiben als ein zusammenhängender Browserablauf lesbar.
+    // eslint-disable-next-line max-lines-per-function -- Footer-Einstufung, Sprachwechsel und der sichtbare Ladeeinstieg bleiben als ein zusammenhängender Browserablauf lesbar.
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    const landing = page.locator('main > .age-rating');
+    const landing = page.locator('.landing-footer .age-rating');
 
     await expect(landing).toContainText('Ab 6 Jahren');
-    await expect(landing).toBeInViewport({ ratio: 1 });
+    await expect(landing).toBeVisible();
     await page.getByRole('button', { name: 'English', exact: true }).click();
     await expect(landing).toContainText('Age rating by the provider');
     await page.goto('/play.html');
@@ -24,9 +24,10 @@ for (const viewport of [
     await expect(loading).toContainText('Ages 6+');
     await expect(loading).toBeInViewport({ ratio: 1 });
     await waitForLoadingScreen(page);
-    const intro = page.locator('.start-screen .age-rating:visible, .intro-age-rating:visible');
+    const intro = page.locator('main > footer .age-rating');
 
-    await expect(intro).toContainText('Cartoon damage');
+    await expect(intro).toContainText('Cartoon property damage');
+    await intro.scrollIntoViewIfNeeded();
     await expect(intro).toBeInViewport({ ratio: 1 });
     expect(
       await intro.evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
