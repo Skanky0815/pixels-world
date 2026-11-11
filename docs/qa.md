@@ -75,12 +75,12 @@ gezieltem `touchEnd` frei.
 
 Maßgeblich ist [.github/workflows/qa.yml](../.github/workflows/qa.yml):
 
-| Anlass          | Umfang                                                           |
-| --------------- | ---------------------------------------------------------------- |
-| Pull Request    | Quality und getaggte `@smoke`-Auswahl                            |
-| Main-Push       | Quality; Browser bewusst nicht erneut geplant                    |
-| Manuelle QA     | Standardmäßig Vollprüfung; Smoke-Profil für Versions-PRs wählbar |
-| Release-Rollout | Vollständige Suite mit Produktionszeiten                         |
+| Anlass                       | Umfang                                                           |
+| ---------------------------- | ---------------------------------------------------------------- |
+| Pull Request                 | Quality und getaggte `@smoke`-Auswahl                            |
+| Main-Push                    | Quality; Browser bewusst nicht erneut geplant                    |
+| Manuelle QA                  | Standardmäßig Vollprüfung; Smoke-Profil für Versions-PRs wählbar |
+| Release vor Veröffentlichung | Vollständige Suite mit Produktionszeiten                         |
 
 Die lokale Vollprüfung trägt die breite PR-Abdeckung. Mehr Shards verkürzen
 Wartezeit, sparen aber nicht automatisch Runner-Minuten. Matrix, Worker,

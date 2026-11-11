@@ -46,7 +46,12 @@ reset_fixture() {
   : > "$GITHUB_STEP_SUMMARY"
 }
 run_gate() { bash "$fixture/repo/.github/scripts/auto-publish-candidate.sh" > "$fixture/result.log" 2>&1; }
-allowed() { run_gate; grep -q 'publish_allowed=true' "$GITHUB_OUTPUT"; }
+allowed() {
+  run_gate
+  grep -qx 'publish_allowed=true' "$GITHUB_OUTPUT"
+  grep -qx "tag=v$version" "$GITHUB_OUTPUT"
+  grep -qx "sha=$GITHUB_SHA" "$GITHUB_OUTPUT"
+}
 no_publish() { run_gate; ! grep -q 'publish_allowed=true' "$GITHUB_OUTPUT"; grep -q 'Kein Publish:' "$GITHUB_STEP_SUMMARY"; }
 fails_closed() {
   if run_gate; then echo 'Ungültiger Publish unerwartet akzeptiert' >&2; cat "$fixture/result.log" >&2; exit 1; fi
@@ -118,6 +123,11 @@ MOCK_API_FAILURE=1 fails_closed
 reset_fixture
 echo 'invalid-json' > "$fixture/candidates.json"
 fails_closed
+# Rechecking after full QA must not keep an earlier approval if main advanced.
+reset_fixture
+allowed
+: > "$GITHUB_OUTPUT"
+MOCK_MAIN=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb no_publish
 # A repeated event after native Release Please has tagged the candidate is a no-op.
 reset_fixture
 allowed

@@ -36,7 +36,7 @@ Einmalig Node 22/Abhängigkeiten und Chromium vorbereiten (`npm ci`, `npx playwr
 
 Der Hook prüft den aktuellen HEAD mit sauberem getracktem Arbeitsstand; Pushes anderer Commits werden abgewiesen, reine Löschungen benötigen keine Tests. Ungetrackte Dateien dürfen keine fehlenden Build-Eingaben des Commits ersetzen. Hooks sind eine lokale Hilfe und können umgangen werden. Bei GitHub-API-Änderungen läuft kein lokaler Git-Hook: denselben Prüfbefehl ausdrücklich vor Veröffentlichung ausführen. Keine alten Testergebnisse als frischen Nachweis verwenden.
 
-PR-CI prüft Quality und die `@smoke`-Auswahl auf einem Browser-Runner; Main-CI wiederholt nur Quality. Manuelle QA und Release-Rollout prüfen alle Szenarien auf den konfigurierten Shards, beim Release mit Produktionszeiten. Details: [QA](docs/qa.md#ci-und-runnerverbrauch).
+PR-CI prüft Quality und die `@smoke`-Auswahl auf einem Browser-Runner; Main-CI wiederholt nur Quality. Manuelle QA und Release vor Veröffentlichung prüfen alle Szenarien auf den konfigurierten Shards, beim Release mit Produktionszeiten. Details: [QA](docs/qa.md#ci-und-runnerverbrauch).
 
 ## Code-Stil und Releases
 

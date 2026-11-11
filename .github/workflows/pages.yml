@@ -27,25 +27,15 @@ jobs:
         with:
           ref: ${{ inputs.release_sha }}
           persist-credentials: false
-      - name: Veröffentlichten Release vor vollständiger QA bestätigen
+      - name: Veröffentlichten Release vor Artefaktübernahme bestätigen
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag }}
           RELEASE_SHA: ${{ inputs.release_sha }}
         run: bash .github/scripts/verify-release.sh
 
-  full-qa:
-    needs: identity
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-    uses: ./.github/workflows/qa.yml
-    with:
-      full_round: true
-      release_tag: ${{ inputs.release_tag }}
-
   build:
-    needs: full-qa
+    needs: identity
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
