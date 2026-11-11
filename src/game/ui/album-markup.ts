@@ -49,7 +49,7 @@ export function albumPage(entry: AlbumEntry | undefined) {
     return `<section class="album-story">${back}<span class="album-eyebrow">${t('albumChoose')}</span><div class="album-mystery" aria-hidden="true">?</div><h3>${t('albumSecret')}</h3><p>${t('albumHint')}</p></section>`;
   const lang = currentLanguage();
 
-  return `<section class="album-story" aria-label="${escape(entry.name[lang])}">${back}<span class="album-eyebrow">${t('albumDiscovered')}</span><figure>${entryImage(entry)}<figcaption>${escape(entry.name[lang])}</figcaption></figure><p>${escape(entry.fluff[lang])}</p><blockquote>${escape(entry.sara[lang])}<cite>— Sara</cite></blockquote></section>`;
+  return `<section class="album-story" aria-label="${escape(entry.name[lang])}">${back}<span class="album-eyebrow">${t('albumDiscovered')}</span><figure>${entryImage(entry)}<figcaption>${escape(entry.name[lang])}</figcaption></figure><div class="album-story-copy"><p>${escape(entry.fluff[lang])}</p><blockquote>${escape(entry.sara[lang])}<cite>— Sara</cite></blockquote></div></section>`;
 }
 
 export function albumTile(

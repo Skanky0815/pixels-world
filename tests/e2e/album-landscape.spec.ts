@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function -- Zusammenhängende Bedienwege prüfen Geometrie, echte Touch-Aktionen und erhaltene Auswahl gemeinsam. */
 import type { Page } from '@playwright/test';
 import { albumEntries } from '../../src/content/album/index';
-import { openPause } from './pause-support';
+import { changeLanguage, openPause } from './pause-support';
 import { test, expect, loadIntro } from './support';
 
 const savedEntries = albumEntries(true).map((entry) => entry.id);
@@ -40,6 +40,54 @@ async function expectSeparateNavigation(page: Page) {
   );
 }
 
+async function expectDetailFits(page: Page) {
+  const album = page.locator('.album-dialog');
+  const story = album.locator('.album-story');
+  const picture = (await story.locator('figure').boundingBox())!;
+  const copy = (await story.locator('.album-story-copy').boundingBox())!;
+  const bounds = (await story.boundingBox())!;
+  const image = (await story.locator('img').boundingBox())!;
+
+  expect(picture.x + picture.width).toBeLessThanOrEqual(copy.x);
+  expect(copy.y).toBeGreaterThanOrEqual(bounds.y);
+  expect(copy.y + copy.height).toBeLessThanOrEqual(bounds.y + bounds.height);
+  expect(image.height).toBeGreaterThanOrEqual(24);
+  expect(await story.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+  expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+}
+
+async function checkEveryDetail(page: Page) {
+  const album = page.locator('.album-dialog');
+  const seen = new Set<string>();
+
+  for (let index = 0; index < savedEntries.length; index++) {
+    const entries = await album
+      .locator('[data-entry]')
+      .evaluateAll((tiles) => tiles.map((tile) => tile.getAttribute('data-entry')!));
+
+    for (const entry of entries) {
+      await album.locator(`[data-entry="${entry}"]`).tap();
+      await expectDetailFits(page);
+      seen.add(entry);
+
+      if (index === 0 && entry === entries.at(-1))
+        await test.info().attach('album-detail-querformat', {
+          body: await page.screenshot(),
+          contentType: 'image/png',
+        });
+      await album.locator('[data-action="overview"]').tap();
+    }
+
+    if (await album.locator('[data-action="page-next"]').isDisabled()) break;
+    await album.locator('[data-action="page-next"]').tap();
+  }
+
+  expect(seen.size).toBe(savedEntries.length);
+
+  while (!(await album.locator('[data-action="page-previous"]').isDisabled()))
+    await album.locator('[data-action="page-previous"]').tap();
+}
+
 test.describe('Album im Smartphone-Querformat', () => {
   test.use({ hasTouch: true, isMobile: true });
 
@@ -59,6 +107,7 @@ test.describe('Album im Smartphone-Querformat', () => {
       await expectBoundedAlbum(page);
       await expectSeparateNavigation(page);
       await expect(album.locator('.album-tile')).toHaveCount(6);
+      await checkEveryDetail(page);
       expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
       expect(
         await album
@@ -110,6 +159,23 @@ test.describe('Album im Smartphone-Querformat', () => {
     });
   }
 
+  for (const viewport of [
+    { width: 568, height: 320 },
+    { width: 740, height: 300 },
+  ]) {
+    test(`${viewport.width}×${viewport.height}: auch alle englischen Detailtexte passen neben das Bild`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await openSavedAlbum(page);
+      await page.locator('.album-dialog [data-action="close"]').tap();
+      await changeLanguage(page, 'en');
+      await page.locator('[data-start-album]').tap();
+      await checkEveryDetail(page);
+      await page.locator('.album-dialog [data-action="close"]').tap();
+    });
+  }
+
   test(
     'Drehen erhält ausgewählten Eintrag und Seite; Notch und Home-Leiste bleiben frei',
     { tag: '@smoke' },
@@ -132,6 +198,7 @@ test.describe('Album im Smartphone-Querformat', () => {
       });
       await page.clock.runFor(64);
       await expectBoundedAlbum(page);
+      await expectDetailFits(page);
       let box = (await album.boundingBox())!;
 
       expect(box.x).toBeGreaterThanOrEqual(44);

@@ -365,7 +365,10 @@ Kopfzeile; die Übersicht passt ohne Scrollen. Andere Ansichten
 zeigen neun Einträge pro Seite. Beim Größenwechsel bleibt der ausgewählte Eintrag
 beziehungsweise der erste Eintrag der bisherigen Seite auf der neuen Seite;
 dadurch kann sich die Seitenzahl ändern. Desktop und Tablet behalten die begrenzte
-Doppelseite. Detailtexte und Speicherhinweise bleiben bei Bedarf scrollbar.
+Doppelseite. Im niedrigen Querformat stehen auch in der Detailansicht Bild und
+Name links, Beschreibung und Saras Kommentar rechts; die vorhandenen deutschen
+und englischen Einträge passen ohne Scrollen. In anderen Ansichten bleiben
+Detailtexte bei Bedarf scrollbar, ebenso längere Speicherhinweise.
 Dialoggröße und Position berücksichtigen dynamische Viewporthöhe und Safe Areas.
 
 `AlbumResetSetting` liegt ausschließlich in den Optionen. Löschen erfordert dort
