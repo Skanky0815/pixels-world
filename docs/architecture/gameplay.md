@@ -62,6 +62,11 @@ Whitelist von Objektpaaren. Relative swept AABBs erkennen auch schnelle Fallwege
 ohne die gesamte Hüllbox einer diagonalen Bewegung als Treffer zu behandeln.
 Parallele Bewegung und bloßes Aufliegen zählen nicht als neuer Stoß.
 
+Landet Pixel von oben auf einer Vase, kippt sie von ihm weg und rollt
+los; seitliches Anschubsen bleibt möglich. Der Landekontakt gibt einmal pro
+Berührungsphase einen Impuls und allein noch keine Schadenspunkte. Reduzierte
+Bewegung unterdrückt das sichtbare Kippen und Drehen, nicht die physische Bewegung.
+
 | Objekt   | Ausgehende Wirkung                                               | Reaktion auf Fremdtreffer                                         |
 | -------- | ---------------------------------------------------------------- | ----------------------------------------------------------------- |
 | Vase     | Rollen, Schieben und Fall; Arcade-Kontakt auch mit anderen Vasen | Leicht: weiterrollen; stark: Bruch am Kontaktpunkt                |

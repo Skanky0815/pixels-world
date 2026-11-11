@@ -169,3 +169,66 @@ test('Objektkontakt: kippende Bücher stoßen eine Vase ohne direkten Pixelkonta
   expect(hit.objectImpacts.last).toMatchObject({ source: 'source-books', target: 'target-vase' });
   await page.keyboard.up('ArrowDown');
 });
+
+for (const direction of [1, -1])
+  test(
+    `Pixel landet auf Vase: kippt und rollt nach ${direction > 0 ? 'rechts' : 'links'}`,
+    { tag: '@smoke' },
+    async ({ page }) => {
+      await start(page, '/?room=impact-landing');
+      await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 500);
+
+      if (direction < 0) {
+        await holdUntil(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 700);
+        await until(page, (s) => s.pixel.grounded);
+        await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 680);
+      } else {
+        await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 520);
+      }
+
+      await until(page, (s) => s.pixel.velocityX === 0);
+      expect((await state(page)).vases.find((v) => v.id === 'landing-vase')?.state).toBe('resting');
+
+      if (direction < 0) await page.emulateMedia({ reducedMotion: 'reduce' });
+      const forward = direction > 0 ? 'ArrowRight' : 'ArrowLeft';
+      const backward = direction > 0 ? 'ArrowLeft' : 'ArrowRight';
+
+      await holdUntil(page, ['Space', forward], (s) => direction * (s.pixel.x - 600) >= -50);
+      await holdUntil(page, [backward], (s) => direction * s.pixel.velocityX <= 0);
+      await until(
+        page,
+        (s) => s.vases.find((v) => v.id === 'landing-vase')?.state === 'moving',
+        16,
+      );
+      const landed = await state(page);
+      const vase = landed.vases.find((v) => v.id === 'landing-vase')!;
+
+      expect(landed.pixel.bottom).toBeCloseTo(440, 0);
+      expect(vase.velocityX * direction).toBeGreaterThan(0);
+      expect(Math.abs(vase.angle)).toBe(direction < 0 ? 0 : 65);
+      expect(landed.chaos.score).toBe(0);
+      expect(vase.shards).toBe(0);
+      await page.keyboard.press('Escape');
+      const paused = (await state(page)).vases;
+
+      await page.clock.runFor(1000);
+      expect((await state(page)).vases).toEqual(paused);
+      await page.keyboard.press('Escape');
+      await page.clock.runFor(160);
+      const rolled = (await state(page)).vases.find((v) => v.id === 'landing-vase')!;
+
+      expect((rolled.x - vase.x) * direction).toBeGreaterThan(10);
+      expect(rolled.state).not.toBe('broken');
+      expect((await state(page)).chaos.score).toBe(0);
+      await test
+        .info()
+        .attach('vase-nach-landung', { body: await page.screenshot(), contentType: 'image/png' });
+      await reset(page);
+      expect((await state(page)).vases.find((v) => v.id === 'landing-vase')).toMatchObject({
+        state: 'resting',
+        angle: 0,
+        x: 600,
+        shards: 0,
+      });
+    },
+  );

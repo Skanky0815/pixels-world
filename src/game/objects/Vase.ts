@@ -62,6 +62,13 @@ export class Vase implements Destructible, ObjectLifecycle {
     this.spin(direction * 80);
   }
 
+  topple(direction: number) {
+    this.push(direction);
+
+    if (this.phase !== 'broken')
+      this.collider.setAngle(motionPreferences.snapshot().reduced ? 0 : direction * 65);
+  }
+
   releaseSupport(shelf: Bounds) {
     const body = this.collider.body as Phaser.Physics.Arcade.Body;
 

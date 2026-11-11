@@ -148,6 +148,8 @@ Sie verwenden dieselben Objektklassen, Collider, Eingaben und Schadensmodelle:
   es fällt auf die Vase am Boden.
 - `/play.html?room=impact-shelf`: das mittlere Regal durch Landungen belasten; seine
   Bruchstücke treffen die Pflanze darunter.
+- `/play.html?room=impact-landing`: von links oder rechts auf die Bodenvase springen;
+  sie kippt und rollt von Pixel weg, ohne sofort zu zerbrechen.
 - `/play.html?room=impact-books`: bei den Büchern links auf dem unteren Regal bleiben;
   beim Kippen stoßen sie die benachbarte Vase an.
 

@@ -41,6 +41,7 @@ function lab(id: string, objects: readonly ObjectInstance[]): RoomDefinition {
 }
 
 export const IMPACT_ROOMS = {
+  'impact-landing': lab('impact-landing', [vase('landing-vase', 600, 'floor')]),
   'impact-books': lab('impact-books', [
     {
       id: 'source-books',

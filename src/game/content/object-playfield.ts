@@ -100,6 +100,8 @@ function connectVases(scene: Phaser.Scene, objects: Objects) {
 function pushVase(pixel: Pixel, vase: Vase) {
   const body = vase.collider.body as Phaser.Physics.Arcade.Body;
 
+  if (body.touching.up && !body.wasTouching.up) vase.topple(pixel.x < vase.collider.x ? 1 : -1);
+
   if (body.touching.left || body.touching.right) vase.push(pixel.x < vase.collider.x ? 1 : -1);
 }
 
