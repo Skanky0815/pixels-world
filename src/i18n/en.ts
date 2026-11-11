@@ -389,4 +389,6 @@ export const en: Record<keyof typeof de, string> = {
   saraDamageShelf3: 'The shelf has collapsed. That wasn’t an invitation to stress-test it.',
   saraDamageShelf4: 'The shelf has collapsed. We’re both staying on the ground for now.',
   saraDamageShelf5: 'Shelf broken, things on the floor. Gravity’s had enough help for today.',
+  ageRatingCompact: 'Ages 6+ · Provider rating\nTime pressure · Cartoon damage',
+  ageRating: 'Ages 6+ · Age rating by the provider\nMild time pressure · Cartoon property damage',
 };

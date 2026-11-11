@@ -24,6 +24,11 @@ sind dafür deaktiviert. Bei mehreren Änderungen bestimmt der größte nötige
 Versionssprung den Vorschlag; die Prüfung erfolgt weiterhin im Versions-PR.
 Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
 
+Vor dem nächsten öffentlichen Release ist außerdem die
+[Betreiber-Checkliste zu Jugendschutz und Speicherung](legal/phase2-review.md#betreiber-checkliste-vor-dem-nächsten-release)
+aus #252 zu bearbeiten und das Ergebnis ausdrücklich zu bestätigen. Grüne technische
+QA ersetzt diese Prüfung nicht.
+
 ## Englische Release Notes ohne Doppeleinträge
 
 Release Please ist die einzige Quelle für Changelog und GitHub-Release-Text.

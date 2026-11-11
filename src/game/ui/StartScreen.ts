@@ -66,6 +66,7 @@ export class StartScreen {
 // eslint-disable-next-line max-lines-per-function -- Die statische zugängliche Einführung bleibt als vollständiger HTML-Aufbau zusammen lesbar.
 function introMarkup() {
   return `<div class="start-copy">
+    <p class="age-rating">${t('ageRatingCompact')}</p>
     <h2>${t('readyPixel')}</h2>
     <aside class="start-goal" aria-label="${t('yourMainGoal')}">
       <strong>${t('yourMainGoal')}</strong>

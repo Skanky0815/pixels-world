@@ -1,0 +1,24 @@
+.age-rating {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #a78d77;
+  border-radius: 6px;
+  background: #403a35;
+  color: #fff1cf;
+  font:
+    14px/1.4 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.landing-page main > .age-rating {
+  margin-top: 12px;
+}
+.start-copy .age-rating {
+  margin: 0 0 8px;
+  padding: 4px 6px;
+  line-height: 1.3;
+}

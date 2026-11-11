@@ -40,43 +40,141 @@ Die Seiten sind eine dokumentierte Umsetzung anhand des Projektstands, keine
 Zusage einer anwaltlichen Prüfung. Bei Monetarisierung oder redaktionellen Inhalten
 muss die Einordnung vor Veröffentlichung erneut geprüft werden.
 
-## Tatsächliche Verarbeitung
+## Jugendschutz und Anbieter-Einstufung
 
-Geprüft wurden Anwendungscode, Styles, Asset-Imports, Build und Pages-Workflow:
+Prüfgrundlage: öffentliches Browsergame, Rechtsrecherche vom 11. November 2026.
+Die [amtliche JMStV-Fassung](https://www.recht.sachsen.de/vorschrift/2410-Jugendmedienschutz-Staatsvertrag?follow_successor=no)
+enthält die sichtbare Kennzeichnung in § 5c Abs. 3. § 25 Abs. 4 verschiebt ihre
+Anwendung um sechs Monate nach Inkrafttreten. Die
+[KJM bestätigt den 1. Juni 2026](https://www.kjm-online.de/themen/technischer-jugendmedienschutz/alterseinstufung/).
+Für das eigene öffentlich zugängliche Spiel ist deshalb eine Kennzeichnung
+vorzubereiten; Kostenfreiheit begründet hier keine Ausnahme. Eine ausschließlich
+Erwachsenen zugängliche Verbreitung liegt nicht vor. Die besonderen Regeln für
+gewinnorientierte Spieleplattformen nach § 14a JuSchG dürfen nicht mit dieser
+allgemeinen Telemedienpflicht verwechselt werden.
 
-- Kein Spielkonto, eigenes Backend, Formularversand oder Übertragen des Spielstands.
-- Rundenzustand nur im Arbeitsspeicher, Reset bei Reload.
-- Keine Analyse, Werbung, fremden Schriftarten oder eingebetteten Dienste.
-- Keine vom Spiel gesetzten Cookies, Session-Storage- oder IndexedDB-Nutzung.
-- Zum Phase-2-Review wurde nur die Sprachwahl unter `pixels-world.language`
-  gespeichert. Mit #107 kommen die Lautstärkepegel unter `pixels-world.audio`
-  hinzu. Spielstände bleiben flüchtig; die Datenschutzerklärung beschreibt beide
-  lokalen Einstellungen. Mit #109 kommt der lokale Bewegungswunsch unter
-  `pixels-world.reduced-motion` hinzu; die Datenschutzerklärung ist entsprechend
-  ergänzt.
-- Externe Verweise sind normale Links; erst die Aktivierung öffnet GitHub oder
-  die verlinkte Informationsseite. Keine Hintergrundabfrage dieser Seiten.
-- Rechtsseiten sind statisches HTML/CSS und laden keinen Spielcode.
+Das [KJM-Infoblatt](https://www.kjm-online.de/fileadmin/user_upload/KJM/Themen/Technischer_Jugendmedienschutz/KJM_Infosheet_Kennzeichnungspflicht_2026.pdf)
+erlaubt die Einstufung durch den Anbieter grundsätzlich ohne externe Prüfung.
+Textform ist möglich; Alter und Gründe sollen gut lesbar vor dem Inhalt erscheinen.
+Die Umsetzung verwendet deshalb eine eigene Textkennzeichnung auf Landingpage,
+Ladeseite und am Anfang der Einführung, kein USK-Logo und keine behauptete
+behördliche Freigabe. Diese Anbieter-Einstufung ist von einer USK-Prüfung zu
+unterscheiden. Der Betreiber muss ihre inhaltliche Begründung vor Veröffentlichung
+prüfen und übernehmen.
 
-Die Aussage „keine eigenen Tracker“ bedeutet nicht „keine Hosting-Daten“:
+### Vorschlag für die Betreiberreview: ab 6 Jahren
+
+Die Einstufung ist eine begründete Projektbewertung, kein Ergebnis einer externen
+Prüfstelle. Die [USK-Kriterien für sechsjährige Kinder](https://usk.de/alle-lexikonbegriffe/usk-ab-06-jahren/)
+beschreiben kurze Spannungsmomente und durch Pausen gemilderten Handlungsdruck.
+Daran orientiert sich der Vorschlag: Die Versöhnung verlangt kurze
+Richtungseingaben mit begrenzter Reaktionszeit. Fehler führen zu weiteren Versuchen;
+Pause ist möglich. Möbel kippen und zerbrechen cartoonhaft, ohne Verletzungen.
+Katzengras löst einen kurzen Würgelaut aus. Saras Ärger und die Versöhnung sind
+humorvoll inszeniert. Die Gründe lauten daher „Leichter Zeitdruck“ und
+„Cartoon-Sachschäden“.
+
+Der geprüfte Spielumfang enthält keine Kämpfe gegen Lebewesen, Blut, Sexualität,
+Drogen, Glücksspiel, Werbung oder Käufe. Es gibt weder Spielerkonten, Chats,
+Uploads noch Ranglisten. Albumfunde sind lokal; es gibt keine tägliche Belohnung,
+Kaufaufforderung oder Bezahlschranke. Der Feedback-Link führt erst nach Aktivierung
+zu GitHub, wo öffentliche Beiträge möglich sind; das ist keine Kommunikation im
+Spiel. Neue Räume, Schreckeffekte, Texte und Onlinefunktionen benötigen eine neue
+Bewertung. Die Altersangabe ist keine pädagogische Empfehlung.
+
+### Technischer Jugendschutz ist gesondert zu klären
+
+Die sichtbare Information nach § 5c ist nicht automatisch eine Schutzmaßnahme nach
+§ 5. Bei einer relevanten Entwicklungsbeeinträchtigung sind Schutzweg und die
+Voraussetzungen des § 5 Abs. 3 bzw. Abs. 5 zu prüfen; auch die Voraussetzungen
+eines Jugendschutzbeauftragten nach § 7 bleiben Teil der Betreiberbewertung.
+
+[JusProg erläutert den age-de.xml-Standard](https://www.jugendschutzprogramm.de/webseite-labeln/).
+Dessen [technische Dokumentation](https://age-label.com/how-to/single-page-rating)
+verlangt eine Konfiguration auf der Wurzel des Hosts, auch bei einzelnen Seiten.
+Das Projekt wird jedoch unter `/pixels-world/` ausgeliefert. Eine Datei nur in
+diesem Projektverzeichnis oder ein Meta-Tag allein wird deshalb nicht als
+nachgewiesene wirksame Filterintegration ausgegeben. Vor dem Release muss der
+Betreiber entscheiden, ob der Schutzweg über die getrennte Bereitstellung trägt
+oder eine wirksam geprüfte Host-Konfiguration benötigt wird. Für Letztere wären
+Host-Wurzel, betroffener Pfad und reale Filtererkennung gemeinsam zu prüfen;
+andere Projekte desselben Hosts dürfen nicht pauschal mit eingestuft werden.
+
+## Tatsächliche Verarbeitung und Endgerätespeicher
+
+Die Anwendung hat kein Backend und überträgt keine Rundeneingaben oder
+Albumfunde. Rundenzustand und Chaospunkte sind flüchtig. Rechtsseiten sind
+statisches HTML/CSS. Externe Quellen, GitHub und Feedback sind normale Links,
+keine eingebetteten Dienste. Die Anwendung setzt keine Cookies und nutzt weder
+Session Storage noch IndexedDB, Analyse, Werbung oder externe Schriften/Medien.
+
+Die folgenden Zugriffe sind im Code nachvollziehbar. Alle Local-Storage-Werte
+bleiben bis zum Löschen der Website-Daten gespeichert, ohne eigene Ablaufzeit.
+
+| Zugriff                                                                                                            | Auslöser und Zweck                                                                                                                                              | Einordnung für die Betreiberreview                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pixels-world.language` ([Quelle](../../src/i18n/locale.ts))                                                       | Vorhandene Sprachwahl lesen; nach Sprachwechsel schreiben.                                                                                                      | Für die ausdrücklich gewählte und wiederherzustellende Sprache funktional begründbar.                                                                                   |
+| `pixels-world.audio` ([Quelle](../../src/settings/audio.ts))                                                       | Lautstärke lesen; bei Änderung speichern.                                                                                                                       | Gewählte Audioeinstellung wiederherstellen; keine Nutzungsstatistik.                                                                                                    |
+| `pixels-world.reduced-motion` ([Quelle](../../src/settings/motion.ts))                                             | Bewegungswunsch lesen; nur bewusste Wahl schreiben. Systemvorgabe per Media Query lesen.                                                                        | Gewählte barrierearme Darstellung; kein Geräteprofil.                                                                                                                   |
+| `pixels-world.difficulty` ([Quelle](../../src/settings/difficulty.ts))                                             | Schwierigkeit lesen; Änderung speichern.                                                                                                                        | Gewählte Spielkonfiguration wiederherstellen.                                                                                                                           |
+| `pixels-world.album` ([Quelle](../../src/game/album/collection.ts))                                                | Sammlung lesen, bei erfolgreicher Versöhnung neue Funde speichern; alte unterstützte Formate migrieren; Reset in Optionen.                                      | Dauerhafter Sammelfortschritt ist eine eigene Funktion. Nutzerwunsch und Notwendigkeit sind ausdrücklich zu bewerten; lokaler Speicher allein begründet keine Ausnahme. |
+| Service Worker und Cache Storage ([Registrierung](../../src/pwa/register.ts), [Umfang](../../tools/pwa-config.ts)) | Automatisch beim Öffnen des veröffentlichten Spiels; lokale App-Dateien vorhalten und alte Caches bereinigen. Nicht allein beim erstmaligen Landingpage-Aufruf. | Offline-Nutzung ist zusätzlich zum Onlinespiel möglich. Ein bloßer Spielaufruf belegt noch keinen ausdrücklichen Wunsch nach dauerhafter Offline-Bereitstellung.        |
+| Gewöhnlicher HTTP-Cache                                                                                            | Browser speichert ausgelieferte Dateien nach seinen Cache-Regeln.                                                                                               | Von der zusätzlichen programmgesteuerten Offline-Vorhaltung unterscheiden.                                                                                              |
+
+[§ 25 TDDDG](https://www.gesetze-im-internet.de/ttdsg/__25.html) betrifft
+Endgerätezugriffe auch ohne personenbezogene Daten. Die Ausnahme für unbedingt
+erforderliche Vorgänge ist auf den ausdrücklich gewünschten Dienst zu beziehen.
+„Keine Cookies“ oder ein berechtigtes Interesse nach DSGVO sind keine eigene
+Ausnahme von dieser Regel.
+Die [DSK-Orientierungshilfe, insbesondere Randnummern 66–80](https://datenschutzkonferenz-online.de/media/oh/OH_Digitale_Dienste.pdf)
+verlangt eine funktionale und zeitliche Prüfung. Für gewählte Einstellungen ist
+eine Ausnahme begründbar; für automatischen Offline-Cache und Album-Persistenz
+ist die Bewertung noch nicht abschließend. Vor dem Release ist hierfür entweder
+eine tragfähige Ausnahme zu dokumentieren oder die optionale Speicherung erst
+nach einer wirksamen Nutzerentscheidung auszuführen. Diese Recherche erklärt
+weder pauschal alle Speicherungen für erforderlich noch einen Banner für zwingend.
+
+Die [Datenschutzaufsicht Niedersachsen](https://www.lfd.niedersachsen.de/faq/faq-telekommunikation-digitale-dienste-datenschutzgesetz-tdddg-206449.html)
+bezieht auch Privatpersonen mit Websites ein. Hobbybetrieb wird deshalb nicht
+als automatische Befreiung behandelt. Datenschutzrechtliche Rechtsgrundlage und
+Information nach DSGVO sind unabhängig davon zu prüfen.
+
+## Hosting, Kontakt und öffentliche Hinweise
+
 [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)
-nennt die sicherheitsbezogene Protokollierung von Besucher-IP-Adressen.
+protokolliert Besucher-IP-Adressen aus Sicherheitsgründen, auch ohne Anmeldung.
 GitHubs [Datenschutzerklärung](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)
-ist für dessen eigene Verarbeitung, internationale Übermittlungen und
-Speicherkriterien verlinkt. Keine unbelegte feste Löschfrist wird versprochen.
+ist für dessen Verarbeitung, internationale Übermittlungen und Speicherkriterien
+verlinkt. Die Anwendung verspricht keine unbelegte Löschfrist für Hostingdaten.
+Ein lokaler Browserlauf kann Requests und Browserspeicher beobachten, aber weder
+GitHubs interne Protokolle noch tatsächliche E-Mail-Bearbeitung nachweisen.
 
-Die Datenschutzhinweise nennen Verantwortlichen, Kontakt, Hosting, Zwecke und
-Rechtsgrundlage, Speicherverhalten, externe Links, E-Mail-Anfragen und Rechte
-nach der [DSGVO](https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A02016R0679-20160504).
-Der Hinweis auf die [Berliner Datenschutzaufsicht](https://www.datenschutz-berlin.de/)
-ist ebenfalls direkt erreichbar. Ein technischer Produktions-Browserlauf prüft
-zusätzlich Requests und die genannten Browserspeicher; er kann GitHubs interne
-Protokolle oder die tatsächliche Bearbeitung von E-Mails nicht überprüfen.
+Die öffentlichen Datenschutzhinweise beschreiben Verantwortlichen, Hosting,
+Einstellungen, Album, Offline-Dateien, externe Links, Kontakt und Betroffenenrechte.
+Das Album wird seit #242 in den Optionen zurückgesetzt; die Beschreibung ist
+entsprechend angepasst. Kontaktdaten bleiben unverändert. Die Einordnung aus #112
+wird nicht durch eine pauschale Zusicherung „rechtssicher“ ersetzt.
 
-## Änderungen mit neuer Prüfung
+## Betreiber-Checkliste vor dem nächsten Release
 
-Vor neuen Hostingdiensten, externen Assets, Accounts, Speicherung, Tracking,
-Monetarisierung oder Veröffentlichung anderer Kontaktdaten müssen Hinweise und
-Bewertung angepasst werden. Der jetzige Stand führt weder Tracking noch einen
-zusätzlichen Einwilligungsdialog ein. Die abschließende Betreiberfreigabe erfolgt
-über den üblichen PR-Review vor dem Merge; der Release bleibt ein eigener Ablauf.
+- [ ] Inhalte einschließlich Würgelaut, Saras Reaktionen und Versöhnung selbst
+      ansehen; Vorschlag „ab 6 Jahren“ mit Begründung ausdrücklich bestätigen oder
+      fachkundig prüfen lassen. Bei Änderungen sichtbare Angaben gemeinsam anpassen.
+- [ ] Schutzweg nach § 5 und Einordnung nach § 7 bestätigen; bei technischer
+      Kennzeichnung tatsächliche Host-Wurzel und Erkennung prüfen. Sichtbare Angabe
+      ersetzt diese Entscheidung nicht.
+- [ ] Für jeden Speicherzugriff Ausnahme oder wirksame Nutzerentscheidung
+      bestätigen. Besonders automatischen Offline-Cache und Album-Persistenz klären;
+      ungeklärte optionale Zugriffe vor Veröffentlichung entsprechend umstellen.
+- [ ] Aktuelle Anbieter-/Kontaktangaben, DSGVO-Grundlagen, GitHub-Hosting und
+      Transparenz der Rechtsseiten prüfen; bei offenen Rechtsfragen fachkundige Hilfe
+      einholen. Keine privaten Kontaktdaten in Issues wiederholen.
+- [ ] Altersinformation am Einstieg auf Desktop, Handy und Tablet in DE/EN sowie
+      Datenschutzangaben mit dem freizugebenden Produktionsbuild abgleichen.
+- [ ] Ergebnis und verbleibende Entscheidungen in #252 bestätigen. Das Issue bleibt
+      bis dahin offen; dieser Text und ein Code-Review allein sind keine abschließende
+      rechtliche Freigabe und kein Auftrag zur Veröffentlichung.
+
+Neue Inhalte, Dienste, Speicherung, Tracking und Monetarisierung erfordern vor
+Veröffentlichung eine erneute Prüfung. Release-Status und aktuelle technische
+Prüfergebnisse gehören ins Issue beziehungsweise in Actions.
