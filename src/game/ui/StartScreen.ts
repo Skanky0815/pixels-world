@@ -5,6 +5,7 @@ import type { ResolvedGoal } from '../domain/main-goal';
 /** Responsive introduction only; gameplay and keyboard transitions remain scene-owned. */
 export class StartScreen {
   private readonly root: HTMLElement;
+  private readonly rating = document.createElement('p');
   private readonly unsubscribe: () => void;
 
   // eslint-disable-next-line max-lines-per-function -- Die zusammengehörige DOM-Initialisierung bindet Einführung, Zieltext und Sichtbarkeit atomar an den Spielbereich.
@@ -30,6 +31,10 @@ export class StartScreen {
     this.root.innerHTML = introMarkup();
     this.describeGoal(goal);
     this.root.hidden = !visible;
+    this.rating.className = 'age-rating intro-age-rating';
+    this.rating.textContent = t('ageRatingCompact');
+    this.rating.hidden = !visible;
+    host.parentElement?.append(this.rating);
     host.append(this.root);
     this.unsubscribe = onLanguageChange(() => this.refresh());
   }
@@ -44,6 +49,7 @@ export class StartScreen {
     const scroll = this.root.querySelector('.start-copy')?.scrollTop ?? 0;
 
     this.root.innerHTML = introMarkup();
+    this.rating.textContent = t('ageRatingCompact');
     this.root.setAttribute('aria-label', t('gameIntroduction'));
     this.describeGoal(this.goal);
     this.root.querySelector('.start-copy')?.scrollTo(0, scroll);
@@ -51,6 +57,7 @@ export class StartScreen {
 
   hide() {
     this.root.hidden = true;
+    this.rating.hidden = true;
   }
 
   snapshot() {
@@ -60,6 +67,7 @@ export class StartScreen {
   destroy() {
     this.unsubscribe();
     this.root.remove();
+    this.rating.remove();
   }
 }
 

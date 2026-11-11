@@ -24,7 +24,7 @@ for (const viewport of [
     await expect(loading).toContainText('Ages 6+');
     await expect(loading).toBeInViewport({ ratio: 1 });
     await waitForLoadingScreen(page);
-    const intro = page.locator('.start-screen .age-rating');
+    const intro = page.locator('.start-screen .age-rating:visible, .intro-age-rating:visible');
 
     await expect(intro).toContainText('Cartoon damage');
     await expect(intro).toBeInViewport({ ratio: 1 });

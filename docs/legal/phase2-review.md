@@ -155,25 +155,29 @@ Das Album wird seit #242 in den Optionen zurückgesetzt; die Beschreibung ist
 entsprechend angepasst. Kontaktdaten bleiben unverändert. Die Einordnung aus #112
 wird nicht durch eine pauschale Zusicherung „rechtssicher“ ersetzt.
 
-## Betreiber-Checkliste vor dem nächsten Release
+## Vor dem Release prüfen
 
-- [ ] Inhalte einschließlich Würgelaut, Saras Reaktionen und Versöhnung selbst
-      ansehen; Vorschlag „ab 6 Jahren“ mit Begründung ausdrücklich bestätigen oder
-      fachkundig prüfen lassen. Bei Änderungen sichtbare Angaben gemeinsam anpassen.
-- [ ] Schutzweg nach § 5 und Einordnung nach § 7 bestätigen; bei technischer
-      Kennzeichnung tatsächliche Host-Wurzel und Erkennung prüfen. Sichtbare Angabe
-      ersetzt diese Entscheidung nicht.
-- [ ] Für jeden Speicherzugriff Ausnahme oder wirksame Nutzerentscheidung
-      bestätigen. Besonders automatischen Offline-Cache und Album-Persistenz klären;
-      ungeklärte optionale Zugriffe vor Veröffentlichung entsprechend umstellen.
-- [ ] Aktuelle Anbieter-/Kontaktangaben, DSGVO-Grundlagen, GitHub-Hosting und
-      Transparenz der Rechtsseiten prüfen; bei offenen Rechtsfragen fachkundige Hilfe
-      einholen. Keine privaten Kontaktdaten in Issues wiederholen.
-- [ ] Altersinformation am Einstieg auf Desktop, Handy und Tablet in DE/EN sowie
-      Datenschutzangaben mit dem freizugebenden Produktionsbuild abgleichen.
-- [ ] Ergebnis und verbleibende Entscheidungen in #252 bestätigen. Das Issue bleibt
-      bis dahin offen; dieser Text und ein Code-Review allein sind keine abschließende
-      rechtliche Freigabe und kein Auftrag zur Veröffentlichung.
+Die Anbieter-Einstufung und ihre Begründung gehören in Ricos übliches PR-Review.
+Dafür gibt es keinen zusätzlichen Freigabeprozess. Technische und rechtliche
+Recherchearbeiten werden nicht als pauschale Entscheidungen an Rico delegiert.
+
+- [ ] Vorschlag „ab 6 Jahren“ samt Inhalten und Begründung im normalen Review
+      bestätigen. Die Angabe bleibt eine Anbieter-Einstufung, keine USK-Freigabe.
+- [ ] Den Schutzweg nach § 5 und die Voraussetzungen nach § 7 fachlich abschließen.
+      Ein sichtbares Label wird nicht als Ersatz für erforderliche Schutzmaßnahmen
+      ausgegeben; eine wirksame technische Kennzeichnung muss zur Host-Struktur passen.
+- [ ] Die konkrete Speicherempfehlung umsetzen beziehungsweise ihre Ausnahme
+      belastbar klären: Offline-Dateien erst nach einer bewussten Offline-Aktion
+      vorhalten; für dauerhaftes Album-Merken eine verständliche Wahl vorsehen.
+      Vorhandene Sammlungen erhalten und bei Ablehnung das Spiel weiter anbieten.
+      Ein allgemeiner Cookie-Banner ist dafür nicht die vorgeschlagene Lösung.
+- [ ] Anbieter-/Kontaktangaben, Hosting und Rechtsseiten mit dem freizugebenden
+      Produktionsbuild abgleichen. Änderungen privater Daten nicht in Issues kopieren.
+
+Die offenen Arbeitsschritte werden in #252 verfolgt. Das Issue bleibt bis zu ihrer
+Klärung offen; der nächste Release wird dadurch nicht versehentlich als geprüft
+ausgegeben. Bei einer verbleibenden rechtlichen Einzelfrage ist gezielt fachkundige
+Klärung nötig, statt eine nicht belegte Sicherheit zu behaupten.
 
 Neue Inhalte, Dienste, Speicherung, Tracking und Monetarisierung erfordern vor
 Veröffentlichung eine erneute Prüfung. Release-Status und aktuelle technische
