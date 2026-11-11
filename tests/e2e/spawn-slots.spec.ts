@@ -67,13 +67,19 @@ test('Belegtes Slotregal stürzt ein; Vasen fallen selbständig, brechen einmal 
   await until(page, (s) =>
     s.books.filter((b) => b.supportY === 304).every((b) => b.state === 'fallen' && !b.dropping),
   );
+  await until(page, (s) => s.books.every((book) => book.state !== 'falling' && !book.dropping));
   const broken = await state(page);
+  const chained = broken.books.filter((book) => book.supportY !== 304 && book.toppledBy !== null);
 
+  expect(chained).toHaveLength(1);
+  expect(chained[0]).toMatchObject({ state: 'fallen', events: 1 });
+  expect(['lower-shelf', ...slots.map((vase) => vase.id)]).toContain(chained[0].toppledBy);
   expect(broken.shelves[0]).toMatchObject({ state: 'collapsed', enabled: false });
   expect(broken.chaos.score).toBe(
     12 +
       before.books.filter((b) => b.supportY === 304 && b.damage === 0).length * BOOK_TOPPLE.points +
-      slots.reduce((sum, v) => sum + v.points, 0),
+      slots.reduce((sum, v) => sum + v.points, 0) +
+      chained.length * BOOK_TOPPLE.points,
   );
   await page.clock.runFor(1500);
   expect((await state(page)).chaos.score).toBe(broken.chaos.score);

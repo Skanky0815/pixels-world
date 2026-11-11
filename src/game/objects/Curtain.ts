@@ -1,5 +1,7 @@
 import { curtainTearPosition, curtainTearSize } from './curtain-tear-position';
 import type Phaser from 'phaser';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
+import { motionPreferences } from '../../settings/motion';
 import { DamageHistory } from '../domain/chaos-event';
 import { CurtainSliding, type TearConfig } from '../interactions/curtain-sliding';
 import type {
@@ -25,6 +27,7 @@ export class Curtain implements Climbable, Destructible {
   private readonly marks: Phaser.GameObjects.Container;
   private previousY: number | null = null;
   private previousSpeed = 0;
+  private nudgeUntil = 0;
 
   // eslint-disable-next-line max-lines-per-function -- Modell, unveränderliche Kletterfläche und ihre zwei Grafiklayer werden gemeinsam initialisiert.
   constructor(scene: Phaser.Scene, config: CurtainConfig) {
@@ -44,6 +47,12 @@ export class Curtain implements Climbable, Destructible {
   // eslint-disable-next-line max-lines-per-function -- Die kurze Folge aus Bewegungsmessung, Modellschritt, Historie und Rissdarstellung bleibt atomar.
   updateClimb(context: InteractionContext, attached: boolean) {
     const p = context.pixel;
+    const nudge =
+      context.time < this.nudgeUntil && !motionPreferences.snapshot().reduced
+        ? Math.sin((this.nudgeUntil - context.time) / 70) * 3
+        : 0;
+
+    this.graphic.setX(this.climbArea.x + nudge);
     const state = !attached ? 'detached' : context.input.vertical < 0 ? 'climbing' : 'sliding';
     const movementMs = this.measureDescent(context, state);
     const event = this.model.update(movementMs, state, movementMs > 0 && !p.grounded);
@@ -94,6 +103,23 @@ export class Curtain implements Climbable, Destructible {
     });
   }
 
+  impactBody(): ImpactBody {
+    return {
+      id: this.id,
+      bounds: this.climbArea,
+      mass: 0.2,
+      moving: false,
+      enabled: true,
+      surface: 'soft',
+    };
+  }
+
+  receiveImpact(hit: ImpactHit) {
+    this.nudgeUntil = hit.time + 600;
+
+    return [];
+  }
+
   damageSnapshot() {
     return this.history.snapshot();
   }
@@ -109,6 +135,8 @@ export class Curtain implements Climbable, Destructible {
   }
 
   reset() {
+    this.nudgeUntil = 0;
+    this.graphic.setX(this.climbArea.x);
     this.model.reset();
     this.history.reset();
     this.previousY = null;

@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import { DamageHistory } from '../domain/chaos-event';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import { BookToppling, type BookRules } from '../interactions/book-toppling';
 import {
   overlaps,
@@ -26,6 +27,7 @@ export class BookStack {
   private readonly graphic: Phaser.GameObjects.Container;
   private readonly art: BookArt;
   private drop: { from: number; elapsed: number; duration: number } | null = null;
+  private toppledBy: string | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -94,6 +96,29 @@ export class BookStack {
     return true;
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    const s = this.model.snapshot();
+    const width = s.state === 'fallen' ? 96 : s.state === 'falling' ? 48 + 48 * s.progress : 48;
+
+    return {
+      id: this.id,
+      bounds: { x: this.config.x - width / 2, y: this.graphic.y - 36, width, height: 36 },
+      mass: 2,
+      enabled: true,
+      moving: s.state === 'falling' || this.drop !== null,
+      surface: 'loose',
+      velocityX: s.state === 'falling' ? 90 : 0,
+      velocityY: this.drop ? 180 : 0,
+    };
+  }
+
+  receiveImpact(hit: ImpactHit) {
+    if (hit.power >= 60 && this.model.knockOver()) this.toppledBy = hit.sourceId;
+
+    return [];
+  }
+
   damageSnapshot() {
     return this.history.snapshot();
   }
@@ -111,6 +136,7 @@ export class BookStack {
       supportY: this.config.supportY,
       y: this.graphic.y,
       dropping: this.drop !== null,
+      toppledBy: this.toppledBy,
     };
   }
 
@@ -118,6 +144,7 @@ export class BookStack {
     this.model.reset();
     this.history.reset();
     this.drop = null;
+    this.toppledBy = null;
     this.graphic.y = this.config.supportY;
     this.draw();
   }

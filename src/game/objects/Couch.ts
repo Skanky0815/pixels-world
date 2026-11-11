@@ -1,5 +1,7 @@
 import { couchScratchPosition, couchScratchScale } from './couch-scratch-position';
 import type Phaser from 'phaser';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
+import { motionPreferences } from '../../settings/motion';
 import type { CouchAppearance } from '../assets/couch-appearance';
 import { DamageHistory } from '../domain/chaos-event';
 import { CouchScratching, type ScratchConfig } from '../interactions/couch-scratching';
@@ -31,6 +33,7 @@ export class Couch implements Interactable, Destructible {
   private readonly marks: Phaser.GameObjects.Container;
 
   private readonly config: CouchConfig;
+  private nudgeUntil = 0;
 
   // eslint-disable-next-line max-lines-per-function -- Die deklarative Sofageometrie und ihre dazu passende Plattform werden gemeinsam aufgebaut.
   constructor(scene: Phaser.Scene, config: CouchConfig) {
@@ -68,6 +71,12 @@ export class Couch implements Interactable, Destructible {
   // eslint-disable-next-line max-lines-per-function -- Modellschritt, Schadensdarstellung und Aktionsrückgabe bilden einen Frame-Schritt; Zeichenroutinen sind ausgelagert.
   update(context: InteractionContext, active: boolean): InteractionResult {
     const s = this.config.seat;
+    const nudge =
+      context.time < this.nudgeUntil && !motionPreferences.snapshot().reduced
+        ? Math.sin((this.nudgeUntil - context.time) / 50)
+        : 0;
+
+    this.graphic.setAngle(nudge);
     const event = this.model.update(context.delta, active && this.eligible(context));
 
     if (event) this.drawDamage(context, event);
@@ -118,6 +127,26 @@ export class Couch implements Interactable, Destructible {
     };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    const s = this.config.seat;
+
+    return {
+      id: this.id,
+      mass: 8,
+      moving: false,
+      enabled: true,
+      surface: 'soft',
+      bounds: { x: s.x, y: s.y - 50, width: s.width, height: this.config.floorY - s.y + 50 },
+    };
+  }
+
+  receiveImpact(hit: ImpactHit) {
+    this.nudgeUntil = hit.time + 400;
+
+    return [];
+  }
+
   damageSnapshot() {
     return this.history.snapshot();
   }
@@ -127,6 +156,8 @@ export class Couch implements Interactable, Destructible {
   }
 
   reset() {
+    this.nudgeUntil = 0;
+    this.graphic.setAngle(0);
     this.model.reset();
     this.history.reset();
     this.marks.removeAll(true);

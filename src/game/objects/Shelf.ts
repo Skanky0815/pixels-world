@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import type { RoomDefinition, Decoration } from '../content/definitions';
 import type { InteractionContext } from '../interactions/contracts';
 import { DamageHistory } from '../domain/chaos-event';
@@ -12,6 +13,9 @@ export class Shelf {
   readonly id: string;
   readonly platform: Phaser.GameObjects.Rectangle;
   private wobbleStartedAt: number | null = null;
+  private collapseStartedAt: number | null = null;
+  private fallProgress = 0;
+  private supportLost = false;
   private readonly model: ShelfStability;
   private readonly history = new DamageHistory();
   private readonly graphic: Phaser.GameObjects.Container;
@@ -61,8 +65,14 @@ export class Shelf {
     this.draw();
 
     if (state === 'collapsed') {
-      (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable = false;
-      this.graphic.setAngle(0).setY(this.floorY - this.art.debrisBottom);
+      this.startCollapse(time);
+      this.fallProgress = Math.min(1, (time - (this.collapseStartedAt ?? time)) / 550);
+      this.graphic
+        .setAngle(0)
+        .setY(
+          this.bounds.y +
+            (this.floorY - this.art.debrisBottom - this.bounds.y) * this.fallProgress ** 2,
+        );
     } else
       this.graphic.setAngle(
         state === 'intact' || this.wobbleStartedAt === null
@@ -71,6 +81,51 @@ export class Shelf {
       );
 
     return event;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    const collapsed = this.model.snapshot().state === 'collapsed';
+
+    return {
+      id: this.id,
+      mass: 6,
+      enabled: true,
+      surface: 'solid',
+      moving: collapsed && this.fallProgress < 1,
+      bounds: { ...this.bounds, y: this.graphic.y, height: this.art.boardHeight },
+    };
+  }
+
+  receiveImpact(hit: ImpactHit) {
+    this.wobbleStartedAt = hit.time;
+    const events = this.impactEvents(hit.power);
+
+    for (const damage of events) this.history.record(damage);
+
+    if (this.model.snapshot().state === 'collapsed') this.startCollapse(hit.time);
+
+    return events;
+  }
+
+  private impactEvents(power: number) {
+    if (power >= 1800) return this.model.collapse();
+    const event = power >= 600 ? this.model.impact() : undefined;
+
+    return event ? [event] : [];
+  }
+
+  private startCollapse(time: number) {
+    (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable = false;
+    this.collapseStartedAt ??= time;
+    this.draw();
+  }
+
+  consumeSupportLoss() {
+    if (this.supportLost || this.model.snapshot().state !== 'collapsed') return false;
+    this.supportLost = true;
+
+    return true;
   }
 
   private warn(before: string, after: string) {
@@ -102,6 +157,8 @@ export class Shelf {
       boardHeight: this.art.boardHeight,
       debrisBoardHeight: this.art.debrisBoardHeight,
       angle: this.graphic.angle,
+      y: this.graphic.y,
+      fallProgress: this.fallProgress,
       enabled: (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable,
     };
   }
@@ -115,9 +172,13 @@ export class Shelf {
     };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Auflage, Fallbewegung und einmalige Freigabe werden mit Grafik und Schadensmodell gemeinsam zurückgesetzt.
   reset() {
     this.model.reset();
     this.wobbleStartedAt = null;
+    this.collapseStartedAt = null;
+    this.fallProgress = 0;
+    this.supportLost = false;
     this.history.reset();
     (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable = true;
     this.graphic.setAngle(0).setY(this.definition.bounds.y);

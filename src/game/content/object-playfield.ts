@@ -1,3 +1,4 @@
+import type { ImpactActor, ImpactWorld } from '../domain/impact-world';
 import { Shelf } from '../objects/Shelf';
 import type Phaser from 'phaser';
 import type { Pixel } from '../actors/Pixel';
@@ -66,19 +67,47 @@ export function connectObjectPhysics(
   floor: Phaser.GameObjects.Rectangle,
   damage: Damage,
 ) {
+  objects.impacts.setDamage((event) => damage(event));
+
   for (const couch of objects.couches) platforms.add(couch.platform);
   scene.physics.add.collider(pixel.collider, platforms);
 
   for (const vase of objects.vases) {
     scene.physics.add.collider(vase.collider, platforms, (_object, surface) => {
-      if (surface === floor) damage(vase.breakOnFloor());
+      objects.impacts.collide(vase);
+
+      if (surface === floor) damage(vase.landOnFloor());
+      else vase.landOnSurface();
     });
-    scene.physics.add.collider(pixel.collider, vase.collider, () => pushVase(pixel, vase));
+    scene.physics.add.collider(
+      pixel.collider,
+      vase.collider,
+      () => pushVase(pixel, vase),
+      () => vase.allowsPixelCollision(pixel.snapshot()),
+    );
   }
+
+  connectVases(scene, objects);
+}
+
+function connectVases(scene: Phaser.Scene, objects: Objects) {
+  for (let a = 0; a < objects.vases.length; a++)
+    for (let b = a + 1; b < objects.vases.length; b++) {
+      const first = objects.vases[a],
+        second = objects.vases[b];
+
+      scene.physics.add.collider(first.collider, second.collider, () =>
+        objects.impacts.collide(first, second),
+      );
+    }
 }
 
 function pushVase(pixel: Pixel, vase: Vase) {
   const body = vase.collider.body as Phaser.Physics.Arcade.Body;
+  const pixelBody = pixel.collider.body as Phaser.Physics.Arcade.Body;
+
+  if (body.touching.up && pixelBody.bottom <= body.top + 1)
+    vase.topple(pixel.x < vase.collider.x ? 1 : -1);
 
   if (body.touching.left || body.touching.right) vase.push(pixel.x < vase.collider.x ? 1 : -1);
 }
@@ -94,9 +123,15 @@ export function advanceObjectInteractions(
   damage: Damage,
   shelves: readonly Shelf[] = [],
 ) {
-  updateShelves(shelves, pixel, time, damage, [...objects.vases, ...objects.books]);
+  updateShelves(shelves, pixel, time, damage);
+  const supported = [...objects.vases, ...objects.books];
 
-  for (const vase of objects.vases) vase.updateFall();
+  releaseShelves(shelves, supported, objects.impacts);
+
+  for (const vase of objects.vases) {
+    vase.updateFall(pixel.snapshot());
+  }
+
   const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));
 
   pixel.move(input, time, delta, surface?.climbArea);
@@ -115,25 +150,29 @@ export function advanceObjectInteractions(
   const interaction = updateGroundInteractions(objects.ground, context);
 
   damage(interaction.event);
+  objects.impacts.advance([...objects.entries.map((entry) => entry.object), ...shelves], delta);
+  releaseShelves(shelves, supported, objects.impacts);
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
 }
 
-// eslint-disable-next-line max-lines-per-function -- Der Einsturz gibt direkt aufliegende Vasen und Bücher für ihren vorhandenen Fallablauf frei; keine künstlichen Zusatzschäden.
-function updateShelves(
+function updateShelves(shelves: readonly Shelf[], pixel: Pixel, time: number, damage: Damage) {
+  for (const shelf of shelves) damage(shelf.update(pixel.snapshot(), time));
+}
+
+// eslint-disable-next-line max-lines-per-function -- Beide Kontaktphasen geben jede verlorene Auflage genau einmal frei, auch bei einem Fremdtreffer im letzten Rundenframe.
+function releaseShelves(
   shelves: readonly Shelf[],
-  pixel: Pixel,
-  time: number,
-  damage: Damage,
-  supported: readonly { releaseSupport(surface: Bounds): void }[],
+  supported: readonly (ImpactActor & { releaseSupport(surface: Bounds): void })[],
+  impacts: ImpactWorld,
 ) {
   for (const shelf of shelves) {
-    const event = shelf.update(pixel.snapshot(), time);
+    if (!shelf.consumeSupportLoss()) continue;
 
-    damage(event);
-
-    if (event?.kind === 'collapse')
-      for (const object of supported) object.releaseSupport(shelf.bounds);
+    for (const object of supported) {
+      impacts.inheritSupport(shelf, object);
+      object.releaseSupport(shelf.bounds);
+    }
   }
 }

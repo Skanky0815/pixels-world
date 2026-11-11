@@ -91,6 +91,25 @@ export class ShelfStability {
       return chaosEvent(this.id, 'collapse', 2, this.rules.collapseValue);
   }
 
+  impact() {
+    if (this.stability === 'stable' || this.snapshot().state === 'collapsed') return;
+    this.landings++;
+
+    return this.damageEvent();
+  }
+
+  collapse() {
+    if (this.stability === 'stable' || this.snapshot().state === 'collapsed') return [];
+    const events = [];
+
+    if (this.landings < this.rules.damageAt)
+      events.push(chaosEvent(this.id, 'shelf-damage', 1, this.rules.damageValue));
+    this.landings = this.rules.collapseAt;
+    events.push(chaosEvent(this.id, 'collapse', 2, this.rules.collapseValue));
+
+    return events;
+  }
+
   // eslint-disable-next-line max-lines-per-function -- Die vier Zustände bleiben mit ihren geordneten Schwellwerten direkt vergleichbar.
   snapshot() {
     const state =

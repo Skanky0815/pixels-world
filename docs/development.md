@@ -135,6 +135,28 @@ Die bisherigen Master und Bewegungs-Sheets bleiben unverändert. Die linke Dialo
 Layoutvorschlag, der rechts beide Figuren frei lässt. Steuerung, Herzvergabe und
 Zeitlimits des Spiels sind hier nicht aktiv. HTML und Module bleiben DEV-only.
 
+## Objektkontakte prüfen
+
+Die zusätzlichen handgebauten Räume sind wie `cozy-remix` ausschließlich über die
+DEV-/E2E-Raumauswahl erreichbar. Produktionsaufrufe ignorieren die Raumparameter.
+Sie verwenden dieselben Objektklassen, Collider, Eingaben und Schadensmodelle:
+
+- `/play.html?room=impact-vases`: zwei Vasen auf dem unteren Regal seitlich anschieben.
+- `/play.html?room=impact-fall`: über den Vorhang rechts aufs mittlere Regal springen
+  und die Vase nach links auf die Vase darunter schieben.
+- `/play.html?room=impact-picture`: am rechten Sofarand zweimal gegen das Bild springen;
+  es fällt auf die Vase am Boden.
+- `/play.html?room=impact-shelf`: das mittlere Regal durch Landungen belasten; seine
+  Bruchstücke treffen die Pflanze darunter.
+- `/play.html?room=impact-landing`: von links oder rechts auf die Bodenvase springen;
+  sie kippt und rollt von Pixel weg, ohne sofort zu zerbrechen.
+- `/play.html?room=impact-books`: bei den Büchern links auf dem unteren Regal bleiben;
+  beim Kippen stoßen sie die benachbarte Vase an.
+
+Pause, reduzierte Bewegung und Neustart funktionieren wie im regulären Spiel.
+Die E2E-Beobachtung enthält nur lesbare Kontaktdaten unter `objectImpacts`;
+kein Raum stellt Spielzustandssetter oder Phaser-Objekte bereit.
+
 ## Einzelne Objekte ausprobieren
 
 Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.

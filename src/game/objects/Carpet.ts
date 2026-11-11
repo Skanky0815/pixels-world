@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type { ImpactBody } from '../domain/impact-world';
 import { DamageHistory } from '../domain/chaos-event';
 import { CarpetHairball, carpetEligible, type CarpetRules } from '../interactions/carpet-hairball';
 import {
@@ -73,6 +74,28 @@ export class Carpet implements Interactable, Destructible {
       faceX: retching ? this.config.area.x + this.config.area.width / 2 : undefined,
       event,
     };
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    return {
+      id: this.id,
+      mass: 0.3,
+      moving: false,
+      enabled: true,
+      surface: 'soft',
+      bounds: {
+        x: this.config.area.x,
+        y: this.config.floorY - 2,
+        width: this.config.area.width,
+        height: 4,
+      },
+    };
+  }
+
+  /** A flat rug absorbs contact; foreign objects cannot trigger Pixel's hairball action. */
+  receiveImpact() {
+    return [];
   }
 
   damageSnapshot() {

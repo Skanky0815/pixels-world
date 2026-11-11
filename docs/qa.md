@@ -184,6 +184,19 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
 - Vorhang greifen, hoch-/hinabklettern, rutschen, abspringen und wieder lösen.
   Kratzen/Knabbern starten im Stillstand und brechen bei Bewegung/Sprung ab.
   Vasen zählen erst beim Bodenbruch; gleicher Schaden zählt nicht doppelt.
+- Die [Kontakt-Testzimmer](development.md#objektkontakte-prüfen) für Vase gegen Vase,
+  rollende Vasen, Bild auf Vase, Regal auf Pflanze und Bücher gegen Vase spielen.
+  Leichte Kontakte dürfen ohne Bruch enden, starke können mehrere Gegenstände
+  beschädigen. Pause während des Falls und Neustart vor dem Aufprall prüfen;
+  kein Knabbern, Kratzen oder Haarballen durch Fremdtreffer.
+- Von beiden Seiten auf eine Vase springen: Sie kippt und rollt weg, ohne allein
+  durch die Landung Punkte zu vergeben. Auch mit reduzierter Bewegung, während
+  einer Pause und nach Neustart prüfen.
+- Im Wohnzimmer mit Raumseed `books-5` über den Vorhang rechts aufs mittlere Regal
+  springen und die Vase nach links schieben. Sie kippt beim Fallen die Bücher
+  auf dem unteren Regal um. Beide Schäden zählen je einmal; andere Regale und
+  Wege bleiben bestehen. Mitten im Bücherfall pausieren und neu starten:
+  keine nachgeholten Punkte, Vase und Bücher stehen wieder am Ausgangsort.
 - Ballziel ohne Schaden erreichen und alternativ Timer ablaufen lassen. Sara
   kommt, Pixel steigt von Möbeln herunter und setzt sich. Score/Welt bleiben
   eingefroren; Texte warten auf frische Bestätigung.

@@ -167,6 +167,14 @@ async function lowerShelf(page: Page) {
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 304) < 2);
 }
 
+async function middleShelf(page: Page) {
+  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 790);
+  await holdUntil(page, ['ArrowUp'], (s) => s.pixel.climbing && s.pixel.y <= 220);
+  await holdUntil(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x <= 730);
+  await holdUntil(page, ['ArrowRight'], (s) => s.pixel.velocityX >= 0);
+  await until(page, (s) => s.pixel.grounded && s.pixel.bottom === 224);
+}
+
 async function firstVase(page: Page) {
   await lowerShelf(page);
   await holdUntil(page, ['ArrowRight'], (s) => s.vases[0].state !== 'resting');
@@ -206,4 +214,5 @@ export {
   besidePlant,
   firstVase,
   lowerShelf,
+  middleShelf,
 };

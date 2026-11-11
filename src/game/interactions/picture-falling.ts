@@ -71,6 +71,16 @@ export class PictureFalling {
     return chaosEvent(this.id, 'picture-fall', 1, this.rules.points);
   }
 
+  impact(strong: boolean) {
+    if (this.state === 'falling' || this.state === 'fallen') return;
+
+    if (strong) {
+      this.state = 'falling';
+      this.elapsed = 0;
+    } else this.state = 'crooked';
+    this.wobble = this.rules.wobbleMs;
+  }
+
   snapshot() {
     return {
       state: this.state,

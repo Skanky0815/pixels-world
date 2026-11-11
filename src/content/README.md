@@ -21,7 +21,8 @@ und als Ziel von Einwirkungen anderer Objekte zu berücksichtigen. Das gilt auch
 für zwei Instanzen desselben Typs, etwa Vase gegen Vase. Direkter Kontakt mit Pixel
 ist dafür keine Voraussetzung. Der allgemeine Ausbau wird in
 [#135](https://github.com/Skanky0815/pixels-world/issues/135) verfolgt; dieser Vertrag
-ist noch nicht für alle Objektpaare implementiert.
+wird von den vorhandenen Wohnzimmerobjekten gemeinsam verwendet; weitere Typen
+werden über dieselben Adaptermethoden angeschlossen.
 
 Im Issue eines neuen Objekts oder einer neuen Variante festhalten:
 

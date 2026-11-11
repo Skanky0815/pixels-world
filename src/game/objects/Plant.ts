@@ -1,4 +1,6 @@
 import type Phaser from 'phaser';
+import type { ImpactBody, ImpactHit } from '../domain/impact-world';
+import { motionPreferences } from '../../settings/motion';
 import { DamageHistory } from '../domain/chaos-event';
 import { PlantNibbling, type PlantConfig } from '../interactions/plant-nibbling';
 import {
@@ -26,6 +28,10 @@ export class Plant implements Interactable, Destructible {
   private readonly soil: Phaser.GameObjects.Image;
 
   private readonly config: PlantObjectConfig;
+  private hasBite = false;
+  private activeTime = 0;
+  private tipUntil = 0;
+  private nudgeUntil = 0;
 
   // eslint-disable-next-line max-lines-per-function -- Modell und die beiden Bilder werden gemeinsam mit ihren unveränderlichen Bodenankern aufgebaut.
   constructor(scene: Phaser.Scene, config: PlantObjectConfig) {
@@ -55,6 +61,7 @@ export class Plant implements Interactable, Destructible {
 
   // eslint-disable-next-line max-lines-per-function -- Modellschritt, Schaden, Pose und Aktionsrückgabe bleiben als ein koordinierender Frame-Schritt sichtbar.
   update(context: InteractionContext, active: boolean): InteractionResult {
+    this.activeTime = context.time;
     const event = this.model.update(context.delta, active && this.eligible(context));
 
     if (event) this.applyDamage(event);
@@ -71,6 +78,7 @@ export class Plant implements Interactable, Destructible {
   }
 
   private applyDamage(event: NonNullable<InteractionResult['event']>) {
+    if (event.kind === 'nibble') this.hasBite = true;
     this.history.record(event);
     this.draw();
 
@@ -80,10 +88,12 @@ export class Plant implements Interactable, Destructible {
   private tip() {
     const c = this.config;
 
+    this.tipUntil = this.activeTime + 350;
     this.graphic.setAngle(-80).setPosition(c.x + 10, c.floorY - 17);
     this.soil.setVisible(true);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Nibbelpose und fremder Stoß teilen denselben aktiven Zeitanker und dieselbe Grafik.
   private animate(state: string, progress: number, nibbling: boolean, time: number) {
     if (state === 'tipped') return;
     const angle =
@@ -93,13 +103,40 @@ export class Plant implements Interactable, Destructible {
           ? Math.sin(time / 80) * 2
           : 0;
 
-    this.graphic.setAngle(angle);
+    const nudge =
+      time < this.nudgeUntil && !motionPreferences.snapshot().reduced
+        ? Math.sin((this.nudgeUntil - time) / 45) * 4
+        : 0;
+
+    this.graphic.setAngle(angle + nudge);
   }
 
   private draw() {
-    this.graphic.setTexture(
-      this.model.snapshot().damage > 0 ? 'catgrass-bitten' : 'catgrass-intact',
-    );
+    this.graphic.setTexture(this.hasBite ? 'catgrass-bitten' : 'catgrass-intact');
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
+  impactBody(): ImpactBody {
+    const b = this.graphic.getBounds();
+
+    return {
+      id: this.id,
+      mass: 1.2,
+      enabled: true,
+      surface: 'loose',
+      moving: this.activeTime < this.tipUntil,
+      velocityX: this.activeTime < this.tipUntil ? -80 : 0,
+      bounds: { x: b.x, y: b.y, width: b.width, height: b.height },
+    };
+  }
+
+  receiveImpact(hit: ImpactHit) {
+    this.nudgeUntil = this.activeTime + 400;
+    const event = hit.power >= 200 ? this.model.tip() : undefined;
+
+    if (event) this.applyDamage(event);
+
+    return event ? [event] : [];
   }
 
   damageSnapshot() {
@@ -121,6 +158,9 @@ export class Plant implements Interactable, Destructible {
   }
 
   reset() {
+    this.hasBite = false;
+    this.tipUntil = 0;
+    this.nudgeUntil = 0;
     this.model.reset();
     this.history.reset();
     this.graphic.setAngle(0).setPosition(this.config.x, this.config.floorY);

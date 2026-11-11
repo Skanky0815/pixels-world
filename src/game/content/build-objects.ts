@@ -1,4 +1,5 @@
 import { Carpet } from '../objects/Carpet';
+import { ImpactWorld } from '../domain/impact-world';
 import { WallPicture } from '../objects/WallPicture';
 import type Phaser from 'phaser';
 import type { ResolvedRoom, ResolvedObject } from './definitions';
@@ -47,6 +48,7 @@ function groupObjects(
   }[],
 ) {
   return {
+    impacts: new ImpactWorld(),
     carpets: objects.filter((object) => object instanceof Carpet),
     couches: objects.filter((object) => object instanceof Couch),
     curtains: objects.filter((object) => object instanceof Curtain),

@@ -82,7 +82,8 @@ export class PlantNibbling {
     return chaosEvent(this.objectId, 'nibble', 1, this.config.nibbleValue);
   }
 
-  private tip(): PlantDamageEvent {
+  tip(): PlantDamageEvent | undefined {
+    if (this.phase === 'tipped') return;
     this.phase = 'tipped';
     this.elapsed = 0;
     this.damage = 2;
