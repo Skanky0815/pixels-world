@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1](https://github.com/Skanky0815/pixels-world/compare/v0.4.0...v0.4.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* **ci:** gate release publication on full QA ([6601d5f](https://github.com/Skanky0815/pixels-world/commit/6601d5fed2aad0e5400802c0ba14187a58432acd)), closes [#265](https://github.com/Skanky0815/pixels-world/issues/265)
+* **test:** tolerate subpixel rounding in age footer checks ([25d1cb3](https://github.com/Skanky0815/pixels-world/commit/25d1cb359d8fb5b15a08a25c9e3f566a72d1ce39)), closes [#263](https://github.com/Skanky0815/pixels-world/issues/263)
+
 ## [0.4.0](https://github.com/Skanky0815/pixels-world/compare/v0.3.0...v0.4.0) (2026-11-11)
 
 
