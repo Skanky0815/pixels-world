@@ -18,14 +18,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  preflight:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag: ${{ steps.release.outputs.tag_name }}
-      sha: ${{ steps.release.outputs.sha }}
+      publish_allowed: ${{ steps.source.outputs.publish_allowed }}
+      tag: ${{ steps.source.outputs.tag }}
+      sha: ${{ steps.source.outputs.sha }}
     permissions:
       actions: write
       contents: write
@@ -59,27 +59,20 @@ jobs:
         run: bash .github/scripts/prepare-release-candidate.sh
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
-        if: steps.source.outputs.publish_allowed == 'true' || steps.candidate.outputs.prepare_needed == 'true'
+        if: env.RELEASE_MODE == 'prepare' && steps.candidate.outputs.prepare_needed == 'true'
         with:
           token: ${{ github.token }}
           target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-          skip-github-release: ${{ github.event_name == 'workflow_dispatch' }}
-          skip-github-pull-request: ${{ github.event_name == 'workflow_run' }}
+          skip-github-release: true
+          skip-github-pull-request: false
       - name: Kurze QA für vorbereiteten Versions-PR starten
         if: env.RELEASE_MODE == 'prepare' && steps.release.outputs.pr != '' && steps.release.outputs.pr != 'null'
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_PR: ${{ steps.release.outputs.pr }}
         run: bash .github/scripts/dispatch-release-qa.sh
-      - name: Erstelltes Release und Tag gegen geprüften Commit verifizieren
-        if: env.RELEASE_MODE == 'publish' && steps.release.outputs.release_created == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
-          RELEASE_SHA: ${{ steps.release.outputs.sha }}
-        run: bash .github/scripts/verify-release.sh
       - name: Release-Ergebnis
         env:
           MODE: ${{ env.RELEASE_MODE }}
@@ -93,13 +86,82 @@ jobs:
           if [ "$MODE" = prepare ]; then
             if [ -n "$PR" ] && [ "$PR" != null ]; then
               number=$(jq -er '.number' <<< "$PR")
-              echo "Versions-PR #$number vorbereitet/aktualisiert: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/pull/$number. Kurze QA automatisch gestartet; Review und Merge erforderlich; danach automatische Veröffentlichung nach erfolgreicher Main-QA." >> "$GITHUB_STEP_SUMMARY"
+              echo "Versions-PR #$number vorbereitet/aktualisiert: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/pull/$number. Kurze QA automatisch gestartet; Review und Merge erforderlich; danach vollständige Release-QA vor Tag, Veröffentlichung und Pages-Rollout." >> "$GITHUB_STEP_SUMMARY"
             else
               echo 'Kein neuer Versions-PR gemeldet. Kandidatenhinweis oben und Release-Please-Log prüfen (bereits aktuell oder keine releaserelevanten Änderungen).' >> "$GITHUB_STEP_SUMMARY"
             fi
           fi
+
+  full-qa:
+    needs: preflight
+    if: github.event_name == 'workflow_run' && needs.preflight.outputs.publish_allowed == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/qa.yml
+    with:
+      full_round: true
+      release_tag: ${{ needs.preflight.outputs.tag }}
+
+  release:
+    needs: [preflight, full-qa]
+    if: github.event_name == 'workflow_run' && needs.preflight.outputs.publish_allowed == 'true' && needs.full-qa.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+      sha: ${{ steps.release.outputs.sha }}
+    permissions:
+      actions: read
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.preflight.outputs.sha }}
+          persist-credentials: false
+      - name: Geprüften Build vor Veröffentlichung bestätigen
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: qa-pages-dist-${{ github.sha }}
+          path: dist
+      - name: Kandidat nach vollständiger QA erneut bestätigen
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/auto-publish-candidate.sh
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: release
+        if: steps.source.outputs.publish_allowed == 'true'
+        with:
+          token: ${{ github.token }}
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          skip-github-release: false
+          skip-github-pull-request: true
+      - name: Erstelltes Release und Tag gegen geprüften Kandidaten verifizieren
+        if: steps.release.outputs.release_created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag_name }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+          TESTED_TAG: ${{ needs.preflight.outputs.tag }}
+          TESTED_SHA: ${{ needs.preflight.outputs.sha }}
+        run: |
+          test "$RELEASE_TAG" = "$TESTED_TAG"
+          test "$RELEASE_SHA" = "$TESTED_SHA"
+          bash .github/scripts/verify-release.sh
+      - name: Veröffentlichungsergebnis
+        env:
+          CREATED: ${{ steps.release.outputs.release_created }}
+          TAG: ${{ steps.release.outputs.tag_name }}
+          SHA: ${{ steps.release.outputs.sha }}
+        run: |
+          echo "Vollständige QA erfolgreich. Release erstellt: ${CREATED:-false} · Tag: $TAG · Commit: $SHA" >> "$GITHUB_STEP_SUMMARY"
           if [ "$CREATED" != true ]; then
-            echo 'Kein neues Release: kein automatischer Pages-Rollout.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Kandidat inzwischen überholt oder bereits veröffentlicht: kein neuer Tag/Release und kein Pages-Rollout.' >> "$GITHUB_STEP_SUMMARY"
           fi
 
   pages:

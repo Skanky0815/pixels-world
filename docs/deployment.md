@@ -101,11 +101,15 @@ zur bestehenden Action v5; bei Action-/Parser-Updates gemeinsam prüfen.
    Version, erlaubte Versionsdateien und Abwesenheit von Tag/Release werden
    zusätzlich geprüft. Normale Feature-/CI-/Doku-Merges sind erklärte No-ops.
    Ein separater manueller `publish`-Modus entfällt.
-4. Nur ein neu erstelltes Release startet im selben Lauf Pages: Release-Identität
-   prüfen, vollständige QA mit Produktionszeiten und Audit, getesteten Build aus
-   derselben Run-/SHA-Zuordnung übernehmen, Identität erneut prüfen und deployen.
-   Kein Neubau und keine zweite Suite im Pages-Job.
-5. Live Start/Spiel, Assets, Rechtsseiten, Sprachen und Mobile-Layout prüfen.
+4. Der bestätigte Kandidat durchläuft zuerst die vollständige QA mit Produktionszeiten
+   und Audit. Erst nach erfolgreicher Vollprüfung und verfügbarem Build werden Main,
+   auslösender QA-Versuch und Versions-Kandidat erneut geprüft. Dann darf Release Please
+   Tag und GitHub Release erstellen; deren Identität muss dem getesteten Kandidaten entsprechen.
+   Fehler, Abbruch, fehlender Build oder überholter Kandidat erzeugen keine Veröffentlichung.
+5. Nur ein neu erstelltes, verifiziertes Release startet im selben Lauf Pages: getesteten
+   Build aus derselben Run-/SHA-Zuordnung übernehmen, Release-Identität erneut prüfen
+   und deployen. Kein Neubau und keine zweite Suite im Pages-Job.
+6. Live Start/Spiel, Assets, Rechtsseiten, Sprachen und Mobile-Layout prüfen.
    Kein E2E-Observer; verlinkte Version muss dem veröffentlichten Tag entsprechen.
 
 Dieser direkte Workflow-Aufruf berücksichtigt, dass von `GITHUB_TOKEN` erzeugte
@@ -116,18 +120,21 @@ dagegen den automatischen Publish auslösen. QA-Profile und Reports: [QA](qa.md)
 ## Identität und Wiederanlauf
 
 `verify-release.sh` bestätigt Tag, veröffentlichtes Nicht-Draft-Release und exakten
-Commit vor Vollprüfung, Artefaktübernahme und Deployment. Ein neuer Main-Stand darf
+Commit nach erfolgreicher Vollprüfung sowie vor Artefaktübernahme und Deployment.
+Vor der Vollprüfung bestätigt `auto-publish-candidate.sh` den vorgesehenen Tag
+und Commit ohne Veröffentlichung; nach der Prüfung wird dieses Gate erneut ausgeführt. Ein neuer Main-Stand darf
 nicht statt des Release-Commits ausgeliefert werden. Concurrency serialisiert
 Release/Rollout; notwendige Gates dürfen nicht übersprungen sein.
 
-| Zustand                                                                 | Vorgehen                                                                                                                                                         |
-| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Main-QA fehlt/läuft/ist fehlgeschlagen                                  | Prepare startet fehlende Main-QA und wartet auf laufende QA. Bei Fehler/Abbruch den verlinkten QA-Lauf beheben; nach Timeout erneut Spielrelease starten.        |
-| Kein aktueller Versions-Merge                                           | `prepare`, Versions-PR prüfen/mergen und Main-QA abwarten. Normale Merges sind keine Veröffentlichung.                                                           |
-| Main nach Versions-Merge weitergelaufen                                 | Neu auf aktuellem grünem Main vorbereiten; keinen alten Kandidaten ungeprüft veröffentlichen.                                                                    |
-| Mehrere pending-Kandidaten, Tag/Release vorhanden oder unklare Historie | Status untersuchen; keine automatische Bereinigung erzwingen.                                                                                                    |
-| Vollprüfung/Rollout fehlgeschlagen                                      | Tag/Release können existieren, der bisherige Pages-Stand bleibt. Fehlgeschlagene Jobs desselben Laufs erneut starten. Ein No-op erzeugt keinen weiteren Rollout. |
-| QA-Artefakt abgelaufen                                                  | Erneut geprüften Build im selben Release-Ablauf liefern; keinen ungeprüften Ersatz hochladen. Aufbewahrung steht im Workflow.                                    |
+| Zustand                                                                 | Vorgehen                                                                                                                                                                 |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Main-QA fehlt/läuft/ist fehlgeschlagen                                  | Prepare startet fehlende Main-QA und wartet auf laufende QA. Bei Fehler/Abbruch den verlinkten QA-Lauf beheben; nach Timeout erneut Spielrelease starten.                |
+| Kein aktueller Versions-Merge                                           | `prepare`, Versions-PR prüfen/mergen und Main-QA abwarten. Normale Merges sind keine Veröffentlichung.                                                                   |
+| Main nach Versions-Merge weitergelaufen                                 | Neu auf aktuellem grünem Main vorbereiten; keinen alten Kandidaten ungeprüft veröffentlichen.                                                                            |
+| Mehrere pending-Kandidaten, Tag/Release vorhanden oder unklare Historie | Status untersuchen; keine automatische Bereinigung erzwingen.                                                                                                            |
+| Vollprüfung fehlgeschlagen/abgebrochen                                  | Kein neuer Tag und kein Release. Fehler beheben und neuen Kandidaten vorbereiten oder bei unverändertem Commit die fehlgeschlagenen Jobs desselben Laufs erneut starten. |
+| Rollout nach erfolgreicher Veröffentlichung fehlgeschlagen              | Tag/Release existieren, der bisherige Pages-Stand bleibt. Fehlgeschlagene Pages-Jobs desselben Laufs erneut starten; Release-Identität wird erneut geprüft.              |
+| QA-Artefakt abgelaufen                                                  | Erneut geprüften Build im selben Release-Ablauf liefern; keinen ungeprüften Ersatz hochladen. Aufbewahrung steht im Workflow.                                            |
 
 `prepare-release-candidate.sh` darf einen alten unveröffentlichten Kandidaten nur
 bei eindeutigem Root-Paket/Tagformat, gültiger Manifestversion, Merge als Main-
@@ -156,9 +163,12 @@ und [Pages-Workflows](https://docs.github.com/en/pages/getting-started-with-gith
 
 ## Versionslink im Footer
 
-Nur nach verifizierter Release-Identität wird `release_tag` an QA weitergegeben.
+Nach Prüfung des noch unveröffentlichten Kandidaten wird dessen vorgesehener
+`release_tag` an QA weitergegeben. Der Release-Link wird vorab in den
+QA-Build eingebettet; öffentlich ausgeliefert wird dieser erst nach erfolgreicher
+Vollprüfung und verifizierter Veröffentlichung.
 Vite erhält `PIXELS_RELEASE_TAG`, vergleicht ihn mit der Paketversion und bettet
 den exakten Release-Link ein. Das deployte Artefakt ist derselbe getestete Build.
 Ohne expliziten Kontext zeigen Entwicklungs-/Vorschaubuilds nur die Version.
 Die Variable allein ersetzt keine Veröffentlichungsprüfung; das Identity-Gate
-bleibt zuständig. Release-Notes öffnen separat, damit die Runde erhalten bleibt.
+vor Pages bleibt zuständig. Release-Notes öffnen separat, damit die Runde erhalten bleibt.

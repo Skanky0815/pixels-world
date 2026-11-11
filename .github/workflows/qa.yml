@@ -87,7 +87,7 @@ on:
   workflow_call:
     inputs:
       release_tag:
-        description: Verifizierter veröffentlichter Tag für den Pages-Build
+        description: Vorab geprüfter Kandidaten-Tag für den späteren Pages-Build
         type: string
         default: ''
       full_round:

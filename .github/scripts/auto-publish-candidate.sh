@@ -61,5 +61,9 @@ jq -e --arg tag "$tag" 'all(.[]; .tag_name != $tag)' <<< "$releases" > /dev/null
 
 # Recheck main/latest QA and globally unique pending candidate immediately before Release Please.
 RELEASE_MODE=publish bash "$root/.github/scripts/verify-release-source.sh"
-note "Main-QA und Versions-Merge #$number ($GITHUB_SHA) bestätigt. Release Please darf $tag veröffentlichen."
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+  echo "tag=$tag" >> "$GITHUB_OUTPUT"
+  echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+fi
+note "Main-QA und Versions-Merge #$number ($GITHUB_SHA) bestätigt. Kandidat $tag bestätigt; Veröffentlichung benötigt zusätzlich die vollständige Release-QA."
 output true
