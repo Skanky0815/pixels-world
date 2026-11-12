@@ -38,8 +38,27 @@ npm run test:e2e:report
 Auf Linux kann `npx playwright install --with-deps chromium` erforderlich sein.
 Playwright startet eigene Vorschauen auf 4174 (E2E) und 4175 (Produktion mit
 Pages-Unterpfad). Vollständige Läufe starten zusätzlich einen Dev-Server auf 4176
-für Animationsvergleich und Objekt-Playground; CI-Smoke lässt ihn aus. Diese Ports müssen frei sein;
+für Animationsvergleich und Objekt-Playground, 4177 für die Offline-Produktion und
+4178 für den A→B-Release-Test; CI-Smoke lässt diese Zusatzserver aus. Diese Ports müssen frei sein;
 fremde Server werden nicht übernommen. Der persönliche Dev-Server bleibt unabhängig.
+
+## Release-Updates prüfen
+
+`pwa-update.spec.ts` baut zwei echte Produktionsversionen und wechselt sie unter
+derselben Adresse aus, sowohl am Root als auch im Pages-Unterpfad. Diese Fälle
+verwenden die echte Browserzeit und echte Service Worker statt der pausierten
+Gameplay-Uhr. Eine absichtlich fehlende neue Datei muss die Installation verhindern;
+erst der vollständige Build darf angeboten werden. Der Ablauf prüft getrennte
+Neustartfreigaben in zwei Tabs, Weiterbetrieb der alten Runde, Sprachwechsel,
+erhaltenes Album/Einstellungen sowie den Offline-Start der aktualisierten Version.
+Der Erstbesuch ohne bereits kontrollierenden Worker ist ein eigener Lebenszyklusfall.
+
+Zusätzlich auf echten iOS-/Safari- und Android-Geräten prüfen: veröffentlichte Version
+als App installieren, eine Runde beginnen, nach einem Folgerelease zur App
+zurückkehren und den Hinweis in den Optionen öffnen. Erst „Später“, dann bewusst
+„Jetzt aktualisieren“ wählen; Album und Einstellungen kontrollieren. Dasselbe mit
+einem zweiten Browser-Tab und nach Offline→Online wiederholen. Browserprüfungen
+ersetzen diese Prüfung des installierten Betriebssystem-Fensters nicht.
 
 ## Browser-Vertrag und Rundenprofile
 

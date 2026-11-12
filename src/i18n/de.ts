@@ -1,4 +1,21 @@
 export const de = {
+  updatesVersion: 'Spielversion v{v0}',
+  updatesCheck: 'Nach Updates suchen',
+  updatesShow: 'Update anzeigen',
+  updatesLater: 'Später',
+  updatesApply: 'Jetzt aktualisieren',
+  updatesUnavailable: 'Updates sind in der veröffentlichten Version verfügbar.',
+  updatesIdle: 'Neue Versionen werden automatisch geprüft.',
+  updatesChecking: 'Suche nach einer neuen Version …',
+  updatesCurrent: 'Du spielst die aktuelle Version.',
+  updatesOffline: 'Du bist offline. Wir prüfen wieder, sobald du online bist.',
+  updatesError:
+    'Das Update konnte nicht geprüft oder gestartet werden. Bitte versuche es noch einmal.',
+  updatesReady: 'Eine neue Version von Pixel’s World ist bereit!',
+  updatesApplying: 'Das Spiel wird aktualisiert …',
+  updatesWarning:
+    'Beim Aktualisieren startet das Spiel neu und deine laufende Runde endet. Dein Album und deine Einstellungen bleiben erhalten.',
+
   loadingTitle: 'Pixels Wohnzimmer wird vorbereitet …',
   loadingReady: 'Pixel wartet schon auf dich. Mit der Leertaste geht’s los!',
   loadingSkip: 'Los geht’s!',
