@@ -1,3 +1,4 @@
+import { installFollowCamera } from '../follow-camera-preview';
 import { loadingScreen } from '../../loading-screen';
 import { preloadObjectAudio } from '../assets/object-audio';
 import { preloadDialoguePortraits, DIALOGUE_PORTRAITS } from '../assets/dialogue-portraits';
@@ -227,6 +228,7 @@ export class LivingRoomScene extends Phaser.Scene {
     const { width, height } = this.room.definition;
 
     this.cameras.main.setBounds(0, 0, width, height);
+    installFollowCamera(this, this.pixel.collider);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der vollständige DEV-Port bleibt innerhalb der Build-Grenze; weder Aktionen noch Engine-Referenzen werden global exponiert.
@@ -509,7 +511,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private renderHud() {
-    this.hud.render({ score: this.chaos.score, difficulty: this.difficulty });
+    this.hud.render({ score: this.chaos.score });
   }
 
   private processDamage(event: ChaosEvent | undefined) {
@@ -574,7 +576,6 @@ export class LivingRoomScene extends Phaser.Scene {
       started: this.started,
       hud: this.hud.snapshot(),
       feedback: this.feedback.readable(),
-      goal: this.goalView.snapshot().text,
       homecoming:
         this.peacefulGoal.snapshot().line && this.ballPlay.snapshot().active
           ? 'dialogue'

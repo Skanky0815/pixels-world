@@ -61,9 +61,10 @@ test(
   { tag: '@smoke' },
   async ({ page }) => {
     await page.setViewportSize({ width: 568, height: 320 });
-    await start(page, '/?round-profile=fast');
+    await start(page, '/?camera=room&round-profile=fast');
     await readable(page);
-    await expect(page.locator('.mobile-goal')).not.toHaveText('');
+    await expect(page.locator('.mobile-goal')).toHaveCount(0);
+    await expect(page.locator('.mobile-hud')).toContainText('CHAOS:');
     await useIdleFrames(page);
     await advanceRoundTo(page, (await state(page)).round.returnAtMs);
     await until(
@@ -118,7 +119,7 @@ test('Schmales Hochformat ohne Touch: HUD bleibt lesbar, Tastatur und Neustart b
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await start(page);
+  await start(page, '/?camera=room');
   await readable(page);
   const initial = await state(page);
 

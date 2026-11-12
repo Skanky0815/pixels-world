@@ -51,6 +51,14 @@ async function state(page: Page): Promise<RoomTestState> {
   });
 }
 
+export async function introAction(page: Page, action: 'options' | 'album') {
+  const button = page.locator(`[data-start-${action}]`);
+
+  return (await button.isVisible())
+    ? button
+    : page.locator(action === 'options' ? '.pause-toggle' : '.album-toggle');
+}
+
 async function loadIntro(page: Page, path = '/') {
   await page.goto(path.replace(/^\/(?=\?|$)/, '/play.html'));
   await waitForGame(page);

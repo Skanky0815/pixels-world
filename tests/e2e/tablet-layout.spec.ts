@@ -169,6 +169,7 @@ test.describe('Desktop ohne Touch', () => {
     await page.keyboard.down('Space');
     await until(page, (s) => s.started);
     await page.keyboard.up('Space');
+    await expect(page.locator('.mobile-hud')).toBeVisible();
     await page.keyboard.down('ArrowRight');
     await until(page, (s) => s.pixel.x > 140);
     await page.keyboard.up('ArrowRight');

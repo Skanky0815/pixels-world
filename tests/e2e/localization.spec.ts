@@ -62,9 +62,7 @@ test.describe('Lokalisierte Touch-Runde', () => {
     await expect(page.locator('[data-control="jump"]')).toHaveText('Jump');
     await expect(page.locator('.mobile-hud')).toContainText('CHAOS: 0');
     await expect(page.locator('.mobile-hud')).not.toContainText(/MOOD|time|soon/i);
-    await expect(page.locator('.mobile-goal')).toHaveText(
-      'Pixel wants to play. Find his favourite ball and stay near it for a moment.',
-    );
+    await expect(page.locator('.mobile-goal')).toHaveCount(0);
     await useIdleFrames(page);
     await advanceRoundTo(page, (await state(page)).round.returnAtMs);
     await until(
@@ -82,6 +80,7 @@ test.describe('Lokalisierte Touch-Runde', () => {
     await touch.tap('jump');
     await until(page, (s) => s.reconciliation.stage === 'reading', 100);
     await expect(page.locator('.mobile-dialogue')).toContainText('CHARM OFFENSIVE');
+    await expect(page.locator('.mobile-dialogue')).not.toContainText(/attempts/i);
     const initial = (await state(page)).reconciliation;
 
     await changeLanguage(page, 'de');
@@ -102,6 +101,7 @@ test.describe('Lokalisierte Touch-Runde', () => {
 
     await until(page, (s) => s.reconciliation.stage === 'complete', 100);
     await expect(page.locator('.mobile-dialogue')).toContainText('ROUND RESULT');
+    await expect(page.locator('.mobile-dialogue')).not.toContainText(/Main goal|Difficulty/i);
     await expect(page.locator('.result-headline')).toHaveText('Friends again!');
     await expect(page.locator('.result-hearts')).toHaveAttribute('aria-label', '1 of 1 hearts');
     await expect(page.locator('[data-control="reset"]')).toHaveText('New round');

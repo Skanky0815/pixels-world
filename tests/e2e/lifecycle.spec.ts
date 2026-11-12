@@ -30,7 +30,7 @@ test(
     expect(restarted.curtain.damage).toBe(0);
     expect(restarted.plant.damage).toBe(0);
     expect(restarted.vases.every((vase) => vase.state === 'resting')).toBe(true);
-    expect(restarted.hud).toEqual({ scoreText: 'CHAOS: 0 · Normal' });
+    expect(restarted.hud).toEqual({ scoreText: 'CHAOS: 0' });
     await page.keyboard.up('r');
 
     for (let round = 0; round < 2; round++) {

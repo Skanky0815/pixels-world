@@ -4,6 +4,7 @@ import { seedRoundRandom } from './round-clock';
 
 type Area = { x: number; y: number; width: number; height: number };
 
+/** Sprite references deliberately use ?camera=room and a fixed world scale. */
 export async function prepareCharacterView(page: Page) {
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedRoundRandom(page);

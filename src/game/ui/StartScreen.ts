@@ -29,6 +29,7 @@ export class StartScreen {
     this.root.setAttribute('aria-label', t('gameIntroduction'));
     this.root.innerHTML = introMarkup();
     this.describeGoal(goal);
+    this.refreshAge();
     this.root.hidden = !visible;
     host.append(this.root);
     this.unsubscribe = onLanguageChange(() => this.refresh());
@@ -46,11 +47,18 @@ export class StartScreen {
     this.root.innerHTML = introMarkup();
     this.root.setAttribute('aria-label', t('gameIntroduction'));
     this.describeGoal(this.goal);
+    this.refreshAge();
     this.root.querySelector('.start-copy')?.scrollTo(0, scroll);
   }
 
   hide() {
     this.root.hidden = true;
+  }
+
+  private refreshAge() {
+    const age = document.querySelector('main > footer .age-rating')?.cloneNode(true);
+
+    if (age) this.root.querySelector('[data-start-age]')?.replaceChildren(age);
   }
 
   snapshot() {
@@ -77,5 +85,6 @@ function introMarkup() {
       <div><dt>↑ ↓</dt><dd>${t('climbTheCurtain')}</dd></div>
     </dl>
   </div><p class="start-prompt"><span class="game-menu-actions">${actionButton('album', 'data-start-album')}${actionButton('options', 'data-start-options')}</span><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
-  <span class="touch-prompt">${t('startTouchShort')}</span></p>`;
+  <span class="touch-prompt">${t('startTouchShort')}</span></p>
+  <footer class="start-age" data-start-age></footer>`;
 }

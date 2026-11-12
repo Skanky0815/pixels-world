@@ -1,4 +1,14 @@
-import { test, expect, start, state, until, reset, besideCouch, waitForGame } from './support';
+import {
+  introAction,
+  test,
+  expect,
+  start,
+  state,
+  until,
+  reset,
+  besideCouch,
+  waitForGame,
+} from './support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
 import type { Page } from '@playwright/test';
 
@@ -215,7 +225,7 @@ test(
     await expectFreshRound(page);
     await page.reload();
     await waitForGame(page);
-    await page.locator('[data-start-album]').click();
+    await (await introAction(page, 'album')).click();
     await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
   },
 );
@@ -240,7 +250,7 @@ async function expectResult(page: Page, outcome: 'success' | 'failed') {
   expect(result.summaryText).toContain(outcome === 'success' ? 'Gelungen' : 'Gescheitert');
   expect(result.hint).toBe('␣: Neue Runde starten');
   expect(result.goalReached).toBe(current.round.endReason === 'goal');
-  expect(result.summaryText).toContain('Hauptziel:');
+  expect(result.summaryText).not.toMatch(/Hauptziel|Schwierigkeitsgrad/);
   expect(result.headlineText).toBe(outcome === 'success' ? 'Wieder vertragen!' : 'Nicht versöhnt');
   expect(result.heartsText).toBe(
     '♥'.repeat(result.hearts) + '♡'.repeat(result.required - result.hearts),

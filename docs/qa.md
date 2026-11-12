@@ -284,10 +284,35 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
   Spieltasten; Feedback öffnet separat, Rechtsseiten im selben Tab.
 - Auf iPhone/Safari und Android/Chrome zwei Finger für Richtung plus Sprung,
   Abbruch, Rotation, Browserleisten/Safe Areas und Start/Ergebnis prüfen.
-  Querformat: Steuerkreuz links, Raum mittig, Aktion rechts; Texte/Buttons bleiben
-  lesbar und erreichbar, der Raum unverzerrt. Lange Texte scrollen innerhalb ihrer
+  Vergleichsansicht `?camera=room` im Querformat: Steuerkreuz links, Raum mittig, Aktion rechts; Texte/Buttons bleiben
+  lesbar und erreichbar, der Raum unverzerrt. Auf kurzen Handy-Querformaten stehen
+  Einführung und Spiel im selben Raster; beim Start bleiben Zimmer und Tasten
+  an derselben Position. Gleich breite Seitenleisten zentrieren das Zimmer. Der Titel steht links oben, beide Tastengruppen sind vertikal mittig; Status und Meldungen stehen rechts oben, Album/Menü rechts unten. Die seitlichen Bereiche vermeiden eine zusätzliche Kopfzeile über dem Zimmer. Die Touch-Tasten liegen neben dem
+  unverdeckten Zimmer; beides passt in die erste Bildschirmansicht.
+  Dialoge dürfen die Tasten nicht überdecken. Rechtslinks,
+  Version und Hinweise stehen im Optionen-Menü unter „Über das Spiel“.
+  Vor dem Start zeigt die Startkarte die Altersinformation; längere Einführungstexte
+  bleiben scrollbar. Lange Texte scrollen innerhalb ihrer
   Box. Unterhalb der getesteten Viewports in `responsive.spec.ts` gegebenenfalls
   mehr Platz oder Hochformat verwenden. Emulation ist kein Hardware-Nachweis.
+- Standardkamera mit `play.html` im Handy-Querformat prüfen:
+  Leinwand füllt die Fläche, transparente Tasten unten reagieren auch gleichzeitig,
+  Kamera folgt Pixel; die Kulisse setzt sich seitlich außerhalb des Spielraums fort.
+  Die sichtbare Randfläche passt sich an die Touch-Tasten an und hält nur einen
+  kleinen Sicherheitsabstand frei.
+  Pixel erreicht die ursprünglichen Raumgrenzen und bleibt vor den Tasten sichtbar.
+  Randobjekte, beide Räume und Rückkehr nach Rotation prüfen. Dialoge, Minispiel
+  und Ergebnis stehen links über den Pfeiltasten; Sara und Pixel bleiben daneben
+  sichtbar. Lange Texte innerhalb der Karte scrollen und Richtungsvorgaben prüfen. Raumränder, Vorhang, Sprünge, Pause
+  und Rotation prüfen; mit `?camera=room` bleibt die Zimmerübersicht erreichbar.
+- Desktop-Standardkamera vergleichen: moderater Zoom,
+  Tastatursteuerung und unveränderte Objektpositionen; Status und linke Dialogkarte
+  bleiben unabhängig von der Kamera lesbar. Die größere Desktopkarte mit größerer
+  Schrift muss auch während der Gesten links neben beiden Figuren bleiben. Fenster über die Kompaktgrenze verkleinern
+  und wieder vergrößern; klassische Ansicht mit `?camera=room` vergleichen.
+- HUD: Punktestand und kurze Aktionsrückmeldungen bleiben sichtbar; Schwierigkeitsgrad
+  steht in den Optionen. Zielstatus und Versuchszähler erscheinen weder im Spiel
+  noch im Ergebnis. Ball, Zielmarker und Herzfortschritt bleiben erhalten.
 - DE/EN in Einführung, Dialog, Versöhnung und Ergebnis wechseln: Runde bleibt
   erhalten. Auswahl wird beim Reload wiederhergestellt; gesperrter Speicher
   verhindert das Spiel nicht. Sprache, Lautstärke und Bewegungseinstellung, kein Spielstand, werden gespeichert.

@@ -22,7 +22,8 @@ test('Fehlendes optionales Porträt blockiert weder Start noch Heimkehrdialog', 
   const sara = (await state(page)).sara;
 
   expect(sara.portrait.visible).toBe(false);
-  expect(sara.canvasTextVisible).toBe(true);
+  expect(sara.canvasTextVisible).toBe(false);
+  await expect(page.locator('.mobile-dialogue')).toContainText('SARA');
   expect(sara.dialogueText).toContain('SARA');
   await expect(page.locator('#loading-screen')).toHaveCount(0);
 });

@@ -150,8 +150,7 @@ function charmText(s: ReconciliationSnapshot) {
 
   if (s.stage === 'finale') return t('allForgivenSaraPetsPixelPeace');
 
-  if (s.stage === 'input')
-    return t('pressTheArrowStepOfAttempts', { v0: s.step + 1, v1: s.length, v2: s.attemptsLeft });
+  if (s.stage === 'input') return t('pressTheArrowStep', { v0: s.step + 1, v1: s.length });
 
   if (s.stage === 'cue') return t('getReadyTheNextArrowIs');
 
@@ -159,12 +158,11 @@ function charmText(s: ReconciliationSnapshot) {
 }
 
 function readingText(s: ReconciliationSnapshot) {
-  if (s.stage === 'reading') return t('pixelSCharmOffensivePressThe');
+  if (s.stage === 'reading') return t('charmInstructions');
 
-  return t('attemptsLeftSpaceContinue', {
+  return t('charmFeedbackContinue', {
     v0: feedbackText(s.feedback),
-    v1: s.attemptsLeft,
-    v2: saraLine(s),
+    v1: saraLine(s),
   });
 }
 

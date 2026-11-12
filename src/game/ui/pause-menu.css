@@ -15,6 +15,29 @@
 .pause-menu::backdrop {
   background: #201b20bb;
 }
+.game-information-panel > summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 10px 0;
+  color: #e4c182;
+}
+.game-information {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 12px;
+}
+.game-information .footer-meta {
+  display: block;
+}
+.game-information .build-info {
+  text-align: left;
+}
+.game-information a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 10px 0;
+}
 .pause-menu h2 {
   margin: 0 0 16px;
   font-size: 22px;

@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function -- Vollständige Nutzerabläufe prüfen Sammlung, echten Schaden, Dialogpause und Persistenz gemeinsam. */
 import {
+  introAction,
   test,
   expect,
   loadIntro,
@@ -42,10 +43,7 @@ for (const mobile of [false, true]) {
       page,
     }) => {
       await loadIntro(page);
-      await page
-        .locator('.start-screen')
-        .getByRole('button', { name: 'Album öffnen', exact: true })
-        .click();
+      await (await introAction(page, 'album')).click();
       const album = page.locator('.album-dialog');
 
       await expect(album).toBeVisible();
@@ -126,7 +124,7 @@ for (const mobile of [false, true]) {
         await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
         await page.reload();
         await waitForGame(page);
-        await page.locator('[data-start-album]').click();
+        await (await introAction(page, 'album')).click();
         await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
       });
   });
@@ -199,7 +197,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await reset(page);
   await page.reload();
   await waitForGame(page);
-  await page.locator('[data-start-album]').click();
+  await (await introAction(page, 'album')).click();
   await expect(page.locator('.album-overall')).toHaveText('Overall: 2 of 14');
   await page.locator('.album-dialog [data-action="close"]').click();
   await openPause(page);
@@ -209,12 +207,12 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.locator('.pause-menu [data-album-reset="ask"]').click();
   await page.locator('.pause-menu [data-album-reset="confirm"]').click();
   await page.locator('[data-pause-resume]').click();
-  await page.locator('[data-start-album]').click();
+  await (await introAction(page, 'album')).click();
   await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
   await expect(page.locator('.album-dialog img')).toHaveCount(0);
   await page.reload();
   await waitForGame(page);
-  await page.locator('[data-start-album]').click();
+  await (await introAction(page, 'album')).click();
   await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
   await expect(page.locator('.album-dialog')).toHaveCount(1);
 });
@@ -263,7 +261,7 @@ test('Neustart und Reload verwerfen Vormerkungen und behalten vorhandene Album-E
   expect(
     await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
   ).toEqual(['vase.blue']);
-  await page.locator('[data-start-album]').click();
+  await (await introAction(page, 'album')).click();
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
   await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
 });
@@ -271,7 +269,7 @@ test('Neustart und Reload verwerfen Vormerkungen und behalten vorhandene Album-E
 test('Korrupte Album-Daten blockieren weder Einführung noch Sammlung', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('pixels-world.album', '{'));
   await loadIntro(page);
-  await page.locator('[data-start-album]').click();
+  await (await introAction(page, 'album')).click();
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 0 von 14');
   await expect(page.locator('.album-dialog footer [role="status"]')).toContainText('ungültig');
 });
@@ -285,7 +283,7 @@ test('Veröffentlichtes Album zählt keine unerreichbare DEV-Variante', async ({
   );
   await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
   await waitForLoadingScreen(page);
-  await page.locator('[data-start-album]').click();
+  await (await introAction(page, 'album')).click();
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 0 von 13');
   await expect(page.locator('.album-tile:disabled')).toHaveCount(9);
   await expect(page.locator('.album-dialog img')).toHaveCount(0);
