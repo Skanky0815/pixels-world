@@ -1,5 +1,14 @@
 /* eslint-disable max-lines-per-function -- Eine echte laufende Runde verbindet Bestätigung, Sprachwechsel, Pause und getrennte Speicherzustände. */
-import { test, expect, start, state, until, besideCouch, waitForGame } from './support';
+import {
+  introAction,
+  test,
+  expect,
+  start,
+  state,
+  until,
+  besideCouch,
+  waitForGame,
+} from './support';
 import { openPause } from './pause-support';
 
 test(
@@ -60,7 +69,7 @@ test(
     await expect(page.locator('.album-dialog [data-album-reset]')).toHaveCount(0);
     await page.reload();
     await waitForGame(page);
-    await page.locator('[data-start-album]').click();
+    await (await introAction(page, 'album')).click();
     await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
     await expect(page.locator('[data-pause-album-reset]')).toHaveCount(1);
   },

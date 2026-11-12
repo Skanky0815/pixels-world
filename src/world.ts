@@ -2,12 +2,20 @@ import './i18n/settings';
 import { translateExact, onLanguageChange } from './i18n/locale';
 import Phaser from 'phaser';
 import './style.css';
+import './mobile-landscape.css';
+import './follow-camera-preview.css';
+import './desktop-camera-preview.css';
 import { observeGameHost } from './game/host-resize';
 import { OBJECTS } from './content/objects/catalog';
 import { selectRoom } from './content/rooms';
 import { resolveRoom } from './game/content/resolve-room';
 import './footer';
 import { LivingRoomScene } from './game/scenes/LivingRoomScene';
+
+document.documentElement.classList.toggle(
+  'follow-camera',
+  new URLSearchParams(location.search).get('camera') !== 'room',
+);
 
 const room = resolveRoom(
   selectRoom(
@@ -35,6 +43,9 @@ if (gameHost) {
     '--room-ratio',
     String(room.definition.width / room.definition.height),
   );
+  gameHost
+    .closest('main')
+    ?.style.setProperty('--room-ratio', String(room.definition.width / room.definition.height));
 }
 
 new Phaser.Game({

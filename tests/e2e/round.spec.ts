@@ -14,7 +14,7 @@ test(
   // eslint-disable-next-line max-lines-per-function -- Das vollständige Rundenszenario behält Vorbereitung, echte Eingaben und gemeinsame Zustandsprüfungen zusammen.
   async ({ page }) => {
     await prepareCharacterView(page);
-    await start(page, fullRound ? '/' : '/?round-profile=fast');
+    await start(page, fullRound ? '/?camera=room' : '/?camera=room&round-profile=fast');
     await besideCouch(page);
     await until(page, (s) => s.couch.damage > 0);
     const initial = await state(page);
@@ -148,7 +148,7 @@ test(
     expect(fresh.round.phase).toBe('chaos');
     expect(fresh.round.elapsedMs).toBeLessThan(500);
     expect(fresh.round.finalChaosScore).toBeNull();
-    expect(fresh.hud.scoreText).toBe('CHAOS: 0 · Normal');
+    expect(fresh.hud.scoreText).toBe('CHAOS: 0');
     expect(fresh.chaos.score).toBe(0);
     expect(fresh.homecoming.stage).toBe('waiting');
     expect(fresh.homecoming.selection).toBeNull();

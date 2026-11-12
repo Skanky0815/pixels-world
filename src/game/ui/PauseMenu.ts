@@ -9,6 +9,7 @@ import './pause-menu.css';
 import { AlbumResetSetting } from './AlbumResetSetting';
 import { AlbumView } from './AlbumView';
 import { actionButton, configureAction } from './game-action';
+import { gameInformation } from './game-information';
 
 const DIFFICULTY_DESCRIPTIONS = {
   easy: 'difficultyEasyDescription',
@@ -209,6 +210,7 @@ export class PauseMenu {
     for (const element of Array.from(this.root.querySelectorAll<HTMLElement>('[data-menu-text]')))
       element.textContent = t(element.dataset.menuText as TextKey);
     this.element('[data-pause-restart]').hidden = !this.actions.started();
+    this.element('[data-game-information]').replaceChildren(gameInformation());
   }
 
   private element(selector: string) {
@@ -241,6 +243,8 @@ export class PauseMenu {
 // eslint-disable-next-line max-lines-per-function -- Das kleine Menü bleibt mit zugehörigen Beschriftungen als ein deklarativer Aufbau lesbar.
 function markup() {
   return `<header class="popup-heading">${closeButtonMarkup(t('optionsClose'), 'data-pause-resume')}<h2 data-menu-text="pauseSettings"></h2></header>
+    <details class="game-information-panel"><summary data-menu-text="gameInformation"></summary>
+      <div data-game-information></div></details>
     <section><label for="pause-difficulty"><span data-menu-text="difficultyLabel"></span></label>
       <select id="pause-difficulty" data-difficulty aria-describedby="difficulty-help difficulty-current">
         <option value="easy" data-menu-text="difficultyEasy"></option>

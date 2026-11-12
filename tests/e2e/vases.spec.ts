@@ -111,7 +111,7 @@ test('Slotvasen und feste Vasen bleiben erreichbar und werten jeden Bruch einmal
   await expectChaos(page);
   const complete = await state(page);
 
-  expect(complete.hud.scoreText).toBe(`CHAOS: ${complete.chaos.score} · Normal`);
+  expect(complete.hud.scoreText).toBe(`CHAOS: ${complete.chaos.score}`);
   await framesPass(page, 45);
   expect((await state(page)).chaos.score).toBe(complete.chaos.score);
 });

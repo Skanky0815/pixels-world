@@ -11,7 +11,7 @@ test(
     // eslint-disable-next-line max-lines-per-function -- Der vollständige sichtbare Spielmoment wird mit realem Fund, Browserfokus und Menü geprüft.
   }) => {
     await prepareCharacterView(page);
-    await start(page);
+    await start(page, '/?camera=room');
     await climbToBall(page);
     await until(page, (s) => s.ballPlay.active);
     const found = await state(page);

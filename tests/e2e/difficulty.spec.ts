@@ -1,5 +1,14 @@
 import { TouchDriver } from './touch-support';
-import { test, expect, state, until, waitForGame, loadIntro, holdUntil } from './support';
+import {
+  introAction,
+  test,
+  expect,
+  state,
+  until,
+  waitForGame,
+  loadIntro,
+  holdUntil,
+} from './support';
 import { startDifficulty } from './difficulty-support';
 import { openPause } from './pause-support';
 
@@ -16,7 +25,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   });
   expect(active.round.returnAtMs).toBeGreaterThanOrEqual(45_000);
   expect(active.round.returnAtMs).toBeLessThanOrEqual(78_750);
-  expect(active.hud.scoreText).toContain('Schwer');
+  expect(active.hud.scoreText).toBe('CHAOS: 0');
   await openPause(page);
   await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
   await expect(page.locator('[data-difficulty-current]')).toContainText('Aktuelle Runde: Schwer');
@@ -36,15 +45,12 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   expect(next.goalView).toMatchObject({ ballVisible: true, markerVisible: true, markerWidth: 36 });
   expect(next.round.returnAtMs).toBeGreaterThanOrEqual(90_000);
   expect(next.round.returnAtMs).toBeLessThanOrEqual(157_500);
-  expect(next.hud.scoreText).toContain('Leicht');
+  expect(next.hud.scoreText).toBe('CHAOS: 0');
   await page.reload();
   await waitForGame(page);
   expect((await state(page)).difficulty).toBe('easy');
   expect((await state(page)).started).toBe(false);
-  await page
-    .locator('.start-screen')
-    .getByRole('button', { name: 'Optionen', exact: true })
-    .click();
+  await (await introAction(page, 'options')).click();
   await expect(page.getByLabel('Schwierigkeitsgrad', { exact: true })).toHaveValue('easy');
   await page.locator('[data-language="en"]').click();
   await expect(page.getByLabel('Difficulty', { exact: true })).toHaveValue('easy');
@@ -60,10 +66,7 @@ test.describe('Schwierigkeitswahl mit Touch', () => {
     // eslint-disable-next-line max-lines-per-function -- Native Optionen und der reale Weiter-Button starten dieselbe gewählte Runde ohne Tastatur.
   }, testInfo) => {
     await loadIntro(page);
-    await page
-      .locator('.start-screen')
-      .getByRole('button', { name: 'Optionen', exact: true })
-      .tap();
+    await (await introAction(page, 'options')).tap();
     await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
     const bounds = await page.locator('.pause-menu').boundingBox();
 

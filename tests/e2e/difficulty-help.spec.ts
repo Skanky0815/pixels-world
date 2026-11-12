@@ -1,4 +1,4 @@
-import { test, expect, loadIntro } from './support';
+import { introAction, test, expect, loadIntro } from './support';
 
 const descriptions = {
   de: [
@@ -26,10 +26,7 @@ for (const viewport of [
       // eslint-disable-next-line max-lines-per-function -- Die Gerätevariante hält den vollständigen Vergleich von Sprache, Erklärung und Auswahl zusammen.
     }, testInfo) => {
       await loadIntro(page);
-      await page
-        .locator('.start-screen')
-        .getByRole('button', { name: 'Optionen', exact: true })
-        .click();
+      await (await introAction(page, 'options')).click();
       const help = page.locator('#difficulty-help');
       const select = page.locator('[data-difficulty]');
 

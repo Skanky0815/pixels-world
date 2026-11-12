@@ -241,7 +241,7 @@ for (const [mobile, hasTouch] of [
         const text = await page.locator('.result-reconciliation').boundingBox();
 
         expect(hearts!.y).toBeGreaterThanOrEqual(text!.y + text!.height);
-        await expect(page.locator('.result-goal')).toContainText('Schwer');
+        await expect(page.locator('.result-goal')).toHaveCount(0);
         const fits = await page
           .locator('.mobile-result')
           .evaluate((el) => el.scrollWidth <= el.clientWidth);
@@ -264,7 +264,7 @@ for (const [mobile, hasTouch] of [
       });
       await page.keyboard.press('F2');
 
-      if (mobile) await expect(page.locator('.result-goal')).toContainText('Schwer');
+      if (mobile) await expect(page.locator('.result-goal')).toHaveCount(0);
       await page.keyboard.down('Space');
       await page.clock.runFor(96);
       await page.keyboard.up('Space');

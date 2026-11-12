@@ -49,7 +49,7 @@ for (const difficulty of DIFFICULTIES) {
       expect(reached.round.finalChaosScore).toBe(0);
       expect(reached.homecoming.selection).toBeNull();
       expect(reached.ballPlay.active).toBe(true);
-      expect(reached.goalView.text).toContain('Pixel spielt');
+      await expect(page.locator('.mobile-goal')).toHaveCount(0);
       expect(reached.goalView).toMatchObject({ ballVisible: true, markerVisible: false });
       // Heimkehr, frische Bestätigung und Ergebnis: peaceful-goal.spec.ts;
       // Ergebniswerte aller Grade: tests/unit/peaceful-goal.test.ts.

@@ -178,6 +178,7 @@ test(
     expect((await state(page)).charmDisplay.canvasTextVisible).toBe(false);
     await expect(page.locator('.mobile-dialogue')).toBeVisible();
     await expect(page.locator('.mobile-dialogue')).toContainText('PIXELS CHARME-OFFENSIVE');
+    await expectClearTouchDialogue(page);
     await expect(page.getByRole('button', { name: 'Weiter', exact: true })).toBeVisible();
     const initial = (await state(page)).reconciliation;
 
@@ -204,6 +205,7 @@ test(
     expect((await state(page)).result?.outcome).toBe('success');
     await expect(page.locator('.mobile-dialogue')).toContainText('RUNDENERGEBNIS');
     await expect(page.locator('.result-headline')).toHaveText('Wieder vertragen!');
+    await expectClearTouchDialogue(page);
     await expect(page.locator('.result-hearts svg[data-filled="true"]')).toHaveCount(1);
     await expect(page.locator('.result-hearts')).toHaveAttribute('aria-label', '1 von 1 Herzen');
     await expectResultColumns(page);
@@ -236,11 +238,39 @@ test(
   },
 );
 
+async function expectClearTouchDialogue(page: import('@playwright/test').Page) {
+  const dialogue = await page.locator('.mobile-dialogue').boundingBox();
+  const directions = await page.locator('.touch-directions').boundingBox();
+  const action = await page.locator('.touch-actions').boundingBox();
+
+  expect(dialogue && directions && action).toBeTruthy();
+
+  if (!dialogue || !directions || !action) throw new Error('Dialog oder Touch-Fläche fehlt');
+
+  for (const control of [directions, action]) expect(separate(dialogue, control)).toBe(true);
+}
+
+// eslint-disable-next-line max-lines-per-function -- Schmale Kamerakarten stapeln die Ergebnisse, Tablets behalten ihre zwei Spalten.
 async function expectResultColumns(page: import('@playwright/test').Page) {
   const chaos = await page.locator('.result-chaos').boundingBox();
   const charm = await page.locator('.result-charm').boundingBox();
 
   if (!chaos || !charm) throw new Error('Ergebnisspalten fehlen');
+
+  if (page.viewportSize()!.height <= 550) {
+    expect(chaos.y + chaos.height).toBeLessThanOrEqual(charm.y);
+
+    return;
+  }
+
   expect(chaos.x + chaos.width).toBeLessThanOrEqual(charm.x);
   expect(chaos.y).toBe(charm.y);
+}
+
+type Rect = { x: number; y: number; width: number; height: number };
+
+function separate(a: Rect, b: Rect) {
+  return (
+    a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y
+  );
 }

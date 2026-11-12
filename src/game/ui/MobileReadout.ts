@@ -8,7 +8,6 @@ import type { DialoguePortrait } from '../domain/dialogue-portrait';
 interface Readout {
   readonly started: boolean;
   readonly hud: ReturnType<GameHud['snapshot']>;
-  readonly goal: string;
   readonly homecoming: string;
   readonly dialogue: string;
   readonly portrait: DialoguePortrait | null;
@@ -22,7 +21,6 @@ interface Readout {
 /** CSS-pixel text from the scene-owned views, independent of room/canvas scaling. */
 export class MobileReadout {
   private readonly hud = document.createElement('section');
-  private readonly goal = document.createElement('p');
   private readonly status = document.createElement('p');
   private readonly score = document.createElement('span');
   private readonly notice = document.createElement('span');
@@ -39,11 +37,10 @@ export class MobileReadout {
     this.hud.className = 'mobile-hud';
     this.hud.hidden = true;
     this.hud.setAttribute('aria-label', t('gameStatus'));
-    this.goal.className = 'mobile-goal';
     this.status.setAttribute('role', 'status');
     this.notice.className = 'mobile-notice';
     this.status.append(this.score, this.notice);
-    this.hud.append(this.status, this.goal);
+    this.hud.append(this.status);
     this.panel.className = 'mobile-dialogue';
     this.panel.setAttribute('aria-label', t('gameDialogue'));
     this.panel.hidden = true;
@@ -81,9 +78,9 @@ export class MobileReadout {
     setText(this.score, state.hud.scoreText);
     setText(this.notice, state.feedback.text);
     this.notice.dataset.feedback = state.feedback.tone;
-    setText(this.goal, state.goal);
     this.resultCard.render(state.result);
     const text = panelText(state);
+    const changed = this.message.textContent !== text.message || this.key.textContent !== text.key;
 
     this.panel.hidden = !text.message;
     this.panel.dataset.placement = state.welcome ? 'welcome' : 'dialogue';
@@ -92,6 +89,8 @@ export class MobileReadout {
     setText(this.quote, text.quote);
     setText(this.hint, text.hint);
     setText(this.key, text.key);
+
+    if (changed) this.panel.scrollTop = 0;
     this.timer.hidden = state.charmStage !== 'input';
     this.timer.value = state.remaining;
   }

@@ -2,7 +2,7 @@
 import type { Page } from '@playwright/test';
 import { albumEntries } from '../../src/content/album/index';
 import { changeLanguage, openPause } from './pause-support';
-import { test, expect, loadIntro } from './support';
+import { introAction, test, expect, loadIntro } from './support';
 
 const savedEntries = albumEntries(true).map((entry) => entry.id);
 
@@ -12,10 +12,7 @@ async function openSavedAlbum(page: Page) {
     localStorage.setItem('pixels-world.album', JSON.stringify({ version: 1, discovered }));
   }, savedEntries);
   await loadIntro(page);
-  await page
-    .locator('.start-screen')
-    .getByRole('button', { name: 'Album öffnen', exact: true })
-    .click();
+  await (await introAction(page, 'album')).click();
 }
 
 async function expectBoundedAlbum(page: Page) {
@@ -150,7 +147,7 @@ test.describe('Album im Smartphone-Querformat', () => {
         await options.locator('[data-album-reset="ask"]').tap();
         await options.locator('[data-album-reset="confirm"]').tap();
         await options.locator('[data-pause-resume]').tap();
-        await page.locator('[data-start-album]').tap();
+        await (await introAction(page, 'album')).tap();
         await expect(album.locator('.album-tile:disabled')).toHaveCount(6);
         expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
         expect(
@@ -174,7 +171,7 @@ test.describe('Album im Smartphone-Querformat', () => {
       await openSavedAlbum(page);
       await page.locator('.album-dialog [data-action="close"]').tap();
       await changeLanguage(page, 'en');
-      await page.locator('[data-start-album]').tap();
+      await (await introAction(page, 'album')).tap();
       await checkEveryDetail(page);
       await page.locator('.album-dialog [data-action="close"]').tap();
     });

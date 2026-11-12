@@ -1,4 +1,3 @@
-import { DIFFICULTY_LABELS } from '../../content/difficulty';
 import { t } from '../../i18n/locale.ts';
 import { compactVisibility } from './compact-visibility';
 import type Phaser from 'phaser';
@@ -16,7 +15,6 @@ export class RoundResultView {
   private readonly chaos: Phaser.GameObjects.Text;
   private readonly reconciliation: Phaser.GameObjects.Text;
   private readonly hearts: Phaser.GameObjects.Graphics;
-  private readonly goal: Phaser.GameObjects.Text;
   private readonly discoveries: Phaser.GameObjects.Text;
   private newDiscoveries = 0;
   private readonly quote: Phaser.GameObjects.Text;
@@ -35,7 +33,6 @@ export class RoundResultView {
     this.chaos = scene.add.text(64, 215, '', { ...style(16), wordWrap: { width: width / 2 - 90 } });
     this.reconciliation = scene.add.text(width / 2 + 20, 215, '', style(16));
     this.hearts = scene.add.graphics().setScale(1.75);
-    this.goal = scene.add.text(64, 315, '', style(13));
     this.discoveries = scene.add.text(64, 285, '', { ...style(14), color: '#c8dfa0' });
     this.quote = scene.add.text(64, 344, '', {
       ...style(14),
@@ -53,7 +50,6 @@ export class RoundResultView {
       this.chaos,
       this.reconciliation,
       this.hearts,
-      this.goal,
       this.discoveries,
       this.quote,
       this.hint,
@@ -89,14 +85,10 @@ export class RoundResultView {
       this.reconciliation.x + this.reconciliation.width + 16,
       this.reconciliation.y + this.reconciliation.height - 24,
     );
-    this.goal.setText(
-      `${t('resultGoal', { v0: t(result.goalReached ? 'reached' : 'notReached') })} · ${t('difficultyLabel')}: ${t(DIFFICULTY_LABELS[result.difficulty])}`,
-    );
     this.quote.setText(t('saraLabel049', { v0: result.closingLine }));
     const textX = this.portrait.render(success ? 'sara-friendly' : 'sara-annoyed') ? 164 : 64;
 
     placeDialogueText(this.quote, textX, this.hint.x - textX - 4);
-    this.goal.setX(textX);
     this.hint.setText(t('spaceNewRound'));
   }
 
@@ -121,14 +113,12 @@ export class RoundResultView {
       chaosText: this.chaos.text,
       reconciliationText: this.reconciliation.text,
       heartsText: this.heartsText(),
-      goalText: this.goal.text,
       newDiscoveries: this.newDiscoveries,
       albumText: this.discoveries.text,
       summaryText: [
         this.chaos.text,
         this.reconciliation.text,
         this.heartsText(),
-        this.goal.text,
         this.discoveries.text,
       ].join('\n'),
       quoteText: this.quote.text,

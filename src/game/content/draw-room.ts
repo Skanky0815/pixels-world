@@ -2,11 +2,13 @@ import { translateExact, onLanguageChange } from '../../i18n/locale';
 import type Phaser from 'phaser';
 import type { RoomDefinition } from './definitions';
 
+import { backdropPadding } from '../follow-camera-preview';
 import { drawRoomEnvironment } from './room-environment';
 
 /** Data-driven art and legacy primitives share the same room and support coordinates. */
 export function drawRoom(scene: Phaser.Scene, room: RoomDefinition) {
-  if (room.environment === 'cozy-room') drawRoomEnvironment(scene, room);
+  if (room.environment === 'cozy-room')
+    drawRoomEnvironment(scene, room, backdropPadding(room.width));
   else drawLegacyBackground(scene, room);
 
   for (const decoration of room.decorations) drawDecoration(scene, decoration);

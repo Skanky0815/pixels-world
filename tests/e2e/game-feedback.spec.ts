@@ -10,7 +10,8 @@ async function expectFeedback(
   key: string,
 ) {
   expect((await state(page)).feedback.messages[channel]).toMatchObject({ key });
-  await expect(page.locator(`.game-feedback-${channel}`)).toBeVisible();
+  await expect(page.locator('.mobile-notice')).toBeVisible();
+  await expect(page.locator('.mobile-notice')).toHaveText((await state(page)).feedback.text);
 }
 
 test('Punktefeedback zeigt echte Punkte, friert mit Pause ein und bleibt nach Reset einmalig', async ({
@@ -24,7 +25,7 @@ test('Punktefeedback zeigt echte Punkte, friert mit Pause ein und bleibt nach Re
   const before = await state(page);
 
   expect(before.feedback.messages.score?.value).toBe(OBJECTS['cozy-couch'].rules.damageValue);
-  await expect(page.locator('.game-feedback-score')).toContainText(
+  await expect(page.locator('.mobile-notice')).toContainText(
     `+${OBJECTS['cozy-couch'].rules.damageValue}`,
   );
   await expectFeedbackCorner(page);
@@ -41,7 +42,7 @@ test('Punktefeedback zeigt echte Punkte, friert mit Pause ein und bleibt nach Re
   await until(page, (s) => s.pixel.x < 140);
   await page.keyboard.up('ArrowLeft');
   await until(page, (s) => !s.feedback.messages.score);
-  await expect(page.locator('.game-feedback-score')).not.toBeVisible();
+  await expect(page.locator('.mobile-notice')).toHaveText('');
   await reset(page);
   await besideCouch(page);
   await until(page, (s) => s.couch.damage === 1);
@@ -167,8 +168,8 @@ test.describe('Feedback im Handheld mit reduzierter Bewegung', () => {
 });
 
 async function expectFeedbackCorner(page: import('@playwright/test').Page) {
-  const score = await page.locator('.game-feedback-score').boundingBox();
-  const layer = await page.locator('.game-feedback-layer').boundingBox();
+  const score = await page.locator('.mobile-hud').boundingBox();
+  const layer = await page.locator('#game').boundingBox();
 
   if (!score || !layer) throw new Error('Feedback fehlt');
   expect(score.y).toBeLessThan(layer.y + layer.height * 0.2);

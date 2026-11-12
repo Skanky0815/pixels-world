@@ -1,0 +1,120 @@
+.start-age {
+  display: none;
+}
+
+/* Introduction and game share the same frame on short touch screens. */
+@media (any-pointer: coarse) and (orientation: landscape) and (max-height: 550px) {
+  body:has(#play-area) {
+    display: grid;
+    height: 100svh;
+    --touch-gap: 2px;
+    --touch-directions-width: calc(3 * var(--touch-target) + 2 * var(--touch-gap));
+    padding: max(2px, env(safe-area-inset-top)) max(2px, env(safe-area-inset-right))
+      max(2px, env(safe-area-inset-bottom)) max(2px, env(safe-area-inset-left));
+
+    main:has(#play-area) {
+      position: relative;
+      grid-template-columns: var(--touch-directions-width) minmax(0, 1fr) var(
+          --touch-directions-width
+        );
+      grid-template-rows: minmax(0, 1fr);
+      height: 100%;
+      gap: 2px;
+      margin-inline: auto;
+      width: 100%;
+    }
+
+    main > header {
+      display: contents;
+    }
+
+    main > header > div:first-child {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: start;
+    }
+
+    main > header > .game-menu-actions {
+      grid-column: 3;
+      grid-row: 1;
+      flex-direction: column;
+      align-items: end;
+      gap: 2px;
+      align-self: end;
+      justify-self: end;
+      width: 100%;
+      z-index: 1;
+    }
+
+    #play-area .mobile-hud {
+      grid-column: 3;
+      grid-row: 1;
+      align-self: start;
+      padding-right: 0;
+      font-size: 12px;
+    }
+
+    .mobile-hud [role='status'] {
+      display: block;
+    }
+
+    .mobile-hud [role='status'] > span:first-child {
+      display: block;
+      min-height: 1.4em;
+    }
+
+    .mobile-hud .mobile-notice {
+      min-height: 0;
+      height: 2.8em;
+      overflow: auto;
+      overflow-wrap: anywhere;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    #play-area #game {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: center;
+      width: min(
+        100%,
+        calc(
+          (100svh - 4px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) *
+            var(--room-ratio, 1.777778)
+        )
+      );
+    }
+
+    .touch-directions {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+    }
+
+    .touch-actions {
+      grid-column: 3;
+      grid-row: 1;
+      width: 100%;
+      align-self: center;
+    }
+
+    .touch-actions button {
+      padding-inline: 2px;
+      font-size: 13px;
+    }
+
+    main > footer {
+      display: none;
+    }
+
+    .start-prompt > .game-menu-actions {
+      display: none;
+    }
+
+    .start-age {
+      display: block;
+      flex-shrink: 0;
+      margin: 0;
+    }
+  }
+}

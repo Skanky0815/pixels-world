@@ -554,9 +554,6 @@ kbd {
   .mobile-hud p {
     margin: 0;
   }
-  .mobile-hud .mobile-goal {
-    display: none;
-  }
   main:has(#play-area) footer {
     grid-column: 1 / -1;
     grid-row: 3;
@@ -704,11 +701,7 @@ kbd {
 .mobile-result .result-hearts[hidden] {
   display: none;
 }
-.mobile-result .result-goal {
-  grid-column: 1 / -1;
-  color: #d4b488;
-  font-size: 12px;
-}
+
 .mobile-result .result-discoveries {
   grid-column: 1 / -1;
   color: #c8dfa0;
