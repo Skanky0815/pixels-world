@@ -2,7 +2,7 @@ export const de = {
   emojiEyebrow: 'PIXEL ZUM MITNEHMEN',
   emojiTitle: 'Pixel für deinen Chat',
   emojiDescription:
-    'Sieben Pixel-Emojis für Slack – von Approval und Chaos bis Herz, Fortschritt, Fragen und Ideen.',
+    'Acht Pixel-Emojis für Slack – von Approval und Chaos bis Herz, Fortschritt, Fragen und Ideen.',
   emojiApproved: 'Pfote drauf!',
   emojiChaos: 'Chaos!',
   emojiInnocent: 'War nicht ich!',
@@ -13,9 +13,11 @@ export const de = {
   emojiAltQuestion: 'Pixel legt den Kopf neben einem Fragezeichen schief.',
   emojiIdea: 'Eine Idee!',
   emojiAltIdea: 'Pixel hat eine Idee neben einer goldenen Glühbirne.',
+  emojiVacation: 'Bin mal weg!',
+  emojiAltVacation: 'Pixel trägt eine Sonnenbrille und grinst entspannt.',
   emojiDownload: 'Emoji-Set herunterladen ↓',
   emojiNote:
-    'ZIP mit sieben transparenten PNGs. Entpacken und in Slack als eigene Emojis hinzufügen.',
+    'ZIP mit acht transparenten PNGs. Entpacken und in Slack als eigene Emojis hinzufügen.',
   emojiAltApproved: 'Pixel hebt eine Pfote neben einem grünen Haken.',
   emojiAltChaos: 'Pixel grinst neben einer kaputten Vase.',
   emojiAltInnocent: 'Pixel schaut unschuldig mit einem Heiligenschein.',

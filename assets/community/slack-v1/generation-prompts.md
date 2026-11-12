@@ -59,3 +59,11 @@ Quelle: `sources/pixel_idee.png`
 ```text
 Use case: illustration-story. Asset type: ONE square Slack custom emoji, genuinely transparent background. Reference defines exact Pixel cat identity and chunky emoji pixel style. Same grey-brown tabby with forehead M and stripes, white muzzle/cheeks/chest, pink nose/ears, bright GREEN eyes, dark crisp pixel outlines. Create pixel_idee: excited 'I have an idea!' expression, eyes wide and cheerful little smile, one white cat paw raised. Beside upper-right cheek is ONE large golden LIGHTBULB with simple screw base and three short chunky rays, no glow gradient. Head-and-paw bust, three-quarter facing RIGHT, cat dominates about80 percent; lightbulb about25 percent. Readable at22px, coarse logical64x64 flat pixel clusters, restrained palette, all ears/paw/bulb inside square with transparent safe margin. No heart, no gears, no question mark, no lettering, no text, no sheet, no background, no shadows, no human hands; every outside pixel alpha0.
 ```
+
+## pixel_urlaub
+
+Quelle: `sources/pixel_urlaub.png`; Identitäts- und Stilreferenz: `pixel_love.png`.
+
+```text
+Use case: illustration-story. Asset type: ONE square custom Slack emoji, genuinely transparent background, matching Pixel emoji set. Image1 is identity and pixel style reference, not an edit target. Preserve grey-brown TABBY cat, dark forehead M and stripes, white muzzle/cheeks/fluffy chest, pink nose/ears, chunky dark outlines, same three-quarter head facing RIGHT. Create pixel_urlaub: relaxed happy Pixel wearing ONE pair of large dark SUNGLASSES with simple warm reflection, small contented grin, front white-tipped cat paws resting comfortably together under chin as if taking a break. Head-and-paws bust only, NO beach scene, no clothes, no drink, no extra props. Sunglasses bold and unmistakable at22px; ears and tabby markings recognizable. Crisp coarse logical64x64 pixel clusters, restrained flat colors, no soft gradients or glow. Cat silhouette fills about90 percent square, small safe transparent margin, all ears and paws inside frame. Single emoji, no sheet, NO heart, NO text, no lettering, no border, no floor, no shadow, no white background; all outside pixels alpha0. Cute natural CAT paws, no human hands.
+```

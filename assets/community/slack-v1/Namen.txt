@@ -7,5 +7,6 @@ pixel_love.png  ->  :pixel_love:
 pixel_in_progress.png  ->  :pixel_in_progress:
 pixel_question.png  ->  :pixel_question:
 pixel_idee.png  ->  :pixel_idee:
+pixel_urlaub.png  ->  :pixel_urlaub:
 
 ZIP entpacken. In Slack im Emoji-Menü „Emoji hinzufügen“ öffnen, jeweils die PNG auswählen und den Namen vergeben.

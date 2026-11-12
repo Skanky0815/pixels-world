@@ -13,6 +13,7 @@ const names = [
   'pixel_in_progress',
   'pixel_question',
   'pixel_idee',
+  'pixel_urlaub',
 ];
 const alphaThreshold = 192;
 

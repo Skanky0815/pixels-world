@@ -10,6 +10,7 @@ const names = [
   'pixel_in_progress',
   'pixel_question',
   'pixel_idee',
+  'pixel_urlaub',
 ];
 
 test('Pixel-Emojis: mobiler Pages-Download enthält alle transparenten PNGs', async ({
@@ -73,7 +74,7 @@ test('Pixel-Emojis: mobiler Pages-Download enthält alle transparenten PNGs', as
   await expect(section.locator('h2')).toHaveText('Pixel for your chat');
   await expect(section.locator('.emoji-download')).toHaveText('Download emoji set ↓');
   await expect(section.locator('img').last()).toHaveAccessibleName(
-    'Pixel has an idea beside a golden lightbulb.',
+    'Pixel wears sunglasses and smiles contentedly.',
   );
   await page.setViewportSize({ width: 1280, height: 900 });
   await section.scrollIntoViewIfNeeded();
