@@ -50,6 +50,35 @@ freigeben, nicht pauschal alle Hosts erlauben.
 `/?room=cozy-remix` wählt nur im Dev-/E2E-Betrieb eine Inhaltsvariante.
 [Raum- und Objektinhalte](../src/content/README.md) erklären den Datenvertrag.
 
+## Linkvorschau und Suchmaschinen
+
+`node tools/prepare-social-card.mjs` rendert die Linkkarte aus dem vorhandenen
+`assets/banner.png` und einer lokalen HTML-/CSS-Beschriftung mit Chromium.
+Voraussetzung ist die normale Playwright-Installation. Ausgabe:
+`public/social/pixels-world.png` (1200 × 630). Das vollständige Banner bleibt sichtbar;
+es werden weder externe Bilder noch Webfonts geladen. Die Karte wird nicht für
+Offline-Spiele vorab geladen.
+
+Open Graph, Social Card, Canonical und `VideoGame`-Daten stehen direkt im initialen
+Landingpage-HTML. Die feste öffentliche Adresse ist
+`https://skanky0815.github.io/pixels-world/`; bei einem Domainwechsel auch HTML und
+`public/sitemap.xml` anpassen. DE/EN wird weiterhin im Browser umgeschaltet;
+es gibt keine getrennten Sprach-URLs und deshalb keine erfundenen `hreflang`-Ziele.
+
+Die Sitemap enthält Landingpage und Spiel unter dem tatsächlichen Pages-Unterpfad.
+Eine `robots.txt` unter `/pixels-world/` gilt nicht als Host-Datei; dafür wäre
+`https://skanky0815.github.io/robots.txt` nötig. Dieses Repository kann dort keine
+Datei ausliefern. Ohne Host-Sperre können die verlinkten Seiten gecrawlt werden;
+Sitemap bei vorhandenem autorisiertem Search-Console-Zugriff separat einreichen.
+Es werden weder Konten eingerichtet noch Indexierung, Rankings oder eine sofortige
+Aktualisierung fremder Vorschau-Caches zugesichert.
+
+Quellen: [Open Graph](https://ogp.me/),
+[Canonical-URLs](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls),
+[Sitemaps](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap),
+[robots.txt](https://developers.google.com/search/docs/crawling-indexing/robots/intro)
+und [Schema.org VideoGame](https://schema.org/VideoGame).
+
 ## App-Icons und Offline-Vorschau
 
 `node tools/prepare-app-icons.mjs` erzeugt die Icons reproduzierbar aus Pixels
@@ -62,7 +91,8 @@ Die relative App-ID, Startadresse und Scope unterstützen den Pages-Unterpfad.
 Die Registrierung erfolgt ausschließlich auf der veröffentlichten Spielseite,
 nicht auf der Landingpage und nicht im E2E-/DEV-Spiel. Es gibt keinen allgemeinen
 Navigations-Fallback: fehlende DEV-Seiten bleiben auch mit Service Worker 404.
-Updates warten bis zum Schließen der alten Spiel-Tabs, statt aktive Runden neu zu laden.
+Bereitstehende Updates werden in den Optionen angeboten; jeder Tab bestätigt seinen
+Neustart selbst. Siehe [Spielupdates](deployment.md#spielupdates-und-offlineversion).
 Für Offline-Prüfungen `npm run build` und `npm run preview` verwenden.
 
 ## Animationen vergleichen
