@@ -7,7 +7,7 @@ for (const difficulty of DIFFICULTIES) {
   for (const room of ['living-room', 'cozy-remix']) {
     test(`Hauptziel ${difficulty} im ${room} ist ohne Schaden erreichbar und holt Sara vorzeitig heim`, async ({
       page,
-      // eslint-disable-next-line max-lines-per-function -- Der echte schadenfreie Weg, Zielabschluss und Neustart sind ein zusammenhängender Erreichbarkeitsnachweis.
+      // eslint-disable-next-line max-lines-per-function -- Jeder echte Weg bleibt bis zum Zielübergang erhalten; den gemeinsamen Abschluss prüft peaceful-goal.spec.ts.
     }) => {
       await startDifficulty(page, difficulty, room === 'living-room' ? '/' : '/?room=cozy-remix');
       await climbToBall(page);
@@ -26,7 +26,7 @@ for (const difficulty of DIFFICULTIES) {
         .info()
         .attach('ziel-aktiv', { body: await page.screenshot(), contentType: 'image/png' });
 
-      if (room === 'living-room') {
+      if (room === 'living-room' && difficulty === 'normal') {
         await page.clock.runFor(300);
         expect((await state(page)).goal.progress).toBeGreaterThan(0);
         await page.evaluate(() => window.dispatchEvent(new Event('blur')));
@@ -51,29 +51,8 @@ for (const difficulty of DIFFICULTIES) {
       expect(reached.ballPlay.active).toBe(true);
       expect(reached.goalView.text).toContain('Pixel spielt');
       expect(reached.goalView).toMatchObject({ ballVisible: true, markerVisible: false });
-      await until(
-        page,
-        (s) => s.pixelReturn.stage === 'seated' && s.homecoming.stage === 'dialogue',
-        500,
-      );
-      expect((await state(page)).homecoming.selection?.score).toBe(0);
-      expect((await state(page)).homecoming.selection?.peaceful).toBe(true);
-      await page.keyboard.down('Space');
-      await until(page, (s) => s.result !== null);
-      await page.keyboard.up('Space');
-      const result = await state(page);
-
-      expect(result.reconciliation.stage).toBe('waiting');
-      expect(result.result).toMatchObject({
-        peaceful: true,
-        outcome: 'success',
-        difficulty,
-        hearts: 0,
-        required: 0,
-      });
-      await test
-        .info()
-        .attach('ziel-erreicht', { body: await page.screenshot(), contentType: 'image/png' });
+      // Heimkehr, frische Bestätigung und Ergebnis: peaceful-goal.spec.ts;
+      // Ergebniswerte aller Grade: tests/unit/peaceful-goal.test.ts.
       await reset(page);
       expect((await state(page)).goal).toMatchObject({ status: 'active', progress: 0 });
       expect((await state(page)).goalView).toMatchObject({

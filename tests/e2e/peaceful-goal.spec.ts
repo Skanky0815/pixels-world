@@ -36,6 +36,7 @@ test(
     expect((await state(page)).homecoming.selection).toMatchObject({
       peaceful: true,
       dialogue: line,
+      score: 0,
     });
     await page.keyboard.down('Space');
     await until(page, (s) => s.result !== null);
@@ -49,6 +50,7 @@ test(
       outcome: 'success',
       required: 0,
       hearts: 0,
+      difficulty: 'normal',
       headlineText: 'Just a lovely day!',
     });
     expect(ended.generation).toBe(found.generation);

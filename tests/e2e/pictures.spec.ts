@@ -6,12 +6,10 @@ import { PICTURE_ALBUM } from '../../src/content/album/pictures';
 
 const fixtures = [
   ['living-room', 'pixel-portrait', 'pictures-4'],
-  ['living-room', 'berlin-tower', 'pictures-7'],
-  ['living-room', 'cozy-nook', 'pictures-2'],
-  ['cozy-remix', 'pixel-portrait', 'pictures-1'],
-  ['cozy-remix', 'berlin-tower', 'pictures-0'],
   ['cozy-remix', 'cozy-nook', 'pictures-3'],
 ] as const;
+// Motiv-/Seedmatrix: wall-slots.test.ts und picture-art.test.ts. Hier bleiben
+// reale Sprungkontakte, Darstellung, Audio und Reset in beiden Räumen.
 const picture = (s: Awaited<ReturnType<typeof state>>) =>
   s.pictures.find((p) => p.id === 'wall:sofa')!;
 

@@ -56,10 +56,10 @@ for (const [room, x] of [
 
 for (const [room, toppled] of [
   ['living-room', false],
-  ['living-room', true],
-  ['cozy-remix', false],
   ['cozy-remix', true],
 ] as const) {
+  // Beide Auflagen und Ausgangszustände bleiben real; gemeinsame Fall-/Punkteregeln
+  // sind unabhängig vom Raum in book-toppling.test.ts und object-impact.test.ts geprüft.
   test(`Regaleinsturz in ${room} mit ${toppled ? 'bereits verstreuten' : 'aufrechten'} Büchern`, async ({
     page,
     // eslint-disable-next-line max-lines-per-function -- Echte Landungen prüfen beide Ausgangszustände, Pause während des Falls, einmaligen Schaden und Reset.
