@@ -32,8 +32,8 @@ export function pwaOptions(mode: string): Partial<VitePWAOptions> {
       // Installation must not succeed without its cache handler when an external runtime fails.
       inlineWorkboxRuntime: true,
       globPatterns: ['**/*.{js,css,html,png,svg,wav,webmanifest}'],
-      // Link previews are fetched by crawlers, not needed for offline gameplay.
-      globIgnores: ['social/**'],
+      // Small landing-page previews work offline; sharing images and ZIP downloads stay out.
+      globIgnores: ['social/**', 'downloads/**/*.zip'],
       navigateFallback: null,
       cleanupOutdatedCaches: true,
       skipWaiting: false,

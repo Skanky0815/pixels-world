@@ -555,3 +555,79 @@ body.landing-page {
     padding-bottom: 48px;
   }
 }
+
+.landing-emojis {
+  margin: 0 0 64px;
+  padding: 40px 32px;
+  text-align: center;
+  border: 1px solid #685044;
+  border-radius: 12px;
+  background: #33292e;
+}
+.landing-emojis h2 {
+  margin: 0 0 16px;
+}
+.emoji-copy {
+  max-width: 660px;
+  margin: 0 auto;
+  color: #cdbca9;
+  font:
+    16px/1.7 system-ui,
+    sans-serif;
+}
+.emoji-previews {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 720px;
+  margin: 24px auto;
+  padding: 0;
+  list-style: none;
+}
+.emoji-previews li {
+  min-width: 0;
+  padding: 16px 8px;
+  background: #241f29;
+  border-radius: 8px;
+}
+.landing-page .emoji-previews img {
+  display: block;
+  width: 80px;
+  height: 80px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  margin: 0 auto 12px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.emoji-previews span {
+  font:
+    14px/1.4 system-ui,
+    sans-serif;
+  overflow-wrap: anywhere;
+}
+.emoji-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin: 0 auto;
+}
+.emoji-note {
+  margin: 16px auto 0;
+  max-width: 620px;
+  color: #b6a195;
+  font:
+    13px/1.6 system-ui,
+    sans-serif;
+}
+@media (max-width: 680px) {
+  .landing-emojis {
+    padding: 28px 20px;
+    margin-bottom: 40px;
+  }
+  .emoji-previews {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
