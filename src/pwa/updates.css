@@ -1,0 +1,27 @@
+.game-updates {
+  border-top: 1px solid #a78d7766;
+  margin-top: 16px;
+  padding-top: 8px;
+}
+.game-updates p {
+  margin: 8px 0;
+}
+.update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pause-toggle[data-update-ready='true'] {
+  position: relative;
+}
+.pause-toggle[data-update-ready='true']::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #241f29;
+  border-radius: 50%;
+  background: #edc37c;
+}

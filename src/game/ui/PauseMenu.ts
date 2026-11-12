@@ -9,6 +9,7 @@ import './pause-menu.css';
 import { AlbumResetSetting } from './AlbumResetSetting';
 import { AlbumView } from './AlbumView';
 import { actionButton, configureAction } from './game-action';
+import { UpdatePanel } from '../../pwa/UpdatePanel';
 import { gameInformation } from './game-information';
 
 const DIFFICULTY_DESCRIPTIONS = {
@@ -27,6 +28,7 @@ interface PauseActions {
 export class PauseMenu {
   private readonly album: AlbumView;
   private readonly albumReset: AlbumResetSetting;
+  private readonly updates: UpdatePanel;
   private readonly root = document.createElement('dialog');
   private readonly toggle = document.createElement('button');
   private readonly albumToggle = document.createElement('button');
@@ -60,6 +62,7 @@ export class PauseMenu {
     const options = { signal: this.abort.signal };
 
     this.mountHeader(options);
+    this.updates = new UpdatePanel(this.element('[data-pause-updates]'), this.toggle);
 
     this.element('[data-pause-album]').addEventListener('click', () => this.openAlbum(), options);
     this.toggle.addEventListener('click', () => this.open(), options);
@@ -141,6 +144,7 @@ export class PauseMenu {
     this.actions.pause(true);
     this.refresh();
     this.albumReset.clearConfirmation();
+    this.updates.showAvailable();
     this.root.showModal();
   }
 
@@ -225,6 +229,7 @@ export class PauseMenu {
     this.unsubscribe();
     this.unsubscribeAudio();
     this.unsubscribeMotion();
+    this.updates.destroy();
     this.unsubscribeDifficulty();
   }
 
@@ -245,6 +250,7 @@ function markup() {
   return `<header class="popup-heading">${closeButtonMarkup(t('optionsClose'), 'data-pause-resume')}<h2 data-menu-text="pauseSettings"></h2></header>
     <details class="game-information-panel"><summary data-menu-text="gameInformation"></summary>
       <div data-game-information></div></details>
+    <section data-pause-updates></section>
     <section><label for="pause-difficulty"><span data-menu-text="difficultyLabel"></span></label>
       <select id="pause-difficulty" data-difficulty aria-describedby="difficulty-help difficulty-current">
         <option value="easy" data-menu-text="difficultyEasy"></option>

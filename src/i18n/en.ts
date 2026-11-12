@@ -1,5 +1,21 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  updatesVersion: 'Game version v{v0}',
+  updatesCheck: 'Check for updates',
+  updatesShow: 'Show update',
+  updatesLater: 'Later',
+  updatesApply: 'Update now',
+  updatesUnavailable: 'Updates are available in the published version.',
+  updatesIdle: 'New versions are checked automatically.',
+  updatesChecking: 'Checking for a new version …',
+  updatesCurrent: 'You are playing the latest version.',
+  updatesOffline: 'You are offline. We will check again when you are back online.',
+  updatesError: 'The update could not be checked or started. Please try again.',
+  updatesReady: 'A new version of Pixel’s World is ready!',
+  updatesApplying: 'Updating the game …',
+  updatesWarning:
+    'Updating restarts the game and ends your current round. Your album and settings will be kept.',
+
   loadingTitle: 'Getting Pixel’s living room ready …',
   loadingReady: 'Pixel is waiting for you. Press Space to get going!',
   loadingSkip: 'Let’s go!',

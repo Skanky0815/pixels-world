@@ -29,6 +29,8 @@ export function pwaOptions(mode: string): Partial<VitePWAOptions> {
       ],
     },
     workbox: {
+      // Installation must not succeed without its cache handler when an external runtime fails.
+      inlineWorkboxRuntime: true,
       globPatterns: ['**/*.{js,css,html,png,svg,wav,webmanifest}'],
       navigateFallback: null,
       cleanupOutdatedCaches: true,

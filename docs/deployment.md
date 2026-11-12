@@ -5,6 +5,33 @@ Die Quellen des Ablaufs sind [release.yml](../.github/workflows/release.yml),
 [pages.yml](../.github/workflows/pages.yml) und die Skripte unter
 [.github/scripts](../.github/scripts/). Kein unabhängiger Pages-Start und kein npm-Publish.
 
+## Spielupdates und Offlineversion
+
+Das Web-App-Manifest beschreibt Installation, Name, Icons und Startseite; eine neue
+Versionsnummer darin aktualisiert nicht den gespeicherten Spielcode. Vite PWA und
+Workbox laden neue Dateien zunächst vollständig in einen wartenden Service Worker.
+Die Workbox-Laufzeit steckt direkt in `sw.js`, damit eine fehlende externe
+Hilfsdatei keine Installation ohne Cache-Handler zulässt
+([Workbox-Konfiguration](https://developer.chrome.com/docs/workbox/modules/workbox-build#type-GenerateSWOptions)).
+
+Das Spiel prüft beim Registrieren, bei Rückkehr ins sichtbare Fenster und regelmäßig
+im Vordergrund auf Updates. „Nach Updates suchen“ in den Optionen startet eine
+manuelle Prüfung; Offline- und Fehlerzustände bleiben erneut bedienbar. Die aktuelle
+Spielversion steht im selben Menü. Ein Punkt am Optionen-Button kündigt ein
+bereitstehendes Update an; er öffnet keinen Dialog während der Runde.
+
+„Jetzt aktualisieren“ bestätigt ausdrücklich den Spielneustart. „Später“ lässt die
+aktuelle Runde weiterlaufen. Jeder offene Tab muss seinen eigenen Neustart
+bestätigen, auch wenn ein anderer Tab die neue Version schon aktiviert hat.
+Album und Einstellungen bleiben im regulären Browser-Speicher erhalten;
+Cache-/Speicherlöschen ist kein Bestandteil des Updateverfahrens.
+
+Das gilt auch für die installierte App und den Pages-Unterpfad. Geschlossene oder
+offline Geräte können ein Release erst beim nächsten Onlinekontakt erkennen.
+Bereits gecachte ältere Releases erhalten die neue Menüanzeige erst, wenn sie
+einmal auf diese Version gewechselt haben; die Änderung kann sich nicht rückwirkend
+in ihren bereits geladenen Code einbauen.
+
 ## Einrichtung und Versionierung
 
 Pages verwendet GitHub Actions und die Umgebung `github-pages`; zugelassene
