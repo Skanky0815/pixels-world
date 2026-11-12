@@ -1,6 +1,7 @@
 import './dev-shell.css';
 import './animation-compare.css';
 import { createPixelComparison } from './pixel-compare';
+import { createEndingComparisons } from './ending-compare';
 import { createSaraComparison } from './sara-compare';
 
 if (!import.meta.env.DEV) throw new Error('Animationsvergleich ist nur im Dev-Betrieb verfügbar.');
@@ -8,14 +9,19 @@ const host = document.querySelector('#comparisons');
 const saraHost = document.querySelector('#sara-comparisons');
 const pause = document.querySelector<HTMLButtonElement>('#pause');
 const step = document.querySelector<HTMLButtonElement>('#step');
+const endingHost = document.querySelector('#ending-comparisons');
 
-if (!host || !saraHost || !pause || !step) throw new Error('Vergleichsansicht unvollständig');
+if (!host || !saraHost || !pause || !step || !endingHost)
+  throw new Error('Vergleichsansicht unvollständig');
 host.replaceChildren();
 saraHost.replaceChildren();
-const comparisons = await Promise.all([
-  createPixelComparison(host),
-  createSaraComparison(saraHost),
-]);
+const comparisons = (
+  await Promise.all([
+    createPixelComparison(host),
+    createSaraComparison(saraHost),
+    createEndingComparisons(endingHost),
+  ])
+).flat();
 const abort = new AbortController();
 let paused = false;
 let lastTime = performance.now();

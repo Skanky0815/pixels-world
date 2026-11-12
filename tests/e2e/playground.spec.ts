@@ -294,7 +294,8 @@ test('Playground: alle Varianten und wiederholte Wechsel behalten stabile Ressou
     contentType: 'image/png',
   });
   await page.getByRole('link', { name: 'Animationsvergleich' }).click();
-  await expect(page.locator('article')).toHaveCount(2);
+  await expect(page.locator('.figures article')).toHaveCount(2);
+  await expect(page.locator('#ending-comparisons article')).toHaveCount(3);
 });
 
 // eslint-disable-next-line max-lines-per-function -- Der deklarative Block begrenzt die Geräteemulation auf diesen mobilen Ablauf.

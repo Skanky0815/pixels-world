@@ -110,6 +110,12 @@ test(
     expect(complete.charmMotion).toMatchObject({ action: 'roll', phase: 'loop' });
     expect(complete.pixel.visualTexture).toBe('pixel-charm');
     expect(complete.pixel.displayWidth).toBe(96);
+    expect(complete.ending.kind).toBe('belly');
+    expect(complete.sara.texture).toBe('sara-ending');
+    expect(complete.sara.animationKey).toBe('sara-ending-belly');
+    await expectEndingPause(page);
+    await until(page, (s) => s.ending.complete);
+    expect((await state(page)).sara.frame).toBe(5);
     await expectResult(page, 'success');
     expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.reconciliation))).toBe(
       true,
@@ -121,6 +127,7 @@ test(
     await until(page, (s) => s.generation > complete.generation);
     expect((await state(page)).reconciliation.stage).toBe('waiting');
     await expectFreshRound(page);
+    expect((await state(page)).ending.kind).toBeNull();
   },
 );
 
@@ -202,6 +209,12 @@ test(
     expect((await state(page)).reconciliation).toEqual(failed.reconciliation);
     expect(failed.chaos).toEqual(frozen.chaos);
     expect(failed.objects).toEqual(frozen.objects);
+    expect(failed.ending.kind).toBe('sulk');
+    expect((await state(page)).sara.frame).toBe(15);
+    const held = (await state(page)).sara;
+
+    await page.clock.runFor(1000);
+    expect((await state(page)).sara).toEqual(held);
     await expectResult(page, 'failed');
     expect(failed.result).toMatchObject({
       newDiscoveries: 0,
@@ -223,6 +236,7 @@ test(
     await until(page, (s) => s.generation > failed.generation);
     expect((await state(page)).reconciliation).toMatchObject({ stage: 'waiting', attemptsLeft: 2 });
     await expectFreshRound(page);
+    expect((await state(page)).ending.kind).toBeNull();
     await page.reload();
     await waitForGame(page);
     await (await introAction(page, 'album')).click();
@@ -322,4 +336,24 @@ for (const width of [390, 1024]) {
       true,
     );
   });
+}
+
+// eslint-disable-next-line max-lines-per-function -- Pause und Wechsel zur ruhigen Endpose dürfen weder Zeit noch Pixels Anker verändern.
+async function expectEndingPause(page: Page) {
+  await page.locator('.pause-toggle').click();
+  const paused = await state(page);
+
+  await page.clock.runFor(2000);
+  expect((await state(page)).ending).toEqual(paused.ending);
+  expect((await state(page)).sara).toEqual(paused.sara);
+  const reduced = page.getByRole('checkbox', { name: 'Bewegung reduzieren' });
+
+  await reduced.check();
+  expect((await state(page)).sara.frame).toBe(5);
+  expect((await state(page)).pixel.visualX).toBe(paused.pixel.visualX);
+  await page.clock.runFor(1000);
+  expect((await state(page)).ending).toEqual(paused.ending);
+  await reduced.uncheck();
+  await page.locator('[data-pause-resume]').click();
+  await until(page, (s) => s.ending.elapsed > paused.ending.elapsed);
 }

@@ -8,6 +8,8 @@ import {
 import type Phaser from 'phaser';
 import type { HomecomingSnapshot, SaraAnimation } from '../domain/homecoming';
 import { SARA_ANIMATIONS } from '../../content/sara-reactions';
+import type { EndingPose } from '../domain/ending-presentation';
+import type { EndingAnimation } from '../actors/sara-endings';
 import { SARA_CLIPS, SARA_SPRITE } from '../actors/sara-animations';
 import { homecomingPositions } from '../content/homecoming-layout';
 const REACTION_LABELS = { calm: t('aSuspiciousLook'), annoyed: t('anExasperatedSigh'), angry: '…' };
@@ -24,7 +26,7 @@ export class SaraReturnView {
   private readonly portrait: DialoguePortrait;
   private readonly dialogue: Phaser.GameObjects.Container;
   private selectedPortrait: PortraitId | null = null;
-  private key: SaraAnimation = SARA_ANIMATIONS.idle;
+  private key: SaraAnimation | EndingAnimation = SARA_ANIMATIONS.idle;
   // eslint-disable-next-line max-lines-per-function -- Der deklarative Aufbau hält Tür, Figur und Dialogpanel mit ihrer gemeinsamen Raumgeometrie zusammen.
   constructor(
     private readonly scene: Phaser.Scene,
@@ -93,6 +95,23 @@ export class SaraReturnView {
     this.renderPortrait(snapshot);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Textur, Fußanker und Handabstand werden gemeinsam aus der Abschlusszeit präsentiert.
+  renderEnding(pose: EndingPose) {
+    const positions = homecomingPositions(this.layout.width);
+    const target =
+      pose.kind === 'sulk' ? positions.saraEndX : positions.pixelSeatX + pose.pixelX + pose.gap;
+
+    this.actor.anims.stop();
+    this.key = pose.key;
+    this.actor
+      .setTexture('sara-ending', pose.frame)
+      .setOrigin(0.5, 90 / 96)
+      .setScale(2);
+    this.actor.x = positions.saraEndX + (target - positions.saraEndX) * pose.approach;
+    this.root.setVisible(true);
+    this.actor.setVisible(true);
+  }
+
   private renderPortrait(snapshot: HomecomingSnapshot) {
     this.layoutPortrait(homecomingPortrait(snapshot));
   }
@@ -132,7 +151,7 @@ export class SaraReturnView {
   private play(key: SaraAnimation) {
     if (key === this.key) return;
     this.key = key;
-    this.actor.play(key);
+    this.actor.setTexture('sara').play(key);
   }
 
   setPaused(paused: boolean) {

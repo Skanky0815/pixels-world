@@ -86,7 +86,7 @@ test(
     await until(page, (s) => s.homecoming.stage === 'dialogue');
     const dialogue = await state(page);
 
-    expect(dialogue.sara.frame).toBe(SARA_CLIPS[dialogue.sara.animationKey].frames.at(-1));
+    expect(dialogue.sara.frame).toBe(SARA_CLIPS[dialogue.homecoming.animationKey].frames.at(-1));
     expect(dialogue.sara.dialogueText).toContain(finished.homecoming.selection?.dialogue);
     expect(dialogue.homecoming.selection?.peaceful).toBe(false);
     await test.info().attach('sara-dialogue', {

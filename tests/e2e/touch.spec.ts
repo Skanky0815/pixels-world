@@ -228,8 +228,10 @@ test(
     await until(page, (s) => !s.result!.canvasTextVisible, 100);
     const beforeReset = await state(page);
 
+    expect(beforeReset.ending).toMatchObject({ kind: 'belly', complete: false });
     await touch.tap('reset');
     await until(page, (s) => s.generation === beforeReset.generation + 1);
+    expect((await state(page)).ending.kind).toBeNull();
     await expect(page.locator('[data-control="reset"]')).toBeHidden();
     await expect(page.locator('.touch-controls')).toHaveCount(1);
     await expect(page.locator('.mobile-hud')).toHaveCount(1);

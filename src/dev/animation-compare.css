@@ -9,3 +9,28 @@
   gap: 8px;
   margin-top: 16px;
 }
+
+.ending-comparisons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.ending-comparisons canvas {
+  width: min(100%, 320px);
+  margin-inline: auto;
+}
+.ending-reduced {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ending-reduced input {
+  width: 20px;
+  height: 20px;
+}
+.ending-comparisons output {
+  display: block;
+  margin-top: 12px;
+  font-size: 12px;
+}
