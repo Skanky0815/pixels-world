@@ -1,5 +1,28 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  emojiEyebrow: 'TAKE PIXEL WITH YOU',
+  emojiTitle: 'Pixel for your chat',
+  emojiDescription:
+    'Eight Pixel emojis for Slack – from approval and chaos to love, progress, questions and ideas.',
+  emojiApproved: 'Approved!',
+  emojiChaos: 'Chaos!',
+  emojiInnocent: 'Wasn’t me!',
+  emojiLove: 'With love',
+  emojiProgress: 'Working on it!',
+  emojiQuestion: 'A question …',
+  emojiAltProgress: 'Pixel looks focused beside two gears.',
+  emojiAltQuestion: 'Pixel tilts his head beside a question mark.',
+  emojiIdea: 'An idea!',
+  emojiAltIdea: 'Pixel has an idea beside a golden lightbulb.',
+  emojiVacation: 'Taking a break!',
+  emojiAltVacation: 'Pixel wears sunglasses and smiles contentedly.',
+  emojiDownload: 'Download emoji set ↓',
+  emojiNote: 'ZIP with eight transparent PNGs. Unzip and add them as custom emoji in Slack.',
+  emojiAltApproved: 'Pixel raises a paw next to a green check mark.',
+  emojiAltChaos: 'Pixel grins next to a broken vase.',
+  emojiAltInnocent: 'Pixel looks innocent with a halo.',
+  emojiAltLove: 'Pixel holds a large red heart with both paws.',
+
   updatesVersion: 'Game version v{v0}',
   updatesCheck: 'Check for updates',
   updatesShow: 'Show update',
