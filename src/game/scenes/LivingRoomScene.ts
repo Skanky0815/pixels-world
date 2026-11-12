@@ -1,3 +1,5 @@
+import { EndingPresentation } from '../domain/ending-presentation';
+import { preloadSaraEndingArt } from '../assets/sara-ending-art';
 import { installFollowCamera } from '../follow-camera-preview';
 import { loadingScreen } from '../../loading-screen';
 import { preloadObjectAudio } from '../assets/object-audio';
@@ -89,6 +91,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private round!: RoundController;
   private charm!: Reconciliation;
   private charmPresentation!: CharmPresentation;
+  private ending = new EndingPresentation();
   private resultView!: RoundResultView;
   private charmView!: ReconciliationView;
   private homecoming!: HomecomingSequence;
@@ -131,6 +134,7 @@ export class LivingRoomScene extends Phaser.Scene {
     loadingScreen.track(this.load, Object.keys(DIALOGUE_PORTRAITS));
     preloadObjectAudio(this);
     preloadCharmArt(this);
+    preloadSaraEndingArt(this);
     preloadDialoguePortraits(this);
     preloadVaseArt(this);
     preloadCarpetArt(this);
@@ -214,6 +218,7 @@ export class LivingRoomScene extends Phaser.Scene {
     });
     this.charm = new Reconciliation(this.random);
     this.charmPresentation = new CharmPresentation();
+    this.ending = new EndingPresentation();
     this.returnTime = 0;
     this.goal = new MainGoal(this.room.goal);
   }
@@ -360,6 +365,7 @@ export class LivingRoomScene extends Phaser.Scene {
             reconciliation: this.charm.snapshot(),
             charmDisplay: this.charmView.snapshot(),
             charmMotion: this.charmPresentation.snapshot(),
+            ending: this.ending.snapshot(),
             objectImpacts: this.built.impacts.snapshot(),
             result: this.resultView.snapshot(),
             pixelReturn: this.returning.snapshot(),
@@ -483,6 +489,7 @@ export class LivingRoomScene extends Phaser.Scene {
       if (this.ballPlay.snapshot().active) this.renderBallPlay();
 
       if (this.round.snapshot().phase === 'reconciliation') this.renderCharmMotion();
+      this.presentEnding();
     });
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribeMotion);
@@ -850,16 +857,19 @@ export class LivingRoomScene extends Phaser.Scene {
     this.charmPresentation.update(before, this.charm.snapshot(), elapsed);
     this.renderCharmMotion();
     this.charmView.render(this.charm.snapshot());
-    this.renderResult();
+    this.renderResult(elapsed);
   }
 
   private renderCharmMotion() {
     this.pixel.presentCharm(
-      this.charmPresentation.motion.pose(motionPreferences.snapshot().reduced),
+      this.ending.pixelPose(
+        this.charmPresentation.motion.pose(motionPreferences.snapshot().reduced),
+      ),
     );
   }
 
-  private renderResult() {
+  // eslint-disable-next-line max-lines-per-function -- Ergebnis, Album und rein visuelle Abschlusszeit werden in derselben Darstellung synchronisiert.
+  private renderResult(elapsed = 0) {
     const result = roundResult(
       this.round.snapshot(),
       this.homecoming.snapshot(),
@@ -867,8 +877,22 @@ export class LivingRoomScene extends Phaser.Scene {
       this.difficulty,
     );
 
+    this.ending.update(
+      result,
+      this.charmPresentation.motion.pose(motionPreferences.snapshot().reduced),
+      elapsed,
+    );
+    this.presentEnding();
     this.resultView.render(result, this.roundAlbum.confirm(result).length);
     this.controls.showRestart(result !== null);
+  }
+
+  private presentEnding() {
+    const pose = this.ending.pose(motionPreferences.snapshot().reduced);
+
+    if (!pose) return;
+    this.sara.renderEnding(pose);
+    this.renderCharmMotion();
   }
 
   private faceSara() {

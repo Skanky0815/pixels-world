@@ -45,6 +45,8 @@ test(
     const ended = await state(page);
 
     expect(ended.reconciliation.stage).toBe('waiting');
+    expect(ended.ending).toMatchObject({ kind: 'head', complete: true });
+    expect(ended.sara).toMatchObject({ texture: 'sara-ending', frame: 11 });
     expect(ended.result).toMatchObject({
       peaceful: true,
       outcome: 'success',

@@ -1,3 +1,5 @@
+import type { EndingAnimation } from './game/actors/sara-endings';
+import type { EndingPresentation } from './game/domain/ending-presentation';
 import type { Carpet } from './game/objects/Carpet';
 import type { WallPicture } from './game/objects/WallPicture';
 import type { AlbumDiscovery } from './content/album/discovery';
@@ -42,13 +44,14 @@ export interface GameTestState {
   };
   readonly reconciliation: ReconciliationSnapshot;
   readonly charmMotion: ReturnType<CharmPresentation['snapshot']>;
+  readonly ending: ReturnType<EndingPresentation['snapshot']>;
   readonly objectImpacts: ReturnType<ImpactWorld['snapshot']>;
   readonly round: RoundSnapshot;
   readonly homecoming: HomecomingSnapshot;
   readonly pixelReturn: PixelReturnSnapshot;
   readonly sara: {
     readonly visible: boolean;
-    readonly animationKey: SaraAnimation;
+    readonly animationKey: SaraAnimation | EndingAnimation;
     readonly x: number;
     readonly soleY: number;
     readonly texture: string;

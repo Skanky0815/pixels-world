@@ -45,8 +45,8 @@ test('DEV-Vorschau enthält alle Posen in genau einer Box pro Figur', async ({ p
   await page.locator('#step').click();
   await expect(page.locator('[data-character=pixel] output')).toContainText('Frame 6');
   await expect(page.locator('[data-character=sara] output')).toContainText('Frame 3');
-  await expect(page.locator('article')).toHaveCount(2);
-  await expect(page.locator('canvas')).toHaveCount(2);
+  await expect(page.locator('.figures article')).toHaveCount(2);
+  await expect(page.locator('.figures canvas')).toHaveCount(2);
 });
 
 test('DEV-Vorschauen bleiben unabhängig und passen auf schmale Bildschirme', async ({
@@ -86,7 +86,7 @@ test('DEV-Vorschauen bleiben unabhängig und passen auf schmale Bildschirme', as
   await expect(sara).toContainText('2.5×');
   await expect(pixel).toContainText('120 × 120 px');
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator('article')).toHaveCount(2);
+  await expect(page.locator('.figures article')).toHaveCount(2);
   await expect(page.getByLabel('Sara-Animation', { exact: true })).toHaveValue('sara-enter');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await testInfo.attach('mobile-animation-viewer', {
@@ -121,4 +121,55 @@ test('DEV-Seiten teilen Seitenrahmen und vollständige Navigation', async ({ pag
     expect(frames[0]!.x).toBe(frames[1]!.x);
     expect(frames[0]!.width).toBe(frames[1]!.width);
   }
+});
+
+test('Abschlussvorschau zeigt Kopf, Rückenlage und Misserfolg mit gemeinsamer Pause', async ({
+  page,
+  // eslint-disable-next-line max-lines-per-function -- Gemeinsame Abschlussposen, Pause und ruhiger Modus bleiben ein zusammenhängender Bedienablauf.
+}, testInfo) => {
+  await openViewer(page);
+  await page.locator('#pause').click();
+  const cards = page.locator('#ending-comparisons article');
+
+  await expect(cards).toHaveCount(3);
+
+  for (const [key, initial] of [
+    ['head', 6],
+    ['belly', 0],
+    ['sulk', 12],
+  ] as const)
+    await expect(page.locator(`[data-ending="${key}"] canvas`)).toHaveAttribute(
+      'data-frame',
+      String(initial),
+    );
+  await page.locator('#step').click();
+  await expect(page.locator('[data-ending="head"] canvas')).toHaveAttribute('data-frame', '7');
+  await expect(page.locator('[data-ending="belly"] canvas')).toHaveAttribute('data-frame', '1');
+  await expect(page.locator('[data-ending="sulk"] canvas')).toHaveAttribute('data-frame', '13');
+  await page.locator('[data-ending="belly"] input').check();
+  await page.locator('#step').click();
+  await expect(page.locator('[data-ending="belly"] canvas')).toHaveAttribute('data-frame', '5');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await openViewer(page);
+
+  for (const [key, last] of [
+    ['head', 11],
+    ['belly', 5],
+    ['sulk', 15],
+  ] as const) {
+    await expect(page.locator(`[data-ending="${key}"] input`)).toBeChecked();
+    await expect(page.locator(`[data-ending="${key}"] canvas`)).toHaveAttribute(
+      'data-frame',
+      String(last),
+    );
+  }
+
+  await page.clock.runFor(1000);
+  await expect(page.locator('[data-ending="belly"] canvas')).toHaveAttribute('data-frame', '5');
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await testInfo.attach('ending-contact-poses-mobile', {
+    body: await page.locator('#ending-comparisons').screenshot(),
+    contentType: 'image/png',
+  });
 });
