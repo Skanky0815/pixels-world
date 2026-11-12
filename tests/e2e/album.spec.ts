@@ -305,14 +305,21 @@ test.describe('Mobile Buchseiten', () => {
   test('Übersicht, Einzelobjekt und Querformat bleiben innerhalb des Bildschirms', async ({
     page,
   }) => {
-    await scratch(page);
-    await finishAlbumRound(page, true);
+    await page.addInitScript(() =>
+      localStorage.setItem(
+        'pixels-world.album',
+        JSON.stringify({ version: 1, discovered: ['couch.cozy'] }),
+      ),
+    );
+    await start(page);
     await page.locator('.album-toggle').click();
     const album = page.locator('.album-dialog');
 
     await expect(page.locator('.pause-menu')).toBeHidden();
     const paused = await state(page);
 
+    expect(paused.round.phase).toBe('chaos');
+    expect(paused.active).toBe(false);
     await page.clock.runFor(2000);
     expect((await state(page)).round).toEqual(paused.round);
 
@@ -336,5 +343,7 @@ test.describe('Mobile Buchseiten', () => {
     await expect(page.locator('.pause-menu')).toBeHidden();
     expect((await state(page)).active).toBe(true);
     await expect(page.locator('.album-toggle')).toHaveCount(1);
+    await page.clock.runFor(160);
+    expect((await state(page)).round.elapsedMs).toBeGreaterThan(paused.round.elapsedMs);
   });
 });
