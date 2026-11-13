@@ -93,13 +93,18 @@ verlangen eine passende Datei am Host-Wurzelpfad.
 Rico möchte `skanky0815.github.io/pixels-world/` beibehalten; eine eigene Domain
 ist später vorgesehen. Der Spiel-Deploy kann `/pixels-world/` veröffentlichen,
 jedoch keine Datei unter `https://skanky0815.github.io/age-de.xml` bereitstellen.
-Das zugehörige User-Pages-Repository ist über die verfügbare GitHub-Verbindung
-nicht auffindbar (404); das beweist weder seine Existenz noch eine Veröffentlichungsberechtigung.
+Das zusätzlich freigegebene [User-Pages-Repository](https://github.com/Skanky0815/skanky0815.github.io)
+ist angelegt. [Host-PR #2](https://github.com/Skanky0815/skanky0815.github.io/pull/2)
+bereitet die Root-Dateien und eine manuelle Veröffentlichung vor. GitHubs beim
+Anlegen automatisch aktive Branch-Veröffentlichung wurde auf GitHub Actions
+umgestellt; der Veröffentlichungsworkflow wurde nicht gestartet.
 
-Die [Root-Vorlage](host-root/age-de.xml) aktiviert HTML-Meta-Auswertung nur für
-`skanky0815.github.io/pixels-world/*`. Sie bleibt absichtlich außerhalb von `public/`.
-Vor einer separaten Bereitstellung am Host-Wurzelpfad muss eine vorhandene
-Root-Konfiguration zusammengeführt werden. Der Sicherheits-Fallback `18` ist keine
+Die [Host-Konfiguration](https://github.com/Skanky0815/skanky0815.github.io/blob/feat/1-age-label/README.md)
+aktiviert HTML-Meta-Auswertung für den exakten Einstieg `/pixels-world` und dessen
+Unterpfade `/pixels-world/*`. Sie wird ausschließlich im Host-Repository gepflegt.
+Der dortige Live-Check verlangt vor Veröffentlichung die Alters-Metadaten auf allen
+vier öffentlichen Spielseiten; zuerst muss deshalb die Spielversion aus PR #286
+regulär veröffentlicht werden. Der Sicherheits-Fallback `18` ist keine
 inhaltliche Einstufung anderer Projekte; seine mögliche Filterwirkung außerhalb
 des Spielpfads muss vor Übernahme geprüft werden. Keine pauschale Host-Einstufung
 „ab 6“ und keine Veröffentlichung anderer Projekte durch diesen PR.
@@ -185,7 +190,7 @@ wird nicht durch eine pauschale Zusicherung „rechtssicher“ ersetzt.
       explizite Löschung und eng begrenzte Offline-Rücknahme umgesetzt.
 - [x] Öffentliche Datenschutzhinweise und Speicherinventar mit dem Code abgeglichen;
       freigegebene Kontaktdaten beibehalten. Keine unbelegten Hosting-Löschfristen.
-- [x] HTML-Meta-Kennzeichnung und konkrete Root-Vorlage vorbereitet.
+- [x] HTML-Meta-Kennzeichnung und separaten Host-PR mit Live-Vorprüfung vorbereitet.
 - [ ] Separate Host-Root-Bereitstellung abstimmen und tatsächliche Filtererkennung
       prüfen, einschließlich der Wirkung auf andere Pfade desselben Hosts.
 - [ ] Die konkrete rechtliche Einzelfrage zu Schutzweg und § 7 abschließen.
