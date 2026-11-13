@@ -2,10 +2,8 @@ import type { Page } from '@playwright/test';
 import { expect } from './support';
 
 export async function openPause(page: Page) {
-  await page
-    .locator('main > header')
-    .getByRole('button', { name: /^(Optionen|Options)$/ })
-    .click();
+  await page.locator('.pause-toggle').click();
+  await page.locator('[data-menu-settings]').click();
   await expect(page.locator('.pause-menu')).toBeVisible();
 }
 

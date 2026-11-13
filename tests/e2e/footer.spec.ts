@@ -24,7 +24,7 @@ test('Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spie
     await expect(footer).toHaveText(`© ${year} Pixel's World · v${packageVersion}`);
     await expect(footer).toBeVisible();
     const shell = await page.locator('main > header, main > footer').elementHandles();
-    const selection = await page.locator('.room-selection').boundingBox();
+    const selection = await page.locator('.game-menu').boundingBox();
     const selectionFooter = await footer.boundingBox();
 
     footerBelow(selection, selectionFooter);

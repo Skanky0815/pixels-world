@@ -123,6 +123,7 @@ test('Landingpage: Pages-Unterpfad lädt nur lokale Ressourcen und erhält die N
   await expect(page).toHaveURL(base + 'play.html');
   await waitForLoadingScreen(page);
   await page.locator('.pause-toggle').click();
+  await page.locator('[data-menu-settings]').click();
   await page.getByRole('link', { name: 'Beenden', exact: true }).click();
   await expect(page).toHaveURL(base);
   await expect(page.locator('canvas')).toHaveCount(0);

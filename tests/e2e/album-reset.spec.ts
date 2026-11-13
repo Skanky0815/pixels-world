@@ -69,7 +69,7 @@ test(
     expect(
       await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
     ).toEqual([]);
-    await options.getByRole('button', { name: 'Close options', exact: true }).click();
+    await options.locator('[data-pause-resume]').click();
     await page.locator('.album-toggle').click();
     await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
     await expect(page.locator('.album-dialog img')).toHaveCount(0);

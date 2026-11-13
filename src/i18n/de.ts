@@ -1,4 +1,15 @@
 export const de = {
+  mainMenu: 'Hauptmenü',
+  menuReady: 'Bereit für Chaos, Pixel?',
+  menuWelcome: 'Ein Zimmer. Eine Katze. Dein Chaos.',
+  menuPlay: 'Spielen →',
+  menuResume: 'Fortsetzen →',
+  menuBack: '← Hauptmenü',
+  menuHelp: 'Hilfe ↗',
+  menuConfirmTitle: 'Die laufende Runde beenden?',
+  menuConfirmBody:
+    'Unbestätigte Funde dieser Runde gehen verloren. Bereits freigeschaltete Albumfunde und Einstellungen bleiben erhalten.',
+  menuConfirmAction: 'Runde beenden',
   helpTeaserTitle: 'Fragen vor der nächsten Chaosrunde?',
   helpTeaserText:
     'Updates, Album, Offline-Spiel und Installation: Hier findest du Hilfe, wenn Pixel mal nicht das einzige Rätsel ist.',

@@ -1,9 +1,9 @@
 /* The header and footer remain the same nodes in selection, introduction and play. */
-html.room-selecting body main:has(#play-area) {
+html:is(.room-selecting, .menu-open) body main:has(#play-area) {
   display: block;
   height: auto;
 }
-html.room-selecting body main:has(#play-area) > header {
+html:is(.room-selecting, .menu-open) body main:has(#play-area) > header {
   display: flex;
   position: static;
   flex-direction: row;
@@ -11,13 +11,17 @@ html.room-selecting body main:has(#play-area) > header {
   justify-content: space-between;
   margin-bottom: 12px;
 }
-html.room-selecting body main:has(#play-area) > header > div:first-child,
-html.room-selecting body main:has(#play-area) > header > .game-menu-actions {
+html:is(.room-selecting, .menu-open) body main:has(#play-area) > header > div:first-child,
+html:is(.room-selecting, .menu-open) body main:has(#play-area) > header > .game-menu-actions {
   position: static;
   width: auto;
   flex-direction: row;
   align-self: center;
 }
-html.room-selecting body #play-area {
+html:is(.room-selecting, .menu-open) body #play-area {
+  display: none;
+}
+
+html.menu-open .room-selection {
   display: none;
 }

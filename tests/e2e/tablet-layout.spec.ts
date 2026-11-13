@@ -89,10 +89,13 @@ async function tabletGeometry(page: Page, landscape: boolean) {
 
 async function tabletMenu(page: Page) {
   await page.locator('.pause-toggle').tap();
+  await page.locator('[data-menu-settings]').tap();
   const menu = await bounds(page, '.pause-menu');
 
   expect(menu.y).toBeGreaterThanOrEqual(0);
-  expect(menu.y + menu.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  expect(menu.x + menu.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  await page.locator('[data-pause-resume]').scrollIntoViewIfNeeded();
+  await expect(page.locator('[data-pause-resume]')).toBeInViewport();
   await page.locator('[data-pause-resume]').tap();
 }
 

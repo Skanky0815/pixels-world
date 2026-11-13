@@ -1,5 +1,4 @@
 import { StoragePanel } from './StoragePanel';
-import { closeButtonMarkup, configureCloseButton } from '../../ui/button';
 import { difficultyPreferences } from '../../settings/difficulty';
 import { DIFFICULTY_LABELS, isDifficulty, type Difficulty } from '../../content/difficulty';
 import { motionPreferences } from '../../settings/motion';
@@ -9,7 +8,8 @@ import { audioPreferences, type AudioLevels } from '../../settings/audio';
 import './pause-menu.css';
 import { AlbumResetSetting } from './AlbumResetSetting';
 import { AlbumView } from './AlbumView';
-import { actionButton, configureAction } from './game-action';
+import { configureAction } from './game-action';
+import { menuMarkup } from './menu-markup';
 import { UpdatePanel } from '../../pwa/UpdatePanel';
 import { gameInformation } from './game-information';
 
@@ -25,14 +25,18 @@ interface PauseActions {
   started(): boolean;
   difficulty(): Difficulty;
   rooms(): void;
+  play(): void;
 }
 
 export class PauseMenu {
+  private view: 'home' | 'settings' | 'information' | 'confirm' = 'home';
+  private returnable = true;
+  private pending?: 'restart' | 'rooms';
   private readonly album: AlbumView;
   private readonly albumReset: AlbumResetSetting;
   private readonly storage: StoragePanel;
   private readonly updates: UpdatePanel;
-  private readonly root = document.createElement('dialog');
+  private readonly root = document.createElement('section');
   private readonly toggle = document.createElement('button');
   private readonly albumToggle = document.createElement('button');
   private readonly headerActions = document.createElement('div');
@@ -46,21 +50,23 @@ export class PauseMenu {
   // eslint-disable-next-line max-lines-per-function -- Zugänglicher Dialog und sämtliche Ereignisse teilen eine szenengebundene Lebensdauer.
   constructor(private readonly actions: PauseActions) {
     this.album = new AlbumView(() => {
-      if (!this.root.open) this.actions.pause(false);
-      const target = this.root.open
+      if (this.root.hidden) this.actions.pause(false);
+      const target = !this.root.hidden
         ? this.element('[data-pause-album]')
         : document.getElementById('game');
 
       target?.focus({ preventScroll: true });
     });
-    this.root.className = 'pause-menu';
-    this.root.innerHTML = markup();
+    this.root.className = 'pause-menu game-menu';
+    this.root.hidden = true;
+    this.root.inert = true;
+    this.root.innerHTML = menuMarkup();
     this.albumReset = new AlbumResetSetting(this.element('[data-pause-album-reset]'));
     this.toggle.type = 'button';
     this.toggle.className = 'pause-toggle';
-    configureAction(this.toggle, 'options');
+    configureAction(this.toggle, 'menu');
 
-    document.body.append(this.root);
+    document.getElementById('play-area')?.before(this.root);
     this.removeLanguage = createLanguageSetting(this.element('[data-pause-language]'));
     const options = { signal: this.abort.signal };
 
@@ -73,22 +79,11 @@ export class PauseMenu {
     this.element('[data-pause-resume]').addEventListener('click', () => this.close(), options);
     this.element('[data-pause-restart]').addEventListener(
       'click',
-      () => this.actions.restart(),
+      () => this.ask('restart'),
       options,
     );
-    this.element('[data-pause-rooms]').addEventListener(
-      'click',
-      () => this.actions.rooms(),
-      options,
-    );
-    this.root.addEventListener(
-      'cancel',
-      (event) => {
-        event.preventDefault();
-        this.close();
-      },
-      options,
-    );
+    this.element('[data-pause-rooms]').addEventListener('click', () => this.ask('rooms'), options);
+    this.bindNavigation(options);
     this.element('[data-difficulty]').addEventListener(
       'change',
       () => this.changeDifficulty(),
@@ -126,7 +121,7 @@ export class PauseMenu {
   }
 
   get opened() {
-    return this.root.open || this.album.opened;
+    return !this.root.hidden || this.album.opened;
   }
 
   private readonly menuKey = (event: KeyboardEvent) => {
@@ -136,32 +131,105 @@ export class PauseMenu {
   private readonly keyDown = (event: KeyboardEvent) => {
     if (event.code !== 'Escape' || event.repeat) return;
 
-    if (!this.opened && document.querySelector('dialog[open]')) return;
+    if (document.querySelector('dialog[open]')) return;
     event.preventDefault();
 
     if (this.opened) this.close();
     else this.open();
   };
 
+  enable() {
+    this.root.inert = false;
+
+    if (!this.root.hidden) this.focusView();
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Deklarative Zuordnung der Menünavigation an denselben Listener-Lebenszyklus.
+  private bindNavigation(options: AddEventListenerOptions) {
+    for (const [hook, action] of Object.entries({
+      'data-menu-settings': () => this.show('settings'),
+      'data-menu-information': () => this.show('information'),
+      'data-menu-back': () => this.show('home'),
+      'data-menu-play': () => {
+        this.leave();
+        this.actions.play();
+      },
+      'data-menu-confirm': () => this.confirm(),
+      'data-menu-cancel': () => this.show('home'),
+    }))
+      this.element(`[${hook}]`).addEventListener('click', action, options);
+  }
+
+  open(initial = false) {
+    if (this.album.opened || document.querySelector('dialog[open]')) return;
+
+    if (this.root.hidden) this.returnable = !initial;
+    this.actions.pause(true);
+    this.root.hidden = false;
+    document.documentElement.classList.add('menu-open');
+    this.albumReset.clearConfirmation();
+    this.show('home');
+  }
+
   openAlbum() {
     this.actions.pause(true);
     this.album.open();
   }
 
-  open() {
-    if (this.opened || document.querySelector('dialog[open]')) return;
-    this.actions.pause(true);
-    this.refresh();
-    this.albumReset.clearConfirmation();
-    this.updates.showAvailable();
-    this.root.showModal();
+  private close() {
+    if (this.root.hidden) return;
+
+    if (!this.returnable) return this.show('home');
+    this.leave();
+    document.getElementById('game')?.focus({ preventScroll: true });
   }
 
-  private close() {
-    if (!this.opened) return;
-    this.root.close();
+  dismiss() {
+    if (!this.root.hidden) this.leave();
+  }
+
+  private leave() {
+    this.root.hidden = true;
+    document.documentElement.classList.remove('menu-open');
     this.actions.pause(false);
-    document.getElementById('game')?.focus({ preventScroll: true });
+  }
+
+  private show(view: typeof this.view) {
+    this.view = view;
+    this.refresh();
+
+    for (const panel of Array.from(this.root.querySelectorAll<HTMLElement>('[data-menu-view]')))
+      panel.hidden = panel.dataset.menuView !== view;
+    this.element('[data-menu-back]').hidden = view === 'home' || view === 'confirm';
+    this.element('.pause-actions').hidden = view === 'confirm';
+
+    if (view === 'settings') this.updates.showAvailable();
+    this.focusView();
+  }
+
+  private focusView() {
+    const hooks = {
+      confirm: '[data-menu-cancel]',
+      settings: '[data-menu-back]',
+      information: '[data-menu-back]',
+      home: this.returnable ? '[data-pause-resume]' : '[data-menu-play]',
+    };
+
+    this.element(hooks[this.view]).focus({ preventScroll: true });
+  }
+
+  private ask(action: 'restart' | 'rooms') {
+    if (!this.actions.started()) return this.actions[action]();
+    this.pending = action;
+    this.show('confirm');
+  }
+
+  private confirm() {
+    const action = this.pending;
+
+    this.pending = undefined;
+
+    if (action) this.actions[action]();
   }
 
   private changeAudio(event: Event) {
@@ -206,24 +274,41 @@ export class PauseMenu {
   }
 
   private refreshToggle() {
-    configureCloseButton(
-      this.element('[data-pause-resume]') as HTMLButtonElement,
-      t('optionsClose'),
-    );
-    configureAction(this.toggle, 'options');
+    configureAction(this.toggle, 'menu');
     configureAction(this.albumToggle, 'album');
-    configureAction(this.element('[data-pause-album]') as HTMLButtonElement, 'album');
+    this.element('[data-pause-album]').setAttribute('aria-label', t('albumOpen'));
+    this.element('[data-pause-album]').textContent = t('albumTitle');
     this.refreshDifficulty();
   }
 
   private refresh() {
-    this.root.setAttribute('aria-label', t('pauseSettings'));
+    this.root.setAttribute('aria-label', t('mainMenu'));
+    this.element('.pause-actions').setAttribute('aria-label', t('mainMenu'));
+    this.refreshHeading();
     this.refreshToggle();
 
     for (const element of Array.from(this.root.querySelectorAll<HTMLElement>('[data-menu-text]')))
       element.textContent = t(element.dataset.menuText as TextKey);
-    this.element('[data-pause-restart]').hidden = !this.actions.started();
+    this.refreshActions();
     this.element('[data-game-information]').replaceChildren(gameInformation());
+  }
+
+  private refreshHeading() {
+    const keys = {
+      home: 'menuReady',
+      settings: 'pauseSettings',
+      information: 'gameInformation',
+      confirm: 'menuConfirmTitle',
+    } as const;
+
+    this.element('[data-menu-heading]').textContent = t(keys[this.view]);
+  }
+
+  private refreshActions() {
+    this.element('[data-pause-restart]').hidden = !this.actions.started();
+    this.element('[data-pause-rooms]').hidden = !this.actions.started();
+    this.element('[data-menu-play]').hidden = this.returnable;
+    this.element('[data-pause-resume]').hidden = !this.returnable;
   }
 
   private element(selector: string) {
@@ -249,39 +334,8 @@ export class PauseMenu {
     this.abort.abort();
     this.removeSubscriptions();
     this.removeLanguage();
-    this.root.close();
+    document.documentElement.classList.remove('menu-open');
     this.root.remove();
     this.headerActions.remove();
   }
-}
-
-// eslint-disable-next-line max-lines-per-function -- Das kleine Menü bleibt mit zugehörigen Beschriftungen als ein deklarativer Aufbau lesbar.
-function markup() {
-  return `<header class="popup-heading">${closeButtonMarkup(t('optionsClose'), 'data-pause-resume')}<h2 data-menu-text="pauseSettings"></h2></header>
-    <details class="game-information-panel"><summary data-menu-text="gameInformation"></summary>
-      <div data-game-information></div></details>
-    <section data-pause-updates></section>
-    <section><label for="pause-difficulty"><span data-menu-text="difficultyLabel"></span></label>
-      <select id="pause-difficulty" data-difficulty aria-describedby="difficulty-help difficulty-current">
-        <option value="easy" data-menu-text="difficultyEasy"></option>
-        <option value="normal" data-menu-text="difficultyNormal"></option>
-        <option value="hard" data-menu-text="difficultyHard"></option>
-      </select>
-      <p id="difficulty-help" class="difficulty-help" aria-live="polite"></p>
-      <p id="difficulty-current" data-difficulty-current></p></section>
-    <section><h3 data-menu-text="language"></h3><div data-pause-language></div></section>
-    <section><h3 data-menu-text="audioSettings"></h3>
-      <label for="pause-master-volume"><span data-menu-text="masterVolume"></span><output data-audio-value="master"></output>
-        <input id="pause-master-volume" type="range" data-audio="master" min="0" max="100" step="1"></label>
-      <label for="pause-effects-volume"><span data-menu-text="effectsVolume"></span><output data-audio-value="effects"></output>
-        <input id="pause-effects-volume" type="range" data-audio="effects" min="0" max="100" step="1"></label>
-    </section>
-    <section><label class="motion-setting"><input type="checkbox" data-reduce-motion><span data-menu-text="reduceMotion"></span></label>
-      <p data-system-motion data-menu-text="systemMotion" hidden></p></section>
-    <section data-pause-storage></section>
-    <section data-pause-album-reset></section>
-    <div class="pause-actions">${actionButton('album', 'data-pause-album')}
-      <button type="button" class="ui-button" data-pause-rooms data-menu-text="roomsBack"></button>
-      <button type="button" class="ui-button" data-pause-restart data-menu-text="newRoundLabel"></button>
-      <a class="ui-button" href="./" data-menu-text="quitGame"></a></div>`;
 }

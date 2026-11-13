@@ -101,7 +101,13 @@ validierten Werten und einer lokalen Zufallsquelle; Vorwärtsschritte benutzen
 Startschritt ist für Einführung und Debug-Szenario derselbe. Die öffentlichen
 E2E-Snapshots bleiben lesend; es gibt keine globalen Debugsetter.
 
-`PauseMenu` besitzt seinen Dialog, den Menüknopf und alle Ereignisse pro Szene.
+`PauseMenu` besitzt eigene Menü-, Einstellungs- und Informationsansichten, den
+Menüknopf und alle Ereignisse pro Szene. Der kompakte Einstieg führt über „Spielen“
+zur Zimmerauswahl und danach zur vorhandenen Einführung. Während einer Runde
+bleibt die Szene pausiert erhalten; „Fortsetzen“ setzt dieselbe Runde fort.
+Neue Runde und Zimmerwechsel benötigen bei begonnener Runde eine ausdrückliche
+Bestätigung. Abbrechen ändert weder Szene noch Fortschritt. Das Album bleibt als
+Buchdialog erhalten; die FAQ öffnet in einem separaten Tab.
 Es verwendet den bestehenden Sprachwähler und `AudioPreferences`; ein Neustart
 entsorgt die alte Ansicht und startet mit frischem Aktivitätszustand. Sprache
 und Audiopegel bleiben erhalten. `GameAudio` überträgt Gesamt- × Effektpegel auf

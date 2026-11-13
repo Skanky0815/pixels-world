@@ -1,5 +1,16 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  mainMenu: 'Main menu',
+  menuReady: 'Ready for chaos, Pixel?',
+  menuWelcome: 'One room. One cat. Your chaos.',
+  menuPlay: 'Play →',
+  menuResume: 'Continue →',
+  menuBack: '← Main menu',
+  menuHelp: 'Help ↗',
+  menuConfirmTitle: 'End the current round?',
+  menuConfirmBody:
+    'Unconfirmed discoveries from this round will be lost. Previously unlocked album discoveries and settings are kept.',
+  menuConfirmAction: 'End round',
   helpTeaserTitle: 'Questions before the next round of chaos?',
   helpTeaserText:
     'Updates, your album, offline play and installation: Find help when Pixel is not the only puzzle.',

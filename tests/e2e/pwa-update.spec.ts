@@ -133,6 +133,7 @@ async function intro(page: Page) {
 
 async function menu(page: Page) {
   if (!(await page.locator('.pause-menu').isVisible())) await page.locator('.pause-toggle').click();
+  await page.locator('[data-menu-settings]').click();
   await expect(page.locator('.pause-menu')).toBeVisible();
 }
 

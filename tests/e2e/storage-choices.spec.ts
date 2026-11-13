@@ -15,6 +15,7 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
   await page.goto(base + 'play.html');
   await expect(page.locator('#loading-screen')).toHaveCount(0);
   await page.locator('.pause-toggle').click();
+  await page.locator('[data-menu-settings]').click();
   await expect(page.locator('[data-remember-album]')).not.toBeChecked();
   expect(
     await page.evaluate(() => navigator.serviceWorker.getRegistrations().then((r) => r.length)),
@@ -46,6 +47,7 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
   );
   await page.locator('.album-dialog [data-action="close"]').click();
   await page.locator('.pause-toggle').click();
+  await page.locator('[data-menu-settings]').click();
   await expect(page.locator('[data-remember-album]')).not.toBeChecked();
   await page.evaluate(() => caches.open('unrelated-project'));
   await page.locator('[data-offline-game]').click();
@@ -61,6 +63,7 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
   await other.goto(base + 'play.html');
   await expect(other.locator('#loading-screen')).toHaveCount(0);
   await other.locator('.pause-toggle').click();
+  await other.locator('[data-menu-settings]').click();
   await Promise.all([
     other.locator('[data-update-check]').click(),
     page.locator('[data-offline-game]').click(),

@@ -10,7 +10,7 @@ test('Pause hält Welt und Timer an; Fokuswechsel und Menütasten setzen nicht f
 }) => {
   await start(page);
   await expect(
-    page.locator('main > header').getByRole('button', { name: 'Optionen', exact: true }),
+    page.locator('main > header').getByRole('button', { name: 'Hauptmenü', exact: true }),
   ).toHaveText('');
   await expect(page.locator('.pause-toggle svg')).toHaveAttribute('aria-hidden', 'true');
   await page.keyboard.down('ArrowRight');
@@ -77,10 +77,10 @@ test('Pause schützt die Versöhnungsfrist und erhält Sprachwechsel ohne Neusta
 
   await page.clock.runFor(10_000);
   await page.locator(menu).getByRole('button', { name: 'English', exact: true }).click();
-  await expect(page.getByRole('dialog', { name: 'Pause & settings' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pause & settings' })).toBeVisible();
   expect((await state(page)).reconciliation).toEqual(paused.reconciliation);
   expect((await state(page)).generation).toBe(paused.generation);
-  await page.getByRole('button', { name: 'Close options', exact: true }).click();
+  await page.locator('[data-pause-resume]').click();
   await until(page, (s) => s.reconciliation.remainingMs < paused.reconciliation.remainingMs, 100);
   expect((await state(page)).reconciliation.failures).toBe(0);
 });
@@ -118,6 +118,7 @@ test('Lautstärke bleibt gespeichert und Neue Runde ist ausschließlich im Menü
   const generation = (await state(page)).generation;
 
   await page.locator(menu).getByRole('button', { name: 'Neue Runde', exact: true }).click();
+  await page.locator('[data-menu-confirm]').click();
   await until(page, (s) => s.generation > generation && s.pixel.grounded);
   expect((await state(page)).chaos.score).toBe(0);
   expect((await state(page)).active).toBe(true);
@@ -138,19 +139,20 @@ test.describe('Pause auf Touch-Geräten', () => {
     await start(page);
     await page
       .locator('main > header')
-      .getByRole('button', { name: 'Optionen', exact: true })
+      .getByRole('button', { name: 'Hauptmenü', exact: true })
       .tap();
+    await page.locator('[data-menu-settings]').tap();
     await expect(page.locator(menu)).toBeVisible();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator(menu).getByRole('button', { name: 'English', exact: true }).tap();
     const bounds = await page.locator(menu).boundingBox();
 
-    expect(bounds && bounds.x >= 0 && bounds.width <= 390 && bounds.height <= 844).toBe(true);
+    expect(bounds && bounds.x >= 0 && bounds.width <= 390).toBe(true);
     await testInfo.attach('mobile-pause-menu', {
       body: await page.locator(menu).screenshot(),
       contentType: 'image/png',
     });
-    await page.getByRole('button', { name: 'Close options', exact: true }).tap();
+    await page.locator('[data-pause-resume]').tap();
     await expect(page.locator(menu)).not.toBeVisible();
     expect((await state(page)).active).toBe(true);
   });

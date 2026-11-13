@@ -29,6 +29,7 @@ test(
     expect(right.goalView.ballRotation).toBeCloseTo(6 - 2 * Math.PI, 4);
     expect(right.pixel.visualFlipX).toBe(false);
     await page.keyboard.press('Escape');
+    await page.locator('[data-menu-settings]').click();
     const paused = await state(page);
 
     await page.clock.runFor(1500);
