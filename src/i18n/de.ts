@@ -1,4 +1,23 @@
 export const de = {
+  recoveryPageTitle: 'Spiel aktualisieren · Pixel’s World',
+  recoveryTitle: 'Zeit für frisches Chaos?',
+  recoveryDescription:
+    'Wenn dein Browser eine alte Spielversion zeigt, öffnest du hier die aktuelle Version direkt.',
+  recoveryTabs:
+    'Beende deine laufende Runde vorher. Andere Spiel-Tabs werden nicht automatisch neu geladen.',
+  recoverySaved: 'Dein gespeichertes Album und deine Einstellungen bleiben erhalten.',
+  recoveryAlbum:
+    'Dein bisher gespeichertes Album kannst du in den Optionen mit „Album für später merken“ wieder übernehmen.',
+  recoveryOpen: 'Aktuelle Version öffnen →',
+  recoveryReady: 'Zum Aktualisieren brauchst du eine Internetverbindung.',
+  recoveryChecking: 'Pixel schaut nach der aktuellen Version …',
+  recoveryFailed:
+    'Die aktuelle Version ist gerade nicht erreichbar. Bitte versuche es noch einmal.',
+  recoveryOffline:
+    'Du bist gerade offline. Verbinde dich mit dem Internet und versuche es noch einmal.',
+  recoveryBack: 'Zur Startseite',
+  recoveryLink: 'Spiel aktualisieren',
+
   roomsTitle: 'Wo geht’s heute hin, Pixel?',
   roomsAvailable: 'Bereit fürs Chaos',
   roomsLater: 'Kommt später',

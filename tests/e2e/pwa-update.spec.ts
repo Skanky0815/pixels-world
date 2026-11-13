@@ -219,3 +219,118 @@ test('Online-Update benötigt keine Offline-Registrierung und startet erst nach 
   ).toBe(0);
   expect(await page.evaluate(() => caches.keys())).toEqual([]);
 });
+
+// Serial with the other release tests: all scenarios share the same deployment server.
+for (const scope of ['/', '/pixels-world/']) {
+  test(`Legacy ohne Update-UI unter ${scope}: frischer Einstieg erhält Daten und andere Tabs`, async ({
+    page,
+    context,
+    request,
+  }, testInfo) => {
+    test.setTimeout(90_000);
+    await request.post(`${origin}/__release?scope=${scope}&release=legacy`);
+    await page.goto(origin + scope + 'play.html');
+    await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
+    await page.reload();
+    await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+    await expect(page.locator('[data-update-check]')).toHaveCount(0);
+    const saved = {
+      'pixels-world.album': JSON.stringify({ version: 1, discovered: ['vase.blue'] }),
+      'pixels-world.audio': JSON.stringify({ master: 0.35, effects: 0.6 }),
+      'pixels-world.difficulty': 'easy',
+      'pixels-world.language': 'de',
+      'pixels-world.reduced-motion': 'true',
+    };
+
+    await page.evaluate((values) => {
+      for (const [key, value] of Object.entries(values)) localStorage.setItem(key, value);
+    }, saved);
+    const other = await context.newPage();
+
+    await other.goto(origin + scope + 'play.html');
+    const oldOrigin = await other.evaluate(() => performance.timeOrigin);
+    const unrelated = await context.newPage();
+
+    await unrelated.goto(origin + '/other-project/');
+    await unrelated.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
+    const unrelatedCaches = await unrelated.evaluate(async () =>
+      (await caches.keys()).filter((name) => name.endsWith(location.href)),
+    );
+
+    expect(unrelatedCaches.length).toBeGreaterThan(0);
+    await request.post(`${origin}/__release?scope=${scope}&release=b`);
+    await page.reload();
+    await expect(page.locator('#legacy-version')).toContainText('v0.4.1');
+    await page.evaluate(async () => {
+      await (await navigator.serviceWorker.getRegistration())?.update();
+    });
+    await expect
+      .poll(
+        () =>
+          page.evaluate(async () => !!(await navigator.serviceWorker.getRegistration())?.waiting),
+        { timeout: 20_000 },
+      )
+      .toBe(true);
+    const before = await page.evaluate(() => caches.keys());
+
+    await page.goto(origin + scope + 'update.html');
+    await expect(page.locator('[data-recover-game]')).toBeVisible();
+    await expect(page.locator('canvas')).toHaveCount(0);
+    expect(await page.evaluate(() => caches.keys())).toEqual(before);
+    expect(await page.evaluate(() => Object.fromEntries(Object.entries(localStorage)))).toEqual(
+      saved,
+    );
+    // The helper and its entry bundle must never become another trapped precached document.
+    expect(
+      await page.evaluate(async () => {
+        const urls = (
+          await Promise.all(
+            (await caches.keys()).map(async (key) =>
+              (await (await caches.open(key)).keys()).map((entry) => entry.url),
+            ),
+          )
+        ).flat();
+
+        return urls.filter((url) => /\/update\.html|\/assets\/recovery-/.test(url));
+      }),
+    ).toEqual([]);
+    await context.setOffline(true);
+    await page.locator('[data-recover-game]').click();
+    await expect(page.locator('[data-recovery-status]')).toContainText('offline');
+    await expect(page).toHaveURL(origin + scope + 'update.html');
+    await context.setOffline(false);
+    await request.post(`${origin}/__release?scope=${scope}&release=b&metadata=broken`);
+    await page.locator('[data-recover-game]').click();
+    await expect(page.locator('[data-recovery-status]')).toContainText('nicht erreichbar');
+    await page.getByRole('button', { name: 'English', exact: true }).click();
+    await expect(page.locator('[data-recovery-status]')).toContainText('unavailable');
+    await page.getByRole('button', { name: 'Deutsch', exact: true }).click();
+    await page
+      .screenshot()
+      .then((body) => testInfo.attach('legacy-update-helper', { body, contentType: 'image/png' }));
+    await request.post(`${origin}/__release?scope=${scope}&release=b`);
+    await page.locator('[data-recover-game]').click();
+    await expect(page).toHaveURL(/play\.html\?fresh=0\.0\.2-update-test-/);
+    await intro(page);
+    await expect(page.locator('#build-info')).toContainText('v0.0.2-update-test');
+    const after = await page.evaluate(() => Object.fromEntries(Object.entries(localStorage)));
+
+    for (const [key, value] of Object.entries(saved)) expect(after[key]).toBe(value);
+    await menu(page);
+    await page.locator('[data-remember-album]').check();
+    await page.locator('[data-pause-album]').click();
+    await expect(page.locator('.album-overall')).toContainText('1 von');
+    expect(await other.evaluate(() => performance.timeOrigin)).toBe(oldOrigin);
+    await expect(other.locator('#legacy-version')).toContainText('v0.4.1');
+    expect(
+      await unrelated.evaluate(async () =>
+        (await navigator.serviceWorker.getRegistrations()).some((r) => r.scope === location.href),
+      ),
+    ).toBe(true);
+    const remaining = await unrelated.evaluate(() => caches.keys());
+
+    for (const key of unrelatedCaches) expect(remaining).toContain(key);
+    await other.close();
+    await unrelated.close();
+  });
+}
