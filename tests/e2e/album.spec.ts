@@ -19,6 +19,14 @@ import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
 import { finishAlbumRound } from './album-support';
 import type { Page } from '@playwright/test';
 
+// Existing persistence/layout contracts start with a returning player's saved choice.
+test.beforeEach(async ({ page }, info) => {
+  if (info.title.startsWith('Blockierter Speicher')) return;
+  await page.addInitScript(() =>
+    localStorage.setItem('pixels-world.storage', '{"album":true,"offline":false}'),
+  );
+});
+
 async function openFromMenu(page: Page) {
   await openPause(page);
   await page.locator('[data-pause-album]').click();
@@ -226,6 +234,9 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
     }),
   );
   await scratch(page);
+  await openPause(page);
+  await page.locator('[data-remember-album]').check();
+  await page.locator('[data-pause-resume]').click();
   await finishAlbumRound(page, true);
   await openFromMenu(page);
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');

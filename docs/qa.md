@@ -47,11 +47,15 @@ fremde Server werden nicht übernommen. Der persönliche Dev-Server bleibt unabh
 `pwa-update.spec.ts` baut zwei echte Produktionsversionen und wechselt sie unter
 derselben Adresse aus, sowohl am Root als auch im Pages-Unterpfad. Diese Fälle
 verwenden die echte Browserzeit und echte Service Worker statt der pausierten
-Gameplay-Uhr. Eine absichtlich fehlende neue Datei muss die Installation verhindern;
+Gameplay-Uhr. Offline-Fälle wählen die Offline-Kopie über die tatsächlichen Optionen.
+Eine absichtlich fehlende neue Datei muss die Installation verhindern;
 erst der vollständige Build darf angeboten werden. Der Ablauf prüft getrennte
 Neustartfreigaben in zwei Tabs, Weiterbetrieb der alten Runde, Sprachwechsel,
 erhaltenes Album/Einstellungen sowie den Offline-Start der aktualisierten Version.
 Der Erstbesuch ohne bereits kontrollierenden Worker ist ein eigener Lebenszyklusfall.
+Ein Online-Update-Ablauf prüft Hinweis und bewussten Neustart ohne Worker oder Offline-Cache.
+`storage-choices.spec.ts` prüft Standard-aus, die Übernahme alter Albumfunde erst auf Wunsch
+und die Offline-Rücknahme, ohne fremde Cache-Einträge zu löschen.
 
 Zusätzlich auf echten iOS-/Safari- und Android-Geräten prüfen: veröffentlichte Version
 als App installieren, eine Runde beginnen, nach einem Folgerelease zur App

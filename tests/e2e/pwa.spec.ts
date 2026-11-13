@@ -78,6 +78,13 @@ for (const base of ['http://127.0.0.1:4177/', 'http://127.0.0.1:4175/pixels-worl
     await session.detach();
     await page.getByRole('link', { name: 'Jetzt spielen →' }).first().click();
     await waitForIntro(page);
+    expect(
+      await page.evaluate(() => navigator.serviceWorker.getRegistrations().then((r) => r.length)),
+    ).toBe(0);
+    await page.locator('.pause-toggle').click();
+    await page.locator('[data-offline-game]').click();
+    await expect(page.locator('[data-offline-game]')).toBeEnabled({ timeout: 20000 });
+    await page.locator('[data-pause-resume]').click();
     await expect
       .poll(
         () =>

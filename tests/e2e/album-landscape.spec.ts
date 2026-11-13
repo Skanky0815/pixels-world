@@ -7,6 +7,13 @@ import { introAction, test, expect, loadIntro } from './support';
 const savedEntries = albumEntries(true).map((entry) => entry.id);
 
 /** A previously confirmed collection is storage data, not a game-state setter. */
+// Existing persistence/layout contracts start with a returning player's saved choice.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem('pixels-world.storage', '{"album":true,"offline":false}'),
+  );
+});
+
 async function openSavedAlbum(page: Page) {
   await page.addInitScript((discovered) => {
     localStorage.setItem('pixels-world.album', JSON.stringify({ version: 1, discovered }));

@@ -1,4 +1,17 @@
 export const de = {
+  storageTitle: 'Auf diesem Gerät',
+  storageAlbum: 'Album für später merken',
+  storageAlbumHelp:
+    'Ohne Auswahl bleiben neue Funde nur bis zum Neuladen. Vorhandene gespeicherte Funde werden beim Aktivieren übernommen; Ausschalten löscht sie nicht.',
+  storageOfflineEnable: 'Offline-Spiel vorbereiten',
+  storageOfflineRemove: 'Offline-Dateien entfernen',
+  storageOfflineHelp:
+    'Speichert nach deiner Auswahl Spieldateien auf diesem Gerät. Online spielen geht auch ohne Offline-Kopie.',
+  storageOfflineEnabled:
+    'Offline-Nutzung ist gewählt. Bei einem Ladefehler kannst du es erneut über die Update-Prüfung versuchen.',
+  storageBusy: 'Offline-Dateien werden vorbereitet …',
+  storageFailed: 'Das hat nicht geklappt. Prüfe deine Verbindung und versuche es erneut.',
+  albumSession: 'Album nur für diesen Besuch.',
   emojiEyebrow: 'PIXEL ZUM MITNEHMEN',
   emojiTitle: 'Pixel für deinen Chat',
   emojiDescription:
@@ -107,7 +120,7 @@ export const de = {
   installBrowser:
     'Am Computer oder Android: Im Browsermenü „App installieren“ oder das Installationssymbol in der Adressleiste wählen.',
   installOffline:
-    'Die veröffentlichte Spielversion ist nach dem ersten vollständigen Laden auch offline verfügbar. Laufende Runden werden nicht gespeichert.',
+    'Für Offline-Nutzung wähle im Spiel unter Optionen „Offline-Spiel vorbereiten“. Die App-Installation allein lädt keine Offline-Kopie.',
   closeInstall: 'Schließen',
   difficultyEasy: 'Leicht',
   difficultyNormal: 'Normal',

@@ -1,5 +1,18 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  storageTitle: 'On this device',
+  storageAlbum: 'Remember my album',
+  storageAlbumHelp:
+    'Without this choice, new discoveries last until reload. Enabling restores saved discoveries; disabling does not erase them.',
+  storageOfflineEnable: 'Prepare offline play',
+  storageOfflineRemove: 'Remove offline files',
+  storageOfflineHelp:
+    'Stores game files on this device after your choice. Online play works without an offline copy.',
+  storageOfflineEnabled:
+    'Offline play is selected. After a loading error, retry using the update check.',
+  storageBusy: 'Preparing offline files …',
+  storageFailed: 'That did not work. Check your connection and try again.',
+  albumSession: 'Album kept for this visit only.',
   emojiEyebrow: 'TAKE PIXEL WITH YOU',
   emojiTitle: 'Pixel for your chat',
   emojiDescription:
@@ -104,7 +117,7 @@ export const en: Record<keyof typeof de, string> = {
   installBrowser:
     'On desktop or Android: choose Install app in the browser menu or use the install icon in the address bar.',
   installOffline:
-    'The published game works offline after its first complete load. Rounds in progress are not saved.',
+    'For offline play, choose “Prepare offline play” in the game’s Options. Installing the app alone does not download an offline copy.',
   closeInstall: 'Close',
   difficultyEasy: 'Easy',
   difficultyNormal: 'Normal',

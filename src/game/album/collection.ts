@@ -1,6 +1,6 @@
 type StoragePort = Pick<Storage, 'getItem' | 'setItem'>;
 export const ALBUM_STORAGE_KEY = 'pixels-world.album';
-export type AlbumStorageStatus = 'ready' | 'unavailable' | 'recovered' | 'newer';
+export type AlbumStorageStatus = 'session' | 'ready' | 'unavailable' | 'recovered' | 'newer';
 
 /** IDs describe variants, never room instances or scoring events. */
 export class AlbumCollection {
@@ -8,17 +8,32 @@ export class AlbumCollection {
   private readonly listeners = new Set<() => void>();
   private status: AlbumStorageStatus = 'ready';
 
+  private remember: boolean;
   private readonly ids: ReadonlySet<string>;
   private readonly storage?: StoragePort;
 
-  constructor(ids: ReadonlySet<string>, storage?: StoragePort) {
+  constructor(ids: ReadonlySet<string>, storage?: StoragePort, remember = true) {
+    this.remember = remember;
     this.ids = ids;
     this.storage = storage;
-    this.restore();
+
+    if (remember) this.restore();
+  }
+
+  setRemember(enabled: boolean) {
+    if (this.remember === enabled) return;
+    this.remember = enabled;
+    this.status = 'ready';
+
+    if (enabled) this.restore();
+    this.changed();
   }
 
   snapshot() {
-    return Object.freeze({ discovered: Object.freeze([...this.found]), storage: this.status });
+    return Object.freeze({
+      discovered: Object.freeze([...this.found]),
+      storage: this.remember ? this.status : 'session',
+    });
   }
 
   unlock(id: string) {
@@ -44,6 +59,8 @@ export class AlbumCollection {
   reset() {
     this.found.clear();
     this.status = 'ready';
+
+    if (!this.remember) this.save(true);
     this.changed();
   }
 
@@ -97,8 +114,8 @@ export class AlbumCollection {
   }
 
   // eslint-disable-next-line max-lines-per-function -- Ein Speicherversuch darf den sitzungsweiten Fortschritt bei blockiertem Storage nicht verlieren.
-  private save() {
-    if (this.status === 'newer') return;
+  private save(force = false) {
+    if ((!this.remember && !force) || this.status === 'newer') return;
 
     try {
       if (!this.storage) throw new Error('Storage unavailable');
