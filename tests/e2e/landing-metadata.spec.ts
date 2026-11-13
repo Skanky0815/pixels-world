@@ -73,10 +73,18 @@ test('Linkvorschau und Suchdaten sind ohne JavaScript unter dem Pages-Pfad errei
 
     expect(sitemap.status()).toBe(200);
     expect(xml).toContain('http://www.sitemaps.org/schemas/sitemap/0.9');
-    expect(urls).toEqual([publicBase, publicBase + 'play.html']);
+    expect(urls).toEqual([publicBase, publicBase + 'play.html', publicBase + 'help.html']);
 
     for (const url of urls)
       expect((await request.get(previewBase + new URL(url).pathname)).status()).toBe(200);
+    await page.goto(previewBase + '/pixels-world/help.html');
+    await expect(page).toHaveTitle('Hilfe · Pixel’s World');
+    await expect(page.locator('summary')).toHaveCount(6);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      publicBase + 'help.html',
+    );
+    await expect(page.locator('#build-info')).toContainText(/v\d+\.\d+\.\d+/);
     await page.goto(previewBase + '/pixels-world/play.html');
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',

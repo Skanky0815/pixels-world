@@ -39,6 +39,9 @@ Bereits gecachte ältere Releases erhalten die neue Menüanzeige erst, wenn sie
 einmal auf diese Version gewechselt haben; die Änderung kann sich nicht rückwirkend
 in ihren bereits geladenen Code einbauen.
 
+Anleitungen für Spieler zu Updates, Installation und lokalem Album stehen in der
+[zweisprachigen Hilfe](../help.html); sie verlinkt den Aktualisierungseinstieg.
+
 ### Alte Version ohne Update-Button
 
 Vor der Update-Funktion konnten alte Offline-Clients neue Dateien bereits laden,

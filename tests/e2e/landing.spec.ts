@@ -52,7 +52,7 @@ test('Landingpage: DE/EN und Tastatur führen ohne Umweg ins Spiel', async ({ pa
   await expect(page.getByRole('heading', { name: 'The minds behind the mess.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Meet the team', exact: true })).toHaveAttribute(
     'href',
-    '#team',
+    './#team',
   );
   await expect(page.locator('article', { has: page.locator('#team-sara') })).toContainText(
     'AI contributor',
@@ -170,6 +170,7 @@ async function expectTeam(page: import('@playwright/test').Page, width: number) 
     'Das Spiel',
     'Über uns',
     'Emojis',
+    'Hilfe',
     'GitHub ↗',
   ]);
   await expect(team.locator('article', { has: page.locator('#team-sara') })).toContainText(

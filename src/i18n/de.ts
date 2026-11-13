@@ -1,4 +1,64 @@
 export const de = {
+  helpTeaserTitle: 'Fragen vor der nächsten Chaosrunde?',
+  helpTeaserText:
+    'Updates, Album, Offline-Spiel und Installation: Hier findest du Hilfe, wenn Pixel mal nicht das einzige Rätsel ist.',
+  helpTeaserLink: 'Zur Hilfe →',
+  helpPageTitle: 'Hilfe · Pixel’s World',
+  helpNav: 'Hilfe',
+  helpTitle: 'Hilfe für kleine Chaospausen',
+  helpIntro:
+    'Pixel kümmert sich ums Chaos. Hier findest du Antworten zu Updates, Album und Spielen unterwegs.',
+  helpUpdateQuestion: 'Wie aktualisiere ich das Spiel?',
+  helpUpdateFirst:
+    'Beende deine Runde und verbinde dich mit dem Internet. Öffne im Spiel die Optionen (Zahnrad) und wähle „Nach Updates suchen“. Dort steht auch deine Spielversion.',
+  helpUpdateSecond:
+    'Wird ein Update angeboten, wähle „Jetzt aktualisieren“. Das startet das Spiel neu. Jeder offene Spiel-Tab braucht seine eigene Bestätigung.',
+  helpUpdateThird:
+    'Fehlt der Update-Knopf oder bleibt die Version alt? Nutze hier „Aktuelle Version öffnen“. Album und Einstellungen bleiben erhalten.',
+  helpDesktop: 'Am Computer',
+  helpDesktopText:
+    'Lade die Seite über ↻ neu. In Chrome kannst du zusätzlich Strg+Umschalt+R (Windows/Linux) oder ⌘+Umschalt+R (Mac) versuchen. Das ersetzt nicht den Aktualisierungseinstieg bei einer festhängenden alten Offline-Version.',
+  helpChromeShortcuts: 'Chrome: Tastenkombinationen ↗',
+  helpAndroid: 'Android · Chrome',
+  helpAndroidText:
+    'Öffne das Dreipunkt-Menü neben der Adressleiste und tippe auf das Symbol zum Neuladen (↻). Bleibt das Spiel alt, öffne unseren Aktualisierungseinstieg in Chrome.',
+  helpChromeReload: 'Chrome: Seite neu laden ↗',
+  helpIphone: 'iPhone · Safari',
+  helpIphoneText:
+    'Ziehe am oberen Seitenrand nach unten, um neu zu laden. Bleibt das Spiel alt, öffne unseren Aktualisierungseinstieg in Safari. Eine besondere „Hard Reload“-Taste brauchst du dafür nicht.',
+  helpSafariReload: 'Safari: Seiten ansehen und neu laden ↗',
+  helpInstalled: 'Als installierte App',
+  helpInstalledText:
+    'Öffne Pixel’s World bei bestehender Internetverbindung und nutze die Update-Prüfung in den Optionen. Fehlt sie, beende die Runde und öffne den Aktualisierungseinstieg im Browser. Dieser aktualisiert den Browser-Aufruf; prüfe die installierte App danach separat erneut. Je nach System teilen App und Browser ihre Daten nicht.',
+  helpOldQuestion: 'Warum sehe ich eine alte Version?',
+  helpOldText:
+    'Dein Browser kann Spieldateien für später aufbewahren. Eine alte Offline-Kopie kann weiter angezeigt werden, während eine neue Version schon wartet – besonders mit mehreren offenen Spiel-Tabs. Ein normaler Reload reicht dann nicht immer.',
+  helpOldNext:
+    'Beende deine Runde und nutze den Aktualisierungseinstieg. Das lädt andere Tabs nicht ungefragt neu. Wenn es weiter hakt, melde uns Browser, Betriebssystem und angezeigte Spielversion.',
+  helpSupport: 'Problem melden ↗',
+  helpAlbumQuestion: 'Wo bleibt mein Album?',
+  helpAlbumText:
+    'Neue Funde werden erst nach einer erfolgreichen Versöhnung freigeschaltet. Ohne „Album für später merken“ in den Optionen bleiben sie nur für diesen Besuch. Mit dieser Auswahl speichert das Spiel dein Album lokal in diesem Browser; vorhandene gespeicherte Funde werden dabei übernommen. Abschalten allein löscht sie nicht.',
+  helpAlbumSettings:
+    'Sprache, Lautstärke und die Option für weniger Bewegung werden bei Änderungen ebenfalls lokal gemerkt, soweit dein Browser das erlaubt. Es gibt kein Konto, keine Cloud-Synchronisierung und keinen gespeicherten Zwischenstand einer laufenden Runde. Andere Geräte oder Browser haben ihr eigenes Album. Im privaten Modus oder bei blockiertem Speicher können Daten nach dem Schließen fehlen.',
+  helpDeleteQuestion: 'Was passiert beim Löschen von Website-Daten?',
+  helpDeleteText:
+    'Dabei können dein gespeichertes Album, Einstellungen und Offline-Dateien verloren gehen. Ohne Sicherung oder Cloud-Konto können wir diese Funde nicht wiederherstellen. Lösche Website-Daten deshalb nicht als normalen Update-Schritt. „Album zurücksetzen“ in den Optionen löscht gezielt deine Album-Funde; auch das ist kein Update-Werkzeug.',
+  helpOfflineQuestion: 'Kann ich offline spielen?',
+  helpOfflineFirst:
+    'Öffne das Spiel zuerst mit Internetverbindung. Wähle in den Optionen „Offline-Spiel vorbereiten“ und warte, bis die Vorbereitung abgeschlossen ist. Danach kannst du das Spiel in demselben Browser bzw. derselben App auch ohne Verbindung wieder öffnen.',
+  helpOfflineSecond:
+    'Die Installation auf dem Startbildschirm allein lädt keine Offline-Kopie. Ohne Vorbereitung oder nach dem Löschen bzw. automatischen Aufräumen der Browserdaten brauchst du wieder Internet. Updates, externe Links und ZIP-Downloads brauchen eine Verbindung. „Offline-Dateien entfernen“ entfernt die Offline-Kopie, nicht dein Album.',
+  helpInstallQuestion: 'Wie installiere ich das Spiel auf dem Handy?',
+  helpInstallAndroid:
+    'Android / Chrome: Öffne die Landingpage und tippe auf „Als App installieren“. Falls kein Installationsdialog erscheint, nutze im Chrome-Menü die Installation bzw. Verknüpfung zum Startbildschirm und folge den angezeigten Schritten.',
+  helpInstallIphone:
+    'iPhone / Safari: Öffne die Landingpage in Safari. Gehe über das Seitenmenü zu „Teilen“ oder tippe direkt auf das Teilen-Symbol – je nach Safari-Layout. Wähle „Zum Home-Bildschirm“, falls angeboten „Als Web-App öffnen“, und anschließend „Hinzufügen“.',
+  helpInstallNote:
+    'Menünamen können je nach Browser- und Systemversion abweichen. Die aktuellen Hersteller-Anleitungen helfen dir beim passenden Weg. Für Offline-Spiel danach die Vorbereitung im Spiel ausdrücklich auswählen.',
+  helpGoogleInstall: 'Android-Anleitung von Google ↗',
+  helpAppleInstall: 'iPhone-Anleitung von Apple ↗',
+
   recoveryPageTitle: 'Spiel aktualisieren · Pixel’s World',
   recoveryTitle: 'Zeit für frisches Chaos?',
   recoveryDescription:

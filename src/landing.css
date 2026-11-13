@@ -65,6 +65,9 @@ body.landing-page {
 .landing-header nav > a:hover {
   color: #fff1cf;
 }
+.landing-header nav > .help-link {
+  display: inline-flex;
+}
 .landing-hero {
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
@@ -632,4 +635,36 @@ body.landing-page {
   .landing-divider {
     margin-bottom: 32px;
   }
+}
+
+.landing-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: clamp(20px, 4vw, 32px);
+  margin-bottom: 48px;
+}
+.landing-help > div {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+.landing-help > img {
+  flex-shrink: 0;
+  width: 128px;
+  height: 128px;
+  image-rendering: pixelated;
+}
+.landing-help h2 {
+  margin: 0 0 16px;
+  font-size: clamp(20px, 2.5vw, 28px);
+  line-height: 1.4;
+}
+.landing-help p {
+  margin: 0;
+  max-width: 650px;
+  color: #c1afa0;
+  font:
+    17px/1.65 system-ui,
+    sans-serif;
 }
