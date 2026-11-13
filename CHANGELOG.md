@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.5.0](https://github.com/Skanky0815/pixels-world/compare/v0.4.1...v0.5.0) (2026-11-13)
+## [0.5.1](https://github.com/Skanky0815/pixels-world/compare/v0.4.1...v0.5.1) (2026-11-13)
 
 
 ### Features
@@ -15,7 +15,9 @@
 ### Bug Fixes
 
 * **privacy:** require explicit choices for optional game storage ([ad00ff4](https://github.com/Skanky0815/pixels-world/commit/ad00ff407b0ec6d17ecb1753248fac1853a08bb2)), closes [#252](https://github.com/Skanky0815/pixels-world/issues/252)
+* **release:** rebuild unpublished candidates from published baseline ([b34e13e](https://github.com/Skanky0815/pixels-world/commit/b34e13e615d7d0eb71b9764f3514fec439343f80)), closes [#291](https://github.com/Skanky0815/pixels-world/issues/291)
 * **test:** detect missing and incorrectly scaled characters ([71b7df7](https://github.com/Skanky0815/pixels-world/commit/71b7df7fd4351d52c231d34805cdb320a8500c41)), closes [#268](https://github.com/Skanky0815/pixels-world/issues/268)
+* **test:** read emoji ZIPs without system unzip ([8d79f89](https://github.com/Skanky0815/pixels-world/commit/8d79f8993b5c40bac52e49716449387fbecea4df)), closes [#288](https://github.com/Skanky0815/pixels-world/issues/288)
 
 
 ### Performance Improvements
