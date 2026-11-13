@@ -175,6 +175,15 @@ bei eindeutigem Root-Paket/Tagformat, gültiger Manifestversion, Merge als Main-
 Vorfahr und Abwesenheit von Tag/Release ablösen. Es dokumentiert die Ablösung am
 alten PR und entfernt nur `autorelease: pending`. Der neue PR entsteht durch
 Release Please; kein manuelles `tagged`, keine manuelle Versionsänderung.
+Die PR-Vorbereitung nutzt die bereits gepinnte Release-Please-Bibliothek. Fehlt
+für die gemergte Manifestversion noch Tag und Release, bestätigt sie den eindeutigen
+Versions-Merge und die letzte veröffentlichte Root-Version samt Tag und Main-Abstammung.
+Nur Manifest und Changelog werden für den Generator aus dieser veröffentlichten Basis
+gelesen; Konfiguration, Paketdateien und Abhängigkeiten bleiben auf aktuellem Main.
+Der Generator bereitet eine neue Patchversion oberhalb des unveröffentlichten
+Kandidaten vor; die Release-Notizen reichen von der letzten veröffentlichten Version
+bis zum aktuellen Main, ohne erneut alte Historie oder doppelte Changelog-Abschnitte. Teilveröffentlichungen und
+unklare Identitäten stoppen den Ablauf. Tagging und Rollout bleiben hinter der Voll-QA.
 Ein aktueller Kandidat ergibt einen erklärten No-op mit nächstem Schritt.
 Fehlt sein erfolgreicher QA-Abschluss als Ereignis, QA manuell auf genau diesem
 aktuellen Main erneut starten; alte/überholte Versuche werden nicht übernommen.

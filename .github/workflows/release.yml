@@ -57,16 +57,19 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash .github/scripts/prepare-release-candidate.sh
-      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
-        id: release
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         if: env.RELEASE_MODE == 'prepare' && steps.candidate.outputs.prepare_needed == 'true'
         with:
-          token: ${{ github.token }}
-          target-branch: main
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-          skip-github-release: true
-          skip-github-pull-request: false
+          node-version: 22
+      - name: Gepinnte Release-Please-Bibliothek installieren
+        if: env.RELEASE_MODE == 'prepare' && steps.candidate.outputs.prepare_needed == 'true'
+        run: npm ci --ignore-scripts
+      - name: Versions-PR mit Release Please vorbereiten
+        id: release
+        if: env.RELEASE_MODE == 'prepare' && steps.candidate.outputs.prepare_needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/prepare-release.mjs
       - name: Kurze QA für vorbereiteten Versions-PR starten
         if: env.RELEASE_MODE == 'prepare' && steps.release.outputs.pr != '' && steps.release.outputs.pr != 'null'
         env:
