@@ -15,6 +15,7 @@ for (const viewport of [
     }) => {
       await page.setViewportSize(viewport);
       await page.goto('/');
+      await expect(page.locator('meta[name="age-meta-label"]')).toHaveAttribute('content', 'age=6');
       const landing = page.locator('.landing-footer .age-rating');
 
       await expect(landing).toContainText('Ab 6 Jahren');

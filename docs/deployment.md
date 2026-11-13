@@ -9,12 +9,15 @@ Die Quellen des Ablaufs sind [release.yml](../.github/workflows/release.yml),
 
 Das Web-App-Manifest beschreibt Installation, Name, Icons und Startseite; eine neue
 Versionsnummer darin aktualisiert nicht den gespeicherten Spielcode. Vite PWA und
-Workbox laden neue Dateien zunächst vollständig in einen wartenden Service Worker.
+Workbox laden neue Dateien bei gewählter Offline-Nutzung vollständig in einen wartenden
+Service Worker. Die Offline-Kopie entsteht erst auf „Offline-Spiel vorbereiten“ in den
+Optionen. Ohne diese Auswahl prüft das Spiel die kleine `version.json` mit `no-store`
+und registriert keinen Worker. Diese Datei und die Spielanzeige nutzen dasselbe Versions-Define.
 Die Workbox-Laufzeit steckt direkt in `sw.js`, damit eine fehlende externe
 Hilfsdatei keine Installation ohne Cache-Handler zulässt
 ([Workbox-Konfiguration](https://developer.chrome.com/docs/workbox/modules/workbox-build#type-GenerateSWOptions)).
 
-Das Spiel prüft beim Registrieren, bei Rückkehr ins sichtbare Fenster und regelmäßig
+Das Spiel prüft beim Spielaufruf, bei Rückkehr ins sichtbare Fenster und regelmäßig
 im Vordergrund auf Updates. „Nach Updates suchen“ in den Optionen startet eine
 manuelle Prüfung; Offline- und Fehlerzustände bleiben erneut bedienbar. Die aktuelle
 Spielversion steht im selben Menü. Ein Punkt am Optionen-Button kündigt ein
@@ -23,8 +26,12 @@ bereitstehendes Update an; er öffnet keinen Dialog während der Runde.
 „Jetzt aktualisieren“ bestätigt ausdrücklich den Spielneustart. „Später“ lässt die
 aktuelle Runde weiterlaufen. Jeder offene Tab muss seinen eigenen Neustart
 bestätigen, auch wenn ein anderer Tab die neue Version schon aktiviert hat.
-Album und Einstellungen bleiben im regulären Browser-Speicher erhalten;
-Cache-/Speicherlöschen ist kein Bestandteil des Updateverfahrens.
+Ausdrücklich gespeicherte Alben und Einstellungen bleiben beim Update erhalten.
+„Album für später merken“ ist separat wählbar; ohne Auswahl bleiben neue Funde für
+den Besuch. Alte Albumfunde werden erst auf Wunsch gelesen und durch Abschalten nicht gelöscht.
+Alte automatische Offline-Kopien werden beim ersten Start dieser Version ohne gespeicherten
+Offline-Wunsch entfernt. „Offline-Dateien entfernen“ betrifft ausschließlich den genauen
+App-Scope und seine Workbox-Caches; andere Projekte und Albumdaten bleiben erhalten.
 
 Das gilt auch für die installierte App und den Pages-Unterpfad. Geschlossene oder
 offline Geräte können ein Release erst beim nächsten Onlinekontakt erkennen.

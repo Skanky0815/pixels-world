@@ -42,7 +42,7 @@ muss die Einordnung vor Veröffentlichung erneut geprüft werden.
 
 ## Jugendschutz und Anbieter-Einstufung
 
-Prüfgrundlage: öffentliches Browsergame, Rechtsrecherche vom 11. November 2026.
+Prüfgrundlage: öffentliches Browsergame, Rechtsrecherche aktualisiert am 13. November 2026.
 Die [amtliche JMStV-Fassung](https://www.recht.sachsen.de/vorschrift/2410-Jugendmedienschutz-Staatsvertrag?follow_successor=no)
 enthält die sichtbare Kennzeichnung in § 5c Abs. 3. § 25 Abs. 4 verschiebt ihre
 Anwendung um sechs Monate nach Inkrafttreten. Die
@@ -82,23 +82,49 @@ zu GitHub, wo öffentliche Beiträge möglich sind; das ist keine Kommunikation 
 Spiel. Neue Räume, Schreckeffekte, Texte und Onlinefunktionen benötigen eine neue
 Bewertung. Die Altersangabe ist keine pädagogische Empfehlung.
 
-### Technischer Jugendschutz ist gesondert zu klären
+### Technischer Jugendschutz: Umsetzung und verbleibende Host-Abhängigkeit
 
-Die sichtbare Information nach § 5c ist nicht automatisch eine Schutzmaßnahme nach
-§ 5. Bei einer relevanten Entwicklungsbeeinträchtigung sind Schutzweg und die
-Voraussetzungen des § 5 Abs. 3 bzw. Abs. 5 zu prüfen; auch die Voraussetzungen
-eines Jugendschutzbeauftragten nach § 7 bleiben Teil der Betreiberbewertung.
+Die sichtbare Einstufung bleibt durch Ricos Review bestätigt. Zusätzlich liefern
+alle vier öffentlichen HTML-Seiten `age-meta-label: age=6` aus. Ein solches Meta-Tag
+ist allein kein nachgewiesener Schutzweg: [JusProg](https://www.jugendschutzprogramm.de/webseite-labeln/)
+und die [technische Dokumentation](https://age-label.com/how-to/single-page-rating)
+verlangen eine passende Datei am Host-Wurzelpfad.
 
-[JusProg erläutert den age-de.xml-Standard](https://www.jugendschutzprogramm.de/webseite-labeln/).
-Dessen [technische Dokumentation](https://age-label.com/how-to/single-page-rating)
-verlangt eine Konfiguration auf der Wurzel des Hosts, auch bei einzelnen Seiten.
-Das Projekt wird jedoch unter `/pixels-world/` ausgeliefert. Eine Datei nur in
-diesem Projektverzeichnis oder ein Meta-Tag allein wird deshalb nicht als
-nachgewiesene wirksame Filterintegration ausgegeben. Vor dem Release muss der
-Betreiber entscheiden, ob der Schutzweg über die getrennte Bereitstellung trägt
-oder eine wirksam geprüfte Host-Konfiguration benötigt wird. Für Letztere wären
-Host-Wurzel, betroffener Pfad und reale Filtererkennung gemeinsam zu prüfen;
-andere Projekte desselben Hosts dürfen nicht pauschal mit eingestuft werden.
+Rico möchte `skanky0815.github.io/pixels-world/` beibehalten; eine eigene Domain
+ist später vorgesehen. Der Spiel-Deploy kann `/pixels-world/` veröffentlichen,
+jedoch keine Datei unter `https://skanky0815.github.io/age-de.xml` bereitstellen.
+Das zugehörige User-Pages-Repository ist über die verfügbare GitHub-Verbindung
+nicht auffindbar (404); das beweist weder seine Existenz noch eine Veröffentlichungsberechtigung.
+
+Die [Root-Vorlage](host-root/age-de.xml) aktiviert HTML-Meta-Auswertung nur für
+`skanky0815.github.io/pixels-world/*`. Sie bleibt absichtlich außerhalb von `public/`.
+Vor einer separaten Bereitstellung am Host-Wurzelpfad muss eine vorhandene
+Root-Konfiguration zusammengeführt werden. Der Sicherheits-Fallback `18` ist keine
+inhaltliche Einstufung anderer Projekte; seine mögliche Filterwirkung außerhalb
+des Spielpfads muss vor Übernahme geprüft werden. Keine pauschale Host-Einstufung
+„ab 6“ und keine Veröffentlichung anderer Projekte durch diesen PR.
+
+Danach sind Root-Datei (HTTP 200, XML-Inhalt), Pfadabgrenzung, beide Einstiege
+und die Erkennung mit einem geeigneten Jugendschutzprogramm zu prüfen. Eine Datei
+nur im Projektpfad und ein formal wohlgeformtes XML reichen als Nachweis nicht.
+Dieser externe Bereitstellungs-/Filtertest bleibt in #252 offen.
+
+### Rechtliche Grenze der technischen Vorbereitung
+
+[§ 5 JMStV](https://www.gesetze-bayern.de/Content/Document/JMStV-5) unterscheidet
+sichtbare Information und Schutzmaßnahmen; die Trennung von Kinderangeboten nach
+Absatz 5 ist kein automatisch passender Ausweg für ein familienfreundliches
+Katzenspiel. Die konkrete Anwendbarkeit bleibt gesondert zu beurteilen.
+
+[§ 7 JMStV](https://www.gesetze-bayern.de/Content/Document/JMStV-7) knüpft an
+Geschäftsmäßigkeit und entwicklungsbeeinträchtigende oder jugendgefährdende Inhalte
+an. Kostenlosigkeit oder geringe Mitarbeiterzahl ergeben allein keine belegte
+Befreiung. Die [KJM-FAQ](https://www.kjm-online.de/ueber-uns/fragen-und-antworten/)
+und der [USK-Hinweis](https://usk.de/fuer-unternehmen/service-angebot-der-usk/jugendschutzbeauftragter/)
+erläutern die Voraussetzungen. Ob das konkrete dauerhaft angebotene Spiel diese
+Tatbestände erfüllt, ist weiterhin die präzise offene Einzelfrage. Es wird weder
+eine externe Prüfung behauptet noch Rico als fachkundiger Beauftragter eingetragen.
+Eine technische Kennzeichnung beantwortet diese organisatorische Rechtsfrage nicht.
 
 ## Tatsächliche Verarbeitung und Endgerätespeicher
 
@@ -108,36 +134,33 @@ statisches HTML/CSS. Externe Quellen, GitHub und Feedback sind normale Links,
 keine eingebetteten Dienste. Die Anwendung setzt keine Cookies und nutzt weder
 Session Storage noch IndexedDB, Analyse, Werbung oder externe Schriften/Medien.
 
-Die folgenden Zugriffe sind im Code nachvollziehbar. Alle Local-Storage-Werte
-bleiben bis zum Löschen der Website-Daten gespeichert, ohne eigene Ablaufzeit.
+Die Zugriffe werden funktional getrennt:
 
-| Zugriff                                                                                                            | Auslöser und Zweck                                                                                                                                              | Einordnung für die Betreiberreview                                                                                                                                      |
-| ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pixels-world.language` ([Quelle](../../src/i18n/locale.ts))                                                       | Vorhandene Sprachwahl lesen; nach Sprachwechsel schreiben.                                                                                                      | Für die ausdrücklich gewählte und wiederherzustellende Sprache funktional begründbar.                                                                                   |
-| `pixels-world.audio` ([Quelle](../../src/settings/audio.ts))                                                       | Lautstärke lesen; bei Änderung speichern.                                                                                                                       | Gewählte Audioeinstellung wiederherstellen; keine Nutzungsstatistik.                                                                                                    |
-| `pixels-world.reduced-motion` ([Quelle](../../src/settings/motion.ts))                                             | Bewegungswunsch lesen; nur bewusste Wahl schreiben. Systemvorgabe per Media Query lesen.                                                                        | Gewählte barrierearme Darstellung; kein Geräteprofil.                                                                                                                   |
-| `pixels-world.difficulty` ([Quelle](../../src/settings/difficulty.ts))                                             | Schwierigkeit lesen; Änderung speichern.                                                                                                                        | Gewählte Spielkonfiguration wiederherstellen.                                                                                                                           |
-| `pixels-world.album` ([Quelle](../../src/game/album/collection.ts))                                                | Sammlung lesen, bei erfolgreicher Versöhnung neue Funde speichern; alte unterstützte Formate migrieren; Reset in Optionen.                                      | Dauerhafter Sammelfortschritt ist eine eigene Funktion. Nutzerwunsch und Notwendigkeit sind ausdrücklich zu bewerten; lokaler Speicher allein begründet keine Ausnahme. |
-| Service Worker und Cache Storage ([Registrierung](../../src/pwa/register.ts), [Umfang](../../tools/pwa-config.ts)) | Automatisch beim Öffnen des veröffentlichten Spiels; lokale App-Dateien vorhalten und alte Caches bereinigen. Nicht allein beim erstmaligen Landingpage-Aufruf. | Offline-Nutzung ist zusätzlich zum Onlinespiel möglich. Ein bloßer Spielaufruf belegt noch keinen ausdrücklichen Wunsch nach dauerhafter Offline-Bereitstellung.        |
-| Gewöhnlicher HTTP-Cache                                                                                            | Browser speichert ausgelieferte Dateien nach seinen Cache-Regeln.                                                                                               | Von der zusätzlichen programmgesteuerten Offline-Vorhaltung unterscheiden.                                                                                              |
+| Daten                                              | Auslöser / Zweck                                                                                    | Begrenzung                                                                                                                                                                                                               |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Sprache, Audio, reduzierte Bewegung, Schwierigkeit | Gewählte Darstellung und Spielkonfiguration wiederherstellen.                                       | Nicht identifizierende Einstellungswerte; keine Statistik.                                                                                                                                                               |
+| `pixels-world.storage`                             | Ausschließlich die zwei gewählten Funktionen Album/Offline merken.                                  | Standardmäßig beide aus; kein Identifikator. Eine Auswahl in einem anderen Tab wird übernommen.                                                                                                                          |
+| `pixels-world.album`                               | Erst bei eingeschaltetem „Album für später merken“ lesen, migrieren und bestätigte Funde speichern. | Ohne Auswahl neue Funde nur im Arbeitsspeicher. Alte Daten bleiben unberührt, werden erst beim Aktivieren übernommen. Abschalten stoppt Lesen/Schreiben; ausdrückliches Zurücksetzen löscht gespeicherte Funde.          |
+| Service Worker / Cache Storage                     | Erst auf „Offline-Spiel vorbereiten“ registrieren und vollständige Spieldateien vorhalten.          | Abschalten entfernt nur die genaue App-Registrierung und zugehörige Workbox-Caches. Alte automatische Kopien werden ohne gespeicherte Auswahl beim ersten neuen Spielaufruf entfernt. Andere Projekte bleiben unberührt. |
+| `version.json`                                     | Kleine Online-Prüfung auf einen neuen Release.                                                      | Ohne Service Worker, mit `no-store`; keine Sammlung oder Eingaben übertragen. Neustart nur nach Bestätigung.                                                                                                             |
+| Gewöhnlicher HTTP-Cache                            | Browserseitige Auslieferung bereits angeforderter Dateien.                                          | Vom zusätzlich angeforderten Offline-Cache getrennt.                                                                                                                                                                     |
 
-[§ 25 TDDDG](https://www.gesetze-im-internet.de/ttdsg/__25.html) betrifft
-Endgerätezugriffe auch ohne personenbezogene Daten. Die Ausnahme für unbedingt
-erforderliche Vorgänge ist auf den ausdrücklich gewünschten Dienst zu beziehen.
-„Keine Cookies“ oder ein berechtigtes Interesse nach DSGVO sind keine eigene
-Ausnahme von dieser Regel.
-Die [DSK-Orientierungshilfe, insbesondere Randnummern 66–80](https://datenschutzkonferenz-online.de/media/oh/OH_Digitale_Dienste.pdf)
-verlangt eine funktionale und zeitliche Prüfung. Für gewählte Einstellungen ist
-eine Ausnahme begründbar; für automatischen Offline-Cache und Album-Persistenz
-ist die Bewertung noch nicht abschließend. Vor dem Release ist hierfür entweder
-eine tragfähige Ausnahme zu dokumentieren oder die optionale Speicherung erst
-nach einer wirksamen Nutzerentscheidung auszuführen. Diese Recherche erklärt
-weder pauschal alle Speicherungen für erforderlich noch einen Banner für zwingend.
+Die [DSK-Orientierungshilfe](https://www.datenschutzkonferenz-online.de/media/oh/OH_Digitale_Dienste.pdf),
+insbesondere Rn. 67–81, verlangt die Prüfung der konkreten gewünschten Funktion
+und ihrer zeitlichen Notwendigkeit. Aus dem Aufruf eines Onlinespiels folgt kein
+pauschaler Wunsch nach allen zusätzlichen Speicherfunktionen. Die Umsetzung
+bezieht die Ausnahme des [§ 25 Abs. 2 Nr. 2 TDDDG](https://www.gesetze-im-internet.de/ttdsg/__25.html)
+daher auf die ausdrücklich angeforderte Album-/Offline-Funktion, nicht auf eine
+behauptete Erforderlichkeit für das bloße Onlinespiel. Die Wahl bleibt freiwillig;
+keine Kopplung an den Spielstart und kein vorsorglicher allgemeiner Cookie-Banner.
+Die zwei Entscheidungswerte sind erforderlich, um die Wahl wiederherzustellen.
 
-Die [Datenschutzaufsicht Niedersachsen](https://www.lfd.niedersachsen.de/faq/faq-telekommunikation-digitale-dienste-datenschutzgesetz-tdddg-206449.html)
-bezieht auch Privatpersonen mit Websites ein. Hobbybetrieb wird deshalb nicht
-als automatische Befreiung behandelt. Datenschutzrechtliche Rechtsgrundlage und
-Information nach DSGVO sind unabhängig davon zu prüfen.
+Lokale Funde enthalten Varianten-IDs, keine Nutzerkennung. Es findet keine
+Übermittlung von Sammlung oder Einstellungen an den Anbieter statt. Hosting-
+und Kontaktverarbeitung nach DSGVO werden davon getrennt dargestellt. Die
+[Datenschutzhinweise](../../datenschutz.html) beschreiben Auswahl, Rücknahme,
+Bestandserhalt und Löschung. Gesperrter Browserspeicher verhindert das Spiel nicht;
+die gewünschte Sammlung funktioniert dann für den aktuellen Besuch.
 
 ## Hosting, Kontakt und öffentliche Hinweise
 
@@ -155,30 +178,20 @@ Das Album wird seit #242 in den Optionen zurückgesetzt; die Beschreibung ist
 entsprechend angepasst. Kontaktdaten bleiben unverändert. Die Einordnung aus #112
 wird nicht durch eine pauschale Zusicherung „rechtssicher“ ersetzt.
 
-## Vor dem Release prüfen
+## Verbleibende Arbeit aus #252
 
-Die Anbieter-Einstufung und ihre Begründung gehören in Ricos übliches PR-Review.
-Dafür gibt es keinen zusätzlichen Freigabeprozess. Technische und rechtliche
-Recherchearbeiten werden nicht als pauschale Entscheidungen an Rico delegiert.
+- [x] Anbieter-Einstufung „ab 6 Jahren“ und Begründung im normalen Review bestätigt.
+- [x] Speicherfunktionen getrennt und freiwillig auswählbar; Bestandsdaten erhalten,
+      explizite Löschung und eng begrenzte Offline-Rücknahme umgesetzt.
+- [x] Öffentliche Datenschutzhinweise und Speicherinventar mit dem Code abgeglichen;
+      freigegebene Kontaktdaten beibehalten. Keine unbelegten Hosting-Löschfristen.
+- [x] HTML-Meta-Kennzeichnung und konkrete Root-Vorlage vorbereitet.
+- [ ] Separate Host-Root-Bereitstellung abstimmen und tatsächliche Filtererkennung
+      prüfen, einschließlich der Wirkung auf andere Pfade desselben Hosts.
+- [ ] Die konkrete rechtliche Einzelfrage zu Schutzweg und § 7 abschließen.
 
-- [ ] Vorschlag „ab 6 Jahren“ samt Inhalten und Begründung im normalen Review
-      bestätigen. Die Angabe bleibt eine Anbieter-Einstufung, keine USK-Freigabe.
-- [ ] Den Schutzweg nach § 5 und die Voraussetzungen nach § 7 fachlich abschließen.
-      Ein sichtbares Label wird nicht als Ersatz für erforderliche Schutzmaßnahmen
-      ausgegeben; eine wirksame technische Kennzeichnung muss zur Host-Struktur passen.
-- [ ] Die konkrete Speicherempfehlung umsetzen beziehungsweise ihre Ausnahme
-      belastbar klären: Offline-Dateien erst nach einer bewussten Offline-Aktion
-      vorhalten; für dauerhaftes Album-Merken eine verständliche Wahl vorsehen.
-      Vorhandene Sammlungen erhalten und bei Ablehnung das Spiel weiter anbieten.
-      Ein allgemeiner Cookie-Banner ist dafür nicht die vorgeschlagene Lösung.
-- [ ] Anbieter-/Kontaktangaben, Hosting und Rechtsseiten mit dem freizugebenden
-      Produktionsbuild abgleichen. Änderungen privater Daten nicht in Issues kopieren.
-
-Die offenen Arbeitsschritte werden in #252 verfolgt. Das Issue bleibt bis zu ihrer
-Klärung offen; der nächste Release wird dadurch nicht versehentlich als geprüft
-ausgegeben. Bei einer verbleibenden rechtlichen Einzelfrage ist gezielt fachkundige
-Klärung nötig, statt eine nicht belegte Sicherheit zu behaupten.
-
-Neue Inhalte, Dienste, Speicherung, Tracking und Monetarisierung erfordern vor
-Veröffentlichung eine erneute Prüfung. Release-Status und aktuelle technische
-Prüfergebnisse gehören ins Issue beziehungsweise in Actions.
+Der Implementierungs-PR verweist deshalb mit **Refs #252** auf das Issue. Er
+schließt es nicht und erklärt die offenen externen Punkte nicht automatisch
+für erledigt. Neue Inhalte, Dienste, Speicherung, Tracking oder Monetarisierung
+benötigen vor Veröffentlichung einen erneuten Abgleich. Release-Status und
+laufende Testergebnisse gehören ins Issue beziehungsweise in Actions.

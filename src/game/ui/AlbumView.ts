@@ -104,7 +104,7 @@ export class AlbumView {
     this.root.dataset.detail = String(this.detail);
     const message = this.storageMessage(snapshot.storage);
 
-    this.root.innerHTML = `<header class="popup-heading">${closeButtonMarkup(t('albumClose'), 'data-action="close" data-focus="close"')}<div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${t('albumOverall', { found: found.size, total: this.entries.length })}</p></div></header>
+    this.root.innerHTML = `<header class="popup-heading">${closeButtonMarkup(t('albumClose'), 'data-action="close" data-focus="close"')}<div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${t('albumOverall', { found: found.size, total: this.entries.length })}${this.sessionHint(snapshot.storage)}</p></div></header>
       ${albumTabs(this.room, this.entries)}
       <div id="album-room" role="tabpanel" aria-labelledby="album-tab-${this.room}">${this.roomMarkup(entries, found, selected)}</div>
       ${message ? `<footer>${message}</footer>` : ''}`;
@@ -130,8 +130,15 @@ export class AlbumView {
     return `<div class="album-spread">${albumPage(selected)}<section class="album-index"><div class="album-index-header"><h3>${escape(roomName(this.room))}</h3><p class="album-progress" aria-live="polite">${t('albumProgress', { found: count, total: entries.length })}</p></div><div class="album-grid">${tiles.map((entry, index) => albumTile(entry, index + offset, found, selected?.id)).join('')}</div>${albumPagination(this.page, pages)}</section></div>`;
   }
 
+  private sessionHint(status: string) {
+    return this.compact.matches && status === 'session' ? ` · ${t('albumSession')}` : '';
+  }
+
   private storageMessage(status: string) {
+    if (this.sessionHint(status)) return '';
+
     const key = {
+      session: 'albumSession',
       unavailable: 'albumStorageUnavailable',
       recovered: 'albumStorageRecovered',
       newer: 'albumStorageNewer',

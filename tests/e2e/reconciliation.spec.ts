@@ -189,6 +189,8 @@ test(
   // eslint-disable-next-line max-lines-per-function -- Zwei gescheiterte Versuche prüfen Welt-Freeze, Album-Speicherschutz, Ergebnis und Neustart gemeinsam.
   async ({ page }) => {
     await page.addInitScript(() => {
+      localStorage.setItem('pixels-world.storage', '{"album":true,"offline":false}');
+
       if (!localStorage.getItem('pixels-world.album'))
         localStorage.setItem(
           'pixels-world.album',

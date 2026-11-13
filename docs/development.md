@@ -88,12 +88,14 @@ hält die Figur im sicheren zentralen Bereich. Die Dateien stehen unter
 
 `vite-plugin-pwa` erzeugt Manifest und Workbox-Service-Worker beim Produktionsbuild.
 Die relative App-ID, Startadresse und Scope unterstützen den Pages-Unterpfad.
-Die Registrierung erfolgt ausschließlich auf der veröffentlichten Spielseite,
-nicht auf der Landingpage und nicht im E2E-/DEV-Spiel. Es gibt keinen allgemeinen
+Die Registrierung erfolgt erst nach „Offline-Spiel vorbereiten“ in den Optionen der
+veröffentlichten Spielseite, nicht auf der Landingpage oder im E2E-/DEV-Spiel.
+Die normale Online-Update-Prüfung nutzt `version.json`. Es gibt keinen allgemeinen
 Navigations-Fallback: fehlende DEV-Seiten bleiben auch mit Service Worker 404.
 Bereitstehende Updates werden in den Optionen angeboten; jeder Tab bestätigt seinen
 Neustart selbst. Siehe [Spielupdates](deployment.md#spielupdates-und-offlineversion).
-Für Offline-Prüfungen `npm run build` und `npm run preview` verwenden.
+Für Offline-Prüfungen `npm run build` und `npm run preview` verwenden und die Offline-Kopie
+in den Optionen vorbereiten.
 
 ## Animationen vergleichen
 

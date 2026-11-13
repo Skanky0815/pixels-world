@@ -11,6 +11,13 @@ import {
 } from './support';
 import { openPause } from './pause-support';
 
+// Existing persistence/layout contracts start with a returning player's saved choice.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem('pixels-world.storage', '{"album":true,"offline":false}'),
+  );
+});
+
 test(
   'Album nur in Optionen löschen: Abbrechen und Schließen bewahren Funde, Bestätigen erhält die Runde',
   { tag: '@smoke' },

@@ -1,3 +1,4 @@
+import { StoragePanel } from './StoragePanel';
 import { closeButtonMarkup, configureCloseButton } from '../../ui/button';
 import { difficultyPreferences } from '../../settings/difficulty';
 import { DIFFICULTY_LABELS, isDifficulty, type Difficulty } from '../../content/difficulty';
@@ -28,6 +29,7 @@ interface PauseActions {
 export class PauseMenu {
   private readonly album: AlbumView;
   private readonly albumReset: AlbumResetSetting;
+  private readonly storage: StoragePanel;
   private readonly updates: UpdatePanel;
   private readonly root = document.createElement('dialog');
   private readonly toggle = document.createElement('button');
@@ -62,6 +64,7 @@ export class PauseMenu {
     const options = { signal: this.abort.signal };
 
     this.mountHeader(options);
+    this.storage = new StoragePanel(this.element('[data-pause-storage]'));
     this.updates = new UpdatePanel(this.element('[data-pause-updates]'), this.toggle);
 
     this.element('[data-pause-album]').addEventListener('click', () => this.openAlbum(), options);
@@ -230,6 +233,7 @@ export class PauseMenu {
     this.unsubscribeAudio();
     this.unsubscribeMotion();
     this.updates.destroy();
+    this.storage.destroy();
     this.unsubscribeDifficulty();
   }
 
@@ -268,6 +272,7 @@ function markup() {
     </section>
     <section><label class="motion-setting"><input type="checkbox" data-reduce-motion><span data-menu-text="reduceMotion"></span></label>
       <p data-system-motion data-menu-text="systemMotion" hidden></p></section>
+    <section data-pause-storage></section>
     <section data-pause-album-reset></section>
     <div class="pause-actions">${actionButton('album', 'data-pause-album')}
       <button type="button" class="ui-button" data-pause-restart data-menu-text="newRoundLabel"></button>

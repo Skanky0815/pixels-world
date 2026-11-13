@@ -1,3 +1,4 @@
+import { storageChoices } from './storage.ts';
 import { AlbumCollection } from '../game/album/collection.ts';
 import { INTERACTABLE_ALBUM } from '../content/album/index.ts';
 
@@ -12,4 +13,7 @@ function storage() {
 export const albumCollection = new AlbumCollection(
   new Set(Object.values(INTERACTABLE_ALBUM).map((entry) => entry.id)),
   storage(),
+  storageChoices.snapshot().album,
 );
+
+storageChoices.subscribe(() => albumCollection.setRemember(storageChoices.snapshot().album));

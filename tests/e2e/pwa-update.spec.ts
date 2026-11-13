@@ -18,6 +18,10 @@ for (const scope of ['/', '/pixels-world/']) {
     await request.post(`${origin}/__release?scope=${scope}&release=a`);
     await page.goto(origin + scope + 'play.html');
     await intro(page);
+    await menu(page);
+    await page.locator('[data-offline-game]').click();
+    await expect(page.locator('[data-offline-game]')).toBeEnabled({ timeout: 20000 });
+    await closeMenu(page);
     await page.evaluate(async () => {
       await navigator.serviceWorker.ready;
       localStorage.setItem(
@@ -160,6 +164,9 @@ test('Erster unkontrollierter Besuch bietet ein inzwischen aktiviertes Update be
   await page.goto(origin + '/play.html');
   await intro(page);
   await menu(page);
+  await page.locator('[data-offline-game]').click();
+  await expect(page.locator('[data-offline-game]')).toBeEnabled({ timeout: 20000 });
+  await page.locator('[data-update-check]').click();
   await expect(page.locator('[data-update-status]')).toContainText('nicht geprüft oder gestartet');
   await request.post(`${origin}/__release?scope=/&release=a`);
   await page.locator('[data-update-check]').click();
@@ -179,4 +186,34 @@ test('Erster unkontrollierter Besuch bietet ein inzwischen aktiviertes Update be
   await intro(page);
   await menu(page);
   await expect(page.locator('[data-update-version]')).toHaveText('Spielversion v0.0.2-update-test');
+});
+
+test('Online-Update benötigt keine Offline-Registrierung und startet erst nach Bestätigung neu', async ({
+  page,
+  request,
+}) => {
+  await request.post(`${origin}/__release?scope=/&release=a`);
+  await page.goto(origin + '/play.html');
+  await intro(page);
+  await menu(page);
+  await page.locator('[data-update-check]').click();
+  await expect(page.locator('[data-update-status]')).toContainText('aktuelle Version');
+  expect(
+    await page.evaluate(() => navigator.serviceWorker.getRegistrations().then((r) => r.length)),
+  ).toBe(0);
+  expect(await page.evaluate(() => caches.keys())).toEqual([]);
+  const before = await page.evaluate(() => performance.timeOrigin);
+
+  await request.post(`${origin}/__release?scope=/&release=b`);
+  await page.locator('[data-update-check]').click();
+  await expect(page.locator('[data-update-offer]')).toBeVisible();
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(before);
+  await page.locator('[data-update-apply]').click();
+  await intro(page);
+  await menu(page);
+  await expect(page.locator('[data-update-version]')).toContainText('0.0.2-update-test');
+  expect(
+    await page.evaluate(() => navigator.serviceWorker.getRegistrations().then((r) => r.length)),
+  ).toBe(0);
+  expect(await page.evaluate(() => caches.keys())).toEqual([]);
 });

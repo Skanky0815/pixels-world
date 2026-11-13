@@ -11,6 +11,7 @@ import { DIFFICULTIES, difficultyRoom } from './src/content/difficulty';
 import { releaseUrl } from './tools/release-metadata';
 import { roundConfigForBuild } from './tools/e2e-timing';
 import { legalFooter } from './tools/legal-footer';
+import { versionMetadata } from './tools/version-metadata';
 import { de } from './src/i18n/de';
 
 // Fail before bundling/serving when any registered content is invalid.
@@ -25,6 +26,7 @@ const { version } = JSON.parse(
 // eslint-disable-next-line max-lines-per-function -- Der deklarative Buildvertrag hält Modi, feste Defines und gemeinsame Ein-/Ausgänge zusammen.
 export default defineConfig(({ mode, command }) => ({
   plugins: [
+    versionMetadata(),
     VitePWA(pwaOptions(mode)),
     legalFooter(
       {
