@@ -18,13 +18,19 @@ const checkout = (job) => job.steps.find((step) => step.uses?.startsWith('action
 const download = (job) =>
   job.steps.find((step) => step.uses?.startsWith('actions/download-artifact@'));
 
-// The only action allowed before full QA can prepare a PR, never publish a release.
-assert.equal(action(preflight).with['skip-github-release'], true);
-assert.equal(action(preflight).with['skip-github-pull-request'], false);
+// The preparation entry point uses Release Please's PR API only, never releases.
+const prepare = preflight.steps.find((step) => step.id === 'release');
+assert.equal(prepare.run, 'node tools/prepare-release.mjs');
+const prepareSource = readFileSync(
+  new URL('../../tools/prepare-release.mjs', import.meta.url),
+  'utf8',
+);
+assert.match(prepareSource, /manifest\.createPullRequests\(\)/);
+assert.doesNotMatch(prepareSource, /\.createReleases\(/);
 for (const mode of ['prepare', 'publish']) {
   for (const needed of ['true', 'false']) {
     assert.equal(
-      evaluate(action(preflight).if, {
+      evaluate(prepare.if, {
         env: { RELEASE_MODE: mode },
         steps: { candidate: { outputs: { prepare_needed: needed } } },
       }),
