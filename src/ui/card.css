@@ -1,0 +1,6 @@
+/* Shared surface for static HTML cards; layout belongs to each content section. */
+.ui-card {
+  border: 1px solid #685044;
+  border-radius: 0;
+  background: #40323988;
+}
