@@ -1,3 +1,4 @@
+import { enterSelectedRoom } from './support';
 /* eslint-disable max-lines-per-function -- Echter A→B-Wechsel, unterbrochene Installation und zwei unabhängige Tabs bilden einen zusammenhängenden Release-Ablauf. */
 import { test, expect, type Page } from '@playwright/test';
 
@@ -126,6 +127,7 @@ for (const scope of ['/', '/pixels-world/']) {
 
 async function intro(page: Page) {
   await expect(page.locator('#loading-screen')).toHaveCount(0, { timeout: 20_000 });
+  await enterSelectedRoom(page);
   await expect(page.locator('canvas')).toBeVisible();
 }
 

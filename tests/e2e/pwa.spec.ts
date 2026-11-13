@@ -1,6 +1,6 @@
 import { PNG } from 'pngjs';
 import type { Page } from '@playwright/test';
-import { test, expect, waitForLoadingScreen } from './support';
+import { test, expect, waitForLoadingScreen, enterSelectedRoom } from './support';
 
 test('Installationshilfe erklärt iPhone und Browser in DE/EN und bleibt mobil lesbar', async ({
   page,
@@ -125,6 +125,7 @@ for (const base of ['http://127.0.0.1:4177/', 'http://127.0.0.1:4175/pixels-worl
 
 async function waitForIntro(page: Page) {
   await waitForLoadingScreen(page);
+  await enterSelectedRoom(page);
   await expect(page.locator('.start-screen')).toBeVisible();
 }
 

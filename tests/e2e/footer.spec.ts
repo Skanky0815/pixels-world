@@ -1,4 +1,4 @@
-import { test, expect, waitForLoadingScreen } from './support';
+import { test, expect, waitForLoadingScreen, enterSelectedRoom } from './support';
 import { readFileSync } from 'node:fs';
 const packageVersion = (
   JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as {
@@ -23,6 +23,15 @@ test('Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spie
 
     await expect(footer).toHaveText(`© ${year} Pixel's World · v${packageVersion}`);
     await expect(footer).toBeVisible();
+    const shell = await page.locator('main > header, main > footer').elementHandles();
+    const selection = await page.locator('.room-selection').boundingBox();
+    const selectionFooter = await footer.boundingBox();
+
+    footerBelow(selection, selectionFooter);
+    await enterSelectedRoom(page);
+    expect(
+      await Promise.all(shell.map((node) => node.evaluate((element) => element.isConnected))),
+    ).toEqual([true, true]);
     const releaseTag = base.includes(':4175') && process.env.PIXELS_RELEASE_TAG;
 
     if (releaseTag) {
@@ -51,3 +60,8 @@ test('Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spie
     );
   }
 });
+
+function footerBelow(area: { y: number; height: number } | null, footer: { y: number } | null) {
+  if (!area || !footer) throw new Error('Auswahl oder Footer fehlt');
+  expect(footer.y).toBeGreaterThanOrEqual(area.y + area.height);
+}

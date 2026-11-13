@@ -52,11 +52,7 @@ async function state(page: Page): Promise<RoomTestState> {
 }
 
 export async function introAction(page: Page, action: 'options' | 'album') {
-  const button = page.locator(`[data-start-${action}]`);
-
-  return (await button.isVisible())
-    ? button
-    : page.locator(action === 'options' ? '.pause-toggle' : '.album-toggle');
+  return page.locator(action === 'options' ? '.pause-toggle' : '.album-toggle');
 }
 
 async function loadIntro(page: Page, path = '/') {
@@ -65,7 +61,7 @@ async function loadIntro(page: Page, path = '/') {
 }
 
 // eslint-disable-next-line max-lines-per-function -- Dieselbe schreibgeschützte Bereitschaftsgrenze gilt für direkte Spielaufrufe und Navigation aus der Landingpage.
-async function waitForGame(page: Page) {
+async function waitForGame(page: Page, enterRoom = true) {
   await expect
     .poll(
       async () => {
@@ -76,8 +72,18 @@ async function waitForGame(page: Page) {
       { intervals: [0], timeout: 15_000 },
     )
     .toBe(true);
-  await expect(page.locator('canvas')).toBeVisible();
+
+  if (enterRoom) await enterSelectedRoom(page);
+
+  await expect(page.locator('canvas')).toHaveCount(1);
   await page.locator('#game').focus();
+}
+
+/** Existing gameplay scenarios begin at the introduction, via the public room action. */
+async function enterSelectedRoom(page: Page) {
+  const choose = page.locator('.room-selection [data-room-start]');
+
+  if (await choose.isVisible()) await choose.click();
 }
 
 /** Read-only DOM readiness also works in production and DEV without a game observer. */
@@ -212,6 +218,7 @@ export {
   loadIntro,
   waitForGame,
   waitForLoadingScreen,
+  enterSelectedRoom,
   until,
   holdUntil,
   couch,

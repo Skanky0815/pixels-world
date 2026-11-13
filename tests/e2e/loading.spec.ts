@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { start, state, until } from './support';
+import { start, state, until, enterSelectedRoom } from './support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
 
 const loader = '#loading-screen';
@@ -39,7 +39,7 @@ function latch() {
 
 async function ready(page: Page) {
   await expect(page.locator(loader)).toHaveCount(0);
-  await expect(page.locator('.start-screen')).toBeVisible();
+  await expect(page.locator('.room-selection')).toBeVisible();
   expect(await page.locator('main').evaluate((main) => (main as HTMLElement).inert)).toBe(false);
 }
 
@@ -123,7 +123,7 @@ test('Assetfortschritt bleibt bis zum echten Abschluss sichtbar', async ({ page 
   await expect(page.locator(loader)).toBeVisible();
   await expect.poll(() => page.evaluate(() => performance.now())).toBeGreaterThan(3000);
   held.release();
-  await expect(page.locator('.start-screen')).toBeVisible();
+  await expect(page.locator('.room-selection')).toBeVisible();
   await expect(page.locator(loader)).toHaveCount(0, { timeout: 1000 });
   await ready(page);
 });
@@ -141,6 +141,7 @@ test('Mindestens zwei Sekunden; frühe Leertaste startet nicht hinter der Anzeig
   await ready(page);
   await page.keyboard.up('Space');
   expect(await page.evaluate(() => window.__pixelTest?.started)).toBe(false);
+  await enterSelectedRoom(page);
   await page.locator('#game').focus();
   await page.keyboard.down('Space');
   await page.clock.runFor(32);
@@ -163,6 +164,7 @@ for (const method of ['keyboard', 'button'] as const) {
     expect(await page.evaluate(() => window.__pixelTest?.started)).toBe(false);
 
     if (method === 'keyboard') await page.keyboard.up('Space');
+    await enterSelectedRoom(page);
     await page.locator('#game').focus();
     await page.keyboard.down('Space');
     await page.clock.runFor(32);

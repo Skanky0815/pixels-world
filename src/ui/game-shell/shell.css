@@ -1,0 +1,23 @@
+/* The header and footer remain the same nodes in selection, introduction and play. */
+html.room-selecting body main:has(#play-area) {
+  display: block;
+  height: auto;
+}
+html.room-selecting body main:has(#play-area) > header {
+  display: flex;
+  position: static;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+html.room-selecting body main:has(#play-area) > header > div:first-child,
+html.room-selecting body main:has(#play-area) > header > .game-menu-actions {
+  position: static;
+  width: auto;
+  flex-direction: row;
+  align-self: center;
+}
+html.room-selecting body #play-area {
+  display: none;
+}

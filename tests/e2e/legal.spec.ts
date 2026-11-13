@@ -94,7 +94,7 @@ test('Produktionsspiel lädt nur eigene Ressourcen ohne automatische Speicherung
   await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
   await waitForLoadingScreen(page);
   await page.clock.runFor(1000);
-  await expect(page.locator('.start-screen')).toBeVisible();
+  await expect(page.locator('.room-selection')).toBeVisible();
   await page.locator('#game').focus();
   await page.keyboard.down('Space');
   await page.clock.runFor(200);

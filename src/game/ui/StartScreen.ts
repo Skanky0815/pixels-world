@@ -1,4 +1,3 @@
-import { actionButton } from './game-action';
 import { t, onLanguageChange, translateExact } from '../../i18n/locale';
 import type { ResolvedGoal } from '../domain/main-goal';
 
@@ -11,20 +10,18 @@ export class StartScreen {
   constructor(
     visible: boolean,
     private readonly goal: ResolvedGoal,
-    private readonly options: () => void,
-    private readonly album: () => void,
+    private readonly rooms: () => void,
   ) {
     const host = document.getElementById('game');
 
     if (!host) throw new Error('Game host missing');
     this.root = document.createElement('section');
     this.root.className = 'start-screen';
+    this.root.addEventListener('keydown', this.buttonKey);
+    this.root.addEventListener('keyup', this.buttonKey);
     this.root.addEventListener('click', (event) => {
-      if (event.target instanceof Element && event.target.closest('[data-start-options]'))
-        this.options();
-
-      if (event.target instanceof Element && event.target.closest('[data-start-album]'))
-        this.album();
+      if (event.target instanceof Element && event.target.closest('[data-start-rooms]'))
+        this.rooms();
     });
     this.root.setAttribute('aria-label', t('gameIntroduction'));
     this.root.innerHTML = introMarkup();
@@ -41,6 +38,15 @@ export class StartScreen {
     if (text) text.textContent = translateExact(goal.motivation);
   }
 
+  private readonly buttonKey = (event: KeyboardEvent) => {
+    if (
+      !['Escape', 'F2'].includes(event.code) &&
+      event.target instanceof Element &&
+      event.target.closest('button')
+    )
+      event.stopPropagation();
+  };
+
   private refresh() {
     const scroll = this.root.querySelector('.start-copy')?.scrollTop ?? 0;
 
@@ -53,6 +59,10 @@ export class StartScreen {
 
   hide() {
     this.root.hidden = true;
+  }
+
+  show() {
+    this.root.hidden = false;
   }
 
   private refreshAge() {
@@ -84,7 +94,7 @@ function introMarkup() {
       <div><dt><span class="space-key" role="img" aria-label="${t('spaceLabel')}">␣</span></dt><dd>${t('jumpAndLeapOffTheCurtain')}</dd></div>
       <div><dt>↑ ↓</dt><dd>${t('climbTheCurtain')}</dd></div>
     </dl>
-  </div><p class="start-prompt"><span class="game-menu-actions">${actionButton('album', 'data-start-album')}${actionButton('options', 'data-start-options')}</span><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
-  <span class="touch-prompt">${t('startTouchShort')}</span></p>
+  </div><p class="start-prompt"><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
+  <span class="touch-prompt">${t('startTouchShort')}</span><button type="button" class="ui-button" data-start-rooms>${t('roomsBack')}</button></p>
   <footer class="start-age" data-start-age></footer>`;
 }

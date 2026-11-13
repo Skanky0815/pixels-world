@@ -60,8 +60,14 @@ test(
       .info()
       .attach('peaceful-desktop', { body: await page.screenshot(), contentType: 'image/png' });
     await page.keyboard.up('Space');
-    await page.keyboard.down('Space');
+    await page.locator('.room-selection-return').click();
     await until(page, (s) => s.generation > found.generation);
+    await expect(page.locator('.room-selection')).toBeVisible();
+    expect((await state(page)).result).toBeNull();
+    expect((await state(page)).chaos.score).toBe(0);
+    await page.locator('[data-room-start]').click();
+    await page.keyboard.down('Space');
+    await until(page, (s) => s.started);
     await page.keyboard.up('Space');
     await climbToBall(page);
     await until(page, (s) => s.ballPlay.active);

@@ -1,4 +1,4 @@
-import { test, expect, waitForLoadingScreen } from './support';
+import { test, expect, waitForLoadingScreen, enterSelectedRoom } from './support';
 
 for (const viewport of [
   { width: 1366, height: 900 },
@@ -29,6 +29,7 @@ for (const viewport of [
       await expect(loading).toContainText('Ages 6');
       await expect(loading).toBeInViewport({ ratio: 1 });
       await waitForLoadingScreen(page);
+      await enterSelectedRoom(page);
       const intro = page.locator('main > footer .age-rating');
 
       await expect(intro).toContainText('Cartoon property damage');

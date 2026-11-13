@@ -1,5 +1,12 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  roomsTitle: 'Where to today, Pixel?',
+  roomsAvailable: 'Ready for chaos',
+  roomsLater: 'Coming later',
+  roomsEnter: 'Into the living room →',
+  roomsBack: 'Choose a room',
+  roomsPreview: 'Living room with Pixel, sofa and curtain',
+
   storageTitle: 'On this device',
   storageAlbum: 'Remember my album',
   storageAlbumHelp:
