@@ -18,6 +18,10 @@ export async function removeOfflineGame() {
 }
 
 export async function checkOnlineVersion() {
+  return (await publishedVersion()) !== __APP_VERSION__;
+}
+
+export async function publishedVersion() {
   const url = new URL('version.json', new URL(import.meta.env.BASE_URL, location.href));
   const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
 
@@ -26,5 +30,5 @@ export async function checkOnlineVersion() {
 
   if (typeof data.version !== 'string' || !data.version) throw new Error('Invalid version');
 
-  return data.version !== __APP_VERSION__;
+  return data.version;
 }

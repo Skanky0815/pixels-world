@@ -6,6 +6,7 @@ import { log } from 'node:console';
 import { URL } from 'node:url';
 import process from 'node:process';
 import { build } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // Two actual production builds share an origin, as two consecutive Pages deployments do.
 const root = await mkdtemp(resolve(tmpdir(), 'pixels-pwa-updates-'));
@@ -18,11 +19,45 @@ for (const [release, version] of Object.entries(versions))
     build: { outDir: resolve(root, release), emptyOutDir: true },
   });
 
+// Reproduce the pre-update-UI cache contract; this is not a copy of the old game.
+await build({
+  configFile: false,
+  root: resolve('tests/e2e/fixtures/legacy-update'),
+  base: './',
+  logLevel: 'warn',
+  plugins: [
+    VitePWA({
+      injectRegister: false,
+      manifest: false,
+      registerType: 'prompt',
+      workbox: {
+        globPatterns: ['**/*.{html,js}'],
+        skipWaiting: false,
+        clientsClaim: false,
+        navigateFallback: null,
+        cleanupOutdatedCaches: true,
+      },
+    }),
+  ],
+  build: {
+    outDir: resolve(root, 'legacy'),
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        index: resolve('tests/e2e/fixtures/legacy-update/index.html'),
+        play: resolve('tests/e2e/fixtures/legacy-update/play.html'),
+      },
+    },
+  },
+});
+
 const releases = new Map([
   ['/', 'a'],
   ['/pixels-world/', 'a'],
+  ['/other-project/', 'legacy'],
 ]);
 const broken = new Set();
+const metadataBroken = new Set();
 const registrationBroken = new Set();
 const blocked = [];
 const types = {
@@ -48,13 +83,17 @@ async function serve(request, response) {
   if (request.method === 'POST' && url.pathname === '/__release') {
     if (url.searchParams.has('registration')) registrationBroken.add(scope);
     else registrationBroken.delete(scope);
-    releases.set(scope, url.searchParams.get('release') === 'b' ? 'b' : 'a');
+    const release = url.searchParams.get('release');
+    releases.set(scope, ['a', 'b', 'legacy'].includes(release) ? release : 'a');
+    if (url.searchParams.has('metadata')) metadataBroken.add(scope);
+    else metadataBroken.delete(scope);
     if (url.searchParams.has('broken')) broken.add(scope);
     else broken.delete(scope);
     response.writeHead(204).end();
     return;
   }
-  const base = url.pathname.startsWith('/pixels-world/') ? '/pixels-world/' : '/';
+  const base =
+    ['/pixels-world/', '/other-project/'].find((value) => url.pathname.startsWith(value)) || '/';
   const directory = resolve(root, releases.get(base));
   const path = resolve(
     directory,
@@ -62,6 +101,10 @@ async function serve(request, response) {
   );
   if (!path.startsWith(directory + sep)) {
     response.writeHead(403).end();
+    return;
+  }
+  if (metadataBroken.has(base) && path.endsWith('/version.json')) {
+    response.writeHead(503).end();
     return;
   }
   if (registrationBroken.has(base) && path.endsWith('/sw.js')) {

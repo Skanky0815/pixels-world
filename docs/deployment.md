@@ -39,6 +39,34 @@ Bereits gecachte ältere Releases erhalten die neue Menüanzeige erst, wenn sie
 einmal auf diese Version gewechselt haben; die Änderung kann sich nicht rückwirkend
 in ihren bereits geladenen Code einbauen.
 
+### Alte Version ohne Update-Button
+
+Vor der Update-Funktion konnten alte Offline-Clients neue Dateien bereits laden,
+aber mit weiteren offenen Spiel-Tabs weiter beim alten Worker bleiben. Ein normaler
+Reload kann dadurch erneut das gecachte Spiel zeigen
+([Service-Worker-Lebenszyklus](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting)).
+
+Nach Veröffentlichung dieser Änderung hilft [Spiel aktualisieren](https://skanky0815.github.io/pixels-world/update.html),
+auch direkt als Link für betroffene Spieler. Der Einstieg ist absichtlich nicht im
+Offline-Precache. Er prüft online die veröffentlichte Version und öffnet auf Wunsch
+`play.html` mit einem frischen, nicht als Trackingparameter behandelten `fresh`-Wert.
+Damit reicht der alte Precache die Dokumentanfrage ans Netz weiter. Bei fehlender
+Verbindung oder ungültiger Versionsantwort bleibt die Seite erneut bedienbar.
+Sie aktiviert keinen wartenden Worker und lädt andere Tabs nicht neu.
+
+Bis zur Veröffentlichung funktioniert auch ein direkter
+[frischer Spieleinstieg](https://skanky0815.github.io/pixels-world/play.html?fresh=20261113).
+Die laufende Runde vorher beenden. Album und Einstellungen bleiben gespeichert;
+bisherige Albumfunde werden über „Album für später merken“ ausdrücklich übernommen.
+Keine pauschale Löschung der Website-Daten nötig. Die bereits vorhandene Migration
+entfernt bei nicht gewählter Offline-Nutzung weiterhin nur die Offline-Kopie des
+exakten App-Scopes. Andere Projekte bleiben unberührt.
+
+Der Browsertest bildet den alten Registrierungs- und Cachevertrag mit einem kleinen
+Legacy-Profil nach und prüft den echten Worker-Wechsel am Root und am Pages-Unterpfad.
+Die Nachstellung mit vollständigem historischem Build gehört als Befund in #296;
+gerätespezifische Nutzerfälle müssen bei abweichendem Verhalten separat geprüft werden.
+
 ## Einrichtung und Versionierung
 
 Pages verwendet GitHub Actions und die Umgebung `github-pages`; zugelassene

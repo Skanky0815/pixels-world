@@ -33,7 +33,7 @@ export function pwaOptions(mode: string): Partial<VitePWAOptions> {
       inlineWorkboxRuntime: true,
       globPatterns: ['**/*.{js,css,html,png,svg,wav,webmanifest}'],
       // Small landing-page previews work offline; sharing images and ZIP downloads stay out.
-      globIgnores: ['social/**', 'downloads/**/*.zip'],
+      globIgnores: ['social/**', 'downloads/**/*.zip', 'update.html', 'assets/recovery-*.js'],
       navigateFallback: null,
       cleanupOutdatedCaches: true,
       skipWaiting: false,

@@ -57,6 +57,7 @@ export default defineConfig(({ mode, command }) => ({
         game: fileURLToPath(new URL('./play.html', import.meta.url)),
         impressum: fileURLToPath(new URL('./impressum.html', import.meta.url)),
         datenschutz: fileURLToPath(new URL('./datenschutz.html', import.meta.url)),
+        recovery: fileURLToPath(new URL('./update.html', import.meta.url)),
       },
     },
   },
