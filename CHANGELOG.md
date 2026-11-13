@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.5.0](https://github.com/Skanky0815/pixels-world/compare/v0.4.1...v0.5.0) (2026-11-13)
+
+
+### Features
+
+* **characters:** animate Sara's round-ending reactions ([135d83c](https://github.com/Skanky0815/pixels-world/commit/135d83c273d76d34a922e40eb8f31b4ab9ea92f3)), closes [#274](https://github.com/Skanky0815/pixels-world/issues/274)
+* **community:** offer Pixel Slack emojis on the landing page ([09a1db6](https://github.com/Skanky0815/pixels-world/commit/09a1db61e76fe771b05df5704d0a6271c30e7443)), closes [#282](https://github.com/Skanky0815/pixels-world/issues/282)
+* **pwa:** offer safe game updates after releases ([720bd41](https://github.com/Skanky0815/pixels-world/commit/720bd412bd84aecab8657512e2af150545baaeb7)), closes [#277](https://github.com/Skanky0815/pixels-world/issues/277)
+* **seo:** add Pixel link previews and search metadata ([d58c67b](https://github.com/Skanky0815/pixels-world/commit/d58c67b8e402e65bba6ef9994e4720b739d86b6b)), closes [#276](https://github.com/Skanky0815/pixels-world/issues/276)
+* **ui:** add responsive camera and dialogue layouts ([d2ac6fd](https://github.com/Skanky0815/pixels-world/commit/d2ac6fde97d9c5e262a377fdd4edba34ccb34878)), closes [#275](https://github.com/Skanky0815/pixels-world/issues/275)
+
+
+### Bug Fixes
+
+* **privacy:** require explicit choices for optional game storage ([ad00ff4](https://github.com/Skanky0815/pixels-world/commit/ad00ff407b0ec6d17ecb1753248fac1853a08bb2)), closes [#252](https://github.com/Skanky0815/pixels-world/issues/252)
+* **test:** detect missing and incorrectly scaled characters ([71b7df7](https://github.com/Skanky0815/pixels-world/commit/71b7df7fd4351d52c231d34805cdb320a8500c41)), closes [#268](https://github.com/Skanky0815/pixels-world/issues/268)
+
+
+### Performance Improvements
+
+* **test:** combine overlapping movement and reset scenarios ([761e4ba](https://github.com/Skanky0815/pixels-world/commit/761e4bac56beeb4aa714f43786f92bf8a917c89d)), closes [#269](https://github.com/Skanky0815/pixels-world/issues/269)
+* **test:** focus browser coverage on integration risks ([97b2e83](https://github.com/Skanky0815/pixels-world/commit/97b2e831b0aa820954f6c91b937de1d0d4f304ff)), closes [#269](https://github.com/Skanky0815/pixels-world/issues/269)
+* **test:** prepare album layout from saved discoveries ([81158af](https://github.com/Skanky0815/pixels-world/commit/81158af1e39d99a4e5efd3ac022ff3602bc70351)), closes [#269](https://github.com/Skanky0815/pixels-world/issues/269)
+
 ## [0.4.1](https://github.com/Skanky0815/pixels-world/compare/v0.4.0...v0.4.1) (2026-11-11)
 
 
