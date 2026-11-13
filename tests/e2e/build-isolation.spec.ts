@@ -1,4 +1,4 @@
-import { test, expect, waitForLoadingScreen } from './support';
+import { test, expect, waitForLoadingScreen, enterSelectedRoom } from './support';
 
 test(
   'Produktionsbuild enthält weder Test-Schnittstelle noch Animationsvergleich',
@@ -35,6 +35,7 @@ test(
     await page.clock.runFor(500);
     await spriteLoaded;
     await waitForLoadingScreen(page);
+    await enterSelectedRoom(page);
     await expect(page.locator('canvas')).toBeVisible();
     expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
     expect(await page.evaluate(() => '__visualFaultDraws' in window)).toBe(false);

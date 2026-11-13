@@ -14,6 +14,7 @@ export function observeGameHost(game: Phaser.Game) {
 }
 
 function resizeHost(game: Phaser.Game, width: number, height: number) {
+  if (width <= 0 || height <= 0) return;
   const roomHeight = Number(game.config.height);
   const logicalWidth = followsPixel() ? (roomHeight * width) / height : Number(game.config.width);
 

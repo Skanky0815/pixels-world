@@ -24,6 +24,7 @@ interface PauseActions {
   restart(): void;
   started(): boolean;
   difficulty(): Difficulty;
+  rooms(): void;
 }
 
 export class PauseMenu {
@@ -73,6 +74,11 @@ export class PauseMenu {
     this.element('[data-pause-restart]').addEventListener(
       'click',
       () => this.actions.restart(),
+      options,
+    );
+    this.element('[data-pause-rooms]').addEventListener(
+      'click',
+      () => this.actions.rooms(),
       options,
     );
     this.root.addEventListener(
@@ -275,6 +281,7 @@ function markup() {
     <section data-pause-storage></section>
     <section data-pause-album-reset></section>
     <div class="pause-actions">${actionButton('album', 'data-pause-album')}
+      <button type="button" class="ui-button" data-pause-rooms data-menu-text="roomsBack"></button>
       <button type="button" class="ui-button" data-pause-restart data-menu-text="newRoundLabel"></button>
       <a class="ui-button" href="./" data-menu-text="quitGame"></a></div>`;
 }

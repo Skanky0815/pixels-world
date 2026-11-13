@@ -30,7 +30,7 @@ import { GameFeedback } from '../ui/GameFeedback';
 import { PauseMenu } from '../ui/PauseMenu';
 import { GameAudio } from '../ui/GameAudio';
 import type { DebugScenario } from '../../dev/game-debug-model';
-import { onLanguageChange, copy } from '../../i18n/locale';
+import { onLanguageChange, copy, translateExact } from '../../i18n/locale';
 import { PeacefulGoal } from '../domain/peaceful-goal';
 import type { PeacefulGoalLine } from '../../content/peaceful-goal';
 import { MobileReadout } from '../ui/MobileReadout';
@@ -73,6 +73,8 @@ import { SaraReturnView } from '../ui/SaraReturnView';
 import { roundConfigForPage } from '../input/round-profile';
 import { homecomingPositions } from '../content/homecoming-layout';
 import { PixelReturnController } from '../domain/pixel-return';
+import { RoomSelection } from '../ui/RoomSelection';
+import { playableRoom } from '../../content/rooms/selection';
 
 export class LivingRoomScene extends Phaser.Scene {
   private mobile!: MobileReadout;
@@ -87,6 +89,8 @@ export class LivingRoomScene extends Phaser.Scene {
   private ballPlayVisualX = 0;
   private started = false;
   private startScreen!: StartScreen;
+  private roomSelection!: RoomSelection;
+  private choosingRoom: boolean;
   private pixel!: Pixel;
   private round!: RoundController;
   private charm!: Reconciliation;
@@ -124,9 +128,10 @@ export class LivingRoomScene extends Phaser.Scene {
   private readonly populationSeed = String(Phaser.Math.Between(0, 0x7fffffff));
   private difficulty: Difficulty = 'normal';
 
-  constructor(private readonly baseRoom: ResolvedRoom) {
+  constructor(private baseRoom: ResolvedRoom) {
     super('LivingRoom');
     this.room = baseRoom;
+    this.choosingRoom = new URLSearchParams(location.search).get('room') !== baseRoom.definition.id;
   }
 
   // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
@@ -164,16 +169,29 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   // eslint-disable-next-line max-lines-per-function -- Raum, Figuren und szenengebundene Diagnose werden in fester Aufbaufolge initialisiert.
-  create(data: { debugScenario?: DebugScenario; started?: boolean } = {}) {
+  create(
+    data: {
+      debugScenario?: DebugScenario;
+      started?: boolean;
+      chooseRoom?: boolean;
+      roomId?: string;
+    } = {},
+  ) {
     if (loadingScreen.failed) return;
     this.events.once(Phaser.Scenes.Events.RENDER, () =>
-      loadingScreen.ready(() => this.controls.release()),
+      loadingScreen.ready(() => {
+        this.controls.release();
+        this.roomSelection.enable();
+      }),
     );
     const generation = ++this.generation;
 
     this.difficulty = difficultyPreferences.snapshot();
     this.started = data.started ?? this.started;
+    this.choosingRoom = data.chooseRoom ?? this.choosingRoom;
+    this.changeRoom(data.roomId);
     this.room = this.populateRoom();
+    this.refreshCaption();
 
     this.initializeRound();
     const floor = this.buildRoom();
@@ -186,6 +204,18 @@ export class LivingRoomScene extends Phaser.Scene {
     this.installObservation(generation);
 
     if (import.meta.env.DEV) this.installDebug(generation, data.debugScenario);
+  }
+
+  private changeRoom(id?: string) {
+    const definition = id ? playableRoom(id) : undefined;
+
+    if (definition) this.baseRoom = resolveRoom(definition, OBJECTS);
+  }
+
+  private refreshCaption() {
+    const caption = document.querySelector('h1 span');
+
+    if (caption) caption.textContent = translateExact(this.room.definition.caption);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Raumseed, Schwierigkeit und isolierter Phaser-Zufall werden gemeinsam beim Rundenaufbau aufgelöst.
@@ -466,11 +496,8 @@ export class LivingRoomScene extends Phaser.Scene {
     });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
     this.resultView = new RoundResultView(this, room.width);
-    this.startScreen = new StartScreen(
-      !this.started,
-      this.room.goal,
-      () => this.menu.open(),
-      () => this.menu.openAlbum(),
+    this.startScreen = new StartScreen(!this.started && !this.choosingRoom, this.room.goal, () =>
+      this.returnToRooms(),
     );
     this.goalView = new GoalView(this, this.room.goal, this.difficulty);
     this.goalView.render(this.goal.snapshot(), this.started);
@@ -482,7 +509,13 @@ export class LivingRoomScene extends Phaser.Scene {
       restart: () => this.scene.restart({}),
       started: () => this.started,
       difficulty: () => this.difficulty,
+      rooms: () => this.returnToRooms(),
     });
+    this.roomSelection = new RoomSelection(
+      this.choosingRoom,
+      (id) => this.chooseRoom(id),
+      () => this.returnToRooms(),
+    );
     this.syncActivity();
     const unsubscribe = onLanguageChange(() => this.refreshLanguage());
     const unsubscribeMotion = motionPreferences.subscribe(() => {
@@ -509,6 +542,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.charmView.destroy();
     this.resultView.destroy();
     this.startScreen.destroy();
+    this.roomSelection.destroy();
     this.goalView.destroy();
     this.mobile.destroy();
     this.menu.destroy();
@@ -558,6 +592,8 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (this.menu.opened) return;
 
+    if (this.roomSelection.opened) return void this.controls.release();
+
     if (!this.started) {
       this.tryStart(input);
 
@@ -572,6 +608,20 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.updateRound(input, delta);
     this.renderMobile();
+  }
+
+  private returnToRooms() {
+    this.scene.restart({ started: false, chooseRoom: true });
+  }
+
+  private chooseRoom(id: string) {
+    if (id !== this.baseRoom.definition.id)
+      return void this.scene.restart({ started: false, chooseRoom: false, roomId: id });
+    this.choosingRoom = false;
+    this.roomSelection.setVisible(false);
+    this.startScreen.show();
+    this.controls.release();
+    document.getElementById('game')?.focus();
   }
 
   // eslint-disable-next-line max-lines-per-function -- Nur Darstellungsdaten bestehender Ansichten; keine zweite Spielzustandsmaschine.
@@ -598,6 +648,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private refreshLanguage() {
+    this.refreshCaption();
     this.renderHud();
     this.renderSara();
     this.charmView.render(this.charm.snapshot());
@@ -622,7 +673,10 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private startRound() {
     this.started = true;
+    this.choosingRoom = false;
+    this.roomSelection.setVisible(false);
     this.startScreen.hide();
+    this.roomSelection.showReturn(false);
     this.goalView.render(this.goal.snapshot(), true);
     this.syncActivity();
   }
@@ -885,6 +939,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.presentEnding();
     this.resultView.render(result, this.roundAlbum.confirm(result).length);
     this.controls.showRestart(result !== null);
+    this.roomSelection.showReturn(result !== null);
   }
 
   private presentEnding() {

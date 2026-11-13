@@ -2,6 +2,12 @@
 
 Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms/cozy-remix.ts](rooms/cozy-remix.ts) zeigt eine zweite handgebaute Variante mit verschobenen Objekten, zwei Instanzen derselben Sofavorlage und anderen Schadenswerten. Beide verwenden [objects/catalog.ts](objects/catalog.ts). Definitionen werden mit `satisfies` gegen die [reinen Datenverträge](../game/content/definitions.ts) geprüft.
 
+## Öffentliche Zimmerauswahl
+
+[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Küche, Schlafzimmer und Arbeitszimmer bleiben bis zu ihrer Umsetzung deaktiviert. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ in Optionen, Einführung und Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
+
+Die Spielhülle verwendet dieselben Header-/Footer-Bausteine aus `src/ui/game-shell/` für Auswahl, Einführung und Runde. Vite setzt das native HTML bereits beim Ausliefern zusammen; Rechtslinks bleiben ohne zusätzliches Browser-JavaScript vorhanden. Die bestehenden Album-/Optionsbuttons bleiben im Header, statt je Ansicht neu angelegt zu werden.
+
 ## Vorlagen und Instanzen
 
 Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `plant`, `vase`, `books`, `picture` oder `carpet`). Sie beschreibt einen bekannten symbolischen Asset-Schlüssel, tatsächlich implementierte Fähigkeiten und Geometrie/Regelwerte. Mehrere Varianten desselben Typs können andere Werte haben. Eine Rauminstanz referenziert ihre Vorlage über `variant` und besitzt eine eigene eindeutige `id` sowie Platzierung. Keine Definition enthält Klassen-/Funktionsnamen zur Ausführung oder eine allgemeine Regelsprache.
