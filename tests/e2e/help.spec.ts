@@ -44,7 +44,8 @@ for (const [width, height, base] of [
       'GitHub ↗',
     ]);
     await expect(page.locator('.help-content > a')).toHaveCount(0);
-    await expect(page.locator('#updates a[href="./update.html"]')).toHaveCount(1);
+    await expect(page.locator('#updates [data-recover-game]')).toHaveCount(1);
+    await expect(page.locator('a[href="./update.html"]')).toHaveCount(0);
     await expect(page.locator('h1')).toHaveText('Hilfe für kleine Chaospausen');
     const first = page.locator('summary').first();
 
@@ -88,14 +89,10 @@ for (const [width, height, base] of [
     await page
       .screenshot({ fullPage: true })
       .then((body) => testInfo.attach('help-english', { body, contentType: 'image/png' }));
-    await expect(page.getByRole('link', { name: 'Open the current version →' })).toHaveAttribute(
-      'href',
-      './update.html',
-    );
-    await page.getByRole('link', { name: 'Open the current version →' }).click();
-    await expect(page).toHaveURL(base + 'update.html');
     await expect(page.getByRole('button', { name: 'Open the current version →' })).toBeVisible();
-    await page.goBack();
+    await expect(page.locator('[data-recovery-status]')).toHaveText(
+      'You need an internet connection to update.',
+    );
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await page.getByRole('link', { name: 'Pixel’s World', exact: true }).click();
     await expect(page.locator('.landing-help')).toContainText('Questions before the next round');

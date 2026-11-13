@@ -1,16 +1,9 @@
-import '../i18n/settings';
-import '../legal.css';
-import '../footer';
-import { createLanguageSetting } from '../i18n/language-setting';
 import { t, onLanguageChange, type TextKey } from '../i18n/locale';
 import { publishedVersion } from './offline-storage';
 
 const button = document.querySelector<HTMLButtonElement>('[data-recover-game]');
 const status = document.querySelector<HTMLElement>('[data-recovery-status]');
-const language = document.querySelector('[data-recovery-language]');
 let message: TextKey = 'recoveryReady';
-
-if (language) createLanguageSetting(language);
 
 if (button) button.addEventListener('click', () => void recover());
 

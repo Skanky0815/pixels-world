@@ -60,21 +60,11 @@ export const en: Record<keyof typeof de, string> = {
   helpGoogleInstall: 'Android guide from Google ↗',
   helpAppleInstall: 'iPhone guide from Apple ↗',
 
-  recoveryPageTitle: 'Update the game · Pixel’s World',
-  recoveryTitle: 'Time for fresh chaos?',
-  recoveryDescription:
-    'If your browser shows an old game version, you can open the current version directly here.',
-  recoveryTabs: 'Finish your current round first. Other game tabs will not reload automatically.',
-  recoverySaved: 'Your saved album and settings will be kept.',
-  recoveryAlbum:
-    'You can restore your previously saved album by choosing “Remember my album” in the options.',
   recoveryOpen: 'Open the current version →',
   recoveryReady: 'You need an internet connection to update.',
   recoveryChecking: 'Pixel is checking the current version …',
   recoveryFailed: 'The current version is unavailable right now. Please try again.',
   recoveryOffline: 'You are offline. Connect to the internet and try again.',
-  recoveryBack: 'Back to the start',
-  recoveryLink: 'Update the game',
 
   roomsTitle: 'Where to today, Pixel?',
   roomsAvailable: 'Ready for chaos',

@@ -29,9 +29,12 @@
           <details class="ui-card" id="updates" open>
             <summary data-i18n="helpUpdateQuestion">Wie aktualisiere ich das Spiel?</summary>
             <div class="help-answer">
-              <a class="ui-button" href="./update.html" data-i18n="recoveryOpen"
-                >Aktuelle Version öffnen →</a
-              >
+              <button type="button" class="ui-button" data-recover-game data-i18n="recoveryOpen">
+                Aktuelle Version öffnen →
+              </button>
+              <p role="status" data-recovery-status data-i18n="recoveryReady">
+                Zum Aktualisieren brauchst du eine Internetverbindung.
+              </p>
               <ol>
                 <li data-i18n="helpUpdateFirst">
                   Beende deine Runde und verbinde dich mit dem Internet. Öffne im Spiel die Optionen
