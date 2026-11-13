@@ -22,6 +22,9 @@ for (const width of [320, 390, 768, 1440]) {
     await expectTeam(page, width);
     await page.getByRole('link', { name: 'Über uns', exact: true }).click();
     await expect(page).toHaveURL(/#team$/);
+    await page.getByRole('link', { name: 'Emojis', exact: true }).click();
+    await expect(page).toHaveURL(/#emojis$/);
+    await expect(page.locator('.landing-emojis')).toBeInViewport();
     await expect(page.getByRole('link', { name: 'Impressum', exact: true })).toHaveAttribute(
       'href',
       './impressum.html',
@@ -166,6 +169,7 @@ async function expectTeam(page: import('@playwright/test').Page, width: number) 
   await expect(page.locator('.landing-header nav a')).toHaveText([
     'Das Spiel',
     'Über uns',
+    'Emojis',
     'GitHub ↗',
   ]);
   await expect(team.locator('article', { has: page.locator('#team-sara') })).toContainText(

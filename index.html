@@ -74,6 +74,7 @@
         <nav aria-label="Navigation">
           <a href="#spielidee" data-i18n="landingAbout">Das Spiel</a>
           <a href="#team" data-i18n="teamNav">Über uns</a>
+          <a href="#emojis">Emojis</a>
           <a
             href="https://github.com/Skanky0815/pixels-world"
             target="_blank"
@@ -135,7 +136,7 @@
           <h2 id="loop-heading" data-i18n="landingLoopTitle">Ganz unschuldig anfangen.</h2>
         </div>
         <div class="loop-cards">
-          <article>
+          <article class="ui-card">
             <span class="step-number" aria-hidden="true">01</span>
             <h3 data-i18n="landingExploreTitle">Erkunden</h3>
             <p data-i18n="landingExplore">
@@ -143,7 +144,7 @@
               gehört dir.
             </p>
           </article>
-          <article>
+          <article class="ui-card">
             <span class="step-number" aria-hidden="true">02</span>
             <h3 data-i18n="landingChaosTitle">Unfug anstellen</h3>
             <p data-i18n="landingChaos">
@@ -151,7 +152,7 @@
               entsteht, entscheidest du.
             </p>
           </article>
-          <article>
+          <article class="ui-card">
             <span class="step-number" aria-hidden="true">03</span>
             <h3 data-i18n="landingCharmTitle">Charme zeigen</h3>
             <p data-i18n="landingCharm">
@@ -234,115 +235,7 @@
           </figcaption>
         </figure>
       </section>
-      <section class="landing-emojis" id="emojis" aria-labelledby="emoji-heading">
-        <p class="eyebrow" data-i18n="emojiEyebrow">PIXEL ZUM MITNEHMEN</p>
-        <h2 id="emoji-heading" data-i18n="emojiTitle">Pixel für deinen Chat</h2>
-        <p class="emoji-copy" data-i18n="emojiDescription">
-          Acht Pixel-Emojis für Slack – von Approval und Chaos bis Herz, Fortschritt, Fragen und
-          Ideen.
-        </p>
-        <ul class="emoji-previews">
-          <li>
-            <img
-              src="/downloads/pixel-slack-emojis/pixel_approved.png"
-              width="128"
-              height="128"
-              loading="lazy"
-              decoding="async"
-              alt="Pixel hebt eine Pfote neben einem grünen Haken."
-              data-i18n-label="emojiAltApproved"
-            /><span data-i18n="emojiApproved">Pfote drauf!</span>
-          </li>
-          <li>
-            <img
-              src="/downloads/pixel-slack-emojis/pixel_chaos.png"
-              width="128"
-              height="128"
-              loading="lazy"
-              decoding="async"
-              alt="Pixel grinst neben einer kaputten Vase."
-              data-i18n-label="emojiAltChaos"
-            /><span data-i18n="emojiChaos">Chaos!</span>
-          </li>
-          <li>
-            <img
-              src="/downloads/pixel-slack-emojis/pixel_war_nicht_ich.png"
-              width="128"
-              height="128"
-              loading="lazy"
-              decoding="async"
-              alt="Pixel schaut unschuldig mit einem Heiligenschein."
-              data-i18n-label="emojiAltInnocent"
-            /><span data-i18n="emojiInnocent">War nicht ich!</span>
-          </li>
-          <li>
-            <img
-              src="/downloads/pixel-slack-emojis/pixel_love.png"
-              width="128"
-              height="128"
-              loading="lazy"
-              decoding="async"
-              alt="Pixel hält mit beiden Pfoten ein großes rotes Herz."
-              data-i18n-label="emojiAltLove"
-            /><span data-i18n="emojiLove">Mit Herz</span>
-          </li>
-          <li>
-            <img
-              src="/downloads/pixel-slack-emojis/pixel_in_progress.png"
-              width="128"
-              height="128"
-              loading="lazy"
-              decoding="async"
-              alt="Pixel schaut konzentriert neben zwei Zahnrädern."
-              data-i18n-label="emojiAltProgress"
-            /><span data-i18n="emojiProgress">Bin dran!</span>
-          </li>
-          <li>
-            <img
-              src="/downloads/pixel-slack-emojis/pixel_question.png"
-              width="128"
-              height="128"
-              loading="lazy"
-              decoding="async"
-              alt="Pixel legt den Kopf neben einem Fragezeichen schief."
-              data-i18n-label="emojiAltQuestion"
-            /><span data-i18n="emojiQuestion">Eine Frage …</span>
-          </li>
-          <li>
-            <img
-              src="/downloads/pixel-slack-emojis/pixel_idee.png"
-              width="128"
-              height="128"
-              loading="lazy"
-              decoding="async"
-              alt="Pixel hat eine Idee neben einer goldenen Glühbirne."
-              data-i18n-label="emojiAltIdea"
-            /><span data-i18n="emojiIdea">Eine Idee!</span>
-          </li>
-          <li>
-            <img
-              src="/downloads/pixel-slack-emojis/pixel_urlaub.png"
-              width="128"
-              height="128"
-              loading="lazy"
-              decoding="async"
-              alt="Pixel trägt eine Sonnenbrille und grinst entspannt."
-              data-i18n-label="emojiAltVacation"
-            /><span data-i18n="emojiVacation">Bin mal weg!</span>
-          </li>
-        </ul>
-        <a
-          class="ui-button emoji-download"
-          href="./downloads/pixel-slack-emojis.zip"
-          download="pixel-slack-emojis.zip"
-          data-i18n="emojiDownload"
-          >Emoji-Set herunterladen ↓</a
-        >
-        <p class="emoji-note" data-i18n="emojiNote">
-          ZIP mit acht transparenten PNGs. Entpacken und in Slack als eigene Emojis hinzufügen.
-        </p>
-      </section>
-      <section class="landing-finale" aria-labelledby="finale-heading">
+      <section class="landing-finale ui-card" aria-labelledby="finale-heading">
         <p class="eyebrow">A QUIET AFTERNOON. FOR NOW.</p>
         <h2 id="finale-heading" data-i18n="landingReady">Bereit für ein bisschen Chaos?</h2>
         <a class="play-link ui-button" href="./play.html" data-i18n="landingPlay"
@@ -358,7 +251,7 @@
           </p>
         </div>
         <div class="team-cards">
-          <article aria-labelledby="team-rico">
+          <article class="ui-card" aria-labelledby="team-rico">
             <span
               class="team-portrait"
               role="img"
@@ -390,7 +283,7 @@
               Entscheidungen und die nötige Geduld mit Pixel.
             </p>
           </article>
-          <article aria-labelledby="team-sara">
+          <article class="ui-card" aria-labelledby="team-sara">
             <span
               class="team-portrait"
               role="img"
@@ -422,7 +315,7 @@
               Umwege und hilft, das Chaos spielbar zu machen.
             </p>
           </article>
-          <article aria-labelledby="team-pixel">
+          <article class="ui-card" aria-labelledby="team-pixel">
             <span
               class="team-portrait"
               role="img"
@@ -447,6 +340,115 @@
             </p>
           </article>
         </div>
+      </section>
+      <hr class="landing-divider" />
+      <section class="landing-emojis ui-card" id="emojis" aria-labelledby="emoji-heading">
+        <p class="eyebrow" data-i18n="emojiEyebrow">PIXEL ZUM MITNEHMEN</p>
+        <h2 id="emoji-heading" data-i18n="emojiTitle">Pixel für deinen Chat</h2>
+        <p class="emoji-copy" data-i18n="emojiDescription">
+          Acht Pixel-Emojis für Slack – von Approval und Chaos bis Herz, Fortschritt, Fragen und
+          Ideen.
+        </p>
+        <ul class="emoji-previews">
+          <li class="ui-card">
+            <img
+              src="/downloads/pixel-slack-emojis/pixel_approved.png"
+              width="128"
+              height="128"
+              loading="lazy"
+              decoding="async"
+              alt="Pixel hebt eine Pfote neben einem grünen Haken."
+              data-i18n-label="emojiAltApproved"
+            /><span data-i18n="emojiApproved">Pfote drauf!</span>
+          </li>
+          <li class="ui-card">
+            <img
+              src="/downloads/pixel-slack-emojis/pixel_chaos.png"
+              width="128"
+              height="128"
+              loading="lazy"
+              decoding="async"
+              alt="Pixel grinst neben einer kaputten Vase."
+              data-i18n-label="emojiAltChaos"
+            /><span data-i18n="emojiChaos">Chaos!</span>
+          </li>
+          <li class="ui-card">
+            <img
+              src="/downloads/pixel-slack-emojis/pixel_war_nicht_ich.png"
+              width="128"
+              height="128"
+              loading="lazy"
+              decoding="async"
+              alt="Pixel schaut unschuldig mit einem Heiligenschein."
+              data-i18n-label="emojiAltInnocent"
+            /><span data-i18n="emojiInnocent">War nicht ich!</span>
+          </li>
+          <li class="ui-card">
+            <img
+              src="/downloads/pixel-slack-emojis/pixel_love.png"
+              width="128"
+              height="128"
+              loading="lazy"
+              decoding="async"
+              alt="Pixel hält mit beiden Pfoten ein großes rotes Herz."
+              data-i18n-label="emojiAltLove"
+            /><span data-i18n="emojiLove">Mit Herz</span>
+          </li>
+          <li class="ui-card">
+            <img
+              src="/downloads/pixel-slack-emojis/pixel_in_progress.png"
+              width="128"
+              height="128"
+              loading="lazy"
+              decoding="async"
+              alt="Pixel schaut konzentriert neben zwei Zahnrädern."
+              data-i18n-label="emojiAltProgress"
+            /><span data-i18n="emojiProgress">Bin dran!</span>
+          </li>
+          <li class="ui-card">
+            <img
+              src="/downloads/pixel-slack-emojis/pixel_question.png"
+              width="128"
+              height="128"
+              loading="lazy"
+              decoding="async"
+              alt="Pixel legt den Kopf neben einem Fragezeichen schief."
+              data-i18n-label="emojiAltQuestion"
+            /><span data-i18n="emojiQuestion">Eine Frage …</span>
+          </li>
+          <li class="ui-card">
+            <img
+              src="/downloads/pixel-slack-emojis/pixel_idee.png"
+              width="128"
+              height="128"
+              loading="lazy"
+              decoding="async"
+              alt="Pixel hat eine Idee neben einer goldenen Glühbirne."
+              data-i18n-label="emojiAltIdea"
+            /><span data-i18n="emojiIdea">Eine Idee!</span>
+          </li>
+          <li class="ui-card">
+            <img
+              src="/downloads/pixel-slack-emojis/pixel_urlaub.png"
+              width="128"
+              height="128"
+              loading="lazy"
+              decoding="async"
+              alt="Pixel trägt eine Sonnenbrille und grinst entspannt."
+              data-i18n-label="emojiAltVacation"
+            /><span data-i18n="emojiVacation">Bin mal weg!</span>
+          </li>
+        </ul>
+        <a
+          class="ui-button emoji-download"
+          href="./downloads/pixel-slack-emojis.zip"
+          download="pixel-slack-emojis.zip"
+          data-i18n="emojiDownload"
+          >Emoji-Set herunterladen ↓</a
+        >
+        <p class="emoji-note" data-i18n="emojiNote">
+          ZIP mit acht transparenten PNGs. Entpacken und in Slack als eigene Emojis hinzufügen.
+        </p>
       </section>
       <footer class="landing-footer">
         <div class="landing-links">
