@@ -273,7 +273,11 @@ for (const scope of ['/', '/pixels-world/']) {
       .toBe(true);
     const before = await page.evaluate(() => caches.keys());
 
-    await page.goto(origin + scope + 'update.html');
+    const entry = scope === '/' ? 'help.html' : 'update.html';
+    const helpUrl = origin + scope + 'help.html' + (scope === '/' ? '' : '#updates');
+
+    await page.goto(origin + scope + entry);
+    await expect(page).toHaveURL(helpUrl);
     await expect(page.locator('[data-recover-game]')).toBeVisible();
     await expect(page.locator('canvas')).toHaveCount(0);
     expect(await page.evaluate(() => caches.keys())).toEqual(before);
@@ -291,13 +295,15 @@ for (const scope of ['/', '/pixels-world/']) {
           )
         ).flat();
 
-        return urls.filter((url) => /\/update\.html|\/assets\/recovery-/.test(url));
+        return urls.filter((url) =>
+          /\/(?:update|help)\.html|\/assets\/help-[^/]*\.js(?:\?|$)/.test(url),
+        );
       }),
     ).toEqual([]);
     await context.setOffline(true);
     await page.locator('[data-recover-game]').click();
     await expect(page.locator('[data-recovery-status]')).toContainText('offline');
-    await expect(page).toHaveURL(origin + scope + 'update.html');
+    await expect(page).toHaveURL(helpUrl);
     await context.setOffline(false);
     await request.post(`${origin}/__release?scope=${scope}&release=b&metadata=broken`);
     await page.locator('[data-recover-game]').click();
@@ -307,7 +313,7 @@ for (const scope of ['/', '/pixels-world/']) {
     await page.getByRole('button', { name: 'Deutsch', exact: true }).click();
     await page
       .screenshot()
-      .then((body) => testInfo.attach('legacy-update-helper', { body, contentType: 'image/png' }));
+      .then((body) => testInfo.attach('legacy-update-faq', { body, contentType: 'image/png' }));
     await request.post(`${origin}/__release?scope=${scope}&release=b`);
     await page.locator('[data-recover-game]').click();
     await expect(page).toHaveURL(/play\.html\?fresh=0\.0\.2-update-test-/);

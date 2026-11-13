@@ -39,6 +39,9 @@ Bereits gecachte ältere Releases erhalten die neue Menüanzeige erst, wenn sie
 einmal auf diese Version gewechselt haben; die Änderung kann sich nicht rückwirkend
 in ihren bereits geladenen Code einbauen.
 
+Anleitungen für Spieler zu Updates, Installation und lokalem Album stehen in der
+[zweisprachigen Hilfe](../help.html); die Aktualisierung startet direkt im FAQ-Punkt.
+
 ### Alte Version ohne Update-Button
 
 Vor der Update-Funktion konnten alte Offline-Clients neue Dateien bereits laden,
@@ -46,13 +49,19 @@ aber mit weiteren offenen Spiel-Tabs weiter beim alten Worker bleiben. Ein norma
 Reload kann dadurch erneut das gecachte Spiel zeigen
 ([Service-Worker-Lebenszyklus](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting)).
 
-Nach Veröffentlichung dieser Änderung hilft [Spiel aktualisieren](https://skanky0815.github.io/pixels-world/update.html),
-auch direkt als Link für betroffene Spieler. Der Einstieg ist absichtlich nicht im
-Offline-Precache. Er prüft online die veröffentlichte Version und öffnet auf Wunsch
-`play.html` mit einem frischen, nicht als Trackingparameter behandelten `fresh`-Wert.
-Damit reicht der alte Precache die Dokumentanfrage ans Netz weiter. Bei fehlender
-Verbindung oder ungültiger Versionsantwort bleibt die Seite erneut bedienbar.
-Sie aktiviert keinen wartenden Worker und lädt andere Tabs nicht neu.
+Nach Veröffentlichung dieser Änderung hilft der [Update-FAQ-Punkt](https://skanky0815.github.io/pixels-world/help.html#updates),
+auch direkt als Link für betroffene Spieler. „Aktuelle Version öffnen“ prüft online
+die veröffentlichte Version und öffnet unmittelbar `play.html` mit einem frischen,
+nicht als Trackingparameter behandelten `fresh`-Wert. Es gibt keinen zweiten
+Bestätigungsschritt auf einer Zwischenseite. Der frühere Link `update.html` leitet
+nur noch zur FAQ weiter, ohne eigene Aktualisierungsoberfläche.
+
+FAQ-Dokument und zugehöriger JavaScript-Einstieg bleiben bewusst außerhalb des
+Offline-Precache, damit auch ein alter Worker den aktuellen Hilfe-Einstieg erreicht.
+Der alte Spiel-Precache reicht die frische Dokumentanfrage ans Netz weiter.
+Bei fehlender Verbindung oder ungültiger Versionsantwort zeigt der FAQ-Punkt einen
+Fehler und bleibt erneut bedienbar. Er aktiviert keinen wartenden Worker und lädt
+andere Tabs nicht neu. Zum erstmaligen Öffnen der FAQ ist eine Verbindung nötig.
 
 Bis zur Veröffentlichung funktioniert auch ein direkter
 [frischer Spieleinstieg](https://skanky0815.github.io/pixels-world/play.html?fresh=20261113).

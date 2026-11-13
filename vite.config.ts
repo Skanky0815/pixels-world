@@ -12,7 +12,7 @@ import { releaseUrl } from './tools/release-metadata';
 import { roundConfigForBuild } from './tools/e2e-timing';
 import { legalFooter } from './tools/legal-footer';
 import { versionMetadata } from './tools/version-metadata';
-import { gameShell } from './tools/game-shell';
+import { htmlShell } from './tools/html-shell';
 import { de } from './src/i18n/de';
 
 // Fail before bundling/serving when any registered content is invalid.
@@ -27,7 +27,8 @@ const { version } = JSON.parse(
 // eslint-disable-next-line max-lines-per-function -- Der deklarative Buildvertrag hält Modi, feste Defines und gemeinsame Ein-/Ausgänge zusammen.
 export default defineConfig(({ mode, command }) => ({
   plugins: [
-    gameShell(),
+    htmlShell('game', ['play']),
+    htmlShell('landing', ['index', 'help']),
     versionMetadata(),
     VitePWA(pwaOptions(mode)),
     legalFooter(
@@ -58,6 +59,7 @@ export default defineConfig(({ mode, command }) => ({
         impressum: fileURLToPath(new URL('./impressum.html', import.meta.url)),
         datenschutz: fileURLToPath(new URL('./datenschutz.html', import.meta.url)),
         recovery: fileURLToPath(new URL('./update.html', import.meta.url)),
+        help: fileURLToPath(new URL('./help.html', import.meta.url)),
       },
     },
   },

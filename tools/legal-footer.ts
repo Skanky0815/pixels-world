@@ -6,7 +6,7 @@ export function legalFooter(info: BuildInfo, aiDisclosure: string): Plugin {
   return {
     name: 'legal-footer',
     transformIndexHtml(html, context) {
-      if (!/\/(?:impressum|datenschutz|update)\.html$/.test(context.filename)) return html;
+      if (!/\/(?:impressum|datenschutz|help|index)\.html$/.test(context.filename)) return html;
 
       return html
         .replace('<!-- BUILD_INFO -->', buildInfoMarkup(info))

@@ -1,20 +1,70 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
-  recoveryPageTitle: 'Update the game · Pixel’s World',
-  recoveryTitle: 'Time for fresh chaos?',
-  recoveryDescription:
-    'If your browser shows an old game version, you can open the current version directly here.',
-  recoveryTabs: 'Finish your current round first. Other game tabs will not reload automatically.',
-  recoverySaved: 'Your saved album and settings will be kept.',
-  recoveryAlbum:
-    'You can restore your previously saved album by choosing “Remember my album” in the options.',
+  helpTeaserTitle: 'Questions before the next round of chaos?',
+  helpTeaserText:
+    'Updates, your album, offline play and installation: Find help when Pixel is not the only puzzle.',
+  helpTeaserLink: 'Get help →',
+  helpPageTitle: 'Help · Pixel’s World',
+  helpNav: 'Help',
+  helpTitle: 'Help for little chaos breaks',
+  helpIntro:
+    'Pixel takes care of the chaos. Find answers about updates, your album and playing on the go here.',
+  helpUpdateQuestion: 'How do I update the game?',
+  helpUpdateFirst:
+    'Finish your round and connect to the internet. Open the game options (gear) and choose “Check for updates”. Your game version is shown there too.',
+  helpUpdateSecond:
+    'If an update is offered, choose “Update now”. This restarts the game. Each open game tab needs its own confirmation.',
+  helpUpdateThird:
+    'Missing the update button, or still seeing an old version? Use “Open the current version” in this answer. Your album and settings are kept.',
+  helpDesktop: 'On a computer',
+  helpDesktopText:
+    'Reload the page with ↻. In Chrome you can also try Ctrl+Shift+R (Windows/Linux) or ⌘+Shift+R (Mac). This does not replace the update helper for an old offline version that is stuck.',
+  helpChromeShortcuts: 'Chrome: keyboard shortcuts ↗',
+  helpAndroid: 'Android · Chrome',
+  helpAndroidText:
+    'Open the three-dot menu beside the address bar and tap Reload (↻). If the game stays old, open our update helper in Chrome.',
+  helpChromeReload: 'Chrome: reload a page ↗',
+  helpIphone: 'iPhone · Safari',
+  helpIphoneText:
+    'Pull down from the top of the page to reload. If the game stays old, open our update helper in Safari. You do not need a special “hard reload” button.',
+  helpSafariReload: 'Safari: browse and reload pages ↗',
+  helpInstalled: 'As an installed app',
+  helpInstalledText:
+    'Open Pixel’s World while online and check for updates in the options. If that option is missing, finish your round and open the update helper in your browser. This updates the browser visit; check the installed app separately afterwards. Depending on your system, the app and browser may not share data.',
+  helpOldQuestion: 'Why do I see an old version?',
+  helpOldText:
+    'Your browser can keep game files for later. An old offline copy may still appear while a new version is waiting, especially with several game tabs open. A normal reload may not be enough.',
+  helpOldNext:
+    'Finish your round and use the update helper. Other tabs will not reload without asking. If you are still stuck, tell us your browser, operating system and displayed game version.',
+  helpSupport: 'Report a problem ↗',
+  helpAlbumQuestion: 'Where is my album saved?',
+  helpAlbumText:
+    'New discoveries unlock only after a successful reconciliation. Without “Remember my album” in the options, they last only for this visit. With that choice, the game saves your album locally in this browser and restores previously saved discoveries. Turning it off alone does not delete them.',
+  helpAlbumSettings:
+    'Language, volume and reduced motion preference are also remembered locally when changed, if your browser allows it. There is no account, cloud sync or saved position within a running round. Other devices or browsers have their own album. Private browsing or blocked storage may prevent data from surviving after you close the browser.',
+  helpDeleteQuestion: 'What happens if I delete website data?',
+  helpDeleteText:
+    'You may lose your saved album, settings and offline files. Without a backup or cloud account, we cannot restore those discoveries. Do not delete website data as a routine update step. “Reset album” in the options deliberately deletes album discoveries; it is not an update tool either.',
+  helpOfflineQuestion: 'Can I play offline?',
+  helpOfflineFirst:
+    'First open the game while online. Choose “Prepare offline play” in the options and wait for preparation to finish. You can then reopen the game in that same browser or app without a connection.',
+  helpOfflineSecond:
+    'Installing a home screen icon alone does not download an offline copy. Without preparation, or after browser data is deleted or automatically cleared, you need the internet again. Updates, external links and ZIP downloads need a connection. “Remove offline files” removes the offline copy, not your album.',
+  helpInstallQuestion: 'How do I install the game on my phone?',
+  helpInstallAndroid:
+    'Android / Chrome: Open the landing page and tap “Install as app”. If no installation prompt appears, use the install or home screen shortcut option in the Chrome menu and follow the on-screen steps.',
+  helpInstallIphone:
+    'iPhone / Safari: Open the landing page in Safari. Use the page menu to find Share, or tap the Share icon directly, depending on your Safari layout. Choose “Add to Home Screen”, enable “Open as Web App” if offered, then tap Add.',
+  helpInstallNote:
+    'Menu names can vary with browser and system version. The current manufacturer guides help you find the right path. To play offline, explicitly prepare the offline copy in the game afterwards.',
+  helpGoogleInstall: 'Android guide from Google ↗',
+  helpAppleInstall: 'iPhone guide from Apple ↗',
+
   recoveryOpen: 'Open the current version →',
   recoveryReady: 'You need an internet connection to update.',
   recoveryChecking: 'Pixel is checking the current version …',
   recoveryFailed: 'The current version is unavailable right now. Please try again.',
   recoveryOffline: 'You are offline. Connect to the internet and try again.',
-  recoveryBack: 'Back to the start',
-  recoveryLink: 'Update the game',
 
   roomsTitle: 'Where to today, Pixel?',
   roomsAvailable: 'Ready for chaos',

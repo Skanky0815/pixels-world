@@ -68,23 +68,7 @@
   <body class="landing-page">
     <a class="skip-link" href="#welcome" data-i18n="landingSkip">Zum Inhalt</a>
     <main>
-      <header class="landing-header">
-        <a class="wordmark" href="./" aria-label="Pixel’s World"
-          >Pixel’s World<span aria-hidden="true">✦</span></a
-        >
-        <nav aria-label="Navigation">
-          <a href="#spielidee" data-i18n="landingAbout">Das Spiel</a>
-          <a href="#team" data-i18n="teamNav">Über uns</a>
-          <a href="#emojis">Emojis</a>
-          <a
-            href="https://github.com/Skanky0815/pixels-world"
-            target="_blank"
-            rel="noopener noreferrer"
-            >GitHub ↗</a
-          >
-          <div id="landing-language"></div>
-        </nav>
-      </header>
+      <!-- LANDING_HEADER -->
       <section class="landing-hero" id="welcome" aria-labelledby="landing-heading">
         <div class="hero-copy">
           <p class="eyebrow">ONE ROOM. ONE CAT.</p>
@@ -242,6 +226,25 @@
         <a class="play-link ui-button" href="./play.html" data-i18n="landingPlay"
           >Jetzt spielen →</a
         >
+      </section>
+      <section class="landing-help ui-card" aria-labelledby="help-heading">
+        <img
+          src="/downloads/pixel-slack-emojis/pixel_question.png"
+          width="128"
+          height="128"
+          loading="lazy"
+          decoding="async"
+          alt="Pixel legt den Kopf neben einem Fragezeichen schief."
+          data-i18n-label="emojiAltQuestion"
+        />
+        <div>
+          <h2 id="help-heading" data-i18n="helpTeaserTitle">Fragen vor der nächsten Chaosrunde?</h2>
+          <p data-i18n="helpTeaserText">
+            Updates, Album, Offline-Spiel und Installation: Hier findest du Hilfe, wenn Pixel mal
+            nicht das einzige Rätsel ist.
+          </p>
+        </div>
+        <a class="ui-button" href="./help.html" data-i18n="helpTeaserLink">Zur Hilfe →</a>
       </section>
       <section class="landing-team" id="team" aria-labelledby="team-heading">
         <div class="section-heading">
@@ -451,28 +454,7 @@
           ZIP mit acht transparenten PNGs. Entpacken und in Slack als eigene Emojis hinzufügen.
         </p>
       </section>
-      <footer class="landing-footer">
-        <div class="landing-links">
-          <a href="./update.html" data-i18n="recoveryLink">Spiel aktualisieren</a>
-          <a
-            href="https://github.com/Skanky0815/pixels-world/issues/new/choose"
-            target="_blank"
-            rel="noopener noreferrer"
-            data-i18n="feedbackIdeas"
-            >Feedback & Ideen</a
-          ><a href="./impressum.html" data-i18n="legalNoticeGerman">Impressum</a
-          ><a href="./datenschutz.html" data-i18n="privacyGerman">Datenschutz</a>
-        </div>
-        <p class="build-info" id="build-info"></p>
-        <p class="ai-disclosure" data-i18n="aiDisclosure">
-          Code, Grafiken und Texte mit KI erstellt. Idee und Review: Rico.
-        </p>
-        <p class="age-rating">
-          <span data-i18n="ageRatingPrefix">Ab </span><strong class="age-number">6</strong
-          ><span data-i18n="ageRatingSuffix"> Jahren · Einstufung durch den Anbieter</span
-          ><span data-i18n="ageRatingReasons"> · Leichter Zeitdruck · Cartoon-Sachschäden</span>
-        </p>
-      </footer>
+      <!-- LANDING_FOOTER -->
     </main>
     <script type="module" src="/src/landing.ts"></script>
   </body>
