@@ -11,7 +11,12 @@ export class RoomSelection {
   private readonly abort = new AbortController();
   private readonly unsubscribe: () => void;
   // eslint-disable-next-line max-lines-per-function -- Auswahl und Rückkehr teilen eine szenengebundene DOM-Lebensdauer und dieselben vorhandenen Menübuttons.
-  constructor(visible: boolean, choose: (id: string) => void, returnToRooms: () => void) {
+  constructor(
+    visible: boolean,
+    choose: (id: string) => void,
+    returnToRooms: () => void,
+    openMenu: () => void,
+  ) {
     this.root.className = 'room-selection';
     this.root.inert = true;
     this.back.className = 'ui-button room-selection-return';
@@ -25,6 +30,7 @@ export class RoomSelection {
     this.root.addEventListener(
       'click',
       (event) => {
+        if ((event.target as Element).closest('[data-rooms-menu]')) return openMenu();
         const id = (event.target as Element).closest<HTMLButtonElement>('[data-room-start]')
           ?.dataset.roomStart;
 
@@ -45,6 +51,9 @@ export class RoomSelection {
 
   enable() {
     this.root.inert = false;
+
+    if (this.opened && !document.documentElement.classList.contains('menu-open'))
+      this.root.querySelector<HTMLButtonElement>('[data-room-start]')?.focus();
   }
 
   private readonly key = (event: KeyboardEvent) => {
@@ -92,6 +101,6 @@ function roomCard(choice: (typeof ROOM_CHOICES)[number]) {
 function markup() {
   const selected = ROOM_CHOICES.find((choice) => choice.definition);
 
-  return `<h2>${t('roomsTitle')}</h2><div class="room-choices">${ROOM_CHOICES.map(roomCard).join('')}</div>
+  return `<div class="room-selection-heading"><h2>${t('roomsTitle')}</h2><button type="button" class="ui-button" data-rooms-menu>${t('menuBack')}</button></div><div class="room-choices">${ROOM_CHOICES.map(roomCard).join('')}</div>
     <div class="room-selection-start"><button type="button" class="ui-button" data-room-start="${selected?.id ?? ''}" ${selected ? '' : 'disabled'}>${t('roomsEnter')}</button></div>`;
 }

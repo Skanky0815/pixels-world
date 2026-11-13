@@ -259,20 +259,24 @@ geladen; Pixel wird dort per CSS zu Sara gespiegelt. Ricos Vorlage ist sein
 
 ## Pause und Einstellungen
 
-Esc oder **Menü** öffnet den szenengebundenen Pausendialog, auch vor dem Start.
+Der kompakte Spieleinstieg öffnet zuerst das Hauptmenü. **Spielen** führt zur
+Zimmerauswahl und danach zur Einführung. Esc oder der Menüknopf öffnet während
+der Runde dieselbe eigene Menüansicht; die Runde pausiert und bleibt erhalten.
+**Fortsetzen** kehrt ohne Reset zurück. **Optionen** wechselt in die eigene
+Einstellungsansicht; **Hauptmenü** führt von dort zurück. Die Hilfe öffnet separat.
 Die Sprachwahl befindet sich ausschließlich dort. **Neue Runde** ist erst nach
-Rundenstart sichtbar; der Ergebnis-Button bleibt erhalten. Der Dialog verwendet
+Rundenstart sichtbar und verlangt wie **Zimmer wechseln** eine Bestätigung; der Ergebnis-Button bleibt erhalten. Die Ansicht verwendet
 den gemeinsamen DE-/EN-Katalog, speichert Sprache, Audiopegel, Bewegungswunsch
 und Schwierigkeit lokal und bleibt
 bei blockiertem Browser-Speicher funktionsfähig. **Optionen** in der Einführung
-öffnet denselben Dialog. Die Schwierigkeit wird erst beim nächsten Rundenstart
+öffnet dieselbe Einstellungsansicht. Die Schwierigkeit wird erst beim nächsten Rundenstart
 übernommen; Presets und Snapshot-Vertrag stehen in der
 [Gameplay-Architektur](architecture/gameplay.md#schwierigkeitsgrade).
 
 `PlayActivity` verknüpft Menüpause mit Fokus/Sichtbarkeit. Fortsetzen verwirft das
 erste Zeitdelta, während `InputFrames` eine dabei noch unbenutzte frische
 Eingabeflanke für den nächsten aktiven Frame bewahrt. Cleanup verwirft den Puffer;
-gehaltene Bewegung wird nicht wiederholt. Menütasten werden im Dialog behandelt,
+gehaltene Bewegung wird nicht wiederholt. Menütasten werden in der Menüansicht behandelt,
 damit Phasers globale Tastensperre native Regler und Formularbedienung nicht stört.
 
 `AudioPreferences` speichert `master` und `effects` unter `pixels-world.audio`.

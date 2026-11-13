@@ -39,7 +39,7 @@ function latch() {
 
 async function ready(page: Page) {
   await expect(page.locator(loader)).toHaveCount(0);
-  await expect(page.locator('.room-selection')).toBeVisible();
+  await expect(page.locator('.game-menu')).toBeVisible();
   expect(await page.locator('main').evaluate((main) => (main as HTMLElement).inert)).toBe(false);
 }
 
@@ -123,7 +123,7 @@ test('Assetfortschritt bleibt bis zum echten Abschluss sichtbar', async ({ page 
   await expect(page.locator(loader)).toBeVisible();
   await expect.poll(() => page.evaluate(() => performance.now())).toBeGreaterThan(3000);
   held.release();
-  await expect(page.locator('.room-selection')).toBeVisible();
+  await expect(page.locator('.game-menu')).toBeVisible();
   await expect(page.locator(loader)).toHaveCount(0, { timeout: 1000 });
   await ready(page);
 });

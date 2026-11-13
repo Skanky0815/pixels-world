@@ -56,6 +56,7 @@ export class InputController {
 
     return (
       !!document.querySelector('dialog[open]') ||
+      document.documentElement.classList.contains('menu-open') ||
       (!!focused?.closest('a, button, input, textarea, select') &&
         !focused.closest('.touch-controls'))
     );

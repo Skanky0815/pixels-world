@@ -1,19 +1,107 @@
-.pause-menu {
-  box-sizing: border-box;
-  width: min(400px, calc(100vw - 24px));
-  max-height: calc(100dvh - 24px);
-  overflow: auto;
-  padding: 20px;
-  border: 2px solid #c49464;
-  border-radius: 10px;
-  background: var(--popup-background);
+/* Full page menu: the running scene stays alive behind the hidden play area. */
+.game-menu {
+  padding: clamp(12px, 3vw, 28px);
+  background: #26212c;
   color: var(--popup-text);
   font:
-    14px/1.5 system-ui,
+    16px/1.6 system-ui,
     sans-serif;
 }
-.pause-menu::backdrop {
-  background: #201b20bb;
+.game-menu[hidden],
+.game-menu [hidden] {
+  display: none !important;
+}
+.game-menu > * {
+  width: min(700px, 100%);
+  margin-inline: auto;
+}
+.menu-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.menu-heading h2 {
+  margin: 0;
+}
+.menu-welcome {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.menu-welcome img {
+  width: 128px;
+  height: 128px;
+  image-rendering: pixelated;
+}
+.menu-welcome p {
+  margin: 0;
+}
+.game-menu .pause-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.game-menu .pause-actions .ui-button {
+  height: auto;
+  min-height: 44px;
+  white-space: normal;
+  text-align: center;
+  padding-block: 10px;
+}
+.game-menu .menu-primary {
+  grid-column: 1 / -1;
+  background: #e1b66e;
+  color: #2c2429;
+}
+.menu-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 32px;
+}
+.menu-settings > section:first-child {
+  grid-column: 1 / -1;
+}
+.menu-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.room-selection-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+@media (max-width: 560px) {
+  .menu-settings {
+    grid-template-columns: 1fr;
+  }
+}
+@media (orientation: landscape) and (max-height: 550px) {
+  .game-menu {
+    padding: 12px;
+  }
+  .menu-welcome {
+    grid-template-columns: 80px 1fr;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+  .menu-welcome img {
+    width: 64px;
+    height: 64px;
+  }
+  .game-menu .pause-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .game-menu .menu-primary {
+    grid-column: auto;
+  }
 }
 .game-information-panel > summary {
   cursor: pointer;
@@ -117,4 +205,47 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+@media (min-width: 641px) {
+  .game-menu:has(.menu-welcome:not([hidden])) {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.8fr) minmax(260px, 1fr);
+    gap: 24px;
+    align-items: center;
+  }
+  .game-menu:has(.menu-welcome:not([hidden])) > .menu-heading {
+    grid-column: 1 / -1;
+  }
+  .game-menu:has(.menu-welcome:not([hidden])) .menu-welcome {
+    margin-bottom: 0;
+  }
+}
+html.menu-open main > .game-footer > .keyboard-help,
+html.menu-open main > .game-footer > .hint {
+  display: none;
+}
+
+@media (min-width: 641px) and (min-height: 551px) {
+  .game-menu:has(.menu-welcome:not([hidden])) .pause-actions {
+    grid-template-columns: 1fr;
+  }
+  .game-menu:has(.menu-welcome:not([hidden])) .menu-welcome img {
+    width: 192px;
+    height: 192px;
+  }
+}
+@media (orientation: landscape) and (max-height: 550px) {
+  .game-menu .menu-heading {
+    margin-bottom: 8px;
+  }
+  .game-menu .menu-welcome img {
+    width: 56px;
+    height: 56px;
+  }
+  .game-menu .pause-actions .ui-button {
+    font-size: 14px;
+    line-height: 1.3;
+    padding-block: 6px;
+  }
 }

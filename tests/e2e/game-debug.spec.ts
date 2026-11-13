@@ -217,6 +217,7 @@ for (const [mobile, hasTouch] of [
       await openDebug(page);
       await page.keyboard.press('F2');
       await page.locator('.pause-toggle').click();
+      await page.locator('[data-menu-settings]').click();
       await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('hard');
       await page.locator('[data-pause-resume]').click();
       await page.keyboard.press('F2');
@@ -252,6 +253,7 @@ for (const [mobile, hasTouch] of [
         contentType: 'image/png',
       });
       await page.locator('.pause-toggle').click();
+      await page.locator('[data-menu-settings]').click();
       await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
       await page.locator('[data-pause-resume]').click();
       await page.keyboard.press('F2');

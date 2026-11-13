@@ -52,7 +52,10 @@ async function state(page: Page): Promise<RoomTestState> {
 }
 
 export async function introAction(page: Page, action: 'options' | 'album') {
-  return page.locator(action === 'options' ? '.pause-toggle' : '.album-toggle');
+  if (action === 'album') return page.locator('.album-toggle');
+  await page.locator('.pause-toggle').click();
+
+  return page.locator('[data-menu-settings]');
 }
 
 async function loadIntro(page: Page, path = '/') {
@@ -81,6 +84,9 @@ async function waitForGame(page: Page, enterRoom = true) {
 
 /** Existing gameplay scenarios begin at the introduction, via the public room action. */
 async function enterSelectedRoom(page: Page) {
+  const play = page.locator('[data-menu-play]');
+
+  if (await play.isVisible()) await play.click();
   const choose = page.locator('.room-selection [data-room-start]');
 
   if (await choose.isVisible()) await choose.click();

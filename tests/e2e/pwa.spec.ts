@@ -82,6 +82,7 @@ for (const base of ['http://127.0.0.1:4177/', 'http://127.0.0.1:4175/pixels-worl
       await page.evaluate(() => navigator.serviceWorker.getRegistrations().then((r) => r.length)),
     ).toBe(0);
     await page.locator('.pause-toggle').click();
+    await page.locator('[data-menu-settings]').click();
     await page.locator('[data-offline-game]').click();
     await expect(page.locator('[data-offline-game]')).toBeEnabled({ timeout: 20000 });
     await page.locator('[data-pause-resume]').click();
@@ -111,6 +112,7 @@ for (const base of ['http://127.0.0.1:4177/', 'http://127.0.0.1:4175/pixels-worl
       await expect(page.locator('.start-screen')).toBeHidden();
       await expectDrawnRoom(page);
       await page.locator('.pause-toggle').click();
+      await page.locator('[data-menu-settings]').click();
       await page.getByRole('link', { name: 'Beenden', exact: true }).click();
       await expect(page).toHaveURL(base);
       await expect(page.locator('h1')).toHaveText('Ein Zimmer. Eine Katze. Dein Chaos.');

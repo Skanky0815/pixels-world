@@ -91,6 +91,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private startScreen!: StartScreen;
   private roomSelection!: RoomSelection;
   private choosingRoom: boolean;
+  private menuHome: boolean;
   private pixel!: Pixel;
   private round!: RoundController;
   private charm!: Reconciliation;
@@ -132,6 +133,7 @@ export class LivingRoomScene extends Phaser.Scene {
     super('LivingRoom');
     this.room = baseRoom;
     this.choosingRoom = new URLSearchParams(location.search).get('room') !== baseRoom.definition.id;
+    this.menuHome = this.choosingRoom;
   }
 
   // eslint-disable-next-line max-lines-per-function -- Zusammengehöriger Asset-Aufbau bzw. vollständiger Geometrie- und Szenariotest bleibt als ein Ablauf lesbar.
@@ -174,6 +176,7 @@ export class LivingRoomScene extends Phaser.Scene {
       debugScenario?: DebugScenario;
       started?: boolean;
       chooseRoom?: boolean;
+      menuHome?: boolean;
       roomId?: string;
     } = {},
   ) {
@@ -182,6 +185,7 @@ export class LivingRoomScene extends Phaser.Scene {
       loadingScreen.ready(() => {
         this.controls.release();
         this.roomSelection.enable();
+        this.menu.enable();
       }),
     );
     const generation = ++this.generation;
@@ -189,6 +193,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.difficulty = difficultyPreferences.snapshot();
     this.started = data.started ?? this.started;
     this.choosingRoom = data.chooseRoom ?? this.choosingRoom;
+    this.menuHome = data.menuHome ?? this.menuHome;
     this.changeRoom(data.roomId);
     this.room = this.populateRoom();
     this.refreshCaption();
@@ -510,13 +515,17 @@ export class LivingRoomScene extends Phaser.Scene {
       started: () => this.started,
       difficulty: () => this.difficulty,
       rooms: () => this.returnToRooms(),
+      play: () => this.openRooms(),
     });
     this.roomSelection = new RoomSelection(
       this.choosingRoom,
       (id) => this.chooseRoom(id),
       () => this.returnToRooms(),
+      () => this.menu.open(),
     );
     this.syncActivity();
+
+    if (this.menuHome && !this.started) this.menu.open(true);
     const unsubscribe = onLanguageChange(() => this.refreshLanguage());
     const unsubscribeMotion = motionPreferences.subscribe(() => {
       if (this.ballPlay.snapshot().active) this.renderBallPlay();
@@ -611,10 +620,21 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private returnToRooms() {
-    this.scene.restart({ started: false, chooseRoom: true });
+    this.scene.restart({ started: false, chooseRoom: true, menuHome: false });
+  }
+
+  private openRooms() {
+    this.menuHome = false;
+    this.choosingRoom = true;
+    this.roomSelection.setVisible(true);
+    this.startScreen.hide();
+    this.controls.release();
+    document.querySelector<HTMLButtonElement>('[data-room-start]')?.focus();
   }
 
   private chooseRoom(id: string) {
+    this.menuHome = false;
+
     if (id !== this.baseRoom.definition.id)
       return void this.scene.restart({ started: false, chooseRoom: false, roomId: id });
     this.choosingRoom = false;
@@ -672,6 +692,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private startRound() {
+    this.menu.dismiss();
     this.started = true;
     this.choosingRoom = false;
     this.roomSelection.setVisible(false);

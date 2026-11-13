@@ -343,6 +343,7 @@ for (const width of [390, 1024]) {
 // eslint-disable-next-line max-lines-per-function -- Pause und Wechsel zur ruhigen Endpose dürfen weder Zeit noch Pixels Anker verändern.
 async function expectEndingPause(page: Page) {
   await page.locator('.pause-toggle').click();
+  await page.locator('[data-menu-settings]').click();
   const paused = await state(page);
 
   await page.clock.runFor(2000);

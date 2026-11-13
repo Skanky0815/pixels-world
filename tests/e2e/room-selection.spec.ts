@@ -7,6 +7,24 @@ test(
   async ({ page }) => {
     await page.goto('/play.html');
     await waitForGame(page, false);
+    const mainMenu = page.locator('.game-menu');
+
+    await expect(mainMenu).toBeVisible();
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
+    await expect(page.locator('#play-area')).toBeHidden();
+    await expect(page.locator('[data-menu-play]')).toBeFocused();
+    await page.locator('[data-menu-settings]').click();
+    await expect(page.locator('[data-menu-view="settings"]')).toBeVisible();
+    await page.locator('[data-menu-back]').click();
+    const popup = page.waitForEvent('popup');
+
+    await mainMenu.locator('a[href="./help.html"]').click();
+    const help = await popup;
+
+    await expect(help).toHaveURL(/help\.html$/);
+    await help.close();
+    await page.bringToFront();
+    await page.locator('[data-menu-play]').click();
     const rooms = page.locator('.room-selection');
 
     await expect(rooms).toBeVisible();
@@ -23,7 +41,7 @@ test(
       .toBe(true);
     const waiting = await state(page);
 
-    await page.locator('#game').focus();
+    await rooms.getByRole('heading').click();
     await page.keyboard.down('ArrowRight');
     await page.keyboard.down('Space');
     await page.clock.runFor(1000);
@@ -36,6 +54,7 @@ test(
     await expect(page.locator('.album-dialog')).toBeVisible();
     await page.locator('.album-dialog [data-action="close"]').click();
     await page.locator('main > header .pause-toggle').click();
+    await page.locator('[data-menu-settings]').click();
     await page.locator('[data-language="en"]').click();
     await page.locator('[data-pause-resume]').click();
     await expect(rooms).toContainText('Where to today, Pixel?');
@@ -60,6 +79,12 @@ test(
 
     await page.locator('.pause-toggle').click();
     await page.locator('[data-pause-rooms]').click();
+    await expect(page.locator('[data-menu-view="confirm"]')).toBeVisible();
+    await page.locator('[data-menu-cancel]').click();
+    expect((await state(page)).generation).toBe(played.generation);
+    expect((await state(page)).chaos.score).toBe(played.chaos.score);
+    await page.locator('[data-pause-rooms]').click();
+    await page.locator('[data-menu-confirm]').click();
     await until(page, (s) => s.generation > played.generation);
     await expect(rooms).toBeVisible();
     expect((await state(page)).chaos.score).toBe(0);
@@ -85,6 +110,7 @@ for (const viewport of [
       async ({ page }) => {
         await page.goto('/play.html');
         await waitForGame(page, false);
+        await page.locator('[data-menu-play]').click();
         const rooms = page.locator('.room-selection');
 
         expect(

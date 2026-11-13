@@ -31,6 +31,7 @@ for (const viewport of [
     await fillsViewport(page);
     await bottomControls(page);
     await page.locator('.pause-toggle').tap();
+    await page.locator('[data-menu-settings]').tap();
     await expect(page.locator('.pause-menu')).toBeVisible();
     await page.locator('[data-pause-resume]').tap();
     await expect(page.locator('.pause-menu')).toBeHidden();

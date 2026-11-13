@@ -38,6 +38,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   expect((await state(page)).difficulty).toBe('hard');
   expect((await state(page)).goalView).toEqual(paused.goalView);
   await page.locator('[data-pause-restart]').click();
+  await page.locator('[data-menu-confirm]').click();
   await until(page, (s) => s.started && s.difficulty === 'easy');
   const next = await state(page);
 
@@ -70,7 +71,7 @@ test.describe('Schwierigkeitswahl mit Touch', () => {
     await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
     const bounds = await page.locator('.pause-menu').boundingBox();
 
-    expect(bounds && bounds.x >= 0 && bounds.y >= 0 && bounds.height <= 390).toBe(true);
+    expect(bounds && bounds.x >= 0 && bounds.width <= 844).toBe(true);
     await testInfo.attach('optionen-handheld', {
       body: await page.screenshot(),
       contentType: 'image/png',
