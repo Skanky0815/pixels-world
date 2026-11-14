@@ -9,7 +9,7 @@ import {
 import { copy } from '../../i18n/locale.ts';
 import type { RoomDefinition } from '../../game/content/definitions.ts';
 
-/** DEV only: fixed route and kitchen art, not the published kitchen or its food goal. */
+/** DEV only: fixed route and kitchen art, real food goal, not yet the published kitchen. */
 export const KITCHEN_PREVIEW = {
   id: 'kitchen-preview',
   caption: copy('kitchenPreviewTitle'),
@@ -36,11 +36,12 @@ export const KITCHEN_PREVIEW = {
     plankHeight: 36,
   },
   goal: {
-    id: 'kitchen-preview-target',
-    kind: 'toy',
-    spawn: { size: 'small', category: 'toy', random: false, reason: 'main-goal' },
-    label: copy('kitchenPreviewGoal'),
-    motivation: copy('kitchenPreviewMotivation'),
+    id: 'kitchen-food-bowl',
+    kind: 'food',
+    albumVariant: 'food-bowl',
+    spawn: { size: 'small', category: 'food', random: false, reason: 'main-goal' },
+    label: copy('foodBowlGoal'),
+    motivation: copy('foodBowlMotivation'),
     surfaceId: 'kitchen-counter',
     x: 860,
     dwellMs: 1200,

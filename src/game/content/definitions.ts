@@ -1,5 +1,5 @@
 import type { HomecomingSide } from './homecoming-layout.ts';
-import type { AlbumEntry } from '../../content/album/discovery.ts';
+import type { DamageAlbumEntry } from '../../content/album/discovery.ts';
 import type { CarpetConfig } from '../objects/Carpet.ts';
 import type { CarpetRules } from '../interactions/carpet-hairball.ts';
 import type { WallPictureConfig } from '../objects/WallPicture.ts';
@@ -28,7 +28,7 @@ import type { BookAppearance } from '../objects/book-art.ts';
 export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
 export type FurnitureAppearance = 'stool' | 'table' | 'counter';
 interface Base {
-  readonly album?: AlbumEntry;
+  readonly album?: DamageAlbumEntry;
   readonly spawn: SpawnProfile;
   readonly capabilities: readonly Capability[];
 }

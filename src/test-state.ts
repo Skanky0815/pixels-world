@@ -12,6 +12,7 @@ import type { Difficulty } from './content/difficulty';
 import type { GameHud } from './game/ui/GameHud';
 import type { GameFeedback } from './game/ui/GameFeedback';
 import type { MainGoal } from './game/domain/main-goal';
+import type { FoodEating } from './game/domain/food-eating';
 import type { BallPlay } from './game/domain/ball-play';
 import type { ResultViewSnapshot } from './game/ui/RoundResultView';
 import type { ReconciliationSnapshot } from './game/domain/reconciliation';
@@ -32,6 +33,7 @@ export interface GameTestState {
   readonly shelves: readonly ReturnType<Shelf['snapshot']>[];
   readonly goal: ReturnType<MainGoal['snapshot']>;
   readonly ballPlay: ReturnType<BallPlay['snapshot']>;
+  readonly foodEating: ReturnType<FoodEating['snapshot']>;
   readonly goalView: ReturnType<GoalView['snapshot']>;
   readonly started: boolean;
   readonly difficulty: Difficulty;

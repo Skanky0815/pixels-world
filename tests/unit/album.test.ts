@@ -21,10 +21,17 @@ function memory(initial: string | null = null) {
 }
 
 test('Jede reale Objektvariante besitzt genau eine stabile, lokalisierte Album-ID und echte Erfolgsregel', () => {
-  assert.deepEqual(Object.keys(INTERACTABLE_ALBUM).sort(), Object.keys(OBJECTS).sort());
+  assert.deepEqual(
+    Object.keys(INTERACTABLE_ALBUM)
+      .filter((key) => key !== 'food-bowl')
+      .sort(),
+    Object.keys(OBJECTS).sort(),
+  );
   assert.equal(ids.size, Object.keys(INTERACTABLE_ALBUM).length);
 
-  for (const [variant, entry] of Object.entries(INTERACTABLE_ALBUM)) {
+  for (const [variant, definition] of Object.entries(OBJECTS)) {
+    const entry = definition.album;
+
     assert.ok(
       entry.name.de &&
         entry.name.en &&
@@ -141,7 +148,7 @@ test('Blockierter Lese-/Schreibzugriff verliert keine sitzungsweite Entdeckung',
 
 test('Veröffentlichte Sammlung enthält keine nur im DEV-Raum erreichbare Variante', () => {
   assert.equal(albumEntries(false).length, 13);
-  assert.equal(albumEntries(true).length, 14);
+  assert.equal(albumEntries(true).length, 15);
   assert.equal(
     albumEntries(false).some((entry) => entry.id === 'couch.worn'),
     false,

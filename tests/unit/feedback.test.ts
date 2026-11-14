@@ -98,3 +98,19 @@ test('Anzeigen altern nur mit aktiver Präsentationszeit und verändern keine Ru
   assert.equal(round.snapshot().elapsedMs, 0);
   assert.ok(FEEDBACK.charmMs < CHARM_TIMING.cueMs);
 });
+
+// eslint-disable-next-line max-lines-per-function -- Beide Zielaktionen müssen vor Saras tatsächlicher Ankunft eine eigene Phase zeigen.
+test('Zielaktion kündigt Sara erst nach ihrem Ende an', () => {
+  for (const goalAction of ['food', 'toy'] as const) {
+    const { feedback, round, state } = fixture();
+
+    round.advance(1000, 0);
+    feedback.advance(1, { ...state(), goalAction });
+    assert.equal(
+      feedback.snapshot().messages.phase?.key,
+      goalAction === 'food' ? 'feedbackEating' : 'feedbackPlaying',
+    );
+    feedback.advance(1, state());
+    assert.equal(feedback.snapshot().messages.phase?.key, 'feedbackReturn');
+  }
+});

@@ -22,7 +22,12 @@ export const DAMAGE_FEEDBACK: Record<DamageKind, TextKey> = {
   'picture-fall': 'feedbackPicture',
   hairball: 'feedbackHairball',
 };
-export const PHASE_FEEDBACK: Record<RoundPhase | 'success' | 'failed' | 'peaceful', TextKey> = {
+export const PHASE_FEEDBACK: Record<
+  RoundPhase | 'success' | 'failed' | 'peaceful' | 'eating' | 'playing',
+  TextKey
+> = {
+  eating: 'feedbackEating',
+  playing: 'feedbackPlaying',
   chaos: 'feedbackStart',
   returning: 'feedbackReturn',
   reaction: 'feedbackReaction',

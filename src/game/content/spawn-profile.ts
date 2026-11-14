@@ -2,7 +2,7 @@ import { ASSETS } from '../assets/definitions.ts';
 import type { Capability, ObjectCatalog, ObjectDefinition } from './definitions.ts';
 
 export const SPAWN_SIZES = ['small', 'medium', 'large'] as const;
-export const SPAWN_CATEGORIES = ['decoration', 'plant', 'furniture', 'toy'] as const;
+export const SPAWN_CATEGORIES = ['decoration', 'plant', 'furniture', 'toy', 'food'] as const;
 export type SpawnSize = (typeof SPAWN_SIZES)[number];
 export type SpawnCategory = (typeof SPAWN_CATEGORIES)[number];
 export type SpawnProfile = {
@@ -14,7 +14,7 @@ export type SpawnProfile = {
 );
 export interface FixedGoalSpawnProfile {
   readonly size: 'small';
-  readonly category: 'toy';
+  readonly category: 'toy' | 'food';
   readonly random: false;
   readonly reason: 'main-goal';
 }
@@ -134,7 +134,7 @@ export function validateGoalSpawn(value: unknown, path: string) {
   if (
     value.random ||
     value.reason !== 'main-goal' ||
-    value.category !== 'toy' ||
+    !['toy', 'food'].includes(value.category as string) ||
     value.size !== 'small'
   )
     fail(path, 'main goal must stay protected from random placement');

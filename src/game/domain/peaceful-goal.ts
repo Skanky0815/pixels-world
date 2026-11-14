@@ -11,6 +11,7 @@ export class PeacefulGoal {
     damagedObjects: number,
     random = Math.random,
     previous?: PeacefulGoalLine,
+    lines: readonly PeacefulGoalLine[] = PEACEFUL_GOAL_LINES,
   ) {
     if (
       this.line ||
@@ -22,7 +23,7 @@ export class PeacefulGoal {
     const sample = random();
 
     validateSample(sample);
-    const pool = PEACEFUL_GOAL_LINES.filter((line) => line !== previous);
+    const pool = lines.filter((line) => line !== previous);
 
     this.line = pool[Math.min(pool.length - 1, Math.floor(sample * pool.length))];
 

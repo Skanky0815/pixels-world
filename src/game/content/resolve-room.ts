@@ -1,3 +1,5 @@
+import type { GoalDefinition } from '../domain/main-goal.ts';
+import { GOAL_ALBUM } from '../../content/album/goals.ts';
 import { validateCarpetRules } from '../interactions/carpet-hairball.ts';
 import { PICTURE_MOTIFS } from '../assets/picture-appearance.ts';
 import { validatePictureRules } from '../interactions/picture-falling.ts';
@@ -672,8 +674,7 @@ class RoomResolver {
     record(goal, path);
     this.unique(goal.id, `${path}.id`);
 
-    if (goal.kind !== 'toy') fail(`${path}.kind`, 'unknown goal kind');
-    validateGoalSpawn(goal.spawn, `${path}.spawn`);
+    validateGoalProfile(goal, path);
     id(goal.label, `${path}.label`);
     id(goal.motivation, `${path}.motivation`);
     number(goal.x, `${path}.x`);
@@ -684,8 +685,10 @@ class RoomResolver {
     if (platform?.durability && platform.durability.stability !== 'stable')
       fail(`${path}.surfaceId`, 'goal shelf must remain stable');
 
-    supportFits(goal.x - 10, 20, surface, path);
-    const area = { x: goal.x - 10, y: surface.y - 20, width: 20, height: 20 };
+    const width = goal.kind === 'food' ? 36 : 20;
+
+    supportFits(goal.x - width / 2, width, surface, path);
+    const area = { x: goal.x - width / 2, y: surface.y - 20, width, height: 20 };
 
     bounds(area, this.room, `${path}.area`);
 
@@ -721,4 +724,19 @@ function validateShelfDecoration(
 
   if (d.supportedBy !== undefined && !room.platforms.some((p) => p.id === d.supportedBy))
     fail(`${root}.decorations.supportedBy`, 'unknown shelf');
+}
+
+// eslint-disable-next-line max-lines-per-function -- Zieltyp, geschützte Belegung und zugehöriger Albumfund bilden einen gemeinsamen Inhaltsvertrag.
+function validateGoalProfile(goal: GoalDefinition, path: string) {
+  if (goal.kind !== 'toy' && goal.kind !== 'food') fail(`${path}.kind`, 'unknown goal kind');
+  validateGoalSpawn(goal.spawn, `${path}.spawn`);
+
+  if (goal.spawn.category !== goal.kind)
+    fail(`${path}.spawn.category`, 'category does not match goal');
+
+  if (
+    goal.albumVariant !== undefined &&
+    (goal.kind !== 'food' || !Object.hasOwn(GOAL_ALBUM, goal.albumVariant))
+  )
+    fail(`${path}.albumVariant`, 'unknown goal album variant');
 }

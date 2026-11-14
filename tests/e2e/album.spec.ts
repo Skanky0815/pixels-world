@@ -1,3 +1,4 @@
+import { albumEntries } from '../../src/content/album/index.ts';
 /* eslint-disable max-lines-per-function -- Vollständige Nutzerabläufe prüfen Sammlung, echten Schaden, Dialogpause und Persistenz gemeinsam. */
 import {
   introAction,
@@ -55,7 +56,9 @@ for (const mobile of [false, true]) {
       const album = page.locator('.album-dialog');
 
       await expect(album).toBeVisible();
-      await expect(album.locator('.album-overall')).toHaveText('Insgesamt: 0 von 14');
+      await expect(album.locator('.album-overall')).toHaveText(
+        `Insgesamt: 0 von ${albumEntries(true).length}`,
+      );
       await expect(album.locator('.album-tile:disabled')).toHaveCount(9);
       await album.getByRole('button', { name: 'Nächste Seite', exact: true }).click();
       await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 2');
@@ -66,12 +69,14 @@ for (const mobile of [false, true]) {
       await album.getByRole('button', { name: 'Vorige Seite', exact: true }).click();
       await expect(album.locator('img')).toHaveCount(0);
       await expect(album).not.toContainText(/Vase|Sofa|Vorhang|Katzengras|Bücher/);
-      await album.getByRole('tab', { name: 'Küche später' }).click();
+      await album.getByRole('tab', { name: 'Schlafzimmer später' }).click();
       await expect(album).toContainText('Dieser Raum hat noch keine Album-Einträge.');
-      await expect(album.locator('.album-overall')).toHaveText('Insgesamt: 0 von 14');
+      await expect(album.locator('.album-overall')).toHaveText(
+        `Insgesamt: 0 von ${albumEntries(true).length}`,
+      );
       await album.getByRole('tab', { name: 'Wohnzimmer', exact: true }).click();
       await page.keyboard.press('ArrowRight');
-      await expect(album.getByRole('tab', { name: 'Küche später' })).toHaveAttribute(
+      await expect(album.getByRole('tab', { name: 'Küche' })).toHaveAttribute(
         'aria-selected',
         'true',
       );
@@ -129,12 +134,16 @@ for (const mobile of [false, true]) {
           contentType: 'image/png',
         });
         await page.locator('.album-toggle').click();
-        await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+        await expect(page.locator('.album-overall')).toHaveText(
+          `Insgesamt: 1 von ${albumEntries(true).length}`,
+        );
         await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
         await page.reload();
         await waitForGame(page);
         await (await introAction(page, 'album')).click();
-        await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+        await expect(page.locator('.album-overall')).toHaveText(
+          `Insgesamt: 1 von ${albumEntries(true).length}`,
+        );
       });
   });
 }
@@ -149,7 +158,9 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await openFromMenu(page);
   const album = page.locator('.album-dialog');
 
-  await expect(album.locator('.album-overall')).toHaveText('Insgesamt: 0 von 14');
+  await expect(album.locator('.album-overall')).toHaveText(
+    `Insgesamt: 0 von ${albumEntries(true).length}`,
+  );
   await expect(album.locator('img')).toHaveCount(0);
   expect((await state(page)).album).toMatchObject({
     pending: ['couch.cozy', 'plant.catgrass'],
@@ -216,7 +227,9 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
     await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
   ).toEqual(['couch.cozy', 'plant.catgrass']);
   await openFromMenu(page);
-  await expect(album.locator('.album-overall')).toHaveText('Insgesamt: 2 von 14');
+  await expect(album.locator('.album-overall')).toHaveText(
+    `Insgesamt: 2 von ${albumEntries(true).length}`,
+  );
   await expect(album.locator('.album-story')).toContainText('Das gemütliche Sofa');
   await expect(album.locator('.album-tile:disabled')).toHaveCount(7);
   await expect(album.locator('.album-story img')).toHaveAttribute('alt', 'Das gemütliche Sofa');
@@ -241,7 +254,9 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.reload();
   await waitForGame(page);
   await (await introAction(page, 'album')).click();
-  await expect(page.locator('.album-overall')).toHaveText('Overall: 2 of 14');
+  await expect(page.locator('.album-overall')).toHaveText(
+    `Overall: 2 of ${albumEntries(true).length}`,
+  );
   await page.locator('.album-dialog [data-action="close"]').click();
   await openPause(page);
   await page.locator('.pause-menu [data-album-reset="ask"]').click();
@@ -251,7 +266,9 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.locator('.pause-menu [data-album-reset="confirm"]').click();
   await page.locator('[data-pause-resume]').click();
   await (await introAction(page, 'album')).click();
-  await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
+  await expect(page.locator('.album-overall')).toHaveText(
+    `Overall: 0 of ${albumEntries(true).length}`,
+  );
   expect(
     await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).achievements),
   ).toEqual({
@@ -265,7 +282,9 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.reload();
   await waitForGame(page);
   await (await introAction(page, 'album')).click();
-  await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
+  await expect(page.locator('.album-overall')).toHaveText(
+    `Overall: 0 of ${albumEntries(true).length}`,
+  );
   await expect(page.locator('.album-dialog')).toHaveCount(1);
 });
 
@@ -284,7 +303,9 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
   await finishAlbumRound(page, true);
   await expect(page.locator('.album-banner')).toHaveAttribute('data-entry', 'couch.cozy');
   await openFromMenu(page);
-  await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+  await expect(page.locator('.album-overall')).toHaveText(
+    `Insgesamt: 1 von ${albumEntries(true).length}`,
+  );
   await expect(page.locator('.album-dialog footer [role="status"]')).toContainText(
     'Speichern ist nicht verfügbar',
   );
@@ -292,7 +313,9 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
   await page.locator('[data-pause-resume]').click();
   await reset(page);
   await openFromMenu(page);
-  await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+  await expect(page.locator('.album-overall')).toHaveText(
+    `Insgesamt: 1 von ${albumEntries(true).length}`,
+  );
 });
 
 test('Neustart und Reload verwerfen Vormerkungen und behalten vorhandene Album-Einträge', async ({
@@ -318,7 +341,9 @@ test('Neustart und Reload verwerfen Vormerkungen und behalten vorhandene Album-E
     await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
   ).toEqual(['vase.blue']);
   await (await introAction(page, 'album')).click();
-  await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+  await expect(page.locator('.album-overall')).toHaveText(
+    `Insgesamt: 1 von ${albumEntries(true).length}`,
+  );
   await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
 });
 
@@ -326,7 +351,9 @@ test('Korrupte Album-Daten blockieren weder Einführung noch Sammlung', async ({
   await page.addInitScript(() => localStorage.setItem('pixels-world.album', '{'));
   await loadIntro(page);
   await (await introAction(page, 'album')).click();
-  await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 0 von 14');
+  await expect(page.locator('.album-overall')).toHaveText(
+    `Insgesamt: 0 von ${albumEntries(true).length}`,
+  );
   await expect(page.locator('.album-dialog footer [role="status"]')).toContainText('ungültig');
 });
 

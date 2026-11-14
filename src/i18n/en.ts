@@ -1,8 +1,9 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
   kitchenPreviewTitle: '02 / KITCHEN · DEV PREVIEW',
-  kitchenPreviewGoal: 'DEV target on the counter',
-  kitchenPreviewMotivation: 'Room preview: reach the future food bowl position.',
+  foodBowlGoal: 'Reach your food bowl on the counter',
+  foodBowlMotivation: 'Your tummy is rumbling. Luckily, there is a way to the bowl.',
+  peacefulGoalFood: 'Oh, Pixel … you were simply hungry. Enjoy your meal, little mouse.',
   achievementEmptyTitle: 'Your achievements are waiting',
   achievementEmptyText: 'You can view your unlocked achievements here.',
   albumAchievements: 'Achievements',
@@ -288,6 +289,8 @@ export const en: Record<keyof typeof de, string> = {
   landingReady: 'Ready for a little chaos?',
 
   feedbackStart: 'Go on, Pixel!',
+  feedbackEating: 'Enjoy your meal!',
+  feedbackPlaying: 'Favourite ball found!',
   feedbackReturn: 'Sara is here!',
   feedbackReaction: 'Sara takes a look …',
   feedbackCharm: 'Time for charm',

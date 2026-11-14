@@ -7,7 +7,7 @@ import { RoundController } from '../../src/game/domain/round-controller.ts';
 import { HomecomingSequence } from '../../src/game/domain/homecoming.ts';
 import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
 import { roundResult } from '../../src/game/domain/round-result.ts';
-import { PEACEFUL_GOAL_LINES } from '../../src/content/peaceful-goal.ts';
+import { PEACEFUL_GOAL_LINES, PEACEFUL_FOOD_LINES } from '../../src/content/peaceful-goal.ts';
 import { copy, resolveText } from '../../src/i18n/locale.ts';
 
 function round(goal = true, score = 0) {
@@ -102,4 +102,18 @@ test('Freundlicher Dialog bleibt bis zur Bestätigung; Auswertung braucht keine 
 
   assert.equal(charm.snapshot().stage, 'waiting');
   assert.equal(charm.snapshot().successes, 0);
+});
+
+// eslint-disable-next-line max-lines-per-function -- Alle Dialogvarianten müssen am realen friedlichen Zielabschluss auswählbar bleiben.
+test('Friedlicher Napfabschluss verwendet Futterdialog statt Balltext', () => {
+  for (const sample of [0, 0.2, 0.4, 0.6, 0.8, 1]) {
+    const model = new PeacefulGoal();
+
+    assert.equal(
+      model.start(round(), 0, () => sample, undefined, PEACEFUL_FOOD_LINES),
+      true,
+    );
+    assert.notEqual(model.snapshot().line, 'peacefulGoalBall');
+    assert.ok(model.snapshot().line);
+  }
 });

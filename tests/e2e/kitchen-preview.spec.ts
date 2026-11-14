@@ -49,7 +49,7 @@ for (const [difficulty, viewport] of [
   test.describe(`Küchen-Grundraum ${difficulty}`, () => {
     test.use({ viewport });
     test(
-      'Hocker, Tisch und Arbeitsplatte sind friedlich erreichbar; Pause und Reset erhalten die Geometrie',
+      'Napf ist friedlich erreichbar; Fressanimation pausiert und lässt sich zurücksetzen',
       { tag: '@smoke' },
       async ({ page }, info) => {
         await page.addInitScript(
@@ -63,7 +63,19 @@ for (const [difficulty, viewport] of [
         await page.keyboard.up('Space');
         expect((await observe(page)).room.id).toBe('kitchen-preview');
         await climbToCounter(page);
+        await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
+        await until(page, (s) => s.foodEating.active);
+        expect((await observe(page)).pixel.visualFlipX).toBe(true);
+        await until(page, (s) => s.foodEating.phase === 'eat');
         const reached = await observe(page);
+
+        expect(reached.goalView.kind).toBe('food');
+        expect(reached.goalView.texture).toBe('food-bowl');
+        expect(reached.ballPlay.active).toBe(false);
+        expect(reached.homecoming.stage).toBe('waiting');
+        expect(reached.album.pending).toContain('goal.food-bowl');
+        expect([23, 24]).toContain(reached.pixel.visualFrame);
+        expect(reached.pixel.visualFlipX).toBe(false);
 
         expect(reached.pictures).toHaveLength(difficulty === 'easy' ? 1 : 2);
         expect(reached.chaos.score).toBe(0);
@@ -79,10 +91,14 @@ for (const [difficulty, viewport] of [
 
         await page.clock.runFor(1000);
         expect((await observe(page)).round).toEqual(paused.round);
+        expect((await observe(page)).foodEating).toEqual(paused.foodEating);
+        expect((await observe(page)).pixel.visualFrame).toBe(paused.pixel.visualFrame);
         await page.locator('[data-pause-resume]').click();
         await move(page, ['r'], (s) => s.generation > reached.generation);
         await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 468) < 2);
         expect((await observe(page)).pixel.x).toBe(110);
+        expect((await observe(page)).foodEating.active).toBe(false);
+        expect((await observe(page)).album.pending).toEqual([]);
         expect((await observe(page)).shelves.every((s) => s.enabled && s.damage === 0)).toBe(true);
       },
     );
@@ -112,6 +128,9 @@ test(
     await climbToCounter(page);
     await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
     await until(page, (s) => s.goal.status === 'reached');
+    await until(page, (s) => s.foodEating.phase === 'eat');
+    expect((await observe(page)).homecoming.stage).toBe('waiting');
+    await info.attach('pixel-frisst', { body: await page.screenshot(), contentType: 'image/png' });
     await until(page, (s) => s.homecoming.stage === 'entering');
     const entering = await observe(page);
 
@@ -139,6 +158,11 @@ test(
     const ending = await observe(page);
 
     expect(ending.result?.outcome).toBe('success');
+    expect(ending.result?.peaceful).toBe(true);
+    expect(ending.album.confirmed).toContain('goal.food-bowl');
+    await expect(page.locator('.album-banner')).toHaveAttribute('data-entry', 'goal.food-bowl');
+    expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();
+    expect(await page.evaluate(() => localStorage.getItem('pixels-world.storage'))).toBeNull();
     expect(ending.sara.flipX).toBe(true);
     expect(ending.sara.x).toBeLessThan(ending.pixel.x);
     expect(ending.pixel.visualFlipX).toBe(true);
@@ -165,4 +189,31 @@ test('Beide festen Küchenregale sind über den Tisch erreichbar', async ({ page
     body: await page.screenshot(),
     contentType: 'image/png',
   });
+});
+
+test('Reduzierte Bewegung hält Kopf und Napf beim Fressen ruhig; Fokusverlust hält aktive Zeit an', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/play.html?room=kitchen-preview&camera=room');
+  await waitForGame(page);
+  await page.keyboard.down('Space');
+  await until(page, (s) => s.started && s.pixel.grounded);
+  await page.keyboard.up('Space');
+  await climbToCounter(page);
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
+  await until(page, (s) => s.foodEating.phase === 'eat');
+  const first = await observe(page);
+
+  await page.clock.runFor(450);
+  expect((await observe(page)).pixel.visualFrame).toBe(23);
+  expect((await observe(page)).pixel.visualX).toBe(first.pixel.visualX);
+  expect((await observe(page)).goalView.ballX).toBe(first.goalView.ballX);
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  const paused = await observe(page);
+
+  await page.clock.runFor(1000);
+  expect((await observe(page)).foodEating).toEqual(paused.foodEating);
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await until(page, (s) => s.homecoming.stage === 'entering');
 });
