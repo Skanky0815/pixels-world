@@ -1,5 +1,8 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  saraDamageTrashBin0: 'The lid was on, Pixel. That was intentional.',
+  saraDamageTrashBin1: 'You really do not have to unpack everything that rustles.',
+  saraDamageTrashBin2: 'Even the rubbish is on the floor now. Very thorough, Pixel.',
   saraDamagePantryJar0: 'One less pantry jar. That was hardly necessary, Pixel.',
   saraDamagePantryJar1: 'The pasta was better off inside the jar.',
   saraDamagePantryJar2: 'First the shards, then we talk, Pixel.',

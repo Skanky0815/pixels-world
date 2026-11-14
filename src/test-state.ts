@@ -9,6 +9,7 @@ import type { RoundAlbum } from './game/album/round';
 import type { WallPlacement } from './game/content/wall-slots';
 import type { Shelf } from './game/objects/Shelf';
 import type { Dish } from './game/objects/Dish';
+import type { TrashBin } from './game/objects/TrashBin';
 import type { FoodBag } from './game/objects/FoodBag';
 import type { BookStack } from './game/objects/BookStack';
 import type { GoalView } from './game/ui/GoalView';
@@ -36,6 +37,7 @@ export interface GameTestState {
   readonly pantry: readonly ReturnType<Pantry['snapshot']>[];
   readonly plants: readonly ReturnType<Plant['supportedSnapshot']>[];
   readonly dishes: readonly ReturnType<Dish['snapshot']>[];
+  readonly trashBins: readonly ReturnType<TrashBin['snapshot']>[];
   readonly foodBags: readonly ReturnType<FoodBag['snapshot']>[];
   readonly books: readonly ReturnType<BookStack['snapshot']>[];
   readonly shelves: readonly ReturnType<Shelf['snapshot']>[];

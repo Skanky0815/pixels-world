@@ -1,4 +1,8 @@
 export const de = {
+  saraDamageTrashBin0: 'Der Deckel war drauf, Pixel. Das war Absicht.',
+  saraDamageTrashBin1: 'Du musst wirklich nicht alles auspacken, was raschelt.',
+  saraDamageTrashBin2: 'Jetzt liegt sogar der Müll daneben. Sehr gründlich, Pixel.',
+
   saraDamagePantryJar0: 'Ein Vorratsglas weniger. Wirklich nötig war das nicht, Pixel.',
   saraDamagePantryJar1: 'Die Nudeln waren im Glas besser aufgehoben.',
   saraDamagePantryJar2: 'Erst die Scherben, dann reden wir, Pixel.',

@@ -1,3 +1,4 @@
+import { preloadTrashBinArt, trashBinArtReady } from '../assets/trash-bin-art';
 import { preloadPantryArt, pantryArtReady } from '../assets/pantry-art';
 import { AlbumBanners } from '../ui/AlbumBanners';
 import { EndingPresentation } from '../domain/ending-presentation';
@@ -160,6 +161,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadVaseArt(this);
     preloadDishArt(this);
     preloadPantryArt(this);
+    preloadTrashBinArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);
@@ -244,7 +246,8 @@ export class LivingRoomScene extends Phaser.Scene {
       kitchenArtReady(this) &&
       this.textures.exists('food-bowl') &&
       herbArtReady(this) &&
-      pantryArtReady(this)
+      pantryArtReady(this) &&
+      trashBinArtReady(this)
     );
   }
 
@@ -409,6 +412,7 @@ export class LivingRoomScene extends Phaser.Scene {
             carpets: this.built.carpets.map((carpet) => carpet.snapshot()),
             pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
+            trashBins: this.built.trashBins.map((bin) => bin.snapshot()),
             foodBags: this.built.foodBags.map((bag) => bag.snapshot()),
             pantry: this.built.pantry.map((item) => item.snapshot()),
             plants: this.built.plants.map((plant) => plant.supportedSnapshot()),

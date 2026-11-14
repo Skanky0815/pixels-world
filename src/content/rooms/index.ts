@@ -1,3 +1,4 @@
+import { TRASH_BIN_ROOMS } from './trash-bin-lab.ts';
 import { PANTRY_ROOMS } from './pantry-lab.ts';
 import { HERB_ROOMS } from './herb-lab.ts';
 import { DISH_ROOMS } from './dish-lab.ts';
@@ -18,6 +19,7 @@ export const ROOMS = {
   ...DISH_ROOMS,
   ...HERB_ROOMS,
   ...PANTRY_ROOMS,
+  ...TRASH_BIN_ROOMS,
 } as const;
 export function selectRoom(id: string | null, variants: boolean) {
   if (!variants || !id) return LIVING_ROOM;

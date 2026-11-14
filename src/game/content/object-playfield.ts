@@ -128,7 +128,7 @@ export function advanceObjectInteractions(
   const supported = [
     ...objects.breakables,
     ...objects.books,
-    ...objects.foodBags,
+    ...objects.topplingContainers,
     ...objects.plants,
   ];
 
@@ -152,7 +152,7 @@ export function advanceObjectInteractions(
     damage(object.updateClimb(context, object === surface && context.pixel.climbing));
   objects.pictures.forEach((picture) => damage(picture.update(context, true).event));
   objects.books.forEach((books) => damage(books.update(context, true).event));
-  objects.foodBags.forEach((bag) => damage(bag.update(context, true).event));
+  objects.topplingContainers.forEach((bag) => damage(bag.update(context, true).event));
 
   const interaction = updateGroundInteractions(objects.ground, context);
 

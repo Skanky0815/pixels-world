@@ -46,6 +46,8 @@ for (const [difficulty, viewport] of [
         expect(reached.chaos.score).toBe(0);
         expect(reached.pantry.length).toBeGreaterThanOrEqual(2);
         expect(reached.pantry.every((item) => item.state === 'resting')).toBe(true);
+        expect(reached.trashBins).toHaveLength(1);
+        expect(reached.trashBins[0].state).toBe('upright');
         expect(reached.foodBags).toHaveLength(1);
         expect(reached.foodBags[0].state).toBe('upright');
         expect(

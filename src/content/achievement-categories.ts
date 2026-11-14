@@ -53,6 +53,14 @@ export const ACHIEVEMENT_CATEGORIES_V4 = [
     targets: ['pantry.jar', 'pantry.tin'],
   },
 ] as const;
+/** Rubbish bins receive a new category; existing categories stay frozen. */
+export const ACHIEVEMENT_CATEGORIES_V5 = [
+  {
+    id: 'trash-bins',
+    name: { de: 'Alles ausgeleert', en: 'Everything emptied' },
+    targets: ['trash-bin.cream'],
+  },
+] as const;
 export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
   ...new Set(
     [
@@ -60,6 +68,7 @@ export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
       ...ACHIEVEMENT_CATEGORIES_V2,
       ...ACHIEVEMENT_CATEGORIES_V3,
       ...ACHIEVEMENT_CATEGORIES_V4,
+      ...ACHIEVEMENT_CATEGORIES_V5,
     ].flatMap((category) => [...category.targets]),
   ),
 ]);

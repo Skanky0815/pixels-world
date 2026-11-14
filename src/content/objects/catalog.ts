@@ -1,3 +1,4 @@
+import { TRASH_BINS } from './trash-bin.ts';
 import { PANTRY } from './pantry.ts';
 import { HERBS } from './herbs.ts';
 import { CARPET_RULES } from '../../game/interactions/carpet-hairball.ts';
@@ -30,6 +31,7 @@ const picture = {
 
 export const OBJECTS = {
   ...PANTRY,
+  ...TRASH_BINS,
   ...HERBS,
   'cream-cup': {
     kind: 'dish',

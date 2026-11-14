@@ -3,6 +3,7 @@ import {
   ACHIEVEMENT_CATEGORIES_V2,
   ACHIEVEMENT_CATEGORIES_V3,
   ACHIEVEMENT_CATEGORIES_V4,
+  ACHIEVEMENT_CATEGORIES_V5,
 } from './achievement-categories.ts';
 import { ROOM_ACHIEVEMENTS_V1, ROOM_ACHIEVEMENTS_V2 } from './achievement-rooms.ts';
 import type { ChaosEvent } from '../game/domain/chaos-event.ts';
@@ -89,7 +90,7 @@ export const DESTRUCTION_TARGETS_V2 = [
     name: { de: 'Geschirr zerbrochen', en: 'Crockery broken' },
   },
 ] as const;
-export const DESTRUCTION_TARGETS = [
+export const DESTRUCTION_TARGETS_V3 = [
   ...DESTRUCTION_TARGETS_V2,
   {
     id: 'pantry',
@@ -98,6 +99,16 @@ export const DESTRUCTION_TARGETS = [
     also: 'spill',
     stage: 1,
     name: { de: 'Vorratsbehälter ruiniert', en: 'Pantry container ruined' },
+  },
+] as const;
+export const DESTRUCTION_TARGETS = [
+  ...DESTRUCTION_TARGETS_V3,
+  {
+    id: 'trash-bin',
+    object: 'trash-bin',
+    event: 'spill',
+    stage: 1,
+    name: { de: 'Mülleimer ausgeleert', en: 'Rubbish bin emptied' },
   },
 ] as const;
 export type DestructionTarget = (typeof DESTRUCTION_TARGETS)[number]['id'];
@@ -347,13 +358,13 @@ const PANTRY_OBJECTIVES: readonly AchievementDefinition[] = [
       en: 'Even the pantry. Very thorough, Pixel.',
     },
     metric: 'destruction',
-    targets: DESTRUCTION_TARGETS.map((target) => target.id),
-    threshold: DESTRUCTION_TARGETS.length,
+    targets: DESTRUCTION_TARGETS_V3.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS_V3.length,
     art: 'chaos',
   },
 ];
 
-export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+const ACHIEVEMENTS_V4: readonly AchievementDefinition[] = [
   ...PANTRY_OBJECTIVES,
   {
     id: 'achievement.masterpiece-v4',
@@ -369,6 +380,63 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     metric: 'all',
     targets: PANTRY_OBJECTIVES.map((entry) => entry.id),
     threshold: PANTRY_OBJECTIVES.length,
+    art: 'love',
+  },
+];
+
+const BIN_OBJECTIVES: readonly AchievementDefinition[] = [
+  ...ACHIEVEMENTS_V4,
+  // eslint-disable-next-line max-lines-per-function -- Der neue eingefrorene Katalogeintrag behält seinen vollständigen Anzeigenvertrag.
+  ...ACHIEVEMENT_CATEGORIES_V5.map((category): AchievementDefinition => ({
+    id: `achievement.category-${category.id}-v5`,
+    name: category.name,
+    description: {
+      de: 'Den Mülleimer umwerfen und die Runde erfolgreich versöhnen.',
+      en: 'Tip over the rubbish bin and reconcile successfully.',
+    },
+    quote: {
+      de: 'Sogar der Müll hat jetzt mehr Platz, Pixel.',
+      en: 'Even the rubbish has more room now, Pixel.',
+    },
+    metric: 'variants',
+    targets: category.targets,
+    threshold: category.targets.length,
+    art: 'chaos',
+  })),
+  {
+    id: 'achievement.destruction-v5',
+    name: { de: 'Meister der Zerstörung IV', en: 'Master of destruction IV' },
+    description: {
+      de: 'Alle elf Objektarten dieser Sammlung vollständig ruinieren, über erfolgreich versöhnte Runden.',
+      en: 'Fully ruin all eleven object types in this collection across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Du hast wirklich nichts ausgelassen, Pixel.',
+      en: 'You really left nothing untouched, Pixel.',
+    },
+    metric: 'destruction',
+    targets: DESTRUCTION_TARGETS.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS.length,
+    art: 'chaos',
+  },
+];
+
+export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+  ...BIN_OBJECTIVES,
+  {
+    id: 'achievement.masterpiece-v5',
+    name: { de: 'Pixels Meisterwerk V', en: 'Pixel’s masterpiece V' },
+    description: {
+      de: 'Alle anderen Erfolge der Sammlung mit Mülleimer freischalten.',
+      en: 'Unlock every other achievement in the rubbish bin collection.',
+    },
+    quote: {
+      de: 'Und jetzt machen wir gemeinsam sauber, Pixel.',
+      en: 'And now we clean up together, Pixel.',
+    },
+    metric: 'all',
+    targets: BIN_OBJECTIVES.map((entry) => entry.id),
+    threshold: BIN_OBJECTIVES.length,
     art: 'love',
   },
 ];

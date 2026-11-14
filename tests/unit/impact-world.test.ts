@@ -45,6 +45,7 @@ function move(a: ReturnType<typeof actor>, x: number, y = 0, vx = 100, vy = 0) {
 test('Jeder Objekttyp kann jeden anderen einschließlich gleicher Typen treffen', () => {
   const types = [
     'pantry',
+    'trash-bin',
     'dish',
     'food-bag',
     'vase',

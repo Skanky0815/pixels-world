@@ -1,5 +1,6 @@
 /** Reuse bundled game PNGs; undiscovered entries never render an image element. */
 export const ALBUM_ART: Readonly<Record<string, string>> = {
+  'trash-bin-intact': new URL('../../../assets/objects/trash-bin/intact.png', import.meta.url).href,
   'pantry-jar': new URL('../../../assets/objects/pantry/jar.png', import.meta.url).href,
   'pantry-tin': new URL('../../../assets/objects/pantry/tin.png', import.meta.url).href,
   'herb-basil': new URL('../../../assets/objects/herbs/basil-intact.png', import.meta.url).href,

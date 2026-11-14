@@ -127,6 +127,7 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, all), [
     ...PANTRY_VARIANTS,
+    'cream-trash-bin',
     ...HERB_VARIANTS,
     ...dishes,
     'dry-food-bag',

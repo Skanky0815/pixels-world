@@ -1,19 +1,23 @@
 import type Phaser from 'phaser';
+import type { TopplingContainerProfile } from './TopplingContainer';
 import type { Toppling } from '../interactions/toppling';
 import { motionPreferences } from '../../settings/motion';
 
-export class FoodBagArt {
+export class TopplingContainerArt {
   readonly root: Phaser.GameObjects.Container;
   private readonly intact: Phaser.GameObjects.Image;
   private readonly spilled: Phaser.GameObjects.Image;
 
-  constructor(scene: Phaser.Scene) {
-    this.intact = scene.add.image(0, 0, 'food-bag-intact').setOrigin(0.5, 1);
-    this.spilled = scene.add.image(0, 0, 'food-bag-spilled').setOrigin(0.5, 1).setVisible(false);
+  constructor(scene: Phaser.Scene, profile: TopplingContainerProfile) {
+    this.intact = scene.add.image(0, 0, profile.intactTexture).setOrigin(0.5, 1);
+    this.spilled = scene.add
+      .image(0, 0, profile.spilledTexture)
+      .setOrigin(0.5, 1)
+      .setVisible(false);
     this.root = scene.add.container(0, 0, [this.intact, this.spilled]);
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Ein gemeinsamer Fußanker hält Wackeln, echte Kipprichtung und den begrenzten Futterstreuzustand zusammen.
+  // eslint-disable-next-line max-lines-per-function -- Ein gemeinsamer Fußanker hält Wackeln, echte Kipprichtung und den begrenzten Inhaltsstreuzustand zusammen.
   render(state: ReturnType<Toppling<'upright'>['snapshot']>, direction: number) {
     const progress =
       state.state === 'fallen' ? 1 : state.state === 'falling' ? Math.min(1, state.progress) : 0;
