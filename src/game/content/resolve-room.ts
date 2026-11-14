@@ -209,6 +209,10 @@ function validateRoom(room: RoomDefinition) {
     !['cozy-room', 'kitchen-preview'].includes(room.environment)
   )
     fail(`${root}.environment`, 'unknown environment');
+
+  if (room.homecomingSide !== undefined && !['left', 'right'].includes(room.homecomingSide))
+    fail(`${root}.homecomingSide`, 'unknown homecoming side');
+
   validateFloorAndLists(room, root);
 }
 

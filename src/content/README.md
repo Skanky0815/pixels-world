@@ -12,6 +12,10 @@ direkt aus den Kollisionsmaßen gezeichnet; Tisch-/Hockerbeine sind reine Dekora
 und bleiben durchlässig, die Küchenzeile besitzt einen geschlossenen Körper bis
 zum Boden. `appearance` erlaubt dafür `stool`, `table` oder `counter` ausschließlich
 mit stabiler Auflage. Oberhalb hängende Schränke sind vorerst reine Kulisse.
+`homecomingSide: 'left'` legt hier Tür und Saras Auftritt nach links; Pixel kehrt
+auf den freien Boden vor dem Hocker zurück. Blickrichtungen, Charmeposen,
+Abschlussannäherung und das gegenüberliegende Versöhnungspanel folgen derselben
+Seite. Ohne Angabe bleibt der bisherige Auftritt von rechts erhalten.
 Der vorhandene Ball markiert lediglich den späteren Napfplatz als DEV-Testziel;
 der echte Futternapf folgt in #230. Die Vorschau verwendet eine eigene Raum-ID,
 zählt nicht für Küchen-/Raumerfolge und bleibt in der öffentlichen Auswahl

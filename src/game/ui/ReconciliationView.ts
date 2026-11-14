@@ -5,10 +5,11 @@ import { charmPortrait } from '../domain/dialogue-portrait';
 import type Phaser from 'phaser';
 import { ARROW_LABELS, CHARM_LINES } from '../../content/reconciliation';
 import type { ReconciliationSnapshot } from '../domain/reconciliation';
-import { homecomingPositions } from '../content/homecoming-layout';
+import { homecomingPositions, type HomecomingSide } from '../content/homecoming-layout';
 /** Reading and timed input are visually separate; only the current arrow needs attention. */
 export class ReconciliationView {
   private readonly removeCompactListener: () => void;
+  private readonly panelLeft: number;
   private readonly root: Phaser.GameObjects.Container;
   private readonly message: Phaser.GameObjects.Text;
   private readonly quote: Phaser.GameObjects.Text;
@@ -23,19 +24,22 @@ export class ReconciliationView {
   private readonly portrait: DialoguePortrait;
   private selectedPortrait: ReturnType<typeof charmPortrait> = null;
   // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau trennt Lesetext, große Tastenkachel, zugehörige Zeit und Herzfortschritt räumlich.
-  constructor(scene: Phaser.Scene, width: number, floorY: number) {
+  constructor(scene: Phaser.Scene, width: number, floorY: number, side: HomecomingSide = 'right') {
     this.root = scene.add.container(0, 0).setDepth(14).setVisible(false);
     const panelWidth = Math.min(width - 80, 610);
-    const right = 40 + panelWidth;
-    const keyX = 40 + panelWidth * 0.72;
-    const panel = scene.add.rectangle(40 + panelWidth / 2, 235, panelWidth, 218, 0x403a35, 1);
+    const left = side === 'left' ? width - 40 - panelWidth : 40;
+
+    this.panelLeft = left;
+    const right = left + panelWidth;
+    const keyX = left + panelWidth * 0.72;
+    const panel = scene.add.rectangle(left + panelWidth / 2, 235, panelWidth, 218, 0x403a35, 1);
 
     panel.setStrokeStyle(2, 0xd4b488);
-    this.message = scene.add.text(60, 140, '', {
+    this.message = scene.add.text(left + 20, 140, '', {
       ...style(16),
       wordWrap: { width: panelWidth - 40 },
     });
-    this.quote = scene.add.text(60, 188, '', {
+    this.quote = scene.add.text(left + 20, 188, '', {
       ...style(16),
       fontStyle: 'italic',
       color: '#e4c182',
@@ -46,14 +50,14 @@ export class ReconciliationView {
     this.key = scene.add.text(keyX, 242, '', style(76)).setOrigin(0.5);
     this.timeTrack = scene.add.rectangle(keyX - 70, 306, 140, 8, 0x66554e).setOrigin(0, 0.5);
     this.timer = scene.add.rectangle(keyX - 70, 306, 1, 8, 0xe4c182).setOrigin(0, 0.5);
-    const heartTrack = scene.add.rectangle(60, 331, 200, 8, 0x66554e).setOrigin(0, 0.5);
+    const heartTrack = scene.add.rectangle(left + 20, 331, 200, 8, 0x66554e).setOrigin(0, 0.5);
 
-    this.heartLabel = scene.add.text(60, 311, '', style(12));
-    this.hearts = scene.add.rectangle(60, 331, 1, 8, 0xd99b9c).setOrigin(0, 0.5);
+    this.heartLabel = scene.add.text(left + 20, 311, '', style(12));
+    this.hearts = scene.add.rectangle(left + 20, 331, 1, 8, 0xd99b9c).setOrigin(0, 0.5);
     this.affection = scene.add
-      .text(homecomingPositions(width).pixelSeatX, floorY - 238, '', style(18))
+      .text(homecomingPositions(width, side).pixelSeatX, floorY - 238, '', style(18))
       .setOrigin(0.5);
-    this.portrait = new DialoguePortrait(scene, 100, 180);
+    this.portrait = new DialoguePortrait(scene, left + 60, 180);
     const dialogue = scene.add.container(0, 0, [
       panel,
       this.portrait.image,
@@ -85,7 +89,7 @@ export class ReconciliationView {
 
   private renderPortrait(snapshot: ReconciliationSnapshot) {
     this.selectedPortrait = charmPortrait(snapshot);
-    const textX = this.portrait.render(this.selectedPortrait) ? 160 : 60;
+    const textX = this.panelLeft + (this.portrait.render(this.selectedPortrait) ? 120 : 20);
 
     placeDialogueText(this.message, textX, this.hint.x - textX);
     placeDialogueText(this.quote, textX, this.hint.x - textX);

@@ -15,7 +15,7 @@ async function until(page: Page, check: (state: GameTestState) => boolean) {
 
         return check(await observe(page));
       },
-      { intervals: [0] },
+      { intervals: [0], timeout: 15_000 },
     )
     .toBe(true);
 }
@@ -27,6 +27,16 @@ async function move(page: Page, keys: string[], check: (state: GameTestState) =>
   } finally {
     for (const key of keys) await page.keyboard.up(key);
   }
+}
+
+async function climbToCounter(page: Page) {
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 255);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 398) < 2);
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 410);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 328) < 2);
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 520);
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 700);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
 }
 
 for (const [difficulty, viewport] of [
@@ -50,13 +60,7 @@ for (const [difficulty, viewport] of [
         await until(page, (s) => s.started && s.pixel.grounded);
         await page.keyboard.up('Space');
         expect((await observe(page)).room.id).toBe('kitchen-preview');
-        await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 255);
-        await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 398) < 2);
-        await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 410);
-        await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 328) < 2);
-        await move(page, ['ArrowRight'], (s) => s.pixel.x >= 520);
-        await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 700);
-        await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
+        await climbToCounter(page);
         const reached = await observe(page);
 
         expect(reached.chaos.score).toBe(0);
@@ -92,3 +96,48 @@ test('Produktion ignoriert die Küchenvorschau und lässt die öffentliche Küch
   await expect(page.locator('.room-choice').filter({ hasText: 'Küche' })).toBeDisabled();
   expect(await page.evaluate(() => typeof window.__pixelTest)).toBe('undefined');
 });
+
+test(
+  'Sara kommt in der Küche von links; Pixel kehrt von der Arbeitsplatte sicher zu ihr zurück',
+  { tag: '@smoke' },
+  async ({ page }, info) => {
+    await page.goto('/play.html?room=kitchen-preview&camera=room');
+    await waitForGame(page);
+    await page.keyboard.down('Space');
+    await until(page, (s) => s.started && s.pixel.grounded);
+    await page.keyboard.up('Space');
+    await climbToCounter(page);
+    await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
+    await until(page, (s) => s.goal.status === 'reached');
+    await until(page, (s) => s.homecoming.stage === 'entering');
+    const entering = await observe(page);
+
+    expect(entering.sara.x).toBeLessThan(114);
+    expect(entering.sara.flipX).toBe(true);
+    expect(entering.pixelReturn.targetX).toBe(178);
+    await page.keyboard.press('Escape');
+    const paused = await observe(page);
+
+    await page.clock.runFor(500);
+    expect((await observe(page)).sara.x).toBe(paused.sara.x);
+    await page.locator('[data-pause-resume]').click();
+    await until(page, (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated');
+    const seated = await observe(page);
+
+    expect(seated.sara.x).toBe(114);
+    expect(seated.pixel.flipX).toBe(true);
+    expect(Math.abs(seated.pixel.x - 178)).toBeLessThanOrEqual(4);
+    await info.attach('sara-von-links', {
+      body: await page.screenshot(),
+      contentType: 'image/png',
+    });
+    await move(page, ['Space'], (s) => s.result !== null);
+    await page.clock.runFor(1000);
+    const ending = await observe(page);
+
+    expect(ending.result?.outcome).toBe('success');
+    expect(ending.sara.flipX).toBe(true);
+    expect(ending.sara.x).toBeLessThan(ending.pixel.x);
+    expect(ending.pixel.visualFlipX).toBe(true);
+  },
+);

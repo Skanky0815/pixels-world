@@ -1,3 +1,4 @@
+import type { HomecomingSide } from './homecoming-layout.ts';
 import type { AlbumEntry } from '../../content/album/discovery.ts';
 import type { CarpetConfig } from '../objects/Carpet.ts';
 import type { CarpetRules } from '../interactions/carpet-hairball.ts';
@@ -115,6 +116,7 @@ export interface RoomDefinition {
     readonly count: Readonly<Record<'easy' | 'normal' | 'hard', number>>;
     readonly entries: readonly (SpawnSlot & { readonly surfaceId: string })[];
   }[];
+  readonly homecomingSide?: HomecomingSide;
   readonly environment?: 'cozy-room' | 'kitchen-preview';
   readonly difficultyObjects?: {
     readonly easyOmit: readonly string[];

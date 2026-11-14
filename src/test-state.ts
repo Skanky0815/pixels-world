@@ -50,6 +50,7 @@ export interface GameTestState {
   readonly homecoming: HomecomingSnapshot;
   readonly pixelReturn: PixelReturnSnapshot;
   readonly sara: {
+    readonly flipX: boolean;
     readonly visible: boolean;
     readonly animationKey: SaraAnimation | EndingAnimation;
     readonly x: number;

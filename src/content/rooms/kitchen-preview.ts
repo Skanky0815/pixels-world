@@ -6,6 +6,7 @@ export const KITCHEN_PREVIEW = {
   id: 'kitchen-preview',
   caption: copy('kitchenPreviewTitle'),
   environment: 'kitchen-preview',
+  homecomingSide: 'left',
   width: 960,
   height: 540,
   pixelAsset: 'pixel',
@@ -53,6 +54,7 @@ export const KITCHEN_PREVIEW = {
     },
   ],
   decorations: [
+    { kind: 'image', asset: 'room-door', bounds: { x: 0, y: 252, width: 112, height: 216 } },
     { kind: 'image', asset: 'room-window', bounds: { x: 430, y: 48, width: 112, height: 184 } },
     { kind: 'rect', bounds: { x: 620, y: 52, width: 340, height: 78 }, color: 0x393b40 },
     { kind: 'rect', bounds: { x: 628, y: 60, width: 154, height: 62 }, color: 0x585b59 },
