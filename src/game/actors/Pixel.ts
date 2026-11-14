@@ -132,13 +132,20 @@ export class Pixel {
       .setDepth(pose.behindSara ? 11 : 13);
   }
 
-  move(input: InputState, time: number, delta: number, area: Bounds | undefined) {
+  // eslint-disable-next-line max-lines-per-function -- Freie Bewegung und optional ausdrücklich angeforderter, belasteter Stoffaufstieg verwenden denselben Körper und Greifvertrag.
+  move(
+    input: InputState,
+    time: number,
+    delta: number,
+    area: Bounds | undefined,
+    climb?: { readonly speed: number; readonly requireUp: boolean },
+  ) {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
 
-    this.updateClimbing(input, time, area, body);
+    this.updateClimbing(input, time, area, body, climb?.requireUp ?? false);
     body.setAllowGravity(!this.climbing);
 
-    if (this.climbing) this.moveOnCurtain(input, time, body);
+    if (this.climbing) this.moveOnCurtain(input, time, body, climb?.speed);
     else this.moveFreely(input, delta, body);
 
     if (input.horizontal !== 0) this.sprite.setFlipX(input.horizontal < 0);
@@ -150,12 +157,13 @@ export class Pixel {
     time: number,
     area: Bounds | undefined,
     body: Phaser.Physics.Arcade.Body,
+    requireUp: boolean,
   ) {
     this.overlapsCurtain = touchesCurtain(body, area);
 
     if (!this.overlapsCurtain) this.mustLeaveCurtain = false;
 
-    if (!this.climbing && this.canGrab(input, time, body)) this.climbing = true;
+    if (!this.climbing && this.canGrab(input, time, body, requireUp)) this.climbing = true;
 
     this.detachFromCurtain(input, time, body);
   }
@@ -167,20 +175,27 @@ export class Pixel {
     }
   }
 
-  private canGrab(input: InputState, time: number, body: Phaser.Physics.Arcade.Body) {
+  private canGrab(
+    input: InputState,
+    time: number,
+    body: Phaser.Physics.Arcade.Body,
+    requireUp: boolean,
+  ) {
     const available = !this.mustLeaveCurtain && time >= this.grabBlockedUntil && !input.jumpPressed;
-    const approaching =
-      input.vertical < 0 ||
-      (input.vertical > 0 && !body.blocked.down) ||
-      jumpingIntoCurtain(input, body);
 
-    return available && this.overlapsCurtain && approaching;
+    return available && this.overlapsCurtain && climbingIntent(input, body, requireUp);
   }
 
-  private moveOnCurtain(input: InputState, time: number, body: Phaser.Physics.Arcade.Body) {
+  // eslint-disable-next-line max-lines-per-function -- Gemeinsame Auf-, Ab- und Absprungbewegung behält die Vorhangwerte als Standard und nutzt beim Stoff nur dessen belastete Aufstiegsgeschwindigkeit.
+  private moveOnCurtain(
+    input: InputState,
+    time: number,
+    body: Phaser.Physics.Arcade.Body,
+    climbSpeed: number = CURTAIN_SLIDE.climbSpeed,
+  ) {
     const speedY =
       input.vertical < 0
-        ? -CURTAIN_SLIDE.climbSpeed
+        ? -climbSpeed
         : input.vertical > 0
           ? CURTAIN_SLIDE.descendSpeed
           : CURTAIN_SLIDE.slideSpeed;
@@ -358,4 +373,14 @@ function touchesCurtain(body: Phaser.Physics.Arcade.Body, area: Bounds | undefin
 
 function jumpingIntoCurtain(input: InputState, body: Phaser.Physics.Arcade.Body) {
   return !body.blocked.down && input.horizontal !== 0 && Math.abs(body.velocity.y) > 1;
+}
+
+function climbingIntent(input: InputState, body: Phaser.Physics.Arcade.Body, requireUp: boolean) {
+  if (requireUp) return input.vertical < 0;
+
+  return (
+    input.vertical < 0 ||
+    (input.vertical > 0 && !body.blocked.down) ||
+    jumpingIntoCurtain(input, body)
+  );
 }

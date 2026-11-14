@@ -485,13 +485,13 @@ class RoomResolver {
 
     supportFits(x, d.geometry.width, support, `${path}.placement`);
     bounds(
-      { x, y: support.y - 6, width: d.geometry.width + 12, height: d.geometry.hang + 6 },
+      { x: x - 12, y: support.y - 6, width: d.geometry.width + 24, height: d.geometry.hang + 6 },
       this.room,
       `${path}.geometry`,
     );
 
     bounds(
-      { x: x + d.geometry.width - 56, y: this.room.floor.y - 36, width: 112, height: 36 },
+      { x: x - 56, y: this.room.floor.y - 36, width: d.geometry.width + 112, height: 36 },
       this.room,
       `${path}.endGeometry`,
     );

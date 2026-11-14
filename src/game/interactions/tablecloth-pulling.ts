@@ -4,11 +4,20 @@ export interface TableclothRules {
   readonly pullMs: number;
   readonly travel: number;
   readonly points: number;
+  readonly climbSpeed: number;
 }
-export const TABLECLOTH_RULES = { warningMs: 600, pullMs: 2400, travel: 240, points: 12 } as const;
+export const TABLECLOTH_RULES = {
+  warningMs: 600,
+  pullMs: 2400,
+  travel: 240,
+  points: 12,
+  climbSpeed: 16,
+} as const;
 export function validateTableclothRules(rules: TableclothRules) {
   if (
-    ![rules.warningMs, rules.pullMs, rules.travel].every((v) => Number.isFinite(v) && v > 0) ||
+    ![rules.warningMs, rules.pullMs, rules.travel, rules.climbSpeed].every(
+      (v) => Number.isFinite(v) && v > 0,
+    ) ||
     !Number.isSafeInteger(rules.points) ||
     rules.points < 0
   )
@@ -29,7 +38,8 @@ export class TableclothPull {
     this.rules = { ...rules };
   }
 
-  update(delta: number, contact: boolean) {
+  // eslint-disable-next-line max-lines-per-function -- Warnung, echte Richtungsumkehr und genau ein vollständiger Endzustand teilen denselben begrenzten Zeitschritt.
+  update(delta: number, contact: boolean, direction = 1) {
     if (this.phase === 'displaced') return;
     const step = Number.isFinite(delta) ? Math.max(0, delta) : 0;
 
@@ -37,9 +47,12 @@ export class TableclothPull {
 
     if (this.phase !== 'pulling') return this.warn(step);
 
-    this.pulled = Math.min(this.rules.pullMs, this.pulled + step);
+    this.pulled = Math.max(
+      -this.rules.pullMs,
+      Math.min(this.rules.pullMs, this.pulled + (direction < 0 ? -step : step)),
+    );
 
-    if (this.pulled === this.rules.pullMs) return this.displace();
+    if (Math.abs(this.pulled) === this.rules.pullMs) return this.displace();
   }
 
   private cancel() {
@@ -62,10 +75,10 @@ export class TableclothPull {
     if (this.phase !== 'displaced') this.phase = 'pulling';
   }
 
-  displace() {
+  displace(direction = Math.sign(this.pulled) || 1) {
     if (this.phase === 'displaced') return;
     this.phase = 'displaced';
-    this.pulled = this.rules.pullMs;
+    this.pulled = this.rules.pullMs * (direction < 0 ? -1 : 1);
 
     return chaosEvent(this.id, 'spill', 1, this.rules.points);
   }
@@ -73,7 +86,7 @@ export class TableclothPull {
   snapshot() {
     return {
       state: this.phase,
-      progress: this.pulled / this.rules.pullMs,
+      progress: Math.abs(this.pulled) / this.rules.pullMs,
       warning: Math.min(1, this.warning / this.rules.warningMs),
       offset: (this.rules.travel * this.pulled) / this.rules.pullMs,
     };

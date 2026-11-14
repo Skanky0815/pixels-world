@@ -483,7 +483,7 @@ export const de = {
   moveAndSteerInMidAir: 'Laufen und im Sprung steuern',
   spaceLabel: 'Leertaste',
   jumpAndLeapOffTheCurtain: 'Springen und vom Vorhang abspringen',
-  climbTheCurtain: 'Am Vorhang klettern',
+  climbTheCurtain: 'Am Stoff klettern',
   restartTheRound: 'Runde neu starten',
   makingAmendsPressTheBigArrow:
     'Bei der Versöhnung: die große Pfeiltaste rechtzeitig drücken. Texte liest du in Ruhe und bestätigst mit Leertaste. Bei Fokusverlust pausiert das Spiel.',
@@ -515,7 +515,7 @@ export const de = {
   pixelSWorldLivingRoomPrototype: 'Pixel’s World · Wohnzimmer',
   move: 'Laufen',
   jumpLabel: 'Springen',
-  climbCurtain: 'Vorhang klettern',
+  climbCurtain: 'Stoff klettern',
   restart: 'Neustart',
   pixelSLivingRoomUseArrow:
     'Pixels Zimmer. Pfeiltasten zum Laufen und Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',

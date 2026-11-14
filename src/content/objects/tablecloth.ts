@@ -5,7 +5,7 @@ export const TABLECLOTHS = {
     kind: 'tablecloth',
     asset: 'tablecloth',
     capabilities: ['automatic', 'damage'],
-    geometry: { width: 220, hang: 100 },
+    geometry: { width: 220, hang: 60 },
     rules: TABLECLOTH_RULES,
     spawn: { size: 'large', category: 'furniture', random: false, reason: 'room-fixture' },
     album: {

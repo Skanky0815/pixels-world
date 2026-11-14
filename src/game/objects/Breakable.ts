@@ -96,7 +96,11 @@ export class Breakable implements Destructible, ObjectLifecycle {
   }
 
   allowsPixelCollision(pixel: InteractionContext['pixel']) {
-    if (this.pixelPassing && !overlaps(pixel, this.impactBody().bounds)) this.pixelPassing = false;
+    const touching = overlaps(pixel, this.impactBody().bounds);
+
+    if (pixel.climbing && touching) this.pixelPassing = true;
+
+    if (this.pixelPassing && !touching) this.pixelPassing = false;
 
     return !this.pixelPassing;
   }
@@ -110,7 +114,7 @@ export class Breakable implements Destructible, ObjectLifecycle {
       !onShelf(body, surface) ||
       body.right <= cloth.x ||
       body.left >= cloth.x + cloth.width ||
-      dx <= 0
+      dx === 0
     )
       return false;
     this.phase = 'moving';

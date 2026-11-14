@@ -477,7 +477,7 @@ export const en: Record<keyof typeof de, string> = {
   moveAndSteerInMidAir: 'Move and steer in mid-air',
   spaceLabel: 'Space',
   jumpAndLeapOffTheCurtain: 'Jump and leap off the curtain',
-  climbTheCurtain: 'Climb the curtain',
+  climbTheCurtain: 'Climb fabric',
   restartTheRound: 'Restart the round',
   makingAmendsPressTheBigArrow:
     'Making amends: press the big arrow in time. Read at your own pace, then press Space to continue. The game pauses when it loses focus.',
@@ -509,7 +509,7 @@ export const en: Record<keyof typeof de, string> = {
   pixelSWorldLivingRoomPrototype: "Pixel's World · Living room",
   move: 'Move',
   jumpLabel: 'Jump',
-  climbCurtain: 'Climb curtain',
+  climbCurtain: 'Climb fabric',
   restart: 'Restart',
   pixelSLivingRoomUseArrow:
     "Pixel's room. Use arrow keys to move and climb, Space to jump. Click the room to focus.",

@@ -72,7 +72,7 @@ test('Fremdzug und Auflagenverlust brauchen keine Pixelwarnung und erzeugen kein
 });
 
 test('Zugregeln sind geprüft und kopiert; ungültige Framezeit bewegt keinen Stoff', () => {
-  for (const key of ['warningMs', 'pullMs', 'travel', 'points'] as const)
+  for (const key of ['warningMs', 'pullMs', 'travel', 'points', 'climbSpeed'] as const)
     for (const value of [-1, NaN, Infinity])
       assert.throws(
         () => new TableclothPull('cloth', { ...TABLECLOTH_RULES, [key]: value }),
@@ -119,7 +119,7 @@ test('Die Decke verlangt eine passende erhöhte Auflage; bloßes Berühren erzeu
 
   if (resolved.kind !== 'tablecloth') throw new Error('Decke fehlt');
   assert.deepEqual(resolved.config.surface, { x: 340, y: 328, width: 220, height: 14 });
-  assert.equal(resolved.config.hang, 100);
+  assert.equal(resolved.config.hang, 60);
   const room = (surfaceId: string, x = 450) => ({
     ...KITCHEN,
     objects: [
@@ -195,3 +195,22 @@ function assertClusters(image: PNG) {
         );
     }
 }
+
+test('Linker Zug und Richtungswechsel verschieben echten Stoff; Abziehen zählt in beiden Richtungen einmal', () => {
+  const model = new TableclothPull('cloth', TABLECLOTH_RULES);
+
+  model.update(600, true, -1);
+  model.update(800, true, -1);
+  assert.equal(model.snapshot().offset, -80);
+  assert.equal(model.snapshot().progress, 1 / 3);
+  model.update(600, false);
+  assert.equal(model.snapshot().offset, -80);
+  model.update(600, true, 1);
+  model.update(1200, true, 1);
+  assert.equal(model.snapshot().offset, 40);
+  model.update(2000, true, -1);
+  assert.equal(model.snapshot().offset, -160);
+  assert.deepEqual(model.update(800, true, -1), chaosEvent('cloth', 'spill', 1, 12));
+  assert.equal(model.snapshot().offset, -240);
+  assert.equal(model.update(1000, true, 1), undefined);
+});

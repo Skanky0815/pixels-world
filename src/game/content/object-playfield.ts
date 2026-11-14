@@ -141,7 +141,15 @@ export function advanceObjectInteractions(
 
   const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));
 
-  pixel.move(input, time, delta, surface?.climbArea);
+  const grip = surface ? undefined : findClothGrip(objects, pixel.snapshot());
+
+  pixel.move(
+    input,
+    time,
+    delta,
+    surface?.climbArea ?? grip?.area,
+    grip ? { speed: grip.cloth.climbSpeed, requireUp: true } : undefined,
+  );
   const context: InteractionContext = Object.freeze({
     time,
     delta,
@@ -155,7 +163,7 @@ export function advanceObjectInteractions(
   objects.books.forEach((books) => damage(books.update(context, true).event));
   objects.topplingContainers.forEach((bag) => damage(bag.update(context, true).event));
 
-  const clothAction = advanceCloths(objects, context, damage);
+  advanceCloths(objects, context, damage, grip);
   const interaction = updateGroundInteractions(objects.ground, context);
 
   damage(interaction.event);
@@ -164,12 +172,8 @@ export function advanceObjectInteractions(
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
 
-  if (clothAction) pixel.faceToward(clothAction.x);
-  pixel.present(
-    time,
-    clothAction ? 'wobbling' : interaction.action,
-    surface?.snapshot().state === 'sliding',
-  );
+  if (grip && context.pixel.climbing) pixel.faceToward(grip.area.x + grip.area.width / 2);
+  pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
 }
 
 function updateShelves(shelves: readonly Shelf[], pixel: Pixel, time: number, damage: Damage) {
@@ -195,12 +199,19 @@ function releaseShelves(
   }
 }
 
-// eslint-disable-next-line max-lines-per-function -- Geordnete Stoffzüge übertragen Bewegung und kausale Herkunft gemeinsam auf unterstützte Oberflächenobjekte.
-function advanceCloths(objects: Objects, context: InteractionContext, damage: Damage) {
-  const active = objects.tablecloths.find((cloth) => cloth.eligible(context));
-
+// eslint-disable-next-line max-lines-per-function, complexity -- Geordnete Stoffzüge übertragen Bewegung und kausale Herkunft gemeinsam auf unterstützte Oberflächenobjekte.
+function advanceCloths(
+  objects: Objects,
+  context: InteractionContext,
+  damage: Damage,
+  grip?: ClothGrip,
+) {
   for (const cloth of objects.tablecloths) {
-    const { event, drag } = cloth.update(context, cloth === active);
+    const { event, drag } = cloth.update(
+      context,
+      cloth === grip?.cloth && context.pixel.climbing,
+      grip?.side,
+    );
 
     damage(event);
 
@@ -210,8 +221,19 @@ function advanceCloths(objects: Objects, context: InteractionContext, damage: Da
       if ('dragOnSurface' in object && object.dragOnSurface(drag.surface, drag.area, drag.dx))
         objects.impacts.inheritSupport(cloth, object);
   }
+}
 
-  return active && active.snapshot().state !== 'displaced'
-    ? { x: active.impactBody().bounds.x + active.impactBody().bounds.width }
-    : null;
+type ClothGrip = {
+  readonly cloth: Objects['tablecloths'][number];
+  readonly side: -1 | 1;
+  readonly area: Bounds;
+};
+
+function findClothGrip(
+  objects: Objects,
+  pixel: InteractionContext['pixel'],
+): ClothGrip | undefined {
+  for (const cloth of objects.tablecloths)
+    for (const grip of cloth.climbAreas())
+      if (overlaps(pixel, grip.area)) return { cloth, ...grip };
 }

@@ -27,6 +27,7 @@ function lab(id: string): RoomDefinition {
 
 export const TABLECLOTH_ROOMS = {
   'cloth-chain': lab('cloth-chain'),
+  'cloth-left': { ...lab('cloth-left'), spawn: { x: 260, surfaceId: 'kitchen-stool' } },
   'cloth-warning': { ...lab('cloth-warning'), spawn: { x: 530, surfaceId: 'floor' } },
   'cloth-incoming': {
     ...lab('cloth-incoming'),
