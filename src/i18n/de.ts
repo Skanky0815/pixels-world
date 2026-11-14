@@ -1,4 +1,15 @@
 export const de = {
+  albumAchievements: 'Erfolge',
+  achievementOverall: '{found} von {total} freigeschaltet',
+  achievementUnlocked: 'Freigeschaltet',
+  achievementLocked: 'Noch gesperrt',
+  achievementNew: 'Neuer Erfolg freigeschaltet',
+  achievementReconciliations: '{count} / {total} Versöhnungen',
+  achievementObjects: '{count} / {total} Objektarten',
+  achievementRounds: '{count} erfolgreiche Versöhnungen',
+  achievementObjectTargets: 'Fester Objektkatalog',
+  achievementDone: 'Geschafft',
+  achievementMissing: 'Fehlt noch',
   albumEntryUnlocked: 'Neuer Album-Eintrag freigeschaltet',
   mainMenu: 'Hauptmenü',
   menuReady: 'Bereit für Chaos, Pixel?',
@@ -50,12 +61,12 @@ export const de = {
   helpSupport: 'Problem melden ↗',
   helpAlbumQuestion: 'Wo bleibt mein Album?',
   helpAlbumText:
-    'Neue Funde werden erst nach einer erfolgreichen Versöhnung freigeschaltet. Ohne „Album für später merken“ in den Optionen bleiben sie nur für diesen Besuch. Mit dieser Auswahl speichert das Spiel dein Album lokal in diesem Browser; vorhandene gespeicherte Funde werden dabei übernommen. Abschalten allein löscht sie nicht.',
+    'Neue Funde werden erst nach einer erfolgreichen Versöhnung freigeschaltet. Ohne „Album für später merken“ in den Optionen bleiben sie nur für diesen Besuch. Mit dieser Auswahl speichert das Spiel dein Album einschließlich Erfolgsfortschritt lokal in diesem Browser; vorhandene gespeicherte Funde werden dabei übernommen. Abschalten allein löscht sie nicht.',
   helpAlbumSettings:
     'Sprache, Lautstärke und die Option für weniger Bewegung werden bei Änderungen ebenfalls lokal gemerkt, soweit dein Browser das erlaubt. Es gibt kein Konto, keine Cloud-Synchronisierung und keinen gespeicherten Zwischenstand einer laufenden Runde. Andere Geräte oder Browser haben ihr eigenes Album. Im privaten Modus oder bei blockiertem Speicher können Daten nach dem Schließen fehlen.',
   helpDeleteQuestion: 'Was passiert beim Löschen von Website-Daten?',
   helpDeleteText:
-    'Dabei können dein gespeichertes Album, Einstellungen und Offline-Dateien verloren gehen. Ohne Sicherung oder Cloud-Konto können wir diese Funde nicht wiederherstellen. Lösche Website-Daten deshalb nicht als normalen Update-Schritt. „Album zurücksetzen“ in den Optionen löscht gezielt deine Album-Funde; auch das ist kein Update-Werkzeug.',
+    'Dabei können dein gespeichertes Album, Einstellungen und Offline-Dateien verloren gehen. Ohne Sicherung oder Cloud-Konto können wir diese Funde nicht wiederherstellen. Lösche Website-Daten deshalb nicht als normalen Update-Schritt. „Album zurücksetzen“ in den Optionen löscht gezielt deine Album-Funde und Erfolge; auch das ist kein Update-Werkzeug.',
   helpOfflineQuestion: 'Kann ich offline spielen?',
   helpOfflineFirst:
     'Öffne das Spiel zuerst mit Internetverbindung. Wähle in den Optionen „Offline-Spiel vorbereiten“ und warte, bis die Vorbereitung abgeschlossen ist. Danach kannst du das Spiel in demselben Browser bzw. derselben App auch ohne Verbindung wieder öffnen.',
@@ -89,7 +100,7 @@ export const de = {
   storageTitle: 'Auf diesem Gerät',
   storageAlbum: 'Album für später merken',
   storageAlbumHelp:
-    'Ohne Auswahl bleiben neue Funde nur bis zum Neuladen. Vorhandene gespeicherte Funde werden beim Aktivieren übernommen; Ausschalten löscht sie nicht.',
+    'Ohne Auswahl bleiben neue Funde und Erfolge nur bis zum Neuladen. Vorhandener gespeicherter Fortschritt wird beim Aktivieren übernommen; Ausschalten löscht ihn nicht.',
   storageOfflineEnable: 'Offline-Spiel vorbereiten',
   storageOfflineRemove: 'Offline-Dateien entfernen',
   storageOfflineHelp:
@@ -174,12 +185,13 @@ export const de = {
   albumEmptyRoom: 'Dieser Raum hat noch keine Album-Einträge.',
   albumReset: 'Album zurücksetzen',
   albumResetQuestion:
-    'Alle bestätigten Entdeckungen im Album löschen? Die laufende Runde bleibt erhalten.',
-  albumResetConfirm: 'Entdeckungen löschen',
+    'Alle bestätigten Entdeckungen und Erfolge löschen? Die laufende Runde bleibt erhalten.',
+  albumResetConfirm: 'Album und Erfolge löschen',
   albumCancel: 'Abbrechen',
   albumStorageUnavailable:
     'Speichern ist nicht verfügbar. Dein Album bleibt für diese Sitzung erhalten.',
-  albumStorageRecovered: 'Gespeicherte Album-Daten waren ungültig. Das Album wurde leer geöffnet.',
+  albumStorageRecovered:
+    'Ein Teil der gespeicherten Album-Daten war ungültig und wurde zurückgesetzt.',
   albumStorageNewer:
     'Dieses Album wurde mit einer neueren Version gespeichert. Die gespeicherten Daten werden nicht überschrieben.',
 

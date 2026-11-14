@@ -110,8 +110,9 @@ test('Rundenabschluss übernimmt alle Funde mit genau einem Schreibvorgang und e
   assert.equal(Object.isFrozen(round.savedDiscoveries()), true);
   assert.equal(notifications, 1);
   assert.deepEqual(JSON.parse(storage.getItem()!), {
-    version: 1,
+    version: 2,
     discovered: ['vase.blue', 'couch.cozy'],
+    achievements: { reconciliations: 1, ruined: [], unlocked: ['achievement.angel-1'] },
   });
   assert.deepEqual(round.snapshot().pending, []);
   assert.equal(round.snapshot().completed, true);
@@ -167,9 +168,9 @@ test('Bereits bestätigte Varianten zählen nicht erneut, auch bei konkurrierend
   collection.unlock('vase.blue');
   assert.deepEqual(round.confirm(finish(game(), true)), []);
   assert.deepEqual(round.savedDiscoveries(), []);
-  assert.equal(storage.writes(), 1);
+  assert.equal(storage.writes(), 2);
   assert.deepEqual(new RoundAlbum(collection).confirm(finish(game(), true)), []);
-  assert.equal(storage.writes(), 1);
+  assert.equal(storage.writes(), 3);
 });
 
 test('Migration, geschützter neuerer Speicher und blockierter Storage bleiben erhalten', () => {

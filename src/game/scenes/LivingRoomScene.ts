@@ -571,6 +571,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private processDamage(event: ChaosEvent | undefined) {
     if (!this.canPlay() || !event || !this.chaos.awardEvent(event)) return;
     this.reactionDamage.record(event, this.damagedObjectKind(event.objectId));
+    this.roundAlbum.recordDamage(event, this.damagedObjectKind(event.objectId));
     this.audio.playDamage(event);
     this.events.emit('object-damaged', event);
     this.discoverAlbum(event);
@@ -964,7 +965,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.presentEnding();
     this.resultView.render(result, this.roundAlbum.confirm(result).length);
 
-    if (result) this.albumBanners.show(this.roundAlbum.savedDiscoveries(), elapsed);
+    if (result) this.albumBanners.show(this.roundAlbum.savedBanners(), elapsed);
     this.controls.showRestart(result !== null);
     this.roomSelection.showReturn(result !== null);
   }

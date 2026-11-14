@@ -28,8 +28,15 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
   await page.locator('[data-pause-album]').click();
   await expect(page.locator('.album-overall')).toContainText('1 von');
   await page.locator('.album-dialog [data-action="close"]').click();
+  const migrated = await page.evaluate(() => localStorage.getItem('pixels-world.album'));
+
+  expect(JSON.parse(migrated!)).toEqual({
+    version: 2,
+    discovered: ['vase.blue'],
+    achievements: { reconciliations: 0, ruined: [], unlocked: [] },
+  });
   await page.locator('[data-remember-album]').uncheck();
-  expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBe(old);
+  expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBe(migrated);
   await page.reload();
   await expect(page.locator('#loading-screen')).toHaveCount(0);
   await page.setViewportSize({ width: 568, height: 320 });

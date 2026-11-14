@@ -68,7 +68,11 @@ test('Version 0 wird migriert; unbekannte IDs und Duplikate erzeugen keinen Fort
   );
 
   assert.deepEqual(new AlbumCollection(ids, storage).snapshot().discovered, ['vase.blue']);
-  assert.deepEqual(JSON.parse(storage.getItem()!), { version: 1, discovered: ['vase.blue'] });
+  assert.deepEqual(JSON.parse(storage.getItem()!), {
+    version: 2,
+    discovered: ['vase.blue'],
+    achievements: { reconciliations: 0, ruined: [], unlocked: [] },
+  });
 });
 test('Korruptes Album startet leer und kann durch neue Schandtaten wieder gespeichert werden', () => {
   for (const raw of [
@@ -96,7 +100,11 @@ test('Neuere Speicherversionen werden erst nach ausdrücklich bestätigtem Reset
   album.unlock('vase.blue');
   assert.equal(storage.getItem(), original);
   album.reset();
-  assert.deepEqual(JSON.parse(storage.getItem()!), { version: 1, discovered: [] });
+  assert.deepEqual(JSON.parse(storage.getItem()!), {
+    version: 2,
+    discovered: [],
+    achievements: { reconciliations: 0, ruined: [], unlocked: [] },
+  });
 });
 test('Blockierter Lese-/Schreibzugriff verliert keine sitzungsweite Entdeckung', () => {
   const blocked = {

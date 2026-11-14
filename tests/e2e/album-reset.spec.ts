@@ -26,7 +26,15 @@ test(
       if (!localStorage.getItem('pixels-world.album'))
         localStorage.setItem(
           'pixels-world.album',
-          JSON.stringify({ version: 1, discovered: ['vase.blue'] }),
+          JSON.stringify({
+            version: 2,
+            discovered: ['vase.blue'],
+            achievements: {
+              reconciliations: 9,
+              ruined: ['vase'],
+              unlocked: ['achievement.angel-1'],
+            },
+          }),
         );
     });
     await start(page);
@@ -48,7 +56,7 @@ test(
     await options.locator('[data-album-reset="ask"]').click();
     await options.getByRole('button', { name: 'English', exact: true }).click();
     await expect(options.locator('#album-reset-question')).toContainText(
-      'Clear all confirmed album discoveries?',
+      'Clear all confirmed album discoveries and achievements?',
     );
     await options.getByRole('button', { name: 'Cancel', exact: true }).click();
     expect(
@@ -56,8 +64,16 @@ test(
     ).toEqual(['vase.blue']);
     const beforeDelete = await state(page);
 
+    expect(
+      await page.evaluate(
+        () => JSON.parse(localStorage.getItem('pixels-world.album')!).achievements.reconciliations,
+      ),
+    ).toBe(9);
+
     await options.getByRole('button', { name: 'Reset album', exact: true }).click();
-    await options.getByRole('button', { name: 'Clear discoveries', exact: true }).click();
+    await options
+      .getByRole('button', { name: 'Clear album and achievements', exact: true })
+      .click();
     await page.clock.runFor(1000);
     const afterDelete = await state(page);
 
@@ -69,6 +85,11 @@ test(
     expect(
       await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
     ).toEqual([]);
+    expect(
+      await page.evaluate(
+        () => JSON.parse(localStorage.getItem('pixels-world.album')!).achievements,
+      ),
+    ).toEqual({ reconciliations: 0, ruined: [], unlocked: [] });
     await options.locator('[data-pause-resume]').click();
     await page.locator('.album-toggle').click();
     await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');

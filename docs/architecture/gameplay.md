@@ -336,13 +336,17 @@ Balancings.
 
 ## Album und lokale Sammlung
 
-`AlbumCollection` speichert ausschließlich stabile, bekannte Album-IDs unter
-`pixels-world.album`, nicht Instanzen, Punkte oder laufende Runden. Version 1 enthält
-`discovered`; Version 0 mit `unlocked` wird migriert. Fremde IDs und Duplikate zählen
-nicht. Korrupte Daten führen zu einem leeren Album mit Hinweis, blockierter Speicher
-zu sitzungsweitem Fortschritt. Neuere Speicherversionen werden bis zu einem bewusst
-bestätigten Album-Reset nicht überschrieben. Ein Runden-Reset löscht bestätigte
-Einträge nicht.
+`AlbumCollection` speichert stabile Album-IDs und langfristigen Erfolgsfortschritt
+gemeinsam unter `pixels-world.album`, nicht Instanzen oder laufende Runden. Version 2
+enthält `discovered` und `achievements` mit Versöhnungszähler, bestätigten Objektarten
+und freigeschalteten Erfolgs-IDs. Version 0 (`unlocked`) und Version 1 (`discovered`)
+bleiben lesbar; alte Albumseiten bleiben erhalten, historische Versöhnungen werden
+nicht aus Funden geschätzt. Fremde IDs und Duplikate zählen nicht. Fehlerhafte
+Erfolgsdaten setzen nur den Erfolgsteil zurück und erhalten gültige Albumseiten.
+Blockierter Speicher lässt den Fortschritt für die Sitzung benutzbar. Neuere
+Speicherversionen werden bis zum bestätigten Album-Reset nicht überschrieben.
+Ein Runden-Reset löscht bestätigten Fortschritt nicht; der Album-Reset löscht
+Entdeckungen und Erfolge zusammen.
 
 Nach erfolgreichem `ChaosScore.awardEvent` sammelt `RoundAlbum` neue Entdeckungen
 nur im Speicher der laufenden Szene, dedupliziert nach stabiler Album-ID. Diese
@@ -353,8 +357,9 @@ Heimkehr, erfolgreiche Versöhnung und Auswertung sind erreicht. Bei gescheitert
 Versöhnung werden alle Vormerkungen verworfen, auch mit bereits verdienten
 Teilherzen; bestätigte Einträge bleiben erhalten. Der friedliche Abschluss
 bleibt ohne Minispiel positiv, erzeugt aber keine Funde.
-Bei Erfolg übergibt `RoundAlbum.confirm` einmalig alle IDs an `AlbumCollection.unlockAll`;
-ein vollständiger Speichervorgang und eine Benachrichtigung übernehmen den Batch.
+Bei Erfolg bestätigt `RoundAlbum.confirm` Albumfunde und Erfolge einmalig über
+`AlbumCollection.completeRound`; ein gemeinsamer Speichervorgang und eine
+Benachrichtigung übernehmen den vollständigen Batch.
 Bereits bekannte IDs zählen nicht erneut. Wiederholtes Rendern und Sprachwechsel
 schreiben nicht erneut. Die Auswertung zeigt die Anzahl tatsächlich neuer Einträge
 oder bei Scheitern ausdrücklich, warum keine neuen Einträge gespeichert wurden.
@@ -362,15 +367,35 @@ Künftige Freischaltungen lesen ausschließlich die bestätigte Sammlung; Skins
 werden hier nicht implementiert. Der nur lesbare E2E-Vertrag zeigt getrennte,
 eingefrorene `pending`-/`confirmed`-Listen unter `album`.
 
-`RoundAlbum.savedDiscoveries()` hält nur die beim Abschluss erfolgreich dauerhaft
-gespeicherten neuen IDs fest. Sitzungsfunde, Schreibfehler und geschützte neuere
+`RoundAlbum.savedBanners()` hält nur die beim Abschluss erfolgreich dauerhaft
+gespeicherten neuen IDs fest: zuerst Albumfunde in Fundreihenfolge, danach neue
+Erfolge in Katalogreihenfolge. Sitzungsfunde, Schreibfehler und geschützte neuere
 Speicherversionen erzeugen keine Banner; späteres Aktivieren des Speicherns
 kündigt diese Runde nicht nachträglich an. `AlbumBanners` zeigt diese Liste einmalig
 in Fundreihenfolge über dem unteren Spielfeld, drei Sekunden je Eintrag. Die
 szenengebundene Warteschlange nutzt dieselbe aktive Spielzeit wie der Abschluss
 (Pause, Album und unsichtbarer Tab halten sie an), verändert weder Spielfeldgröße
 noch Fokus und wird beim Szenenwechsel entfernt. Bild und DE-/EN-Titel kommen aus
-dem Albumkatalog. Reduzierte Bewegung unterdrückt die Einblendbewegung.
+den beiden Katalogen. Reduzierte Bewegung unterdrückt die Einblendbewegung.
+
+Die datengetriebenen Definitionen in `content/achievements.ts` legen vier
+Versöhnungsschwellen (1, 10, 50, 100) und den festen Zerstörungskatalog der ersten
+Erfolgsversion fest. Nur eine vollständig erfolgreiche Versöhnung erhöht den
+Zähler; friedliche Abschlüsse ohne Minispiel tun das nicht. Schaden wird über
+bereits akzeptierte Chaosereignisse vorgemerkt: Vase gebrochen, Sofa Stufe 6,
+Vorhang Stufe 8, Pflanze umgekippt, Bücher oder Bild gefallen, Regal eingestürzt.
+Die sieben Objektarten werden rundenübergreifend aus erfolgreichen Runden gesammelt;
+Varianten und zufällige Spawns erweitern diesen festen Katalog nicht. Bekannte
+Erfolge bleiben freigeschaltet. Neue Weltobjekte brauchen gegebenenfalls eine neue
+Erfolgsdefinition statt einer stillen Änderung des vorhandenen Ziels.
+`AchievementProgress` führt gespeicherte Basis und ungespeicherte erfolgreiche
+Runden getrennt, damit Einschalten der Speicherwahl vorhandenen Fortschritt
+übernimmt und wiederholtes Umschalten keine Runden doppelt zählt.
+
+Der Erfolge-Reiter ist das fünfte Lesezeichen desselben Albumdialogs. Auch gesperrte
+Erfolge sind anwählbar und zeigen Bedingung, Fortschritt und Status. Desktop zeigt
+Liste und Detail nebeneinander; kompakte Geräte wechseln zwischen Übersicht und
+Detail. Im kurzen Querformat führt das aktive Lesezeichen „← Erfolge“ zurück.
 
 Der szenengebundene `AlbumView` zeigt das freigegebene Buchlayout als nativen Dialog.
 Einführung und Pause-Menü öffnen dasselbe Album, pausieren dabei das Spiel und lösen

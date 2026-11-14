@@ -1,3 +1,5 @@
+import { destructionTarget, type DestructionTarget } from '../../content/achievements.ts';
+import type { ChaosEvent } from '../domain/chaos-event.ts';
 import type { AlbumCollection } from './collection.ts';
 import type { RoundResult } from '../domain/round-result.ts';
 
@@ -6,6 +8,8 @@ const EMPTY: readonly string[] = Object.freeze([]);
 /** Scene-owned provisional discoveries never enter storage or the album view. */
 export class RoundAlbum {
   private readonly pending = new Set<string>();
+  private readonly ruined = new Set<DestructionTarget>();
+  private banners: readonly string[] = EMPTY;
   private saved: readonly string[] = EMPTY;
   private confirmed: readonly string[] | null = null;
   private readonly collection: AlbumCollection;
@@ -21,6 +25,12 @@ export class RoundAlbum {
     return true;
   }
 
+  recordDamage(event: ChaosEvent, object?: string) {
+    const target = destructionTarget(event, object);
+
+    if (!this.confirmed && target) this.ruined.add(target);
+  }
+
   /** Resolve once: success commits the batch, failed reconciliation discards it. */
   confirm(result: RoundResult | null) {
     if (!result) return EMPTY;
@@ -28,12 +38,26 @@ export class RoundAlbum {
     if (this.confirmed) return this.confirmed;
     this.confirmed = EMPTY;
 
-    if (result.outcome === 'success') this.confirmed = this.collection.unlockAll(this.pending);
+    if (result.outcome === 'success') this.commit(result);
 
     if (this.collection.snapshot().storage === 'ready') this.saved = this.confirmed;
     this.pending.clear();
+    this.ruined.clear();
 
     return this.confirmed;
+  }
+
+  private commit(result: RoundResult) {
+    const batch = this.collection.completeRound(this.pending, this.ruined, !result.peaceful);
+
+    this.confirmed = batch.entries;
+
+    if (this.collection.snapshot().storage === 'ready')
+      this.banners = Object.freeze([...batch.entries, ...batch.achievements]);
+  }
+
+  savedBanners() {
+    return this.banners;
   }
 
   savedDiscoveries() {

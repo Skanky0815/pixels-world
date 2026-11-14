@@ -1,5 +1,16 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  albumAchievements: 'Achievements',
+  achievementOverall: '{found} of {total} unlocked',
+  achievementUnlocked: 'Unlocked',
+  achievementLocked: 'Locked',
+  achievementNew: 'New achievement unlocked',
+  achievementReconciliations: '{count} / {total} reconciliations',
+  achievementObjects: '{count} / {total} object types',
+  achievementRounds: '{count} successful reconciliations',
+  achievementObjectTargets: 'Fixed object catalogue',
+  achievementDone: 'Done',
+  achievementMissing: 'Not yet',
   albumEntryUnlocked: 'New album entry unlocked',
   mainMenu: 'Main menu',
   menuReady: 'Ready for chaos, Pixel?',
@@ -51,12 +62,12 @@ export const en: Record<keyof typeof de, string> = {
   helpSupport: 'Report a problem ↗',
   helpAlbumQuestion: 'Where is my album saved?',
   helpAlbumText:
-    'New discoveries unlock only after a successful reconciliation. Without “Remember my album” in the options, they last only for this visit. With that choice, the game saves your album locally in this browser and restores previously saved discoveries. Turning it off alone does not delete them.',
+    'New discoveries unlock only after a successful reconciliation. Without “Remember my album” in the options, they last only for this visit. With that choice, the game saves your album and achievement progress locally in this browser and restores previously saved discoveries. Turning it off alone does not delete them.',
   helpAlbumSettings:
     'Language, volume and reduced motion preference are also remembered locally when changed, if your browser allows it. There is no account, cloud sync or saved position within a running round. Other devices or browsers have their own album. Private browsing or blocked storage may prevent data from surviving after you close the browser.',
   helpDeleteQuestion: 'What happens if I delete website data?',
   helpDeleteText:
-    'You may lose your saved album, settings and offline files. Without a backup or cloud account, we cannot restore those discoveries. Do not delete website data as a routine update step. “Reset album” in the options deliberately deletes album discoveries; it is not an update tool either.',
+    'You may lose your saved album, settings and offline files. Without a backup or cloud account, we cannot restore those discoveries. Do not delete website data as a routine update step. “Reset album” in the options deliberately deletes album discoveries and achievements; it is not an update tool either.',
   helpOfflineQuestion: 'Can I play offline?',
   helpOfflineFirst:
     'First open the game while online. Choose “Prepare offline play” in the options and wait for preparation to finish. You can then reopen the game in that same browser or app without a connection.',
@@ -88,7 +99,7 @@ export const en: Record<keyof typeof de, string> = {
   storageTitle: 'On this device',
   storageAlbum: 'Remember my album',
   storageAlbumHelp:
-    'Without this choice, new discoveries last until reload. Enabling restores saved discoveries; disabling does not erase them.',
+    'Without this choice, new discoveries and achievements last until reload. Enabling restores saved progress; disabling does not erase it.',
   storageOfflineEnable: 'Prepare offline play',
   storageOfflineRemove: 'Remove offline files',
   storageOfflineHelp:
@@ -170,11 +181,12 @@ export const en: Record<keyof typeof de, string> = {
   albumSoon: 'later',
   albumEmptyRoom: 'This room has no album entries yet.',
   albumReset: 'Reset album',
-  albumResetQuestion: 'Clear all confirmed album discoveries? The current round will be kept.',
-  albumResetConfirm: 'Clear discoveries',
+  albumResetQuestion:
+    'Clear all confirmed album discoveries and achievements? The current round will be kept.',
+  albumResetConfirm: 'Clear album and achievements',
   albumCancel: 'Cancel',
   albumStorageUnavailable: 'Saving is unavailable. Your album will remain for this session.',
-  albumStorageRecovered: 'Saved album data was invalid. The album was opened empty.',
+  albumStorageRecovered: 'Some saved album data was invalid and has been reset.',
   albumStorageNewer: 'This album was saved by a newer version. Saved data will not be overwritten.',
 
   teamRicoGithub: 'Rico on GitHub',

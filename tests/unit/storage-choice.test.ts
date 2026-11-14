@@ -51,7 +51,7 @@ test('Bestehendes Album wird erst auf Wunsch gelesen; Opt-out erhält gespeicher
   assert.equal(album.snapshot().storage, 'session');
   album.setRemember(true);
   assert.deepEqual(new Set(album.snapshot().discovered), new Set(['vase.blue', 'couch.cozy']));
-  assert.equal(JSON.parse(saved).version, 1);
+  assert.equal(JSON.parse(saved).version, 2);
   const retained = saved;
 
   album.setRemember(false);
