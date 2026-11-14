@@ -122,8 +122,8 @@ test('Ergebniswiederholung, später Schaden und Reload zählen keine zweite Rund
   round.confirm(success);
   round.confirm(success);
   ruin(round, 1);
-  assert.deepEqual(round.savedBanners(), ['vase.blue', 'achievement.angel-1']);
-  assert.ok(Object.isFrozen(round.savedBanners()));
+  assert.deepEqual(round.confirmedBanners(), ['vase.blue', 'achievement.angel-1']);
+  assert.ok(Object.isFrozen(round.confirmedBanners()));
   assert.equal(storage.writes(), 1);
   const reload = new AlbumCollection(ids, storage);
 
@@ -131,10 +131,11 @@ test('Ergebniswiederholung, später Schaden und Reload zählen keine zweite Rund
     reconciliations: 1,
     ruined: ['vase'],
     ruinedVariants: [],
+    completedRooms: [],
     unlocked: ['achievement.angel-1'],
   });
   assert.equal(storage.writes(), 1);
-  assert.deepEqual(new RoundAlbum(reload).savedBanners(), []);
+  assert.deepEqual(new RoundAlbum(reload).confirmedBanners(), []);
 });
 
 test('Zerstörung wird über erfolgreiche Runden gesammelt, duplizierte Kontakte und Fehlschläge zählen nicht', () => {
@@ -150,9 +151,10 @@ test('Zerstörung wird über erfolgreiche Runden gesammelt, duplizierte Kontakte
       reconciliations: 0,
       ruined: [],
       ruinedVariants: [],
+      completedRooms: [],
       unlocked: [],
     });
-    assert.deepEqual(round.savedBanners(), []);
+    assert.deepEqual(round.confirmedBanners(), []);
   }
 
   for (let index = 0; index < 7; index++) {
@@ -162,14 +164,14 @@ test('Zerstörung wird über erfolgreiche Runden gesammelt, duplizierte Kontakte
     ruin(round, index);
     round.confirm(success);
     assert.equal(collection.achievementSnapshot().ruined.length, index + 1);
-    assert.equal(round.savedBanners().includes('achievement.destruction-v1'), index === 6);
+    assert.equal(round.confirmedBanners().includes('achievement.destruction-v1'), index === 6);
   }
 
   const repeated = new RoundAlbum(collection);
 
   ruin(repeated, 0);
   repeated.confirm(success);
-  assert.deepEqual(repeated.savedBanners(), []);
+  assert.deepEqual(repeated.confirmedBanners(), []);
   assert.equal(collection.achievementSnapshot().ruined.length, 7);
 });
 
@@ -198,6 +200,7 @@ test('Katalogfremde Ziele zählen nicht; bekannte Erfolge bleiben bei späteren 
         reconciliations: 100,
         ruined: ['vase', 'future', 'vase'],
         ruinedVariants: [],
+        completedRooms: [],
         unlocked: [ACHIEVEMENTS[0].id, 'achievement.destruction-v1', 'future'],
       },
     }),
@@ -208,6 +211,7 @@ test('Katalogfremde Ziele zählen nicht; bekannte Erfolge bleiben bei späteren 
     reconciliations: 100,
     ruined: ['vase'],
     ruinedVariants: [],
+    completedRooms: [],
     unlocked: [
       ACHIEVEMENTS[0].id,
       'achievement.destruction-v1',
@@ -228,7 +232,7 @@ test('Fehlerhafte Erfolgsdaten verlieren keine gültigen Albumseiten; neuere For
     {},
     { reconciliations: -1 },
     { reconciliations: 1.5 },
-    { reconciliations: 12, ruined: [7], ruinedVariants: [], unlocked: [] },
+    { reconciliations: 12, ruined: [7], ruinedVariants: [], completedRooms: [], unlocked: [] },
   ]) {
     const collection = new AlbumCollection(
       ids,
@@ -246,7 +250,7 @@ test('Fehlerhafte Erfolgsdaten verlieren keine gültigen Albumseiten; neuere For
   const round = new RoundAlbum(collection);
 
   round.confirm(success);
-  assert.deepEqual(round.savedBanners(), []);
+  assert.deepEqual(round.confirmedBanners(), ['achievement.angel-1']);
   assert.equal(storage.getItem(), original);
 });
 
@@ -259,6 +263,7 @@ test('Opt-in übernimmt gespeicherte und ungespeicherte Runden; Umschalten dupli
         reconciliations: 9,
         ruined: ['vase'],
         ruinedVariants: [],
+        completedRooms: [],
         unlocked: ['achievement.angel-1'],
       },
     }),
@@ -267,7 +272,7 @@ test('Opt-in übernimmt gespeicherte und ungespeicherte Runden; Umschalten dupli
   const round = new RoundAlbum(collection);
 
   round.confirm(success);
-  assert.deepEqual(round.savedBanners(), []);
+  assert.deepEqual(round.confirmedBanners(), ['achievement.angel-1']);
   collection.setRemember(true);
   assert.equal(collection.achievementSnapshot().reconciliations, 10);
   assert.ok(collection.achievementSnapshot().unlocked.includes('achievement.angel-10'));
@@ -284,11 +289,12 @@ test('Opt-in übernimmt gespeicherte und ungespeicherte Runden; Umschalten dupli
     reconciliations: 0,
     ruined: [],
     ruinedVariants: [],
+    completedRooms: [],
     unlocked: [],
   });
 });
 
-test('Blockierter Speicher bleibt sitzungsweit benutzbar und kündigt keine dauerhaften Erfolge an', () => {
+test('Blockierter Speicher feiert neue Erfolge ohne eine dauerhafte Speicherung zu behaupten', () => {
   const collection = new AlbumCollection(ids, {
     getItem: () => null,
     setItem: () => {
@@ -300,7 +306,7 @@ test('Blockierter Speicher bleibt sitzungsweit benutzbar und kündigt keine daue
   round.confirm(success);
   assert.equal(collection.achievementSnapshot().reconciliations, 1);
   assert.deepEqual(collection.achievementSnapshot().unlocked, ['achievement.angel-1']);
-  assert.deepEqual(round.savedBanners(), []);
+  assert.deepEqual(round.confirmedBanners(), ['achievement.angel-1']);
 });
 
 test('Kategorie zählt vollständig ruinierte Varianten über Runden, niemals bloße Albumfunde oder doppelte Instanzen', () => {
@@ -325,7 +331,7 @@ test('Kategorie zählt vollständig ruinierte Varianten über Runden, niemals bl
     next.recordDamage(chaosEvent(variant, 'break', 1, 1), 'vase', variant);
   next.confirm(success);
   next.confirm(success);
-  assert.deepEqual(next.savedBanners(), ['achievement.category-vases-v1']);
+  assert.deepEqual(next.confirmedBanners(), ['achievement.category-vases-v1']);
   assert.ok(
     new AlbumCollection(ids, storage)
       .achievementSnapshot()
@@ -399,4 +405,94 @@ test('Vorheriges Format ohne Variantenfeld behält Erfolge und Zähler, ohne unb
     'achievement.angel-10',
   ]);
   assert.equal(collection.snapshot().storage, 'ready');
+});
+
+test('Raumziele zählen getrennt je Schwierigkeit, nur mit Ziel und erfolgreichem Abschluss', () => {
+  const storage = memory();
+  const collection = new AlbumCollection(ids, storage);
+
+  for (const result of [failed, success]) {
+    new RoundAlbum(collection).confirm(result, 'living-room');
+    assert.deepEqual(collection.achievementSnapshot().completedRooms, []);
+  }
+
+  new RoundAlbum(collection).confirm({ ...success, goalReached: true }, 'cozy-remix');
+  assert.deepEqual(collection.achievementSnapshot().completedRooms, []);
+
+  for (const difficulty of ['easy', 'normal', 'hard'] as const) {
+    const round = new RoundAlbum(collection);
+
+    round.confirm({ ...success, goalReached: true, difficulty }, 'living-room');
+    round.confirm({ ...success, goalReached: true, difficulty }, 'living-room');
+    assert.ok(round.confirmedBanners().includes(`achievement.rooms-${difficulty}-v1`));
+    assert.ok(
+      !collection.achievementSnapshot().unlocked.includes('achievement.peaceful-living-room-v1'),
+    );
+  }
+
+  assert.deepEqual(new AlbumCollection(ids, storage).achievementSnapshot().completedRooms, [
+    'easy/living-room',
+    'normal/living-room',
+    'hard/living-room',
+  ]);
+});
+
+test('Sanfte Pfoten verlangt friedliches Schwer ohne Schaden und zählt gleichzeitig als Raumabschluss', () => {
+  const collection = new AlbumCollection(ids, memory(), false);
+
+  for (const result of [
+    peaceful,
+    { ...peaceful, difficulty: 'hard' as const },
+    { ...peaceful, difficulty: 'hard' as const, score: 0, goalReached: false },
+  ])
+    new RoundAlbum(collection).confirm(result, 'living-room');
+  assert.ok(
+    !collection.achievementSnapshot().unlocked.includes('achievement.peaceful-living-room-v1'),
+  );
+  const round = new RoundAlbum(collection);
+
+  round.confirm({ ...peaceful, difficulty: 'hard', score: 0 }, 'living-room');
+  assert.deepEqual(round.confirmedBanners(), ['achievement.peaceful-living-room-v1']);
+  assert.equal(collection.achievementSnapshot().reconciliations, 0);
+  assert.ok(collection.achievementSnapshot().completedRooms?.includes('hard/living-room'));
+  const repeat = new RoundAlbum(collection);
+
+  repeat.confirm({ ...peaceful, difficulty: 'hard', score: 0 }, 'living-room');
+  assert.deepEqual(repeat.confirmedBanners(), []);
+  collection.reset();
+  assert.deepEqual(collection.achievementSnapshot().completedRooms, []);
+});
+
+test('Raumerfolge enthalten alle veröffentlichten Räume, aber keine DEV- oder späteren Räume', async () => {
+  const { ACHIEVEMENT_ROOMS } = await import('../../src/content/achievement-rooms.ts');
+  const { ROOM_CHOICES } = await import('../../src/content/rooms/selection.ts');
+
+  assert.deepEqual(
+    ACHIEVEMENT_ROOMS.map((room) => room.id),
+    ROOM_CHOICES.filter((room) => room.definition).map((room) => room.id),
+  );
+});
+
+test('Meisterwerk zählt alle anderen Erfolge, schaltet im letzten Batch frei und wiederholt sich nicht', async () => {
+  const { DESTRUCTION_VARIANTS } = await import('../../src/content/achievement-categories.ts');
+  const { ROOM_COMPLETIONS } = await import('../../src/content/achievement-rooms.ts');
+  const progress = new AchievementProgress();
+
+  progress.restore({
+    reconciliations: 100,
+    ruined: DESTRUCTION_TARGETS.map((t) => t.id),
+    ruinedVariants: DESTRUCTION_VARIANTS,
+    completedRooms: ROOM_COMPLETIONS.filter((id) => !id.startsWith('hard-peaceful/')),
+    unlocked: [],
+  });
+  assert.ok(!progress.snapshot().unlocked.includes('achievement.masterpiece-v1'));
+  assert.deepEqual(progress.confirm(false, [], [], ['hard-peaceful/living-room']), [
+    'achievement.peaceful-living-room-v1',
+    'achievement.masterpiece-v1',
+  ]);
+  assert.equal(progress.snapshot().unlocked.length, ACHIEVEMENTS.length);
+  const reload = new AchievementProgress();
+
+  reload.restore(progress.snapshot());
+  assert.deepEqual(reload.confirm(true, [], [], ROOM_COMPLETIONS), []);
 });

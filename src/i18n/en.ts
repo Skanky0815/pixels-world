@@ -9,6 +9,10 @@ export const en: Record<keyof typeof de, string> = {
   achievementNew: 'New achievement unlocked',
   achievementReconciliations: '{count} / {total} reconciliations',
   achievementVariants: '{count} / {total} variants',
+  achievementRooms: '{count} / {total} rooms',
+  achievementGoalTargets: 'Achievement objectives',
+  achievementGoals: '{count} / {total} achievements',
+  achievementRoomTargets: 'Completed rooms',
   achievementObjects: '{count} / {total} object types',
   achievementRounds: '{count} successful reconciliations',
   achievementObjectTargets: 'Fixed object catalogue',
@@ -248,6 +252,9 @@ export const en: Record<keyof typeof de, string> = {
   landingRoomAlt: 'Pixel explores Sara’s living room with a sofa, shelves and a curtain.',
   landingRoomCaption: 'A quiet afternoon. For now.',
   landingAlbumEyebrow: 'LITTLE MISDEEDS. LASTING MEMORIES.',
+  landingAchievementsTitle: 'Little cat. Big achievements.',
+  landingAchievementsText:
+    'From “Little angel” and “Gentle paws” to “Pixel’s masterpiece”: Collect achievements in the Album of Misdeeds – through chaos or peaceful play.',
   landingAlbumDescription:
     'Pixel’s mischief gets its own book. Discover new entries as you play, with pictures, cheeky comments and little stories. Anything you haven’t discovered stays a secret.',
   landingAlbumStorage:

@@ -1,4 +1,5 @@
 import { ACHIEVEMENT_CATEGORIES } from './achievement-categories.ts';
+import { ROOM_ACHIEVEMENTS } from './achievement-rooms.ts';
 import type { ChaosEvent } from '../game/domain/chaos-event.ts';
 
 type Localized = { readonly de: string; readonly en: string };
@@ -7,7 +8,7 @@ export interface AchievementDefinition {
   readonly name: Localized;
   readonly description: Localized;
   readonly quote: Localized;
-  readonly metric: 'reconciliations' | 'destruction' | 'variants';
+  readonly metric: 'reconciliations' | 'destruction' | 'variants' | 'rooms' | 'all';
   readonly targets?: readonly string[];
   readonly threshold: number;
   readonly art: 'love' | 'chaos';
@@ -103,7 +104,7 @@ const categories: readonly AchievementDefinition[] = ACHIEVEMENT_CATEGORIES.map(
   art: 'chaos',
 }));
 
-export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+const MILESTONES: readonly AchievementDefinition[] = [
   angel(
     1,
     'I',
@@ -143,5 +144,32 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     metric: 'destruction',
     threshold: DESTRUCTION_TARGETS.length,
     art: 'chaos',
+  },
+  ...ROOM_ACHIEVEMENTS.map((entry): AchievementDefinition => ({
+    ...entry,
+    quote: { de: 'Das war eine Glanzleistung, Pixel.', en: 'That was brilliant, Pixel.' },
+    metric: 'rooms',
+    threshold: entry.targets.length,
+    art: 'love',
+  })),
+];
+
+export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+  ...MILESTONES,
+  {
+    id: 'achievement.masterpiece-v1',
+    name: { de: 'Pixels Meisterwerk', en: 'Pixel’s masterpiece' },
+    description: {
+      de: 'Alle anderen Erfolge dieser Sammlung freischalten.',
+      en: 'Unlock every other achievement in this collection.',
+    },
+    quote: {
+      de: 'Du hast wirklich an alles gedacht, Pixel.',
+      en: 'You really thought of everything, Pixel.',
+    },
+    metric: 'all',
+    targets: MILESTONES.map((entry) => entry.id),
+    threshold: MILESTONES.length,
+    art: 'love',
   },
 ];

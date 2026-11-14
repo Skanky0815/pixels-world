@@ -71,7 +71,13 @@ test('Version 0 wird migriert; unbekannte IDs und Duplikate erzeugen keinen Fort
   assert.deepEqual(JSON.parse(storage.getItem()!), {
     version: 2,
     discovered: ['vase.blue'],
-    achievements: { reconciliations: 0, ruined: [], ruinedVariants: [], unlocked: [] },
+    achievements: {
+      reconciliations: 0,
+      ruined: [],
+      ruinedVariants: [],
+      completedRooms: [],
+      unlocked: [],
+    },
   });
 });
 test('Korruptes Album startet leer und kann durch neue Schandtaten wieder gespeichert werden', () => {
@@ -103,7 +109,13 @@ test('Neuere Speicherversionen werden erst nach ausdrücklich bestätigtem Reset
   assert.deepEqual(JSON.parse(storage.getItem()!), {
     version: 2,
     discovered: [],
-    achievements: { reconciliations: 0, ruined: [], ruinedVariants: [], unlocked: [] },
+    achievements: {
+      reconciliations: 0,
+      ruined: [],
+      ruinedVariants: [],
+      completedRooms: [],
+      unlocked: [],
+    },
   });
 });
 test('Blockierter Lese-/Schreibzugriff verliert keine sitzungsweite Entdeckung', () => {

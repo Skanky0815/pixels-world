@@ -440,6 +440,14 @@ werden an derselben Quelle gepflegt. Einträge entstehen nur nach vom Chaossyste
 keine zusätzliche Punktevergabe. Neue Varianten benötigen einen eindeutigen Eintrag
 und eine PNG-Zuordnung in `album-art.ts`.
 
+Neue Objekte und Varianten pflegen zugleich die versionierten Kategorieziele in
+`achievement-categories.ts`, passende Schadensendzustände und die gemeinsame
+Album-/Erfolgsbannerfolge. Neue veröffentlichte Räume pflegen die Ziele in
+`achievement-rooms.ts` für Leicht/Normal/Schwer und ihren friedlichen Schwer-Erfolg.
+Dabei den Gesamterfolg „Pixels Meisterwerk“ berücksichtigen: Er setzt alle anderen
+Ziele seiner Version voraus. Bereits freigespielte Ziele bleiben erhalten; DEV-Inhalte
+und Platzhalter erweitern keine veröffentlichten Erfolgsziele.
+
 Die beiden Wohnzimmer-Varianten teilen das Kapitel `living-room`. Weitere Räume
 können dieselbe ID verwenden, ohne den Gesamtzähler zu erhöhen. Noch nicht mit
 Einträgen belegte Raum-Tabs zeigen einen Leerzustand und zählen keine Platzhalter.

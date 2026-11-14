@@ -1,4 +1,4 @@
-/** One scene, one result, one presentation per durably saved discovery. */
+/** One scene, one result, one presentation per confirmed unlock. */
 export class AlbumBannerQueue {
   private entries: readonly string[] = [];
   private started = false;

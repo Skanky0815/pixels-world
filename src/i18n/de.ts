@@ -8,6 +8,10 @@ export const de = {
   achievementNew: 'Neuer Erfolg freigeschaltet',
   achievementReconciliations: '{count} / {total} Versöhnungen',
   achievementVariants: '{count} / {total} Varianten',
+  achievementRooms: '{count} / {total} Räume',
+  achievementGoalTargets: 'Erfolgsziele',
+  achievementGoals: '{count} / {total} Erfolge',
+  achievementRoomTargets: 'Geschaffte Räume',
   achievementObjects: '{count} / {total} Objektarten',
   achievementRounds: '{count} erfolgreiche Versöhnungen',
   achievementObjectTargets: 'Fester Objektkatalog',
@@ -253,6 +257,9 @@ export const de = {
   landingRoomAlt: 'Pixel erkundet Saras Wohnzimmer mit Sofa, Regalen und Vorhang.',
   landingRoomCaption: 'Ein gemütlicher Nachmittag. Noch.',
   landingAlbumEyebrow: 'KLEINE SCHANDTATEN. BLEIBENDE ERINNERUNGEN.',
+  landingAchievementsTitle: 'Kleine Katze. Große Erfolge.',
+  landingAchievementsText:
+    'Von „Unschuldsengel“ über „Sanfte Pfoten“ bis „Pixels Meisterwerk“: Sammle Erfolge im Album der Schandtaten – mit Chaos oder ganz friedlich.',
   landingAlbumDescription:
     'Pixels Unfug bekommt ein eigenes Buch. Entdecke beim Spielen neue Einträge mit Bildern, frechen Kommentaren und kleinen Geschichten. Was noch unentdeckt ist, bleibt ein Geheimnis.',
   landingAlbumStorage:

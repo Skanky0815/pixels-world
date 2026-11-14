@@ -370,12 +370,12 @@ Künftige Freischaltungen lesen ausschließlich die bestätigte Sammlung; Skins
 werden hier nicht implementiert. Der nur lesbare E2E-Vertrag zeigt getrennte,
 eingefrorene `pending`-/`confirmed`-Listen unter `album`.
 
-`RoundAlbum.savedBanners()` hält nur die beim Abschluss erfolgreich dauerhaft
-gespeicherten neuen IDs fest: zuerst Albumfunde in Fundreihenfolge, danach neue
-Erfolge in Katalogreihenfolge. Sitzungsfunde, Schreibfehler und geschützte neuere
-Speicherversionen erzeugen keine Banner; späteres Aktivieren des Speicherns
-kündigt diese Runde nicht nachträglich an. `AlbumBanners` zeigt diese Liste einmalig
-in Fundreihenfolge über dem unteren Spielfeld, drei Sekunden je Eintrag. Die
+`RoundAlbum.confirmedBanners()` hält neue bestätigte IDs unabhängig von der
+Speicherwahl fest: zuerst Albumfunde in Fundreihenfolge, danach Erfolge in
+Katalogreihenfolge. Auch Sitzungsfunde und nicht dauerhaft speicherbare Erfolge
+werden gefeiert; die neutrale Freischaltmeldung behauptet keine Speicherung.
+Späteres Aktivieren des Speicherns wiederholt keine Banner. `AlbumBanners` zeigt
+diese Liste einmalig über dem unteren Spielfeld, drei Sekunden je Eintrag. Die
 szenengebundene Warteschlange nutzt dieselbe aktive Spielzeit wie der Abschluss
 (Pause, Album und unsichtbarer Tab halten sie an), verändert weder Spielfeldgröße
 noch Fokus und wird beim Szenenwechsel entfernt. Bild und DE-/EN-Titel kommen aus
@@ -521,3 +521,22 @@ separaten Timer oder nachgeholte Hintergrundzeit. Ein neuer Szenenaufbau ersetzt
 das Modell und alle Darstellungen. Reduzierte Bewegung unterdrückt Ballrollen,
 Schritte, Ausrichtung und Drehungen; der ruhige Blick/Blinzler und dieselbe Dauer
 bleiben. Änderungen der Bewegungspräferenz wirken auch im geöffneten Pause-Menü.
+
+Raum-Erfolge verwenden die festen veröffentlichten Ziele aus
+`content/achievement-rooms.ts`: je ein Erfolg für alle spielbaren Räume auf
+Leicht, Normal und Schwer, zusätzlich je Raum ein friedlicher Abschluss auf Schwer.
+Nur erreichtes Hauptziel plus erfolgreicher Abschluss zählt; Timer ohne Ziel,
+Abbruch und gescheiterte Versöhnung zählen nicht. Friedliche Abschlüsse ohne
+Minispiel zählen hier, erhöhen aber keinen Versöhnungszähler. „Sanfte Pfoten“
+verlangt zusätzlich den friedlichen Null-Schaden-Abschluss auf Schwer. Schwierigkeit
+und Raum-ID stammen aus der gespielten Runde; Schwer erfüllt nicht automatisch Leicht.
+DEV-Räume und zukünftige Platzhalter sind ausgeschlossen. Die optionalen
+`completedRooms`-IDs werden ohne historische Vermutungen migriert, dedupliziert
+und gemeinsam gespeichert bzw. zurückgesetzt. Neue Räume erweitern einen neuen
+versionierten Zielsatz; bereits freigespielte Erfolge bleiben erhalten.
+
+„Pixels Meisterwerk“ verlangt alle anderen IDs derselben Katalogversion, niemals
+sich selbst. Die Freischaltprüfung arbeitet in Katalogreihenfolge und bestätigt
+Einzelerfolge vor dem Gesamterfolg im selben Batch. Dadurch erscheint sein Banner
+direkt nach dem letzten erforderlichen Erfolg; Reload oder wiederholte Ergebnisse
+feiern ihn nicht erneut. Änderungen am Zielkatalog müssen diese Version mitpflegen.

@@ -985,9 +985,9 @@ export class LivingRoomScene extends Phaser.Scene {
       elapsed,
     );
     this.presentEnding();
-    this.resultView.render(result, this.roundAlbum.confirm(result).length);
+    this.resultView.render(result, this.roundAlbum.confirm(result, this.room.definition.id).length);
 
-    if (result) this.albumBanners.show(this.roundAlbum.savedBanners(), elapsed);
+    if (result) this.albumBanners.show(this.roundAlbum.confirmedBanners(), elapsed);
     this.controls.showRestart(result !== null);
     this.roomSelection.showReturn(result !== null);
   }

@@ -1,4 +1,5 @@
 import { SHELF_TARGET_NAMES } from '../../content/achievement-categories.ts';
+import { ACHIEVEMENT_ROOMS } from '../../content/achievement-rooms.ts';
 import { INTERACTABLE_ALBUM } from '../../content/album/index.ts';
 import {
   ACHIEVEMENTS,
@@ -17,8 +18,8 @@ export const ACHIEVEMENT_ART = {
 export const ACHIEVEMENT_PAGE_SIZE = 4;
 
 export function achievementCount(entry: AchievementDefinition, data: AchievementData) {
-  if (entry.metric === 'variants')
-    return entry.targets?.filter((id) => data.ruinedVariants?.includes(id)).length ?? 0;
+  if (entry.targets)
+    return entry.targets.filter((id) => achievementTargets(entry, data).includes(id)).length;
 
   return Math.min(
     entry.threshold,
@@ -47,14 +48,15 @@ export function achievementsMarkup(data: AchievementData, selected: string, page
 }
 
 function progress(entry: AchievementDefinition, data: AchievementData) {
-  const key =
-    entry.metric === 'variants'
-      ? 'achievementVariants'
-      : entry.metric === 'reconciliations'
-        ? 'achievementReconciliations'
-        : 'achievementObjects';
+  const key = {
+    variants: 'achievementVariants',
+    rooms: 'achievementRooms',
+    all: 'achievementGoals',
+    reconciliations: 'achievementReconciliations',
+    destruction: 'achievementObjects',
+  } as const;
 
-  return t(key, { count: achievementCount(entry, data), total: entry.threshold });
+  return t(key[entry.metric], { count: achievementCount(entry, data), total: entry.threshold });
 }
 
 function achievementTile(entry: AchievementDefinition, data: AchievementData, selected?: string) {
@@ -81,19 +83,28 @@ function achievementStory(entry: AchievementDefinition, data: AchievementData) {
 
 function targetName(id: string) {
   return (
+    ACHIEVEMENTS.find((entry) => entry.id === id)?.name ??
+    ACHIEVEMENT_ROOMS.find((room) => room.id === id.split('/')[1])?.name ??
     Object.values(INTERACTABLE_ALBUM).find((entry) => entry.id === id)?.name ??
     SHELF_TARGET_NAMES[id] ?? { de: id, en: id }
   );
 }
 
 function targetList(data: AchievementData, entry: AchievementDefinition) {
-  const targets =
-    entry.metric === 'variants'
-      ? (entry.targets ?? []).map((id) => ({ id, name: targetName(id) }))
-      : DESTRUCTION_TARGETS;
-  const found = entry.metric === 'variants' ? (data.ruinedVariants ?? []) : data.ruined;
+  const targets = entry.targets
+    ? (entry.targets ?? []).map((id) => ({ id, name: targetName(id) }))
+    : DESTRUCTION_TARGETS;
+  const found = achievementTargets(entry, data);
 
-  return `<ul class="achievement-targets" aria-label="${t('achievementObjectTargets')}">${targets.map((target) => `<li><span aria-hidden="true">${found.includes(target.id) ? '✓' : '○'}</span> <span class="sr-only">${found.includes(target.id) ? t('achievementDone') : t('achievementMissing')}: </span>${escape(target.name[currentLanguage()])}</li>`).join('')}</ul>`;
+  return `<ul class="achievement-targets" aria-label="${t(entry.metric === 'rooms' ? 'achievementRoomTargets' : entry.metric === 'all' ? 'achievementGoalTargets' : 'achievementObjectTargets')}">${targets.map((target) => `<li><span aria-hidden="true">${found.includes(target.id) ? '✓' : '○'}</span> <span class="sr-only">${found.includes(target.id) ? t('achievementDone') : t('achievementMissing')}: </span>${escape(target.name[currentLanguage()])}</li>`).join('')}</ul>`;
+}
+
+function achievementTargets(entry: AchievementDefinition, data: AchievementData) {
+  if (entry.metric === 'all') return data.unlocked;
+
+  if (entry.metric === 'rooms') return data.completedRooms ?? [];
+
+  return entry.metric === 'variants' ? (data.ruinedVariants ?? []) : data.ruined;
 }
 
 function achievementPlaceholder() {

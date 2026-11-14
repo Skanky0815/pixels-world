@@ -55,6 +55,11 @@
   }
 }
 @media (any-pointer: coarse) and (orientation: landscape) and (max-height: 550px) {
+  #game:has(.album-banner:not([hidden]))
+    .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
+    bottom: calc(2 * var(--touch-target) + var(--touch-gap) + 16px);
+    max-height: calc(100% - 2 * var(--touch-target) - var(--touch-gap) - 24px);
+  }
   .follow-camera .album-banner {
     left: calc(var(--touch-directions-width) + 16px);
     right: 104px;

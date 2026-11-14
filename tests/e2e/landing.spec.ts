@@ -10,7 +10,9 @@ for (const width of [320, 390, 768, 1440]) {
       'Ein Zimmer. Eine Katze. Dein Chaos.',
     );
     await expect(page.locator('canvas, .start-screen, .pause-menu')).toHaveCount(0);
-    await expect(page.locator('.play-link')).toHaveCount(3);
+    await expect(page.locator('.play-link')).toHaveCount(4);
+    await expect(page.locator('.landing-achievements')).toContainText('Pixels Meisterwerk');
+    await expect(page.locator('.landing-achievements img')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

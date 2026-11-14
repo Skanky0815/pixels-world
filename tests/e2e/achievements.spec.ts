@@ -1,9 +1,11 @@
+import { ROOM_COMPLETIONS } from '../../src/content/achievement-rooms';
 import { DESTRUCTION_VARIANTS } from '../../src/content/achievement-categories';
 /* eslint-disable max-lines-per-function -- Tatsächlicher Rundenabschluss und Gerätewechsel prüfen den zusammenhängenden Erfolgsvertrag. */
 import {
   test,
   expect,
   start,
+  state,
   until,
   besideCouch,
   loadIntro,
@@ -15,9 +17,15 @@ import { seedRoundRandom } from './round-clock';
 import { changeLanguage, openPause } from './pause-support';
 import type { Page } from '@playwright/test';
 
-async function seed(page: Page, count: number, ruined: string[], variants: readonly string[] = []) {
+async function seed(
+  page: Page,
+  count: number,
+  ruined: string[],
+  variants: readonly string[] = [],
+  rooms: readonly string[] = [],
+) {
   await page.addInitScript(
-    ({ count, ruined, variants }) => {
+    ({ count, ruined, variants, rooms }) => {
       localStorage.setItem('pixels-world.storage', '{"album":true,"offline":false}');
 
       if (!localStorage.getItem('pixels-world.album'))
@@ -30,12 +38,13 @@ async function seed(page: Page, count: number, ruined: string[], variants: reado
               reconciliations: count,
               ruined,
               ruinedVariants: variants,
+              completedRooms: rooms,
               unlocked: ['achievement.angel-1'],
             },
           }),
         );
     },
-    { count, ruined, variants },
+    { count, ruined, variants, rooms },
   );
 }
 
@@ -90,7 +99,7 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   expect(await savedProgress(page)).toEqual(progress);
   await (await introAction(page, 'album')).click();
   await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
-  await expect(page.locator('.achievement-index')).toContainText('4 von 12 freigeschaltet');
+  await expect(page.locator('.achievement-index')).toContainText('4 von 17 freigeschaltet');
   await expect(page.locator('.album-overall')).toHaveText('10 erfolgreiche Versöhnungen');
 });
 
@@ -118,7 +127,7 @@ for (const mobile of [false, true])
       await expect(album.locator('.achievement-tile')).toHaveCount(4);
       await expect(album.locator('.album-progress')).toHaveAttribute(
         'aria-label',
-        '10 von 12 freigeschaltet',
+        '10 von 17 freigeschaltet',
       );
       await expect(page.getByRole('button', { name: /Unschuldsengel IV/ })).toBeDisabled();
       const second = page.getByRole('button', { name: /Unschuldsengel II Freigeschaltet/ });
@@ -149,7 +158,7 @@ for (const mobile of [false, true])
         await expect(album.locator('.achievement-targets li')).toHaveCount(4);
         await assertFits(album);
         await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
-        await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 3');
+        await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 5');
         await album.locator('[data-action="page-next"]').click();
         await assertFits(album);
         await page.getByRole('button', { name: /Meister der Zerstörung/ }).click();
@@ -158,6 +167,12 @@ for (const mobile of [false, true])
         await assertFits(album);
         await album.locator('.achievement-targets li').last().scrollIntoViewIfNeeded();
         await expect(album.locator('.achievement-targets li').last()).toBeInViewport();
+        await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
+        await album.locator('[data-action="page-next"]').click();
+        await expect(album.locator('.album-pagination')).toContainText('Seite 4 von 5');
+        await expect(album.locator('.achievement-tile')).toHaveCount(4);
+        await expect(album.locator('.achievement-tile:not(:disabled)')).toHaveCount(0);
+        await assertFits(album);
       }
 
       await test.info().attach(mobile ? 'erfolge-handy' : 'erfolge-desktop', {
@@ -213,7 +228,80 @@ async function assertFits(album: ReturnType<Page['locator']>) {
 async function firstAchievementPage(album: ReturnType<Page['locator']>) {
   await album.locator('#album-tab-achievements').click();
 
-  for (let index = 0; index < 2; index++)
+  for (let index = 0; index < 4; index++)
     if (await album.locator('[data-action="page-previous"]').isEnabled())
       await album.locator('[data-action="page-previous"]').click();
 }
+
+test('Desktop feiert Albumfund und Erfolg ohne dauerhafte Speicherwahl', async ({ page }) => {
+  await seedRoundRandom(page);
+  await start(page, '/?round-profile=fast');
+  await besideCouch(page);
+  await until(page, (s) => s.couch.damage >= 1);
+  await page.keyboard.down('ArrowRight');
+  await page.clock.runFor(600);
+  await page.keyboard.up('ArrowRight');
+  await finishAlbumRound(page, true);
+  const banner = page.locator('.album-banner');
+
+  await expect(banner).toHaveAttribute('data-entry', 'couch.cozy');
+  await test
+    .info()
+    .attach('sitzungsbanner-desktop', { body: await page.screenshot(), contentType: 'image/png' });
+
+  for (const id of (await state(page)).album.confirmed) {
+    await expect(banner).toHaveAttribute('data-entry', id);
+    await page.clock.runFor(3100);
+  }
+
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-1');
+  expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();
+});
+
+test('Meisterwerk erscheint direkt hinter dem letzten noch fehlenden Erfolg', async ({ page }) => {
+  await seed(
+    page,
+    99,
+    ['vase', 'couch', 'curtain', 'plant', 'books', 'picture', 'shelf'],
+    DESTRUCTION_VARIANTS,
+    ROOM_COMPLETIONS,
+  );
+  await seedRoundRandom(page);
+  await start(page, '/?round-profile=fast');
+  await besideCouch(page);
+  await until(page, (s) => s.couch.damage === 6);
+  await finishAlbumRound(page, true);
+  const banner = page.locator('.album-banner');
+
+  await expect(banner).toHaveAttribute('data-entry', 'couch.cozy');
+  await page.clock.runFor(3100);
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-100');
+  await page.clock.runFor(3100);
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.masterpiece-v1');
+  await expect(banner).toContainText('Pixels Meisterwerk');
+  await page.clock.runFor(3100);
+  await expect(banner).toBeHidden();
+  expect((await savedProgress(page)).unlocked).toHaveLength(17);
+  await page.locator('.album-toggle').click();
+  await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
+
+  for (let i = 0; i < 4; i++) await page.locator('[data-action="page-next"]').click();
+  await page.getByRole('button', { name: /Pixels Meisterwerk Freigeschaltet/ }).click();
+
+  for (const viewport of [
+    { width: 1280, height: 900 },
+    { width: 320, height: 568 },
+    { width: 568, height: 320 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.clock.runFor(64);
+    await expect(page.locator('.achievement-targets li')).toHaveCount(16);
+    await expect(async () => {
+      await page.locator('.achievement-targets li').last().scrollIntoViewIfNeeded();
+      await expect(page.locator('.achievement-targets li').last()).toBeInViewport();
+    }).toPass({ timeout: 5000 });
+    expect(
+      await page.locator('.album-dialog').evaluate((el) => el.scrollHeight - el.clientHeight),
+    ).toBeLessThanOrEqual(1);
+  }
+});

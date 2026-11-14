@@ -70,10 +70,11 @@ export class AlbumCollection {
     targets: Iterable<DestructionTarget>,
     reconciled: boolean,
     variants: Iterable<string> = [],
+    rooms: Iterable<string> = [],
   ) {
     const added = [...new Set(ids)].filter((id) => this.canUnlock(id));
     const before = this.achievements.snapshot();
-    const earned = this.achievements.confirm(reconciled, targets, variants);
+    const earned = this.achievements.confirm(reconciled, targets, variants, rooms);
 
     for (const id of added) this.found.add(id);
 

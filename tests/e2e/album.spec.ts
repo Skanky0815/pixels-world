@@ -244,7 +244,13 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
   expect(
     await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).achievements),
-  ).toEqual({ reconciliations: 0, ruined: [], ruinedVariants: [], unlocked: [] });
+  ).toEqual({
+    reconciliations: 0,
+    ruined: [],
+    ruinedVariants: [],
+    completedRooms: [],
+    unlocked: [],
+  });
   await expect(page.locator('.album-dialog img')).toHaveCount(0);
   await page.reload();
   await waitForGame(page);
@@ -266,7 +272,7 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
   await page.locator('[data-remember-album]').check();
   await page.locator('[data-pause-resume]').click();
   await finishAlbumRound(page, true);
-  await expect(page.locator('.album-banner')).toBeHidden();
+  await expect(page.locator('.album-banner')).toHaveAttribute('data-entry', 'couch.cozy');
   await openFromMenu(page);
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
   await expect(page.locator('.album-dialog footer [role="status"]')).toContainText(

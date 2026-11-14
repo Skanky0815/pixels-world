@@ -116,6 +116,7 @@ test('Rundenabschluss übernimmt alle Funde mit genau einem Schreibvorgang und e
       reconciliations: 1,
       ruined: [],
       ruinedVariants: [],
+      completedRooms: [],
       unlocked: ['achievement.angel-1'],
     },
   });
@@ -209,7 +210,7 @@ test('Migration, geschützter neuerer Speicher und blockierter Storage bleiben e
   assert.equal(ALBUM_STORAGE_KEY, 'pixels-world.album');
 });
 
-test('Banner erhalten nur die im Moment des Abschlusses erfolgreich gespeicherten IDs', () => {
+test('Banner zeigen neue Freischaltungen auch ohne dauerhafte Speicherung und werden nicht nachgeholt', () => {
   for (const [storage, remember] of [
     [memory(), false],
     [memory(JSON.stringify({ version: 9, discovered: ['future'] })), true],
@@ -229,6 +230,7 @@ test('Banner erhalten nur die im Moment des Abschlusses erfolgreich gespeicherte
     round.record('vase.blue');
     assert.deepEqual(round.confirm(finish(game(), true)), ['vase.blue']);
     assert.deepEqual(round.savedDiscoveries(), []);
+    assert.ok(round.confirmedBanners().includes('vase.blue'));
     collection.setRemember(true);
     round.confirm(finish(game(), true));
     assert.deepEqual(round.savedDiscoveries(), []);

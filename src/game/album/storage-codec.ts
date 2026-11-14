@@ -52,6 +52,7 @@ function achievements(value: unknown): AchievementData {
     reconciliations: data.reconciliations,
     ruined: strings(data.ruined),
     ruinedVariants: strings(data.ruinedVariants ?? []),
+    completedRooms: strings(data.completedRooms ?? []),
     unlocked: strings(data.unlocked),
   };
 }

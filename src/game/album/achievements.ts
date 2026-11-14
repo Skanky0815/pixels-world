@@ -1,4 +1,5 @@
 import { DESTRUCTION_VARIANTS } from '../../content/achievement-categories.ts';
+import { ROOM_COMPLETIONS } from '../../content/achievement-rooms.ts';
 import {
   ACHIEVEMENTS,
   DESTRUCTION_TARGETS,
@@ -9,12 +10,14 @@ export interface AchievementData {
   readonly reconciliations: number;
   readonly ruined: readonly string[];
   readonly ruinedVariants?: readonly string[];
+  readonly completedRooms?: readonly string[];
   readonly unlocked: readonly string[];
 }
 export const EMPTY_ACHIEVEMENTS: AchievementData = Object.freeze({
   reconciliations: 0,
   ruined: Object.freeze([]),
   ruinedVariants: Object.freeze([]),
+  completedRooms: Object.freeze([]),
   unlocked: Object.freeze([]),
 });
 
@@ -24,6 +27,7 @@ export class AchievementProgress {
   private pending = 0;
   private readonly ruined = new Set<string>();
   private readonly ruinedVariants = new Set<string>();
+  private readonly completedRooms = new Set<string>();
   private readonly unlocked = new Set<string>();
 
   restore(data: AchievementData) {
@@ -36,6 +40,7 @@ export class AchievementProgress {
       if (data.unlocked.includes(entry.id)) this.unlocked.add(entry.id);
 
     this.addVariants(data.ruinedVariants ?? []);
+    this.addRooms(data.completedRooms ?? []);
     this.earn();
   }
 
@@ -44,15 +49,18 @@ export class AchievementProgress {
     reconciled: boolean,
     targets: Iterable<DestructionTarget>,
     variants: Iterable<string> = [],
+    rooms: Iterable<string> = [],
   ) {
-    if (!reconciled) return Object.freeze([]);
+    this.addRooms(rooms);
+
+    if (!reconciled) return this.earn();
 
     if (this.total() < Number.MAX_SAFE_INTEGER) this.pending++;
 
     for (const id of targets)
       if (DESTRUCTION_TARGETS.some((target) => target.id === id)) this.ruined.add(id);
 
-    for (const id of variants) if (DESTRUCTION_VARIANTS.includes(id)) this.ruinedVariants.add(id);
+    this.addVariants(variants);
 
     return this.earn();
   }
@@ -61,12 +69,18 @@ export class AchievementProgress {
     for (const id of variants) if (DESTRUCTION_VARIANTS.includes(id)) this.ruinedVariants.add(id);
   }
 
-  private earn() {
-    const earned = ACHIEVEMENTS.filter(
-      (entry) => !this.unlocked.has(entry.id) && this.value(entry) >= entry.threshold,
-    ).map((entry) => entry.id);
+  private addRooms(rooms: Iterable<string>) {
+    for (const id of rooms) if (ROOM_COMPLETIONS.includes(id)) this.completedRooms.add(id);
+  }
 
-    for (const id of earned) this.unlocked.add(id);
+  private earn() {
+    const earned: string[] = [];
+
+    for (const entry of ACHIEVEMENTS) {
+      if (this.unlocked.has(entry.id) || this.value(entry) < entry.threshold) continue;
+      this.unlocked.add(entry.id);
+      earned.push(entry.id);
+    }
 
     return Object.freeze(earned);
   }
@@ -76,10 +90,16 @@ export class AchievementProgress {
   }
 
   private value(entry: AchievementDefinition) {
-    if (entry.metric === 'variants')
-      return entry.targets?.filter((id) => this.ruinedVariants.has(id)).length ?? 0;
+    if (entry.targets)
+      return entry.targets.filter((id) => this.targetSet(entry.metric).has(id)).length;
 
     return entry.metric === 'reconciliations' ? this.total() : this.ruined.size;
+  }
+
+  private targetSet(metric: AchievementDefinition['metric']) {
+    if (metric === 'all') return this.unlocked;
+
+    return metric === 'rooms' ? this.completedRooms : this.ruinedVariants;
   }
 
   markSaved() {
@@ -92,6 +112,7 @@ export class AchievementProgress {
     this.pending = 0;
     this.ruined.clear();
     this.ruinedVariants.clear();
+    this.completedRooms.clear();
     this.unlocked.clear();
   }
 
@@ -100,6 +121,7 @@ export class AchievementProgress {
       reconciliations: this.total(),
       ruined: Object.freeze([...this.ruined]),
       ruinedVariants: Object.freeze([...this.ruinedVariants]),
+      completedRooms: Object.freeze([...this.completedRooms]),
       unlocked: Object.freeze([...this.unlocked]),
     });
   }

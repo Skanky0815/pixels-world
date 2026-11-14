@@ -37,13 +37,13 @@ export class RoundAlbum {
 
   /** Resolve once: success commits the batch, failed reconciliation discards it. */
   // eslint-disable-next-line max-lines-per-function -- Bestätigung und gemeinsames Verwerfen aller rundenbezogenen Vormerkungen bilden eine Transaktion.
-  confirm(result: RoundResult | null) {
+  confirm(result: RoundResult | null, roomId?: string) {
     if (!result) return EMPTY;
 
     if (this.confirmed) return this.confirmed;
     this.confirmed = EMPTY;
 
-    if (result.outcome === 'success') this.commit(result);
+    if (result.outcome === 'success') this.commit(result, roomId);
 
     if (this.collection.snapshot().storage === 'ready') this.saved = this.confirmed;
     this.pending.clear();
@@ -53,22 +53,22 @@ export class RoundAlbum {
     return this.confirmed;
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Alle bestätigten Funde und Erfolge teilen dieselbe dauerhafte Bannerentscheidung.
-  private commit(result: RoundResult) {
+  // eslint-disable-next-line max-lines-per-function -- Alle bestätigten Funde und Erfolge teilen dieselbe Freischaltungs- und Bannerentscheidung.
+  private commit(result: RoundResult, roomId?: string) {
     const batch = this.collection.completeRound(
       this.pending,
       this.ruined,
       !result.peaceful,
       this.variants,
+      completedRooms(result, roomId),
     );
 
     this.confirmed = batch.entries;
 
-    if (this.collection.snapshot().storage === 'ready')
-      this.banners = Object.freeze([...batch.entries, ...batch.achievements]);
+    this.banners = Object.freeze([...batch.entries, ...batch.achievements]);
   }
 
-  savedBanners() {
+  confirmedBanners() {
     return this.banners;
   }
 
@@ -83,4 +83,14 @@ export class RoundAlbum {
       completed: this.confirmed !== null,
     });
   }
+}
+
+function completedRooms(result: RoundResult, roomId?: string) {
+  if (!result.goalReached || !roomId) return [];
+  const rooms = [`${result.difficulty}/${roomId}`];
+
+  if (result.difficulty === 'hard' && result.peaceful && result.score === 0)
+    rooms.push(`hard-peaceful/${roomId}`);
+
+  return rooms;
 }

@@ -40,7 +40,10 @@ test(
     });
     await page.keyboard.down('Space');
     await until(page, (s) => s.result !== null);
-    await expect(page.locator('.album-banner')).toBeHidden();
+    await expect(page.locator('.album-banner')).toHaveAttribute(
+      'data-entry',
+      'achievement.rooms-normal-v1',
+    );
     expect((await state(page)).feedback.text).toContain('Ball found. Everything in one piece.');
     await page.clock.runFor(3000);
     const ended = await state(page);
@@ -96,4 +99,32 @@ test('Schon ein Kratzen vor dem Ziel behält den regulären Versöhnungsablauf',
   await until(page, (s) => s.reconciliation.stage === 'reading');
   await page.keyboard.up('Space');
   expect((await state(page)).result).toBeNull();
+});
+
+test('Schwer ohne Schäden feiert Raumabschluss und Sanfte Pfoten auch ohne Speichern', async ({
+  page,
+  // eslint-disable-next-line max-lines-per-function -- Echter Schwer-Abschluss prüft beide Banner und die unveränderte Speicherwahl gemeinsam.
+}) => {
+  await page.addInitScript(() => localStorage.setItem('pixels-world.difficulty', 'hard'));
+  await start(page);
+  await climbToBall(page);
+  await until(
+    page,
+    (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated',
+    500,
+  );
+  await page.keyboard.down('Space');
+  await until(page, (s) => s.result !== null);
+  await page.keyboard.up('Space');
+  const banner = page.locator('.album-banner');
+
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.rooms-hard-v1');
+  expect((await state(page)).chaos.damagedObjects).toBe(0);
+  await page.clock.runFor(3100);
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.peaceful-living-room-v1');
+  await expect(banner).toContainText('Sanfte Pfoten');
+  expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();
+  await test
+    .info()
+    .attach('sanfte-pfoten-desktop', { body: await page.screenshot(), contentType: 'image/png' });
 });
