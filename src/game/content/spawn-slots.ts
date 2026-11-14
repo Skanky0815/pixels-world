@@ -1,3 +1,4 @@
+import { PANTRY_PROFILES } from '../assets/pantry-appearance.ts';
 import { overlaps, shuffled } from './slot-geometry.ts';
 import { populateWallSlots } from './wall-slots.ts';
 import { DISH_PROFILES } from '../assets/dish-appearance.ts';
@@ -365,6 +366,8 @@ function looseAsset(kind: ResolvedObject['kind']) {
 }
 
 function candidateSize(definition: ObjectDefinition) {
+  if (definition.kind === 'pantry') return PANTRY_PROFILES[definition.appearance];
+
   if (definition.kind === 'dish') return DISH_PROFILES[definition.appearance];
 
   if (definition.kind === 'couch')

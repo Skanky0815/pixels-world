@@ -1,3 +1,4 @@
+import { PANTRY_ROOMS } from './pantry-lab.ts';
 import { HERB_ROOMS } from './herb-lab.ts';
 import { DISH_ROOMS } from './dish-lab.ts';
 import { KITCHEN } from './kitchen.ts';
@@ -16,6 +17,7 @@ export const ROOMS = {
   ...FOOD_BAG_ROOMS,
   ...DISH_ROOMS,
   ...HERB_ROOMS,
+  ...PANTRY_ROOMS,
 } as const;
 export function selectRoom(id: string | null, variants: boolean) {
   if (!variants || !id) return LIVING_ROOM;

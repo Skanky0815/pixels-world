@@ -1,3 +1,4 @@
+import { PANTRY } from './pantry.ts';
 import { HERBS } from './herbs.ts';
 import { CARPET_RULES } from '../../game/interactions/carpet-hairball.ts';
 import { PICTURE_RULES } from '../../game/interactions/picture-falling.ts';
@@ -28,6 +29,7 @@ const picture = {
 } as const;
 
 export const OBJECTS = {
+  ...PANTRY,
   ...HERBS,
   'cream-cup': {
     kind: 'dish',

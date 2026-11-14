@@ -1,3 +1,4 @@
+import { PANTRY_VARIANTS } from '../../src/content/objects/pantry.ts';
 import { HERB_VARIANTS } from '../../src/content/objects/herbs.ts';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
@@ -45,7 +46,7 @@ test('Alle Bestandsvarianten haben passende Größe, Kategorie und Spawn-Eignung
       random: false,
       reason: 'room-fixture',
     });
-  assert.deepEqual(filterSpawnCandidates(OBJECTS, shelf), [...dishes, ...vases]);
+  assert.deepEqual(filterSpawnCandidates(OBJECTS, shelf), ['biscuit-tin', ...dishes, ...vases]);
 });
 
 // eslint-disable-next-line max-lines-per-function -- Die vollständige 3×3-Matrix deckt passende und zu große Inhalte für jede Größenklasse ab.
@@ -77,6 +78,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), [
+    ...PANTRY_VARIANTS,
     ...HERB_VARIANTS,
     ...dishes,
     'dry-food-bag',
@@ -85,6 +87,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
     ...books,
   ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, support: 'raised' }), [
+    ...PANTRY_VARIANTS,
     ...HERB_VARIANTS,
     ...dishes,
     'dry-food-bag',
@@ -92,6 +95,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
     ...books,
   ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, capacity: 'small' }), [
+    'biscuit-tin',
     ...dishes,
     ...vases,
   ]);
@@ -101,7 +105,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
   );
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['push', 'damage'] }),
-    [...dishes, ...vases],
+    [...PANTRY_VARIANTS, ...dishes, ...vases],
   );
   assert.equal(
     fitsSpawnSlot(OBJECTS['small-vase'].spawn, ['push'], {
@@ -122,6 +126,7 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, all), [
+    ...PANTRY_VARIANTS,
     ...HERB_VARIANTS,
     ...dishes,
     'dry-food-bag',

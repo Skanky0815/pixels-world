@@ -1,4 +1,11 @@
 export const de = {
+  saraDamagePantryJar0: 'Ein Vorratsglas weniger. Wirklich nötig war das nicht, Pixel.',
+  saraDamagePantryJar1: 'Die Nudeln waren im Glas besser aufgehoben.',
+  saraDamagePantryJar2: 'Erst die Scherben, dann reden wir, Pixel.',
+  saraDamagePantryTin0: 'Du hast die Keksdose gefunden. Und ihren ganzen Inhalt verteilt.',
+  saraDamagePantryTin1: 'Die Dose war zu. Das hatte einen Grund, Pixel.',
+  saraDamagePantryTin2: 'Kekse, Deckel, Katze. Alles an einem anderen Platz.',
+
   kitchenTitle: '02 / KÜCHE',
   saraDamageDish0: 'Pixel, das Geschirr hat dir wirklich nichts getan.',
   saraDamageDish1: 'Ich sehe, du hast schon abgeräumt. Sehr gründlich sogar.',

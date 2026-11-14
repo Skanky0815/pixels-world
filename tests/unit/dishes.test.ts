@@ -58,7 +58,7 @@ test('Neue Objektarten ersetzen keine fehlenden v1-Ziele und widerrufen keine al
   reload.restore({ reconciliations: 0, ruined: [], unlocked: [oldMaster.id, oldDestruction.id] });
   assert.ok(reload.snapshot().unlocked.includes(oldMaster.id));
   assert.ok(!reload.snapshot().unlocked.includes('achievement.masterpiece-v2'));
-  assert.equal(DESTRUCTION_TARGETS.length, 9);
+  assert.equal(DESTRUCTION_TARGETS.length, 10);
   assert.ok(DESTRUCTION_VARIANTS.includes('dish.cup'));
 });
 

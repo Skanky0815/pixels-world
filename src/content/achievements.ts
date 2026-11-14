@@ -2,6 +2,7 @@ import {
   ACHIEVEMENT_CATEGORIES,
   ACHIEVEMENT_CATEGORIES_V2,
   ACHIEVEMENT_CATEGORIES_V3,
+  ACHIEVEMENT_CATEGORIES_V4,
 } from './achievement-categories.ts';
 import { ROOM_ACHIEVEMENTS_V1, ROOM_ACHIEVEMENTS_V2 } from './achievement-rooms.ts';
 import type { ChaosEvent } from '../game/domain/chaos-event.ts';
@@ -70,7 +71,8 @@ export const DESTRUCTION_TARGETS_V1 = [
     name: { de: 'Regal eingestürzt', en: 'Shelf collapsed' },
   },
 ] as const;
-export const DESTRUCTION_TARGETS = [
+/** Frozen nine-type objective set; later families extend the current catalog separately. */
+export const DESTRUCTION_TARGETS_V2 = [
   ...DESTRUCTION_TARGETS_V1,
   {
     id: 'food-bag',
@@ -87,12 +89,25 @@ export const DESTRUCTION_TARGETS = [
     name: { de: 'Geschirr zerbrochen', en: 'Crockery broken' },
   },
 ] as const;
+export const DESTRUCTION_TARGETS = [
+  ...DESTRUCTION_TARGETS_V2,
+  {
+    id: 'pantry',
+    object: 'pantry',
+    event: 'break',
+    also: 'spill',
+    stage: 1,
+    name: { de: 'Vorratsbehälter ruiniert', en: 'Pantry container ruined' },
+  },
+] as const;
 export type DestructionTarget = (typeof DESTRUCTION_TARGETS)[number]['id'];
 
 export function destructionTarget(event: ChaosEvent, object?: string) {
   return DESTRUCTION_TARGETS.find(
     (target) =>
-      target.object === object && target.event === event.kind && event.stage >= target.stage,
+      target.object === object &&
+      (target.event === event.kind || ('also' in target && target.also === event.kind)) &&
+      event.stage >= target.stage,
   )?.id;
 }
 
@@ -226,8 +241,8 @@ const NEW_MILESTONES: readonly AchievementDefinition[] = [
       en: 'The kitchen too, then. Thorough work, Pixel.',
     },
     metric: 'destruction',
-    targets: DESTRUCTION_TARGETS.map((target) => target.id),
-    threshold: DESTRUCTION_TARGETS.length,
+    targets: DESTRUCTION_TARGETS_V2.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS_V2.length,
     art: 'chaos',
   },
   ...ROOM_ACHIEVEMENTS_V2.map((entry): AchievementDefinition => ({
@@ -281,7 +296,7 @@ const HERB_OBJECTIVES: readonly AchievementDefinition[] = [
   })),
 ];
 
-export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+const ACHIEVEMENTS_V3: readonly AchievementDefinition[] = [
   ...HERB_OBJECTIVES,
   {
     id: 'achievement.masterpiece-v3',
@@ -297,6 +312,63 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     metric: 'all',
     targets: HERB_OBJECTIVES.map((entry) => entry.id),
     threshold: HERB_OBJECTIVES.length,
+    art: 'love',
+  },
+];
+
+const PANTRY_OBJECTIVES: readonly AchievementDefinition[] = [
+  ...ACHIEVEMENTS_V3,
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Anzeigenvertrag des neuen eingefrorenen Behältersatzes bleibt zusammen.
+  ...ACHIEVEMENT_CATEGORIES_V4.map((category): AchievementDefinition => ({
+    id: `achievement.category-${category.id}-v4`,
+    name: category.name,
+    description: {
+      de: 'Das Vorratsglas zerbrechen und die Keksdose vollständig ausleeren, über erfolgreich versöhnte Runden.',
+      en: 'Break the pantry jar and fully spill the biscuit tin across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Das war die gesamte Vorratshaltung, Pixel.',
+      en: 'That was the entire pantry, Pixel.',
+    },
+    metric: 'variants',
+    targets: category.targets,
+    threshold: category.targets.length,
+    art: 'chaos',
+  })),
+  {
+    id: 'achievement.destruction-v4',
+    name: { de: 'Meister der Zerstörung III', en: 'Master of destruction III' },
+    description: {
+      de: 'Alle zehn Objektarten dieser Sammlung vollständig ruinieren, über erfolgreich versöhnte Runden.',
+      en: 'Fully ruin all ten object types in this collection across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Sogar die Vorräte. Sehr gründlich, Pixel.',
+      en: 'Even the pantry. Very thorough, Pixel.',
+    },
+    metric: 'destruction',
+    targets: DESTRUCTION_TARGETS.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS.length,
+    art: 'chaos',
+  },
+];
+
+export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+  ...PANTRY_OBJECTIVES,
+  {
+    id: 'achievement.masterpiece-v4',
+    name: { de: 'Pixels Meisterwerk IV', en: 'Pixel’s masterpiece IV' },
+    description: {
+      de: 'Alle anderen Erfolge der Sammlung mit Vorratsglas und Keksdose freischalten.',
+      en: 'Unlock every other achievement in the pantry jar and biscuit tin collection.',
+    },
+    quote: {
+      de: 'Deine Ausdauer ist beeindruckend. Meine auch.',
+      en: 'Your persistence is impressive. So is mine.',
+    },
+    metric: 'all',
+    targets: PANTRY_OBJECTIVES.map((entry) => entry.id),
+    threshold: PANTRY_OBJECTIVES.length,
     art: 'love',
   },
 ];

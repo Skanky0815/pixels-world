@@ -17,7 +17,11 @@ for (const [difficulty, viewport] of [
           (value) => localStorage.setItem('pixels-world.difficulty', value),
           difficulty,
         );
-        await page.goto('/play.html?room=kitchen-preview');
+        const seed = { easy: 'pantry-easy-12', normal: 'pantry-normal-34', hard: 'pantry-hard-11' }[
+          difficulty
+        ];
+
+        await page.goto(`/play.html?room=kitchen-preview&room-seed=${seed}`);
         await waitForGame(page);
         await page.keyboard.down('Space');
         await until(page, (s) => s.started && s.pixel.grounded);
@@ -40,6 +44,8 @@ for (const [difficulty, viewport] of [
 
         expect(reached.pictures).toHaveLength(difficulty === 'easy' ? 1 : 2);
         expect(reached.chaos.score).toBe(0);
+        expect(reached.pantry.length).toBeGreaterThanOrEqual(2);
+        expect(reached.pantry.every((item) => item.state === 'resting')).toBe(true);
         expect(reached.foodBags).toHaveLength(1);
         expect(reached.foodBags[0].state).toBe('upright');
         expect(

@@ -30,7 +30,7 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
       );
       assert.equal(
         room.objects.filter((o) =>
-          ['dish', 'plant'].includes(OBJECTS[o.variant as keyof typeof OBJECTS].kind),
+          ['dish', 'plant', 'pantry'].includes(OBJECTS[o.variant as keyof typeof OBJECTS].kind),
         ).length,
         difficulty === 'easy' ? 5 : difficulty === 'normal' ? 6 : 8,
       );
