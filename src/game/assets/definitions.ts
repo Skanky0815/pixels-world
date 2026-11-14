@@ -1,5 +1,6 @@
 /** Known assets only; content never supplies executable class names or raw URLs. */
 export const ASSETS = {
+  'trash-bin': { kind: 'trash-bin', capabilities: ['automatic', 'damage'], width: 48, height: 60 },
   pantry: { kind: 'pantry', capabilities: ['push', 'damage'] },
   pixel: { kind: 'sprite', frameWidth: 32, frameHeight: 32 },
   sara: { kind: 'sprite', frameWidth: 64, frameHeight: 96 },

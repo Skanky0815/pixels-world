@@ -231,6 +231,14 @@ Die DEV-Räume `food-bag-warning`, `food-bag-impact`, `food-bag-chain` und
 mit handgebauten Daten bereit. Sie verwenden dieselben Adapter wie Küche und
 Playground; keine schreibbaren Testhaken oder zweite Physik.
 
+## Küchenmülleimer und gemeinsames Kippen
+
+`trash-bin` ist ein mittelgroßes Bodenobjekt. Der reservierte Küchen-Bodenplatz nutzt denselben validierten Slotvertrag wie der separate Futterbeutel; erhöhte Mülleimerplätze werden abgewiesen. Der Resolver prüft den Raum für beide Kipprichtungen einschließlich Deckel und begrenzter Streufläche. Der Laufweg bleibt durchquerbar, direkter Kontakt kann jedoch das optionale Chaos auslösen.
+
+Futterbeutel und Mülleimer verwenden `TopplingContainer` und dieselbe Bilddarstellung mit Profilen für echte Körpermaße, Endmaße, Masse, Texturen und Kippschwelle. Warnung, Kontaktabbruch, Auflagenverlust, aktive Zeit, einmaliger `spill`-Schaden, Pause und Reset bleiben gemeinsam. Eingehende und ausgehende Kontakte einschließlich gleicher Instanzen laufen über `ImpactWorld`; weder Deckel noch einzelne Müllteile erhalten eigene Schadensquellen. Ein ruhender ausgelaufener Behälter erzeugt keine neue Bewegung oder Wertung. Grafikquellen und Export: [Mülleimer](../../assets/objects/trash-bin/README.md).
+
+Der Mülleimer ergänzt Album und einen neuen eingefrorenen Kategorie-, Zerstörungs- und Meisterwerk-Satz. Der vorherige Zehner-Zielsatz ist `DESTRUCTION_TARGETS_V3`; neue Familien erweitern nur den aktuellen Katalog. Erfolgreiche Bestätigung, gescheiterte Runden, Banner und freiwillige Speicherwahl bleiben im gemeinsamen Albumvertrag.
+
 ## Vasen-Grafikvarianten
 
 Das bekannte Asset `vase-default` behält seinen 18×28-Geometrie- und

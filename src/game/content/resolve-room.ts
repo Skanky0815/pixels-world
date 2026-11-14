@@ -1,3 +1,4 @@
+import { TRASH_BIN_PROFILE } from '../assets/trash-bin-profile.ts';
 import { PANTRY_PROFILES, isPantryAppearance } from '../assets/pantry-appearance.ts';
 import { isPlantAppearance } from '../assets/plant-appearance.ts';
 import { DISH_PROFILES, isDishAppearance } from '../assets/dish-appearance.ts';
@@ -91,7 +92,8 @@ function validateObjectRules(value: ObjectDefinition, path: string) {
   if (value.kind === 'pantry') return validatePantry(value, path);
   record(value.rules, `${path}.rules`);
 
-  if (value.kind === 'food-bag') return validateToppling(value.rules, path);
+  if (value.kind === 'food-bag' || value.kind === 'trash-bin')
+    return validateToppling(value.rules, path);
 
   if (value.kind === 'books') return validateBooks(value, path);
 
@@ -448,7 +450,8 @@ class RoomResolver {
 
     if (d.kind === 'pantry') return this.resolvePantry(instance, d, path, support);
 
-    if (d.kind === 'food-bag') return this.resolveFoodBag(instance, d, path, support);
+    if (d.kind === 'food-bag' || d.kind === 'trash-bin')
+      return this.resolveTopplingContainer(instance, d, path, support);
 
     if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
 
@@ -684,27 +687,32 @@ class RoomResolver {
     };
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Intakter Beutel und begrenzte Streufläche müssen in denselben Raum und auf die benannte Auflage passen.
-  private resolveFoodBag(
+  // eslint-disable-next-line max-lines-per-function -- Intakter Behälter und begrenzte Streufläche müssen in denselben Raum und auf die benannte Auflage passen.
+  private resolveTopplingContainer(
     instance: ObjectInstance,
-    d: Extract<ObjectDefinition, { kind: 'food-bag' }>,
+    d: Extract<ObjectDefinition, { kind: 'food-bag' | 'trash-bin' }>,
     path: string,
     support: Bounds,
   ): ResolvedObject {
     const p = instance.placement;
 
+    if (d.kind === 'trash-bin' && support.y !== this.room.floor.y)
+      fail(`${path}.placement`, 'trash bin needs floor support');
+    const shape = d.kind === 'trash-bin' ? TRASH_BIN_PROFILE : { width: 32, height: 44 };
+    const reach = d.kind === 'trash-bin' ? 156 : 120;
+
     bounds(
-      { x: p.x - 60, y: support.y - 44, width: 120, height: 44 },
+      { x: p.x - reach / 2, y: support.y - shape.height, width: reach, height: shape.height },
       this.room,
       `${path}.geometry`,
     );
-    supportFits(p.x - 16, 32, support, `${path}.placement`);
+    supportFits(p.x - shape.width / 2, shape.width, support, `${path}.placement`);
 
     return {
       id: instance.id,
       variant: instance.variant,
       asset: d.asset,
-      kind: 'food-bag',
+      kind: d.kind,
       config: {
         id: instance.id,
         x: p.x,
@@ -814,6 +822,7 @@ class RoomResolver {
     for (const object of objects) {
       maximum +=
         object.kind === 'food-bag' ||
+        object.kind === 'trash-bin' ||
         object.kind === 'books' ||
         object.kind === 'picture' ||
         object.kind === 'carpet'

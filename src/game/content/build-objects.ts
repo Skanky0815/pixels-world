@@ -1,3 +1,5 @@
+import { TrashBin } from '../objects/TrashBin';
+import { TopplingContainer } from '../objects/TopplingContainer';
 import { Pantry } from '../objects/Pantry';
 import { Breakable } from '../objects/Breakable';
 import { Dish } from '../objects/Dish';
@@ -30,6 +32,8 @@ function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
       return new Pantry(scene, definition.config);
     case 'dish':
       return new Dish(scene, definition.config);
+    case 'trash-bin':
+      return new TrashBin(scene, definition.config);
     case 'food-bag':
       return new FoodBag(scene, definition.config);
     case 'carpet':
@@ -52,12 +56,32 @@ function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
 // eslint-disable-next-line max-lines-per-function -- Der typisierte Rückgabevertrag und seine stabil geordneten Objektgruppen bleiben zusammen.
 function groupObjects(
   objects: (
-    Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet | FoodBag | Dish | Pantry
+    | Couch
+    | Curtain
+    | Plant
+    | Vase
+    | BookStack
+    | WallPicture
+    | Carpet
+    | FoodBag
+    | Dish
+    | Pantry
+    | TrashBin
   )[],
   entries: {
     readonly definition: ResolvedObject;
     readonly object:
-      Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet | FoodBag | Dish | Pantry;
+      | Couch
+      | Curtain
+      | Plant
+      | Vase
+      | BookStack
+      | WallPicture
+      | Carpet
+      | FoodBag
+      | Dish
+      | Pantry
+      | TrashBin;
   }[],
 ) {
   return {
@@ -71,6 +95,8 @@ function groupObjects(
     dishes: objects.filter((object) => object instanceof Dish),
     vases: objects.filter((object) => object instanceof Vase),
     pictures: objects.filter((object) => object instanceof WallPicture),
+    topplingContainers: objects.filter((object) => object instanceof TopplingContainer),
+    trashBins: objects.filter((object) => object instanceof TrashBin),
     foodBags: objects.filter((object) => object instanceof FoodBag),
     books: objects.filter((object) => object instanceof BookStack),
     ground: [

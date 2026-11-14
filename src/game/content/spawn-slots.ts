@@ -366,6 +366,8 @@ function looseAsset(kind: ResolvedObject['kind']) {
 }
 
 function candidateSize(definition: ObjectDefinition) {
+  if (definition.kind === 'trash-bin') return ASSETS['trash-bin'];
+
   if (definition.kind === 'pantry') return PANTRY_PROFILES[definition.appearance];
 
   if (definition.kind === 'dish') return DISH_PROFILES[definition.appearance];

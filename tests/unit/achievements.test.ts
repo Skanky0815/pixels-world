@@ -71,6 +71,7 @@ test('Alle versionierten Ziele verlangen den endgültigen Zustand, nicht irgende
       'food-bag',
       'dish',
       'pantry',
+      'trash-bin',
     ],
   );
   assert.equal(DESTRUCTION_TARGETS[1].stage, COUCH_SCRATCH.maxDamage);
@@ -356,7 +357,7 @@ test('Jede feste Kategorie hat erreichbare veröffentlichte Varianten und schalt
   const { albumEntries } = await import('../../src/content/album/index.ts');
   const published = new Set(albumEntries(false).map((entry) => entry.id));
 
-  assert.equal(DESTRUCTION_VARIANTS.length, 22);
+  assert.equal(DESTRUCTION_VARIANTS.length, 23);
   assert.ok(!DESTRUCTION_VARIANTS.includes('couch.worn'));
   assert.ok(!DESTRUCTION_VARIANTS.includes('shelf.stable'));
 
@@ -506,6 +507,7 @@ test('Meisterwerk zählt alle anderen Erfolge, schaltet im letzten Batch frei un
       'achievement.masterpiece-v2',
       'achievement.masterpiece-v3',
       'achievement.masterpiece-v4',
+      'achievement.masterpiece-v5',
     ],
   );
   assert.equal(progress.snapshot().unlocked.length, ACHIEVEMENTS.length);

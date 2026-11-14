@@ -1,3 +1,4 @@
+import { preloadTrashBinArt } from '../game/assets/trash-bin-art';
 import { preloadPantryArt } from '../game/assets/pantry-art';
 import { GameAudio } from '../game/ui/GameAudio';
 import { preloadObjectAudio } from '../game/assets/object-audio';
@@ -63,6 +64,7 @@ export class PlaygroundScene extends Phaser.Scene {
     preloadVaseArt(this);
     preloadDishArt(this);
     preloadPantryArt(this);
+    preloadTrashBinArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);

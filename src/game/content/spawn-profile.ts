@@ -32,6 +32,7 @@ const CATEGORIES = {
   pantry: 'decoration',
   books: 'decoration',
   'food-bag': 'decoration',
+  'trash-bin': 'furniture',
   picture: 'decoration',
   carpet: 'furniture',
   plant: 'plant',
@@ -79,6 +80,8 @@ function objectSize(object: ObjectDefinition) {
 
     return spawnSizeFor(shape.width, shape.height);
   }
+
+  if (object.kind === 'trash-bin') return spawnSizeFor(48, 60);
 
   if (object.kind === 'food-bag') return spawnSizeFor(32, 44);
 

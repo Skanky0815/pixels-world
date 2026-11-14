@@ -3,6 +3,7 @@ import type { PantryConfig } from '../objects/Pantry';
 import type { PlantAppearance } from '../assets/plant-appearance';
 import type { DishConfig } from '../objects/Dish.ts';
 import type { DishAppearance } from '../assets/dish-appearance.ts';
+import type { TrashBinConfig } from '../objects/TrashBin.ts';
 import type { FoodBagConfig } from '../objects/FoodBag.ts';
 import type { TopplingRules } from '../interactions/toppling.ts';
 import type { HomecomingSide } from './homecoming-layout.ts';
@@ -53,6 +54,11 @@ export type ObjectDefinition =
       readonly appearance: DishAppearance;
       readonly points: number;
       readonly color: number;
+    })
+  | (Base & {
+      readonly kind: 'trash-bin';
+      readonly asset: 'trash-bin';
+      readonly rules: TopplingRules;
     })
   | (Base & {
       readonly kind: 'food-bag';
@@ -189,6 +195,7 @@ interface ResolvedBase {
 export type ResolvedObject =
   | (ResolvedBase & { readonly kind: 'pantry'; readonly config: PantryConfig })
   | (ResolvedBase & { readonly kind: 'dish'; readonly config: DishConfig })
+  | (ResolvedBase & { readonly kind: 'trash-bin'; readonly config: TrashBinConfig })
   | (ResolvedBase & { readonly kind: 'food-bag'; readonly config: FoodBagConfig })
   | (ResolvedBase & { readonly kind: 'carpet'; readonly config: CarpetConfig })
   | (ResolvedBase & { readonly kind: 'picture'; readonly config: WallPictureConfig })

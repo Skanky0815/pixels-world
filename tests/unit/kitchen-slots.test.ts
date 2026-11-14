@@ -35,6 +35,7 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
         difficulty === 'easy' ? 5 : difficulty === 'normal' ? 6 : 8,
       );
       assert.equal(room.objects.filter((o) => o.variant === 'dry-food-bag').length, 1);
+      assert.equal(room.objects.filter((o) => o.variant === 'cream-trash-bin').length, 1);
       assert.equal(room.platforms.length, 5);
       assert.ok(room.platforms.every((p) => p.durability?.stability === 'stable'));
       assert.equal(resolveRoom(room, OBJECTS).goal.surfaceY, 258);
@@ -53,5 +54,5 @@ test('Küchen-Objektslots erlauben Geschirr und lassen den Napfbereich frei', ()
 
   assert.ok('slots' in counter);
   assert.ok(counter.slots.entries.every((slot) => counter.bounds.x + slot.x + 48 < 800));
-  assert.deepEqual(KITCHEN_PREVIEW.objectSlots[0].count, { easy: 1, normal: 1, hard: 1 });
+  assert.deepEqual(KITCHEN_PREVIEW.objectSlots[0].count, { easy: 2, normal: 2, hard: 2 });
 });

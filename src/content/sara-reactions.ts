@@ -38,6 +38,7 @@ export const SARA_DIALOGUE = {
 export type SaraAnger = keyof typeof SARA_DIALOGUE;
 export type DialoguePools = Readonly<Partial<Record<SaraAnger, readonly string[]>>>;
 export const SARA_DAMAGE_RULES = [
+  { topic: 'trashBin', objectKind: 'trash-bin', eventKind: 'spill', priority: 27 },
   { topic: 'pantryJar', objectKind: 'pantry', eventKind: 'break', priority: 36 },
   { topic: 'pantryTin', objectKind: 'pantry', eventKind: 'spill', priority: 26 },
   { topic: 'dish', objectKind: 'dish', eventKind: 'break', priority: 35 },
@@ -87,6 +88,11 @@ export const SARA_ROOM_DIALOGUE = {
 } as const;
 
 export const SARA_DAMAGE_DIALOGUE = {
+  trashBin: {
+    calm: [copy('saraDamageTrashBin0')],
+    annoyed: [copy('saraDamageTrashBin1')],
+    angry: [copy('saraDamageTrashBin2')],
+  },
   pantryJar: {
     calm: [copy('saraDamagePantryJar0')],
     annoyed: [copy('saraDamagePantryJar1')],
