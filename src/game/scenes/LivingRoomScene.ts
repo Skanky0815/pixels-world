@@ -14,6 +14,7 @@ import { discoverAlbum, INTERACTABLE_ALBUM } from '../../content/album';
 import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
 import { preloadBookArt } from '../assets/book-art';
+import { preloadKitchenArt } from '../assets/kitchen-art';
 import { preloadRoomArt } from '../assets/room-art';
 import { preloadShelfArt } from '../assets/shelf-art';
 import type { Shelf } from '../objects/Shelf';
@@ -72,7 +73,7 @@ import { DialogueMemory } from '../domain/sara-dialogue';
 import { ReactionDamage } from '../domain/reaction-damage';
 import { SaraReturnView } from '../ui/SaraReturnView';
 import { roundConfigForPage } from '../input/round-profile';
-import { homecomingPositions } from '../content/homecoming-layout';
+import { homecomingPositions, homecomingCharmPose } from '../content/homecoming-layout';
 import { PixelReturnController } from '../domain/pixel-return';
 import { RoomSelection } from '../ui/RoomSelection';
 import { playableRoom } from '../../content/rooms/selection';
@@ -151,6 +152,8 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadBookArt(this);
     preloadShelfArt(this);
     preloadRoomArt(this);
+
+    if (this.room.definition.environment === 'kitchen-preview') preloadKitchenArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
@@ -456,7 +459,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private initializeReturn() {
     const { width, floor } = this.room.definition;
-    const positions = homecomingPositions(width);
+    const positions = homecomingPositions(width, this.room.definition.homecomingSide);
 
     this.returning = new PixelReturnController(
       { width, floorY: floor.y, targetX: positions.pixelSeatX },
@@ -499,9 +502,10 @@ export class LivingRoomScene extends Phaser.Scene {
     this.sara = new SaraReturnView(this, {
       width: room.width,
       floorY: room.floor.y,
+      entrySide: room.homecomingSide,
       backgroundDoor: room.decorations.some((d) => d.kind === 'image' && d.asset === 'room-door'),
     });
-    this.charmView = new ReconciliationView(this, room.width, room.floor.y);
+    this.charmView = new ReconciliationView(this, room.width, room.floor.y, room.homecomingSide);
     this.albumBanners = new AlbumBanners();
     this.resultView = new RoundResultView(this, room.width);
     this.startScreen = new StartScreen(!this.started && !this.choosingRoom, this.room.goal, () =>
@@ -963,11 +967,11 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private renderCharmMotion() {
-    this.pixel.presentCharm(
-      this.ending.pixelPose(
-        this.charmPresentation.motion.pose(motionPreferences.snapshot().reduced),
-      ),
+    const pose = this.ending.pixelPose(
+      this.charmPresentation.motion.pose(motionPreferences.snapshot().reduced),
     );
+
+    this.pixel.presentCharm(homecomingCharmPose(pose, this.room.definition.homecomingSide));
   }
 
   // eslint-disable-next-line max-lines-per-function -- Ergebnis, Album und rein visuelle Abschlusszeit werden in derselben Darstellung synchronisiert.
@@ -1001,7 +1005,9 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private faceSara() {
-    this.pixel.faceToward(homecomingPositions(this.room.definition.width).saraEndX);
+    this.pixel.faceToward(
+      homecomingPositions(this.room.definition.width, this.room.definition.homecomingSide).saraEndX,
+    );
   }
 
   // eslint-disable-next-line max-lines-per-function -- Einmalige Phasenübergänge und ihre Ansichten werden atomar aus demselben Snapshot synchronisiert.

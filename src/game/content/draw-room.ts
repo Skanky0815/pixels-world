@@ -4,11 +4,14 @@ import type { RoomDefinition } from './definitions';
 
 import { backdropPadding } from '../follow-camera-preview';
 import { drawRoomEnvironment } from './room-environment';
+import { drawKitchenPreview } from './kitchen-preview-art';
 
 /** Data-driven art and legacy primitives share the same room and support coordinates. */
 export function drawRoom(scene: Phaser.Scene, room: RoomDefinition) {
   if (room.environment === 'cozy-room')
     drawRoomEnvironment(scene, room, backdropPadding(room.width));
+  else if (room.environment === 'kitchen-preview')
+    drawKitchenPreview(scene, room, backdropPadding(room.width));
   else drawLegacyBackground(scene, room);
 
   for (const decoration of room.decorations) drawDecoration(scene, decoration);

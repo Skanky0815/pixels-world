@@ -11,7 +11,7 @@ import { SARA_ANIMATIONS } from '../../content/sara-reactions';
 import type { EndingPose } from '../domain/ending-presentation';
 import type { EndingAnimation } from '../actors/sara-endings';
 import { SARA_CLIPS, SARA_SPRITE } from '../actors/sara-animations';
-import { homecomingPositions } from '../content/homecoming-layout';
+import { homecomingPositions, type HomecomingSide } from '../content/homecoming-layout';
 const REACTION_LABELS = { calm: t('aSuspiciousLook'), annoyed: t('anExasperatedSigh'), angry: '…' };
 
 /** Scene-owned sprite and dialogue view; selection and timing stay in the domain. */
@@ -34,11 +34,14 @@ export class SaraReturnView {
       readonly width: number;
       readonly floorY: number;
       readonly backgroundDoor?: boolean;
+      readonly entrySide?: HomecomingSide;
     },
   ) {
     this.root = scene.add.container(0, 0).setDepth(12).setVisible(false);
     const { width } = layout;
-    const door = layout.backgroundDoor ? [] : fallbackDoor(scene, layout.width, layout.floorY);
+    const door = layout.backgroundDoor
+      ? []
+      : fallbackDoor(scene, layout.width, layout.floorY, layout.entrySide);
 
     this.actor = this.buildActor();
     const panel = scene.add.rectangle(width / 2, 188, width - 80, 112, 0x403a35, 0.96);
@@ -72,17 +75,19 @@ export class SaraReturnView {
 
   private buildActor() {
     registerAnimations(this.scene);
+    const startX = homecomingPositions(this.layout.width, this.layout.entrySide).saraStartX;
 
     return this.scene.add
-      .sprite(this.layout.width + 32, this.layout.floorY, 'sara', 0)
+      .sprite(startX, this.layout.floorY, 'sara', 0)
       .setOrigin(SARA_SPRITE.origin.x, SARA_SPRITE.origin.y)
       .setScale(SARA_SPRITE.scale)
+      .setFlipX(this.layout.entrySide === 'left')
       .play(SARA_ANIMATIONS.idle);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Figur, Dialogposition und Text werden atomar aus derselben Heimkehrphase präsentiert.
   render(snapshot: HomecomingSnapshot, canContinue = false) {
-    const positions = homecomingPositions(this.layout.width);
+    const positions = homecomingPositions(this.layout.width, this.layout.entrySide);
 
     this.root.setVisible(snapshot.stage !== 'waiting');
     this.actor.setVisible(true);
@@ -97,9 +102,12 @@ export class SaraReturnView {
 
   // eslint-disable-next-line max-lines-per-function -- Textur, Fußanker und Handabstand werden gemeinsam aus der Abschlusszeit präsentiert.
   renderEnding(pose: EndingPose) {
-    const positions = homecomingPositions(this.layout.width);
+    const positions = homecomingPositions(this.layout.width, this.layout.entrySide);
     const target =
-      pose.kind === 'sulk' ? positions.saraEndX : positions.pixelSeatX + pose.pixelX + pose.gap;
+      pose.kind === 'sulk'
+        ? positions.saraEndX
+        : positions.pixelSeatX +
+          (pose.pixelX + pose.gap) * (this.layout.entrySide === 'left' ? -1 : 1);
 
     this.actor.anims.stop();
     this.key = pose.key;
@@ -173,6 +181,7 @@ export class SaraReturnView {
       visible: this.root.visible,
       animationKey: this.key,
       x: this.actor.x,
+      flipX: this.actor.flipX,
       soleY: this.actor.y,
       texture: this.actor.texture.key,
       frame: Number(this.actor.frame.name),
@@ -223,9 +232,18 @@ function dialogueMessage(snapshot: HomecomingSnapshot, canContinue: boolean) {
   return t('saraLabel', { v0: snapshot.selection?.dialogue ?? '', v1: cue });
 }
 
-function fallbackDoor(scene: Phaser.Scene, width: number, floorY: number) {
+// eslint-disable-next-line max-lines-per-function -- Tür und Griff werden gemeinsam zur gewählten Eintrittsseite gespiegelt.
+function fallbackDoor(
+  scene: Phaser.Scene,
+  width: number,
+  floorY: number,
+  side: HomecomingSide = 'right',
+) {
+  const center = side === 'left' ? 36 : width - 36;
+  const knob = center + (side === 'left' ? 21 : -21);
+
   return [
-    scene.add.rectangle(width - 36, floorY - 72, 64, 144, 0x705547),
-    scene.add.circle(width - 57, floorY - 64, 4, 0xe4c182),
+    scene.add.rectangle(center, floorY - 72, 64, 144, 0x705547),
+    scene.add.circle(knob, floorY - 64, 4, 0xe4c182),
   ];
 }

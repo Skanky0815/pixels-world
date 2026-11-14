@@ -1,4 +1,7 @@
 export const de = {
+  kitchenPreviewTitle: '02 / KÜCHE · DEV-VORSCHAU',
+  kitchenPreviewGoal: 'DEV-Zielplatz auf der Arbeitsplatte',
+  kitchenPreviewMotivation: 'Raumvorschau: Erreiche den späteren Napfplatz.',
   achievementEmptyTitle: 'Deine Erfolge warten auf dich',
   achievementEmptyText: 'Hier kannst du deine freigespielten Erfolge ansehen.',
   albumAchievements: 'Erfolge',

@@ -1,10 +1,12 @@
 import { IMPACT_ROOMS } from './impact-lab.ts';
 import { LIVING_ROOM } from './living-room.ts';
 import { COZY_REMIX } from './cozy-remix.ts';
+import { KITCHEN_PREVIEW } from './kitchen-preview.ts';
 
 export const ROOMS = {
   'living-room': LIVING_ROOM,
   'cozy-remix': COZY_REMIX,
+  'kitchen-preview': KITCHEN_PREVIEW,
   ...IMPACT_ROOMS,
 } as const;
 export function selectRoom(id: string | null, variants: boolean) {

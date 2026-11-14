@@ -1,5 +1,8 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  kitchenPreviewTitle: '02 / KITCHEN · DEV PREVIEW',
+  kitchenPreviewGoal: 'DEV target on the counter',
+  kitchenPreviewMotivation: 'Room preview: reach the future food bowl position.',
   achievementEmptyTitle: 'Your achievements are waiting',
   achievementEmptyText: 'You can view your unlocked achievements here.',
   albumAchievements: 'Achievements',
