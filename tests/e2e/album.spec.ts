@@ -191,9 +191,19 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.locator('.album-dialog [data-action="close"]').click();
   await page.locator('[data-pause-resume]').click();
   await page.clock.runFor(3300);
-  await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-1');
-  await expect(banner).toContainText('Neuer Erfolg freigeschaltet');
-  await page.clock.runFor(3300);
+  const unlocked: string[] = await page.evaluate(
+    () => JSON.parse(localStorage.getItem('pixels-world.album')!).achievements.unlocked,
+  );
+
+  expect(unlocked[0]).toBe('achievement.angel-1');
+
+  // Production timings can also tip the plant; every newly earned banner must finish.
+  for (const id of unlocked) {
+    await expect(banner).toHaveAttribute('data-entry', id);
+    await expect(banner).toContainText('Neuer Erfolg freigeschaltet');
+    await page.clock.runFor(3300);
+  }
+
   await expect(banner).toBeHidden();
   expect(await page.locator('#game').boundingBox()).toEqual(field);
   expect((await state(page)).result?.newDiscoveries).toBe(2);
