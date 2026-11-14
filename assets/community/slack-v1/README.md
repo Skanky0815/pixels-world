@@ -34,8 +34,10 @@ der Referenzen. Grundlage sind `assets/team/pixel-portrait-v3.png` und
 
 `node tools/prepare-slack-emojis.mjs` exportiert das Set mit `pngjs` und dem
 Systemwerkzeug `zip`. Die Motivgrenzen berücksichtigen Alpha ab 192. Ein
-56-Pixel-Motivbereich im logischen 64×64-Raster erhält einen kleinen transparenten
-Rand; anschließend wird ohne Glättung zweifach auf 128×128 vergrößert. Übernommene
+62-Pixel-Motivbereich im logischen 64×64-Raster nutzt die Fläche proportional bis
+auf mindestens zwei transparente Exportpixel pro Seite aus; bei schmaleren oder
+flacheren Motiven bleibt auf der kürzeren Achse mehr Rand. Anschließend wird ohne
+Glättung zweifach auf 128×128 vergrößert. Übernommene
 RGB-Werte bleiben erhalten, Alpha wird binär. Die Quellen werden nicht geändert.
 Der Export prüft die Dateigröße und erzeugt Namensliste, Vorschau und ZIP erneut.
 
