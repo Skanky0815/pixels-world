@@ -5,6 +5,7 @@ import type { InteractionContext } from '../interactions/contracts';
 import { DamageHistory } from '../domain/chaos-event';
 import { ShelfStability, shelfWobbleAngle } from '../domain/shelf-stability';
 import { ShelfArt } from './shelf-art';
+import { StaticFurnitureArt } from './static-furniture-art';
 
 type ShelfDefinition = RoomDefinition['platforms'][number];
 type ShelfDecoration = Extract<Decoration, { kind: 'rect' }>;
@@ -19,7 +20,7 @@ export class Shelf {
   private readonly model: ShelfStability;
   private readonly history = new DamageHistory();
   private readonly graphic: Phaser.GameObjects.Container;
-  private readonly art: ShelfArt;
+  private readonly art: ShelfArt | StaticFurnitureArt;
   private readonly decorations: readonly ShelfDecoration[];
 
   // eslint-disable-next-line max-lines-per-function -- Content, Grafik und unveränderlicher statischer Körper werden für dieselbe Regalfläche gemeinsam erzeugt.
@@ -45,7 +46,9 @@ export class Shelf {
     this.decorations = decorations.filter(
       (d): d is ShelfDecoration => d.kind === 'rect' && d.supportedBy === this.id,
     );
-    this.art = new ShelfArt(scene, b, this.decorations);
+    this.art = definition.appearance
+      ? new StaticFurnitureArt(scene, b, floorY, definition.appearance)
+      : new ShelfArt(scene, b, this.decorations);
     this.graphic = this.art.root;
     this.draw();
   }

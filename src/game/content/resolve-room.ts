@@ -182,6 +182,16 @@ function validateCouch(value: Extract<ObjectDefinition, { kind: 'couch' }>, path
   number(value.rules.delayMs, `${path}.rules.delayMs`);
 }
 
+function validatePlatformAppearance(platform: RoomDefinition['platforms'][number], path: string) {
+  if (platform.appearance === undefined) return;
+
+  if (!['stool', 'table', 'counter'].includes(platform.appearance))
+    fail(path, 'unknown furniture appearance');
+
+  if ((platform.durability?.stability ?? 'stable') !== 'stable')
+    fail(path, 'furniture must remain stable');
+}
+
 // eslint-disable-next-line max-lines-per-function -- Die skalaren Raum-Metadaten werden in ihrer bisherigen Fehlerreihenfolge geprüft.
 function validateRoom(room: RoomDefinition) {
   record(room, 'room');
@@ -194,7 +204,10 @@ function validateRoom(room: RoomDefinition) {
   asset(room.pixelAsset, 'sprite', `${root}.pixelAsset`);
   color(room.wallColor, `${root}.wallColor`);
 
-  if (room.environment !== undefined && room.environment !== 'cozy-room')
+  if (
+    room.environment !== undefined &&
+    !['cozy-room', 'kitchen-preview'].includes(room.environment)
+  )
     fail(`${root}.environment`, 'unknown environment');
   validateFloorAndLists(room, root);
 }
@@ -271,6 +284,8 @@ class RoomResolver {
       this.unique(platform.id, `${root}.platforms.id`);
       bounds(platform.bounds, room, `${root}.platforms.${platform.id}.bounds`);
       asset(platform.asset, 'shelf', `${root}.platforms.${platform.id}.asset`);
+
+      validatePlatformAppearance(platform, `${root}.platforms.${platform.id}.appearance`);
 
       if (platform.durability !== undefined) {
         record(platform.durability, `${root}.platforms.${platform.id}.durability`);

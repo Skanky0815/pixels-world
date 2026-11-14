@@ -4,6 +4,19 @@ Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms
 
 ## Öffentliche Zimmerauswahl
 
+Die DEV-Vorschau `play.html?room=kitchen-preview` zeigt den Küchen-Grundraum aus
+[#57](https://github.com/Skanky0815/pixels-world/issues/57): Spawn links, Hocker,
+Tisch und Arbeitsplatte rechts. Alle drei Auflagen sind standfest und verwenden
+dieselbe Plattform-/Kontaktlogik wie die Regale. Die vorläufige Möbelgrafik wird
+direkt aus den Kollisionsmaßen gezeichnet; Tisch-/Hockerbeine sind reine Dekoration
+und bleiben durchlässig, die Küchenzeile besitzt einen geschlossenen Körper bis
+zum Boden. `appearance` erlaubt dafür `stool`, `table` oder `counter` ausschließlich
+mit stabiler Auflage. Oberhalb hängende Schränke sind vorerst reine Kulisse.
+Der vorhandene Ball markiert lediglich den späteren Napfplatz als DEV-Testziel;
+der echte Futternapf folgt in #230. Die Vorschau verwendet eine eigene Raum-ID,
+zählt nicht für Küchen-/Raumerfolge und bleibt in der öffentlichen Auswahl
+deaktiviert. Produktions-URLs ignorieren die DEV-Raumauswahl weiterhin.
+
 [rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Küche, Schlafzimmer und Arbeitszimmer bleiben bis zu ihrer Umsetzung deaktiviert. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ in Optionen, Einführung und Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
 
 Die Spielhülle verwendet dieselben Header-/Footer-Bausteine aus `src/ui/game-shell/` für Auswahl, Einführung und Runde. Vite setzt das native HTML bereits beim Ausliefern zusammen; Rechtslinks bleiben ohne zusätzliches Browser-JavaScript vorhanden. Die bestehenden Album-/Optionsbuttons bleiben im Header, statt je Ansicht neu angelegt zu werden.

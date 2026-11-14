@@ -25,6 +25,7 @@ import type { BookRules } from '../interactions/book-toppling.ts';
 import type { BookAppearance } from '../objects/book-art.ts';
 
 export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
+export type FurnitureAppearance = 'stool' | 'table' | 'counter';
 interface Base {
   readonly album?: AlbumEntry;
   readonly spawn: SpawnProfile;
@@ -114,7 +115,7 @@ export interface RoomDefinition {
     readonly count: Readonly<Record<'easy' | 'normal' | 'hard', number>>;
     readonly entries: readonly (SpawnSlot & { readonly surfaceId: string })[];
   }[];
-  readonly environment?: 'cozy-room';
+  readonly environment?: 'cozy-room' | 'kitchen-preview';
   readonly difficultyObjects?: {
     readonly easyOmit: readonly string[];
     readonly hardAdd: readonly ObjectInstance[];
@@ -141,6 +142,7 @@ export interface RoomDefinition {
     readonly id: string;
     readonly bounds: Bounds;
     readonly asset: 'wood-shelf';
+    readonly appearance?: FurnitureAppearance;
     readonly durability?: ShelfStabilityConfig;
     readonly slots?: {
       readonly count: Readonly<Record<'easy' | 'normal' | 'hard', number>>;
