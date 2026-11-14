@@ -37,7 +37,8 @@ function bounds(image) {
 function exportEmoji(name) {
   const image = PNG.sync.read(readFileSync(new URL(`sources/${name}.png`, root)));
   const box = bounds(image);
-  const scale = 56 / Math.max(box.width, box.height);
+  // One logical pixel becomes two export pixels of transparent safety margin.
+  const scale = 62 / Math.max(box.width, box.height);
   const width = Math.round(box.width * scale),
     height = Math.round(box.height * scale);
   const left = Math.floor((64 - width) / 2),
