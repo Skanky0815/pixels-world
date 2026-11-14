@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.0](https://github.com/Skanky0815/pixels-world/compare/v0.5.1...v0.6.0) (2026-11-14)
+
+
+### Features
+
+* **album:** add persistent reconciliation and destruction achievements ([ac8cbb6](https://github.com/Skanky0815/pixels-world/commit/ac8cbb66c407502c106c17686ce8e0b6e119f907)), closes [#295](https://github.com/Skanky0815/pixels-world/issues/295)
+* **album:** celebrate newly saved discoveries with result banners ([a68ebde](https://github.com/Skanky0815/pixels-world/commit/a68ebdefae95c9587fdeab736942fd15de21fa9a)), closes [#293](https://github.com/Skanky0815/pixels-world/issues/293)
+* **ui:** add a compact main menu with separate settings ([1f05527](https://github.com/Skanky0815/pixels-world/commit/1f05527fdbcf824c61195a99cc4f0b4cca950f2e)), closes [#294](https://github.com/Skanky0815/pixels-world/issues/294)
+* **ui:** add room selection with shared game header and footer ([30e61b5](https://github.com/Skanky0815/pixels-world/commit/30e61b574cddfa16a19e0b294fc20d40fb1c1746)), closes [#62](https://github.com/Skanky0815/pixels-world/issues/62)
+* **web:** add bilingual help with a Pixel FAQ teaser ([f3270ff](https://github.com/Skanky0815/pixels-world/commit/f3270ff8ee1d069a66919fe2f4593f092baa6e2f)), closes [#297](https://github.com/Skanky0815/pixels-world/issues/297)
+
+
+### Bug Fixes
+
+* **emojis:** maximize Pixel within the emoji canvas ([0902818](https://github.com/Skanky0815/pixels-world/commit/090281890c3fdc28c38bfaf69da49227640ef994)), closes [#301](https://github.com/Skanky0815/pixels-world/issues/301)
+* **pwa:** recover legacy clients without clearing saved data ([f7ba820](https://github.com/Skanky0815/pixels-world/commit/f7ba820fa57c7b81985903080ffc1526e1c94d89)), closes [#296](https://github.com/Skanky0815/pixels-world/issues/296)
+
 ## [0.5.1](https://github.com/Skanky0815/pixels-world/compare/v0.4.1...v0.5.1) (2026-11-13)
 
 
