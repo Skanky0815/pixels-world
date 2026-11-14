@@ -29,9 +29,10 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
         difficulty === 'easy' ? 1 : 2,
       );
       assert.equal(
-        room.objects.filter((o) => OBJECTS[o.variant as keyof typeof OBJECTS].kind === 'dish')
-          .length,
-        difficulty === 'easy' ? 4 : difficulty === 'normal' ? 5 : 7,
+        room.objects.filter((o) =>
+          ['dish', 'plant'].includes(OBJECTS[o.variant as keyof typeof OBJECTS].kind),
+        ).length,
+        difficulty === 'easy' ? 5 : difficulty === 'normal' ? 6 : 8,
       );
       assert.equal(room.objects.filter((o) => o.variant === 'dry-food-bag').length, 1);
       assert.equal(room.platforms.length, 5);

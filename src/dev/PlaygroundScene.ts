@@ -7,6 +7,7 @@ import { preloadBookArt } from '../game/assets/book-art';
 import { preloadRoomArt } from '../game/assets/room-art';
 import { preloadShelfArt } from '../game/assets/shelf-art';
 import type { Shelf } from '../game/objects/Shelf';
+import { preloadHerbArt } from '../game/assets/herb-art';
 import { preloadCatgrassArt } from '../game/assets/catgrass-art';
 import { preloadCurtainArt } from '../game/assets/curtain-art';
 import { preloadCouchArt } from '../game/assets/couch-art';
@@ -69,6 +70,7 @@ export class PlaygroundScene extends Phaser.Scene {
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
+    preloadHerbArt(this);
     const asset = ASSETS.pixel;
 
     this.load.spritesheet('pixel', spriteUrl('pixel'), {

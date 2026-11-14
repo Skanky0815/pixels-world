@@ -5,6 +5,7 @@ export interface AlbumEntry {
   readonly asset: string;
   readonly name: { readonly de: string; readonly en: string };
   readonly previewOnly?: boolean;
+  readonly also?: readonly { readonly kind: DamageKind; readonly stage: number }[];
   readonly rooms: readonly AlbumRoom[];
   readonly condition: { readonly kind: DamageKind | 'goal-reached'; readonly stage: number };
   readonly fluff: { readonly de: string; readonly en: string };
@@ -35,7 +36,15 @@ export function albumDiscovery(
   if (!Object.hasOwn(catalog, variant)) return null;
   const entry = catalog[variant];
 
-  if (event.kind !== entry.condition.kind || event.stage !== entry.condition.stage) return null;
+  if (!matchesTrigger(event, entry)) return null;
 
   return Object.freeze({ entryId: entry.id, objectId: event.objectId, eventId: event.id });
+}
+
+function matchesTrigger(event: AlbumTrigger, entry: AlbumEntry) {
+  const triggers = [entry.condition, ...(entry.also ?? [])];
+
+  return triggers.some(
+    (condition) => event.kind === condition.kind && event.stage === condition.stage,
+  );
 }

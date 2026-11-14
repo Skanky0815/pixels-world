@@ -1,3 +1,4 @@
+import type { PlantAppearance } from '../assets/plant-appearance';
 import type { DishConfig } from '../objects/Dish.ts';
 import type { DishAppearance } from '../assets/dish-appearance.ts';
 import type { FoodBagConfig } from '../objects/FoodBag.ts';
@@ -88,6 +89,7 @@ export type ObjectDefinition =
   | (Base & {
       readonly kind: 'plant';
       readonly asset: 'catgrass-default';
+      readonly appearance?: PlantAppearance;
       readonly reach: { readonly left: number; readonly right: number };
       readonly rules: PlantConfig;
     })

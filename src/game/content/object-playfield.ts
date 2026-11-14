@@ -125,9 +125,14 @@ export function advanceObjectInteractions(
   shelves: readonly Shelf[] = [],
 ) {
   updateShelves(shelves, pixel, time, damage);
-  const supported = [...objects.breakables, ...objects.books, ...objects.foodBags];
+  const supported = [
+    ...objects.breakables,
+    ...objects.books,
+    ...objects.foodBags,
+    ...objects.plants,
+  ];
 
-  releaseShelves(shelves, supported, objects.impacts);
+  releaseShelves(shelves, supported, objects.impacts, damage);
 
   for (const vase of objects.breakables) {
     vase.updateFall(pixel.snapshot());
@@ -153,7 +158,7 @@ export function advanceObjectInteractions(
 
   damage(interaction.event);
   objects.impacts.advance([...objects.entries.map((entry) => entry.object), ...shelves], delta);
-  releaseShelves(shelves, supported, objects.impacts);
+  releaseShelves(shelves, supported, objects.impacts, damage);
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
@@ -166,15 +171,18 @@ function updateShelves(shelves: readonly Shelf[], pixel: Pixel, time: number, da
 // eslint-disable-next-line max-lines-per-function -- Beide Kontaktphasen geben jede verlorene Auflage genau einmal frei, auch bei einem Fremdtreffer im letzten Rundenframe.
 function releaseShelves(
   shelves: readonly Shelf[],
-  supported: readonly (ImpactActor & { releaseSupport(surface: Bounds): void })[],
+  supported: readonly (ImpactActor & { releaseSupport(surface: Bounds): ChaosEvent | void })[],
   impacts: ImpactWorld,
+  damage: Damage,
 ) {
   for (const shelf of shelves) {
     if (!shelf.consumeSupportLoss()) continue;
 
     for (const object of supported) {
       impacts.inheritSupport(shelf, object);
-      object.releaseSupport(shelf.bounds);
+      const event = object.releaseSupport(shelf.bounds);
+
+      if (event) damage(event);
     }
   }
 }

@@ -1,3 +1,4 @@
+import { HERBS } from './herbs.ts';
 import { CARPET_RULES } from '../../game/interactions/carpet-hairball.ts';
 import { PICTURE_RULES } from '../../game/interactions/picture-falling.ts';
 import type { ObjectCatalog } from '../../game/content/definitions.ts';
@@ -27,6 +28,7 @@ const picture = {
 } as const;
 
 export const OBJECTS = {
+  ...HERBS,
   'cream-cup': {
     kind: 'dish',
     asset: 'dish',

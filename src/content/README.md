@@ -105,11 +105,9 @@ Profile, Größen und Filter werden vor Verwendung validiert. Die bestehende
 Raumvalidierung erkennt fehlende Metadaten, unpassende Kategorien/Größen und
 verbotene Zufallsplatzierung des Vorhangs oder Hauptziels.
 
-Katzengras ist aktuell nur für Bodenplätze geeignet: seine stehende Interaktion,
-Kippbewegung und Erde benötigen einen festen Bodenanker. Der Filter schließt es
-auf erhöhten Möbelplätzen aus. Auch eine passende Größenklasse allein erlaubt
-keine solche Platzierung. Weitere Auflagenunterstützung benötigt eine eigene
-Mechanikänderung.
+Pflanzen unterstützen Boden und erhöhte Auflagen. Katzengras bleibt in seiner bisherigen Spawn-Metadatenfreigabe auf Bodenplätze begrenzt; Basilikum, Petersilie und Minze erlauben `any-surface`. `support` hält die echte Spawn-Auflage, `floorY` den Raumboden. Knabberbereich und Grafik folgen dem aktuellen Auflagenanker. Verlorene Träger geben Pflanzen über denselben gemeinsamen Auflagenverlust-Vertrag wie Vasen, Geschirr, Bücher und Beutel frei; der Kipp-Schaden wird dabei unmittelbar einmalig gewertet. Topf und begrenzte Erde fallen mit aktiver Zeit gemeinsam zum Boden, wirken über `ImpactWorld` auf weitere Objekte und kehren beim Reset auf dieselbe erhöhte Auflage zurück.
+
+Die [Kräutergrafiken samt Quellen und Prompts](../../assets/objects/herbs/README.md) ergänzen das Katzengras-Set. Die gemeinsame Pflanzenklasse verwendet pro Variante intakten und angeknabberten Sprite; die Erde bleibt gemeinsam. Kräuter belegen einen vorhandenen Platz links auf der Arbeitsplatte und einen möglichen Platz am linken Wandregal; Fenster und Sprungweg erhalten keine neue Plattform. Albumfunde akzeptieren über den gemeinsamen `also`-Vertrag sowohl erstes Knabbern als auch direktes Kippen durch Fremdtreffer. Vollständig ruinierte Varianten verlangen weiterhin `tip`, Stufe 2, und erfolgreiche Versöhnung. „Alle Pflanzen II“ und „Pixels Meisterwerk III“ erweitern die Sammlung als neue Fassungen; die Ziele der vorigen Fassungen bleiben unverändert.
 
 Die Metadaten dienen der unten beschriebenen Slotbelegung; ausdrücklich platzierte
 Rauminstanzen bleiben unabhängig von ihrer Zufallseignung erhalten.

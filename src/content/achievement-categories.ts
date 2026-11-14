@@ -37,11 +37,21 @@ export const ACHIEVEMENT_CATEGORIES_V2 = [
     targets: ['dish.cup', 'dish.plate'],
   },
 ] as const;
-export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze(
-  [...ACHIEVEMENT_CATEGORIES, ...ACHIEVEMENT_CATEGORIES_V2].flatMap((category) => [
-    ...category.targets,
-  ]),
-);
+/** The expanded plant objective is a new version; the cat-grass-only objective stays frozen. */
+export const ACHIEVEMENT_CATEGORIES_V3 = [
+  {
+    id: 'plants',
+    name: { de: 'Alle Pflanzen II', en: 'All plants II' },
+    targets: ['plant.catgrass', 'plant.basil', 'plant.parsley', 'plant.mint'],
+  },
+] as const;
+export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
+  ...new Set(
+    [...ACHIEVEMENT_CATEGORIES, ...ACHIEVEMENT_CATEGORIES_V2, ...ACHIEVEMENT_CATEGORIES_V3].flatMap(
+      (category) => [...category.targets],
+    ),
+  ),
+]);
 export const SHELF_TARGET_NAMES: Readonly<
   Record<string, { readonly de: string; readonly en: string }>
 > = {

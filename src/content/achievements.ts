@@ -1,4 +1,8 @@
-import { ACHIEVEMENT_CATEGORIES, ACHIEVEMENT_CATEGORIES_V2 } from './achievement-categories.ts';
+import {
+  ACHIEVEMENT_CATEGORIES,
+  ACHIEVEMENT_CATEGORIES_V2,
+  ACHIEVEMENT_CATEGORIES_V3,
+} from './achievement-categories.ts';
 import { ROOM_ACHIEVEMENTS_V1, ROOM_ACHIEVEMENTS_V2 } from './achievement-rooms.ts';
 import type { ChaosEvent } from '../game/domain/chaos-event.ts';
 
@@ -236,7 +240,7 @@ const NEW_MILESTONES: readonly AchievementDefinition[] = [
 ];
 const CURRENT_OBJECTIVES = [...ACHIEVEMENTS_V1, ...NEW_MILESTONES];
 
-export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+const ACHIEVEMENTS_V2: readonly AchievementDefinition[] = [
   ...CURRENT_OBJECTIVES,
   {
     id: 'achievement.masterpiece-v2',
@@ -252,6 +256,47 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     metric: 'all',
     targets: CURRENT_OBJECTIVES.map((entry) => entry.id),
     threshold: CURRENT_OBJECTIVES.length,
+    art: 'love',
+  },
+];
+
+const HERB_OBJECTIVES: readonly AchievementDefinition[] = [
+  ...ACHIEVEMENTS_V2,
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Anzeigenvertrag des eingefrorenen Pflanzensatzes bleibt zusammen.
+  ...ACHIEVEMENT_CATEGORIES_V3.map((category): AchievementDefinition => ({
+    id: `achievement.category-${category.id}-v3`,
+    name: category.name,
+    description: {
+      de: 'Katzengras und alle drei Küchenkräuter vollständig umkippen, über erfolgreich versöhnte Runden.',
+      en: 'Fully tip over cat grass and all three kitchen herbs across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Pixel, der Kräutergarten war kein Projekt für dich.',
+      en: 'Pixel, the herb garden was not your project.',
+    },
+    metric: 'variants',
+    targets: category.targets,
+    threshold: category.targets.length,
+    art: 'chaos',
+  })),
+];
+
+export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+  ...HERB_OBJECTIVES,
+  {
+    id: 'achievement.masterpiece-v3',
+    name: { de: 'Pixels Meisterwerk III', en: 'Pixel’s masterpiece III' },
+    description: {
+      de: 'Alle anderen Erfolge der Sammlung mit Küchenkräutern freischalten.',
+      en: 'Unlock every other achievement in the kitchen herb collection.',
+    },
+    quote: {
+      de: 'Sogar an die Kräuter hast du gedacht. Natürlich.',
+      en: 'You even remembered the herbs. Of course.',
+    },
+    metric: 'all',
+    targets: HERB_OBJECTIVES.map((entry) => entry.id),
+    threshold: HERB_OBJECTIVES.length,
     art: 'love',
   },
 ];

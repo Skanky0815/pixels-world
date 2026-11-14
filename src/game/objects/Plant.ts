@@ -1,3 +1,6 @@
+import { PlantSupport } from '../interactions/plant-support';
+import { plantTexture, type PlantAppearance } from '../assets/plant-appearance';
+import type { Bounds } from '../interactions/contracts';
 import type Phaser from 'phaser';
 import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import { motionPreferences } from '../../settings/motion';
@@ -15,6 +18,9 @@ export interface PlantObjectConfig {
   readonly id: string;
   readonly x: number;
   readonly floorY: number;
+  readonly support?: Bounds;
+  readonly roomWidth?: number;
+  readonly appearance?: PlantAppearance;
   readonly reach: { readonly left: number; readonly right: number };
   readonly rules: PlantConfig;
 }
@@ -27,6 +33,7 @@ export class Plant implements Interactable, Destructible {
   private readonly graphic: Phaser.GameObjects.Image;
   private readonly soil: Phaser.GameObjects.Image;
 
+  private readonly support: PlantSupport;
   private readonly config: PlantObjectConfig;
   private hasBite = false;
   private activeTime = 0;
@@ -37,31 +44,47 @@ export class Plant implements Interactable, Destructible {
   constructor(scene: Phaser.Scene, config: PlantObjectConfig) {
     this.config = { ...config, reach: { ...config.reach }, rules: { ...config.rules } };
     this.id = config.id;
+    this.support = new PlantSupport(
+      config.x,
+      config.support ?? { x: 0, y: config.floorY, width: config.roomWidth ?? 960, height: 1 },
+      { x: 0, y: config.floorY, width: config.roomWidth ?? 960, height: 1 },
+    );
     this.model = new PlantNibbling(config.rules, this.id);
     this.maximumScore = config.rules.nibbleValue + config.rules.tipValue;
-    this.graphic = scene.add.image(config.x, config.floorY, 'catgrass-intact').setOrigin(0.5, 1);
+    this.graphic = scene.add
+      .image(
+        config.x,
+        this.support.snapshot().y,
+        plantTexture(config.appearance ?? 'catgrass', false),
+      )
+      .setOrigin(0.5, 1);
     this.soil = scene.add
       .image(config.x - 8, config.floorY + 1, 'catgrass-soil')
       .setOrigin(0.5, 1)
       .setDepth(0.5)
       .setVisible(false);
+    this.placeSoil();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Stillstand, Reichweite und tatsächliche Auflage bilden gemeinsam den Kontaktvertrag.
   eligible(context: InteractionContext) {
     const p = context.pixel,
       c = this.config;
 
     return (
+      !this.support.snapshot().dropping &&
       standingStill(context) &&
       p.x >= c.x + c.reach.left &&
       p.x <= c.x + c.reach.right &&
-      Math.abs(p.bottom - c.floorY) < 2
+      Math.abs(p.bottom - this.support.snapshot().y) < 2
     );
   }
 
   // eslint-disable-next-line max-lines-per-function -- Modellschritt, Schaden, Pose und Aktionsrückgabe bleiben als ein koordinierender Frame-Schritt sichtbar.
   update(context: InteractionContext, active: boolean): InteractionResult {
     this.activeTime = context.time;
+    this.support.advance(context.delta);
+    this.placeOnSupport();
     const event = this.model.update(context.delta, active && this.eligible(context));
 
     if (event) this.applyDamage(event);
@@ -89,7 +112,8 @@ export class Plant implements Interactable, Destructible {
     const c = this.config;
 
     this.tipUntil = this.activeTime + 350;
-    this.graphic.setAngle(-80).setPosition(c.x + 10, c.floorY - 17);
+    this.graphic.setAngle(-80).setPosition(c.x + 10, this.support.snapshot().y - 17);
+    this.placeSoil();
     this.soil.setVisible(true);
   }
 
@@ -108,11 +132,11 @@ export class Plant implements Interactable, Destructible {
         ? Math.sin((this.nudgeUntil - time) / 45) * 4
         : 0;
 
-    this.graphic.setAngle(angle + nudge);
+    this.graphic.setAngle(motionPreferences.snapshot().reduced ? 0 : angle + nudge);
   }
 
   private draw() {
-    this.graphic.setTexture(this.hasBite ? 'catgrass-bitten' : 'catgrass-intact');
+    this.graphic.setTexture(plantTexture(this.config.appearance ?? 'catgrass', this.hasBite));
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der vollständige Kontaktvertrag hält aktuelle Geometrie, Masse und Bewegungszustand zusammen.
@@ -124,7 +148,8 @@ export class Plant implements Interactable, Destructible {
       mass: 1.2,
       enabled: true,
       surface: 'loose',
-      moving: this.activeTime < this.tipUntil,
+      moving: this.support.snapshot().dropping || this.activeTime < this.tipUntil,
+      velocityY: this.support.snapshot().velocityY,
       velocityX: this.activeTime < this.tipUntil ? -80 : 0,
       bounds: { x: b.x, y: b.y, width: b.width, height: b.height },
     };
@@ -137,6 +162,49 @@ export class Plant implements Interactable, Destructible {
     if (event) this.applyDamage(event);
 
     return event ? [event] : [];
+  }
+
+  releaseSupport(surface: Bounds) {
+    if (!this.support.release(surface)) return;
+    const event = this.model.tip();
+
+    if (event) this.applyDamage(event);
+
+    return event;
+  }
+
+  private placeSoil() {
+    const soil = this.support.soil();
+
+    this.soil.setPosition(soil.x, soil.y).setDisplaySize(soil.width, 10);
+  }
+
+  private placeOnSupport() {
+    const tipped = this.model.snapshot().state === 'tipped';
+
+    this.graphic.setPosition(
+      this.config.x + (tipped ? 10 : 0),
+      this.support.snapshot().y - (tipped ? 17 : 0),
+    );
+    this.placeSoil();
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Nur lesbare Grafik-, Boden- und Auflagendaten bleiben als flacher Beobachtungsvertrag zusammen.
+  supportedSnapshot() {
+    const support = this.support.snapshot();
+
+    return {
+      id: this.id,
+      appearance: this.config.appearance ?? 'catgrass',
+      ...this.snapshot(),
+      dropping: support.dropping,
+      velocityY: support.velocityY,
+      floorY: this.config.floorY,
+      supportY: support.y,
+      soilX: this.soil.x,
+      soilY: this.soil.y,
+      soilWidth: this.soil.displayWidth,
+    };
   }
 
   damageSnapshot() {
@@ -157,13 +225,17 @@ export class Plant implements Interactable, Destructible {
     return { ...this.model.snapshot(), ...this.damageSnapshot(), ...this.artSnapshot() };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Modell, Fall, Grafik und Schadenshistorie werden gemeinsam auf denselben Spawn zurückgesetzt.
   reset() {
     this.hasBite = false;
+    this.activeTime = 0;
+    this.support.reset();
     this.tipUntil = 0;
     this.nudgeUntil = 0;
     this.model.reset();
     this.history.reset();
-    this.graphic.setAngle(0).setPosition(this.config.x, this.config.floorY);
+    this.graphic.setAngle(0).setPosition(this.config.x, this.support.snapshot().y);
+    this.placeSoil();
     this.soil.setVisible(false);
     this.draw();
   }
