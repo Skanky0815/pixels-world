@@ -13,11 +13,13 @@ async function until(page: Page, check: (state: GameTestState) => boolean) {
       async () => {
         await page.clock.runFor(32);
 
-        return check(await observe(page));
+        const snapshot = await observe(page);
+
+        return check(snapshot) ? { matched: true } : { matched: false, snapshot };
       },
       { intervals: [0], timeout: 15_000 },
     )
-    .toBe(true);
+    .toEqual({ matched: true });
 }
 
 async function move(page: Page, keys: string[], check: (state: GameTestState) => boolean) {
@@ -63,6 +65,7 @@ for (const [difficulty, viewport] of [
         await climbToCounter(page);
         const reached = await observe(page);
 
+        expect(reached.pictures).toHaveLength(difficulty === 'easy' ? 1 : 2);
         expect(reached.chaos.score).toBe(0);
         expect(
           reached.shelves.every((s) => s.enabled && s.damage === 0 && s.stability === 'stable'),
@@ -141,3 +144,25 @@ test(
     expect(ending.pixel.visualFlipX).toBe(true);
   },
 );
+
+test('Beide festen Küchenregale sind über den Tisch erreichbar', async ({ page }, info) => {
+  await page.goto('/play.html?room=kitchen-preview&camera=room');
+  await waitForGame(page);
+  await page.keyboard.down('Space');
+  await until(page, (s) => s.started && s.pixel.grounded);
+  await page.keyboard.up('Space');
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 255);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 398) < 2);
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 430);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 328) < 2);
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 500);
+  await move(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x <= 330);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 218) < 2);
+  await move(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x <= 90);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 202) < 2);
+  expect((await observe(page)).shelves.every((s) => s.enabled && s.damage === 0)).toBe(true);
+  await info.attach('kuechenregale', {
+    body: await page.screenshot(),
+    contentType: 'image/png',
+  });
+});

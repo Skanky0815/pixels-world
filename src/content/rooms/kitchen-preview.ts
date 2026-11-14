@@ -1,3 +1,11 @@
+import {
+  KITCHEN_TABLE_SLOTS,
+  KITCHEN_COUNTER_SLOTS,
+  KITCHEN_WALL_SHELF_SLOTS,
+  KITCHEN_DOOR_SHELF_SLOTS,
+  KITCHEN_FLOOR_SLOTS,
+  KITCHEN_WALL_SLOTS,
+} from './kitchen-slots.ts';
 import { copy } from '../../i18n/locale.ts';
 import type { RoomDefinition } from '../../game/content/definitions.ts';
 
@@ -7,6 +15,13 @@ export const KITCHEN_PREVIEW = {
   caption: copy('kitchenPreviewTitle'),
   environment: 'kitchen-preview',
   homecomingSide: 'left',
+  wallSlots: KITCHEN_WALL_SLOTS,
+  objectSlots: KITCHEN_FLOOR_SLOTS,
+  navigationClearances: [
+    { x: 0, y: 276, width: 212, height: 192 },
+    { x: 304, y: 248, width: 320, height: 80 },
+    { x: 800, y: 138, width: 140, height: 120 },
+  ],
   width: 960,
   height: 540,
   pixelAsset: 'pixel',
@@ -39,6 +54,7 @@ export const KITCHEN_PREVIEW = {
       durability: { stability: 'stable' },
     },
     {
+      slots: KITCHEN_TABLE_SLOTS,
       id: 'kitchen-table',
       asset: 'wood-shelf',
       appearance: 'table',
@@ -46,11 +62,26 @@ export const KITCHEN_PREVIEW = {
       durability: { stability: 'stable' },
     },
     {
+      slots: KITCHEN_COUNTER_SLOTS,
       id: 'kitchen-counter',
       asset: 'wood-shelf',
       appearance: 'counter',
       bounds: { x: 620, y: 258, width: 340, height: 210 },
       durability: { stability: 'stable' },
+    },
+    {
+      id: 'kitchen-door-shelf',
+      asset: 'wood-shelf',
+      bounds: { x: 16, y: 202, width: 104, height: 16 },
+      durability: { stability: 'stable' },
+      slots: KITCHEN_DOOR_SHELF_SLOTS,
+    },
+    {
+      id: 'kitchen-wall-shelf',
+      asset: 'wood-shelf',
+      bounds: { x: 276, y: 218, width: 136, height: 16 },
+      durability: { stability: 'stable' },
+      slots: KITCHEN_WALL_SHELF_SLOTS,
     },
   ],
   decorations: [

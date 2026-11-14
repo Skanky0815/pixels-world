@@ -10,6 +10,7 @@ const image = (name: string) => PNG.sync.read(readFileSync(new URL(`kitchen-${na
 // eslint-disable-next-line max-lines-per-function -- Möbelbilder werden gegen die tatsächlichen Auflagen und den Bodenanker des Raums geprüft.
 test('Küchenmöbel passen exakt zu ihren Auflagen und behalten transparente Zwischenräume', () => {
   for (const platform of KITCHEN_PREVIEW.platforms) {
+    if (!('appearance' in platform)) continue;
     const png = image(platform.appearance);
 
     assert.equal(png.width, platform.bounds.width);

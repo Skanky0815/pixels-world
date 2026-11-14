@@ -6,7 +6,7 @@ Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms
 
 Die DEV-Vorschau `play.html?room=kitchen-preview` zeigt den Küchen-Grundraum aus
 [#57](https://github.com/Skanky0815/pixels-world/issues/57): Spawn links, Hocker,
-Tisch und Arbeitsplatte rechts. Alle drei Auflagen sind standfest und verwenden
+Tisch und Arbeitsplatte rechts sowie zwei feste Wandregale. Alle Auflagen sind standfest und verwenden
 dieselbe Plattform-/Kontaktlogik wie die Regale. Die [Küchengrafiken](../../assets/environment/kitchen/README.md) werden an
 denselben Auflagen und Bodenankern ausgerichtet; Tisch-/Hockerbeine sind reine Dekoration
 und bleiben durchlässig, die Küchenzeile besitzt einen geschlossenen Körper bis
@@ -16,6 +16,15 @@ mit stabiler Auflage. Oberhalb hängende Schränke sind vorerst reine Kulisse.
 auf den freien Boden vor dem Hocker zurück. Blickrichtungen, Charmeposen,
 Abschlussannäherung und das gegenüberliegende Versöhnungspanel folgen derselben
 Seite. Ohne Angabe bleibt der bisherige Auftritt von rechts erhalten.
+Die [Küchen-Slots](rooms/kitchen-slots.ts) reservieren Plätze auf Tisch,
+Arbeitsplatte, beiden Regalen und am Boden. Diese verwenden schon den gemeinsamen
+Slot-Vertrag, aber noch leere Pools und Dichte null: #226–#230 schalten ihre echten
+Varianten dort gezielt frei. Kräuter auf erhöhten Flächen benötigen vorher #229.
+Zwei Wandbereiche verwenden die vorhandenen interaktiven Bildvarianten; Leicht
+belegt einen, Normal/Schwer beide. Regale bleiben feste Raumgeometrie. Saras
+Bodenbereich, der Ausstieg vom Tisch und der Napfplatz sind zusätzlich als
+Navigationsfreiräume markiert. Der Bereich ab Welt-x=800 bleibt auf der
+Arbeitsplatte ohne Gegenstands-Slots.
 Der vorhandene Ball markiert lediglich den späteren Napfplatz als DEV-Testziel;
 der echte Futternapf folgt in #230. Die Vorschau verwendet eine eigene Raum-ID,
 zählt nicht für Küchen-/Raumerfolge und bleibt in der öffentlichen Auswahl
