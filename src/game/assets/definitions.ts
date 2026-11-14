@@ -8,6 +8,7 @@ export const ASSETS = {
   'vase-default': { kind: 'vase', capabilities: ['push', 'damage'], width: 18, height: 28 },
   'carpet-default': { kind: 'carpet', capabilities: ['automatic', 'damage'] },
   'wall-picture': { kind: 'picture', capabilities: ['automatic', 'damage'], width: 108, height: 112 },
+  'food-bag': { kind: 'food-bag', capabilities: ['automatic', 'damage'], width: 32, height: 44 },
   'book-stack': { kind: 'books', capabilities: ['automatic', 'damage'], width: 48, height: 36 },
   'favorite-ball': { kind: 'toy', width: 16, height: 16 },
   'room-plaster': { kind: 'tile' },

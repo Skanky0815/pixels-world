@@ -79,9 +79,12 @@ function validateObject(value: ObjectDefinition, path: string) {
   validateObjectSpawn(value, path);
 }
 
+// eslint-disable-next-line max-lines-per-function -- Der diskriminierte Regelvertrag bleibt neben der Auswahl seiner konkreten Validierung sichtbar.
 function validateObjectRules(value: ObjectDefinition, path: string) {
   if (value.kind === 'vase') return validateVase(value, path);
   record(value.rules, `${path}.rules`);
+
+  if (value.kind === 'food-bag') return validateToppling(value.rules, path);
 
   if (value.kind === 'books') return validateBooks(value, path);
 
@@ -133,9 +136,16 @@ function validateVase(value: Extract<ObjectDefinition, { kind: 'vase' }>, path: 
 function validateBooks(value: Extract<ObjectDefinition, { kind: 'books' }>, path: string) {
   if (!['stacked', 'upright'].includes(value.appearance ?? 'stacked'))
     fail(`${path}.appearance`, 'unknown book appearance');
-  number(value.rules.warningMs, `${path}.rules.warningMs`, Number.EPSILON);
-  number(value.rules.fallMs, `${path}.rules.fallMs`, Number.EPSILON);
-  integer(value.rules.points, `${path}.rules.points`);
+  validateToppling(value.rules, path);
+}
+
+function validateToppling(
+  rules: { readonly warningMs: number; readonly fallMs: number; readonly points: number },
+  path: string,
+) {
+  number(rules.warningMs, `${path}.rules.warningMs`, Number.EPSILON);
+  number(rules.fallMs, `${path}.rules.fallMs`, Number.EPSILON);
+  integer(rules.points, `${path}.rules.points`);
 }
 
 // eslint-disable-next-line max-lines-per-function -- Zeitparameter, Punktwerte und Reichweite bilden gemeinsam den Pflanzenvertrag.
@@ -391,7 +401,7 @@ class RoomResolver {
     return result;
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Die vollständige diskriminierte Platzierungsauswahl bleibt zusammen; Geometrie und Konfiguration sind ausgelagert.
+  // eslint-disable-next-line max-lines-per-function, complexity -- Die vollständige diskriminierte Platzierungsauswahl bleibt zusammen; Geometrie und Konfiguration sind ausgelagert.
   private resolvePlacement(
     instance: ObjectInstance,
     d: ObjectDefinition,
@@ -410,6 +420,8 @@ class RoomResolver {
     if (d.kind === 'couch') return this.resolveCouch(instance, d, path, support);
 
     if (d.kind === 'plant') return this.resolvePlant(instance, d, path, support);
+
+    if (d.kind === 'food-bag') return this.resolveFoodBag(instance, d, path, support);
 
     if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
 
@@ -636,6 +648,37 @@ class RoomResolver {
     };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Intakter Beutel und begrenzte Streufläche müssen in denselben Raum und auf die benannte Auflage passen.
+  private resolveFoodBag(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'food-bag' }>,
+    path: string,
+    support: Bounds,
+  ): ResolvedObject {
+    const p = instance.placement;
+
+    bounds(
+      { x: p.x - 60, y: support.y - 44, width: 120, height: 44 },
+      this.room,
+      `${path}.geometry`,
+    );
+    supportFits(p.x - 16, 32, support, `${path}.placement`);
+
+    return {
+      id: instance.id,
+      variant: instance.variant,
+      asset: d.asset,
+      kind: 'food-bag',
+      config: {
+        id: instance.id,
+        x: p.x,
+        supportY: support.y,
+        floorY: this.room.floor.y,
+        rules: d.rules,
+      },
+    };
+  }
+
   run(): ResolvedRoom {
     const { room } = this;
     const objects = room.objects.map((instance) => this.resolve(instance));
@@ -646,14 +689,17 @@ class RoomResolver {
     return { definition: room, spawn, objects, goal: this.resolveGoal() };
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Die drei Wertungsformen und die Ganzzahlprüfung nach jeder Addition bleiben in einer Schleife sichtbar.
+  // eslint-disable-next-line max-lines-per-function, complexity -- Die unterschiedlichen Wertungsformen und die Ganzzahlprüfung nach jeder Addition bleiben in einer Schleife sichtbar.
   private validateMaximumScore(objects: ResolvedObject[]) {
     const { root } = this;
     let maximum = 0;
 
     for (const object of objects) {
       maximum +=
-        object.kind === 'books' || object.kind === 'picture' || object.kind === 'carpet'
+        object.kind === 'food-bag' ||
+        object.kind === 'books' ||
+        object.kind === 'picture' ||
+        object.kind === 'carpet'
           ? object.config.rules.points
           : object.kind === 'vase'
             ? object.config.points

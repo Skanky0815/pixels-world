@@ -74,15 +74,21 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
     support: 'floor',
   };
 
-  assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), ['catgrass', ...vases, ...books]);
+  assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), [
+    'dry-food-bag',
+    'catgrass',
+    ...vases,
+    ...books,
+  ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, support: 'raised' }), [
+    'dry-food-bag',
     ...vases,
     ...books,
   ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, capacity: 'small' }), vases);
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['automatic', 'damage'] }),
-    ['catgrass', ...books],
+    ['dry-food-bag', 'catgrass', ...books],
   );
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['push', 'damage'] }),
@@ -106,7 +112,12 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
     support: 'floor',
   };
 
-  assert.deepEqual(filterSpawnCandidates(OBJECTS, all), ['catgrass', ...vases, ...books]);
+  assert.deepEqual(filterSpawnCandidates(OBJECTS, all), [
+    'dry-food-bag',
+    'catgrass',
+    ...vases,
+    ...books,
+  ]);
   assert.equal(fitsSpawnSlot(LIVING_ROOM.goal.spawn, [], all), false);
   assert.equal(Object.hasOwn(OBJECTS, 'favorite-ball'), false);
   assert.equal(Object.hasOwn(OBJECTS, 'pixel'), false);

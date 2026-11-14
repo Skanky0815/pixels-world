@@ -27,6 +27,7 @@ export interface SpawnSlotFilter {
 const CATEGORIES = {
   vase: 'decoration',
   books: 'decoration',
+  'food-bag': 'decoration',
   picture: 'decoration',
   carpet: 'furniture',
   plant: 'plant',
@@ -59,8 +60,11 @@ export function spawnSizeFor(width: number, height: number): SpawnSize {
   return 'large';
 }
 
+// eslint-disable-next-line max-lines-per-function -- Die vollständige Typauswahl verwendet reale registrierte Grafikmaße statt einer zweiten Größentabelle.
 function objectSize(object: ObjectDefinition) {
   if (object.kind === 'carpet') return spawnSizeFor(object.geometry.width, object.geometry.height);
+
+  if (object.kind === 'food-bag') return spawnSizeFor(32, 44);
 
   if (object.kind === 'books') return spawnSizeFor(48, 36);
 

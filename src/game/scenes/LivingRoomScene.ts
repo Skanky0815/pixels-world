@@ -16,6 +16,7 @@ import { RoundAlbum } from '../album/round';
 import { discoverGoalAlbum, discoverAlbum, INTERACTABLE_ALBUM } from '../../content/album';
 import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
+import { preloadFoodBagArt } from '../assets/food-bag-art';
 import { preloadBookArt } from '../assets/book-art';
 import { preloadKitchenArt } from '../assets/kitchen-art';
 import { preloadRoomArt } from '../assets/room-art';
@@ -157,6 +158,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);
+    preloadFoodBagArt(this);
     preloadShelfArt(this);
     preloadRoomArt(this);
 
@@ -391,6 +393,7 @@ export class LivingRoomScene extends Phaser.Scene {
             carpets: this.built.carpets.map((carpet) => carpet.snapshot()),
             pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
+            foodBags: this.built.foodBags.map((bag) => bag.snapshot()),
             objects: this.built.entries.map((entry) => ({
               id: entry.object.id,
               kind: entry.definition.kind,

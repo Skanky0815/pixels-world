@@ -20,6 +20,13 @@ function memory(initial: string | null = null) {
   };
 }
 
+function assertRooms(rooms: readonly string[]) {
+  assert.ok(rooms.length > 0);
+
+  for (const room of rooms)
+    assert.ok(['living-room', 'kitchen', 'bedroom', 'study'].includes(room));
+}
+
 test('Jede reale Objektvariante besitzt genau eine stabile, lokalisierte Album-ID und echte Erfolgsregel', () => {
   assert.deepEqual(
     Object.keys(INTERACTABLE_ALBUM)
@@ -41,7 +48,7 @@ test('Jede reale Objektvariante besitzt genau eine stabile, lokalisierte Album-I
         entry.sara.en,
     );
     assert.equal(entry, OBJECTS[variant as keyof typeof OBJECTS].album);
-    assert.deepEqual(entry.rooms, ['living-room']);
+    assertRooms(entry.rooms);
     const event = chaosEvent('random-instance', entry.condition.kind, 1, 1);
 
     assert.equal(discoverAlbum(event, variant)?.entryId, entry.id);
@@ -148,7 +155,7 @@ test('Blockierter Lese-/Schreibzugriff verliert keine sitzungsweite Entdeckung',
 
 test('Veröffentlichte Sammlung enthält keine nur im DEV-Raum erreichbare Variante', () => {
   assert.equal(albumEntries(false).length, 13);
-  assert.equal(albumEntries(true).length, 15);
+  assert.equal(albumEntries(true).length, 16);
   assert.equal(
     albumEntries(false).some((entry) => entry.id === 'couch.worn'),
     false,

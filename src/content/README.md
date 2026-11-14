@@ -18,8 +18,9 @@ Abschlussannäherung und das gegenüberliegende Versöhnungspanel folgen derselb
 Seite. Ohne Angabe bleibt der bisherige Auftritt von rechts erhalten.
 Die [Küchen-Slots](rooms/kitchen-slots.ts) reservieren Plätze auf Tisch,
 Arbeitsplatte, beiden Regalen und am Boden. Diese verwenden schon den gemeinsamen
-Slot-Vertrag, aber noch leere Pools und Dichte null: #226–#230 schalten ihre echten
-Varianten dort gezielt frei. Kräuter auf erhöhten Flächen benötigen vorher #229.
+Slot-Vertrag: Der Boden-Slot `food-bag` enthält bereits einen Trockenfutterbeutel
+je Schwierigkeitsgrad. Die übrigen Pools bleiben leer und ihre Dichten null;
+#226–#229 schalten ihre echten Varianten dort gezielt frei. Kräuter auf erhöhten Flächen benötigen vorher #229.
 Zwei Wandbereiche verwenden die vorhandenen interaktiven Bildvarianten; Leicht
 belegt einen, Normal/Schwer beide. Regale bleiben feste Raumgeometrie. Saras
 Bodenbereich, der Ausstieg vom Tisch und der Napfplatz sind zusätzlich als
@@ -27,7 +28,7 @@ Navigationsfreiräume markiert. Der Bereich ab Welt-x=800 bleibt auf der
 Arbeitsplatte ohne Gegenstands-Slots.
 Am geschützten Zielplatz steht der echte Futternapf aus #230. Nach dem Fund
 frisst Pixel kurz, bevor die gemeinsame Heimkehr beginnt. Der optionale Futterbeutel
-bleibt ein eigener Chaosgegenstand und ist noch nicht belegt. Die Vorschau verwendet eine eigene Raum-ID,
+steht darunter im vorhandenen Boden-Slot als eigener Chaosgegenstand. Die Vorschau verwendet eine eigene Raum-ID,
 zählt nicht für Küchen-/Raumerfolge und bleibt in der öffentlichen Auswahl
 deaktiviert. Produktions-URLs ignorieren die DEV-Raumauswahl weiterhin.
 
@@ -186,6 +187,40 @@ Systeme wie alle anderen Albumfunde. Der Napf bleibt bis zur Küchenveröffentli
 `previewOnly`; versionierte Zerstörungs-/Raumerfolge bleiben unverändert.
 Die aktuelle Platzierung am oberen Regal ist in beiden Räumen schadenfrei
 per Tastatur erreichbar; neue Platzierungen benötigen denselben Spieltest.
+
+## Futterbeutel und gemeinsames Umkippen
+
+`food-bag` ist ein zufällig platzierbarer mittelgroßer Dekorationsgegenstand mit
+32×44-Pixel-Grundform; die Küche wählt den `dry-food-bag` gezielt über ihren
+Boden-Slot unter dem Tisch. Die [Grafiken samt Quellen und Prompts](../../assets/objects/food-bag/README.md)
+zeigen einen begrenzten 96×28-Streuzustand; Raumauflösung berücksichtigt zusätzlich
+die gerichtete kurze Kippbewegung. Reset wiederholt dieselbe Belegung.
+
+`Toppling` steuert für Bücher und Beutel Warnung, Abbruch, unumkehrbares Kippen und
+einmaligen Endschaden. `BookToppling` bewahrt die bestehenden Bücherzustände und
+Regelwerte. Der Beutel wackelt bei ruhiger kurzer Berührung; ein tatsächlicher
+starker Anlauf oder eine harte Landung kippt ihn sofort. Weggehen/Wegspringen
+zählt nicht als Anlauf auf den Gegenstand. Fremdstöße laufen als Quelle und Ziel
+über denselben `ImpactWorld`, einschließlich gleicher Beutel. Masse, Geschwindigkeit,
+Zustand und Material bestimmen Wirkung und Gegenstoß; die vorhandenen begrenzten
+Kausalpfade verhindern wiederholte Rückwirkungen. Verlorene Auflagen lassen den
+Beutel bis zum Boden fallen, auch wenn er bereits ausgelaufen war, ohne zusätzlichen
+Schaden. Der verstreute Endzustand ist weich und erzeugt keine eigenen Futterpartikel
+mit unbeschränkten Schadensereignissen. Er blockiert den Laufweg nicht.
+
+`spill`, Stufe 1, zählt genau einmal als Schaden und als Beutel-Albumfund; Wackeln
+ist kein Fund. Die bestehende Schadenszahl schließt einen friedlichen Abschluss
+auch bei einem konfigurierten Punktwert null aus. Saras Reaktion kennt den
+Futterbeutel als eigenen Schaden. Bestätigung/Verwerfen, Speicherung und einmalige
+Banner nutzen die gemeinsame Albumtransaktion. Der Napf bleibt ein geschütztes
+anderes Ziel. Beutel und Napf sind bis zur Raumveröffentlichung `previewOnly`;
+veröffentlichte v1-Erfolgsziele ändern sich nicht. Beim Freigeben der Küche in #57
+neue Kategorien-/Objektziele und „Pixels Meisterwerk“ passend versionieren.
+
+Die DEV-Räume `food-bag-warning`, `food-bag-impact`, `food-bag-chain` und
+`food-bag-support` stellen echte Kontakte, gleiche Instanzen und Auflagenverlust
+mit handgebauten Daten bereit. Sie verwenden dieselben Adapter wie Küche und
+Playground; keine schreibbaren Testhaken oder zweite Physik.
 
 ## Vasen-Grafikvarianten
 

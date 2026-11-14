@@ -4,6 +4,7 @@ import type { ObjectCatalog } from '../../game/content/definitions.ts';
 import { COUCH_SCRATCH } from '../../game/interactions/couch-scratching.ts';
 import { CURTAIN_SLIDE } from '../../game/interactions/curtain-sliding.ts';
 import { PLANT_NIBBLE } from '../../game/interactions/plant-nibbling.ts';
+import { FOOD_BAG_RULES } from '../../game/interactions/toppling.ts';
 import { BOOK_TOPPLE } from '../../game/interactions/book-toppling.ts';
 
 const cozyCouch = {
@@ -26,6 +27,29 @@ const picture = {
 } as const;
 
 export const OBJECTS = {
+  'dry-food-bag': {
+    kind: 'food-bag',
+    asset: 'food-bag',
+    capabilities: ['automatic', 'damage'],
+    spawn: { size: 'medium', category: 'decoration', random: true, support: 'any-surface' },
+    rules: FOOD_BAG_RULES,
+    album: {
+      id: 'food-bag.dry',
+      asset: 'food-bag-intact',
+      previewOnly: true,
+      rooms: ['kitchen'],
+      name: { de: 'Der Trockenfutterbeutel', en: 'The dry-food bag' },
+      condition: { kind: 'spill', stage: 1 },
+      fluff: {
+        de: 'Ein Buffet auf Bodenniveau. Selbst eröffnet, versteht sich.',
+        en: 'A floor-level buffet. Self-service, naturally.',
+      },
+      sara: {
+        de: 'Pixel, dafür gibt es einen Napf. Du kennst den sogar schon.',
+        en: 'Pixel, that is what the bowl is for. You already know where it is.',
+      },
+    },
+  },
   'living-room-rug': {
     kind: 'carpet',
     asset: 'carpet-default',

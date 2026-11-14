@@ -354,11 +354,13 @@ function slotArea(
 }
 
 function looseAsset(kind: ResolvedObject['kind']) {
-  return kind === 'books'
-    ? ASSETS['book-stack']
-    : kind === 'plant'
-      ? ASSETS['catgrass-default']
-      : ASSETS['vase-default'];
+  return kind === 'food-bag'
+    ? ASSETS['food-bag']
+    : kind === 'books'
+      ? ASSETS['book-stack']
+      : kind === 'plant'
+        ? ASSETS['catgrass-default']
+        : ASSETS['vase-default'];
 }
 
 function candidateSize(definition: ObjectDefinition) {

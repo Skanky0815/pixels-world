@@ -19,6 +19,7 @@ export const DAMAGE_FEEDBACK: Record<DamageKind, TextKey> = {
   'shelf-damage': 'feedbackShelfDamage',
   collapse: 'feedbackShelfCollapse',
   topple: 'feedbackBooks',
+  spill: 'feedbackFoodBag',
   'picture-fall': 'feedbackPicture',
   hairball: 'feedbackHairball',
 };

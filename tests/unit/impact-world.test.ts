@@ -43,7 +43,17 @@ function move(a: ReturnType<typeof actor>, x: number, y = 0, vx = 100, vy = 0) {
 
 // eslint-disable-next-line max-lines-per-function -- Alle vorhandenen Typnamen und gleichartige Instanzen müssen denselben Kontaktvertrag durchlaufen, ohne Paar-Whitelist.
 test('Jeder Objekttyp kann jeden anderen einschließlich gleicher Typen treffen', () => {
-  const types = ['vase', 'books', 'plant', 'picture', 'shelf', 'couch', 'curtain', 'carpet'];
+  const types = [
+    'food-bag',
+    'vase',
+    'books',
+    'plant',
+    'picture',
+    'shelf',
+    'couch',
+    'curtain',
+    'carpet',
+  ];
 
   for (const source of types)
     for (const target of types) {

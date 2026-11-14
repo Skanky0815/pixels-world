@@ -23,10 +23,16 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
       const room = populate(seed, difficulty);
 
       assert.deepEqual(room, populate(seed, difficulty));
-      assert.equal(room.objects.length, difficulty === 'easy' ? 1 : 2);
-      assert.ok(
-        room.objects.every((o) => OBJECTS[o.variant as keyof typeof OBJECTS].kind === 'picture'),
+      assert.equal(
+        room.objects.filter((o) => o.variant !== 'dry-food-bag').length,
+        difficulty === 'easy' ? 1 : 2,
       );
+      assert.ok(
+        room.objects
+          .filter((o) => o.variant !== 'dry-food-bag')
+          .every((o) => OBJECTS[o.variant as keyof typeof OBJECTS].kind === 'picture'),
+      );
+      assert.equal(room.objects.filter((o) => o.variant === 'dry-food-bag').length, 1);
       assert.equal(room.platforms.length, 5);
       assert.ok(room.platforms.every((p) => p.durability?.stability === 'stable'));
       assert.equal(resolveRoom(room, OBJECTS).goal.surfaceY, 258);
@@ -34,7 +40,7 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
 });
 
 // eslint-disable-next-line max-lines-per-function -- Reservierungen für fehlende Objektfamilien bleiben leer und außerhalb von Saras und Pixels Zielbereich.
-test('Küchen-Objektslots bleiben bis zur jeweiligen Umsetzung leer und lassen den Napfbereich frei', () => {
+test('Küchen-Objektslots belegen nur den Futterbeutel und lassen den Napfbereich frei', () => {
   for (const platform of KITCHEN_PREVIEW.platforms) {
     if (!('slots' in platform)) continue;
     assert.deepEqual(platform.slots.count, { easy: 0, normal: 0, hard: 0 });
@@ -45,5 +51,5 @@ test('Küchen-Objektslots bleiben bis zur jeweiligen Umsetzung leer und lassen d
 
   assert.ok('slots' in counter);
   assert.ok(counter.slots.entries.every((slot) => counter.bounds.x + slot.x + 48 < 800));
-  assert.deepEqual(KITCHEN_PREVIEW.objectSlots[0].count, { easy: 0, normal: 0, hard: 0 });
+  assert.deepEqual(KITCHEN_PREVIEW.objectSlots[0].count, { easy: 1, normal: 1, hard: 1 });
 });
