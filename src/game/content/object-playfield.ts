@@ -124,7 +124,7 @@ export function advanceObjectInteractions(
   shelves: readonly Shelf[] = [],
 ) {
   updateShelves(shelves, pixel, time, damage);
-  const supported = [...objects.vases, ...objects.books];
+  const supported = [...objects.vases, ...objects.books, ...objects.foodBags];
 
   releaseShelves(shelves, supported, objects.impacts);
 
@@ -146,6 +146,7 @@ export function advanceObjectInteractions(
     damage(object.updateClimb(context, object === surface && context.pixel.climbing));
   objects.pictures.forEach((picture) => damage(picture.update(context, true).event));
   objects.books.forEach((books) => damage(books.update(context, true).event));
+  objects.foodBags.forEach((bag) => damage(bag.update(context, true).event));
 
   const interaction = updateGroundInteractions(objects.ground, context);
 

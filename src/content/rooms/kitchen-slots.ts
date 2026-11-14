@@ -41,7 +41,7 @@ export const KITCHEN_DOOR_SHELF_SLOTS = {
 export const KITCHEN_FLOOR_SLOTS = [
   {
     id: 'kitchen-floor-content',
-    count: pending,
+    count: { easy: 1, normal: 1, hard: 1 },
     entries: [
       {
         id: 'bin',
@@ -57,7 +57,7 @@ export const KITCHEN_FLOOR_SLOTS = [
         x: 430,
         capacity: 'medium',
         categories: ['decoration'],
-        pool: [],
+        pool: ['dry-food-bag'],
       },
     ],
   },

@@ -1,3 +1,4 @@
+import { FOOD_BAG_ROOMS } from './food-bag-lab.ts';
 import { IMPACT_ROOMS } from './impact-lab.ts';
 import { LIVING_ROOM } from './living-room.ts';
 import { COZY_REMIX } from './cozy-remix.ts';
@@ -8,6 +9,7 @@ export const ROOMS = {
   'cozy-remix': COZY_REMIX,
   'kitchen-preview': KITCHEN_PREVIEW,
   ...IMPACT_ROOMS,
+  ...FOOD_BAG_ROOMS,
 } as const;
 export function selectRoom(id: string | null, variants: boolean) {
   if (!variants || !id) return LIVING_ROOM;

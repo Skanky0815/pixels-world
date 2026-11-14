@@ -1,3 +1,4 @@
+import { FoodBag } from '../objects/FoodBag';
 import { Carpet } from '../objects/Carpet';
 import { ImpactWorld } from '../domain/impact-world';
 import { WallPicture } from '../objects/WallPicture';
@@ -19,9 +20,11 @@ export function buildObjects(scene: Phaser.Scene, room: ResolvedRoom) {
   return groupObjects(objects, entries);
 }
 
-// eslint-disable-next-line max-lines-per-function -- Der vollständige diskriminierte Switch zeigt die vier erlaubten Objektadapter ohne versteckte Fallthroughs.
+// eslint-disable-next-line max-lines-per-function, complexity -- Der vollständige diskriminierte Switch zeigt die registrierten Objektadapter ohne versteckte Fallthroughs.
 function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
   switch (definition.kind) {
+    case 'food-bag':
+      return new FoodBag(scene, definition.config);
     case 'carpet':
       return new Carpet(scene, definition.config);
     case 'picture':
@@ -41,10 +44,10 @@ function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
 
 // eslint-disable-next-line max-lines-per-function -- Der typisierte Rückgabevertrag und seine stabil geordneten Objektgruppen bleiben zusammen.
 function groupObjects(
-  objects: (Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet)[],
+  objects: (Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet | FoodBag)[],
   entries: {
     readonly definition: ResolvedObject;
-    readonly object: Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet;
+    readonly object: Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet | FoodBag;
   }[],
 ) {
   return {
@@ -55,6 +58,7 @@ function groupObjects(
     plants: objects.filter((object) => object instanceof Plant),
     vases: objects.filter((object) => object instanceof Vase),
     pictures: objects.filter((object) => object instanceof WallPicture),
+    foodBags: objects.filter((object) => object instanceof FoodBag),
     books: objects.filter((object) => object instanceof BookStack),
     ground: [
       ...objects.filter((object) => object instanceof Carpet),

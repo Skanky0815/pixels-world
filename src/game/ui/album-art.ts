@@ -1,5 +1,9 @@
 /** Reuse bundled game PNGs; undiscovered entries never render an image element. */
 export const ALBUM_ART: Readonly<Record<string, string>> = {
+  'food-bag-intact': new URL(
+    '../../../assets/objects/food-bag/food-bag-intact.png',
+    import.meta.url,
+  ).href,
   'food-bowl': new URL('../../../assets/objects/food-bowl/food-bowl.png', import.meta.url).href,
   'vase-terracotta': new URL(
     '../../../assets/objects/vases/vase-terracotta-intact.png',

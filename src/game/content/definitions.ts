@@ -1,3 +1,5 @@
+import type { FoodBagConfig } from '../objects/FoodBag.ts';
+import type { TopplingRules } from '../interactions/toppling.ts';
 import type { HomecomingSide } from './homecoming-layout.ts';
 import type { DamageAlbumEntry } from '../../content/album/discovery.ts';
 import type { CarpetConfig } from '../objects/Carpet.ts';
@@ -33,6 +35,11 @@ interface Base {
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
+  | (Base & {
+      readonly kind: 'food-bag';
+      readonly asset: 'food-bag';
+      readonly rules: TopplingRules;
+    })
   | (Base & {
       readonly kind: 'carpet';
       readonly asset: 'carpet-default';
@@ -160,6 +167,7 @@ interface ResolvedBase {
   readonly asset: AssetKey;
 }
 export type ResolvedObject =
+  | (ResolvedBase & { readonly kind: 'food-bag'; readonly config: FoodBagConfig })
   | (ResolvedBase & { readonly kind: 'carpet'; readonly config: CarpetConfig })
   | (ResolvedBase & { readonly kind: 'picture'; readonly config: WallPictureConfig })
   | (ResolvedBase & { readonly kind: 'books'; readonly config: BookStackConfig })

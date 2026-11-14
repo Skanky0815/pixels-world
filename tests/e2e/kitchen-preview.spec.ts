@@ -1,45 +1,6 @@
 /* eslint-disable max-lines-per-function -- Die echte Sprungroute prüft alle Auflagen, Pause und Reset als zusammenhängenden Raumablauf. */
 import { test, expect, waitForGame, waitForLoadingScreen } from './support';
-import type { Page } from '@playwright/test';
-import type { GameTestState } from '../../src/test-state';
-
-async function observe(page: Page) {
-  return page.evaluate(() => window.__pixelTest!);
-}
-
-async function until(page: Page, check: (state: GameTestState) => boolean) {
-  await expect
-    .poll(
-      async () => {
-        await page.clock.runFor(32);
-
-        const snapshot = await observe(page);
-
-        return check(snapshot) ? { matched: true } : { matched: false, snapshot };
-      },
-      { intervals: [0], timeout: 15_000 },
-    )
-    .toEqual({ matched: true });
-}
-
-async function move(page: Page, keys: string[], check: (state: GameTestState) => boolean) {
-  try {
-    for (const key of keys) await page.keyboard.down(key);
-    await until(page, check);
-  } finally {
-    for (const key of keys) await page.keyboard.up(key);
-  }
-}
-
-async function climbToCounter(page: Page) {
-  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 255);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 398) < 2);
-  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 410);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 328) < 2);
-  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 520);
-  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 700);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
-}
+import { observe, until, move, climbToCounter } from './kitchen-support';
 
 for (const [difficulty, viewport] of [
   ['easy', { width: 1280, height: 900 }],
@@ -79,6 +40,8 @@ for (const [difficulty, viewport] of [
 
         expect(reached.pictures).toHaveLength(difficulty === 'easy' ? 1 : 2);
         expect(reached.chaos.score).toBe(0);
+        expect(reached.foodBags).toHaveLength(1);
+        expect(reached.foodBags[0].state).toBe('upright');
         expect(
           reached.shelves.every((s) => s.enabled && s.damage === 0 && s.stability === 'stable'),
         ).toBe(true);

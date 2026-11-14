@@ -6,6 +6,7 @@ import type { AlbumDiscovery } from './content/album/discovery';
 import type { RoundAlbum } from './game/album/round';
 import type { WallPlacement } from './game/content/wall-slots';
 import type { Shelf } from './game/objects/Shelf';
+import type { FoodBag } from './game/objects/FoodBag';
 import type { BookStack } from './game/objects/BookStack';
 import type { GoalView } from './game/ui/GoalView';
 import type { Difficulty } from './content/difficulty';
@@ -29,6 +30,7 @@ export interface GameTestState {
   readonly albumDiscovery: AlbumDiscovery | null;
   readonly album: ReturnType<RoundAlbum['snapshot']>;
   readonly wallPlacements: readonly WallPlacement[];
+  readonly foodBags: readonly ReturnType<FoodBag['snapshot']>[];
   readonly books: readonly ReturnType<BookStack['snapshot']>[];
   readonly shelves: readonly ReturnType<Shelf['snapshot']>[];
   readonly goal: ReturnType<MainGoal['snapshot']>;

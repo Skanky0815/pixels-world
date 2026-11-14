@@ -35,6 +35,7 @@ const DAMAGE_CUES: Partial<Record<DamageKind, ObjectCue>> = {
   break: 'vase',
   'picture-fall': 'picture',
   topple: 'books',
+  spill: 'books',
   'shelf-damage': 'creak',
   collapse: 'collapse',
   hairball: 'hairball',

@@ -8,7 +8,8 @@ export type DamageKind =
   | 'collapse'
   | 'topple'
   | 'picture-fall'
-  | 'hairball';
+  | 'hairball'
+  | 'spill';
 export interface ChaosEvent<K extends DamageKind = DamageKind, S extends number = number> {
   readonly id: string;
   readonly objectId: string;

@@ -311,6 +311,11 @@ export const de = {
   feedbackBreak: '+{v0} · Klirr!',
   feedbackHairball: 'Haarballen auf dem Teppich',
   feedbackPicture: 'Bild abgestürzt',
+  feedbackFoodBag: 'Futter verteilt! +{v0}',
+  saraDamageFoodBag0: 'Pixel, Trockenfutter gehört in den Napf. Nicht unter den ganzen Tisch.',
+  saraDamageFoodBag1: 'Du hast den Futterbeutel geöffnet. Mit der ganzen Katze, wie ich sehe.',
+  saraDamageFoodBag2:
+    'Erst der Futterbeutel, dann die Küche. Wir sprechen über die Reihenfolge, Pixel.',
   feedbackBooks: '+{v0} · Bücher umgeworfen',
   feedbackHeart: 'Herz gewonnen ♥',
   feedbackCorrect: 'Richtig!',

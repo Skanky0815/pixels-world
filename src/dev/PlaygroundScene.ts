@@ -2,6 +2,7 @@ import { GameAudio } from '../game/ui/GameAudio';
 import { preloadObjectAudio } from '../game/assets/object-audio';
 import { preloadCarpetArt } from '../game/assets/carpet-art';
 import { preloadPictureArt } from '../game/assets/picture-art';
+import { preloadFoodBagArt } from '../game/assets/food-bag-art';
 import { preloadBookArt } from '../game/assets/book-art';
 import { preloadRoomArt } from '../game/assets/room-art';
 import { preloadShelfArt } from '../game/assets/shelf-art';
@@ -60,6 +61,7 @@ export class PlaygroundScene extends Phaser.Scene {
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);
+    preloadFoodBagArt(this);
     preloadShelfArt(this);
     preloadRoomArt(this);
     preloadCouchArt(this);
