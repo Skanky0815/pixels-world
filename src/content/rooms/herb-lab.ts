@@ -37,6 +37,10 @@ function lab(
 }
 
 export const HERB_ROOMS = {
+  'herb-neighbors': lab('herb-neighbors', [
+    object('left-herb', 'kitchen-basil', 130),
+    object('right-herb', 'kitchen-parsley', 170),
+  ]),
   'herb-basil': lab('herb-basil', [object('herb', 'kitchen-basil', 130)]),
   'herb-parsley': lab('herb-parsley', [object('herb', 'kitchen-parsley', 130)]),
   'herb-mint': lab('herb-mint', [object('herb', 'kitchen-mint', 130)]),

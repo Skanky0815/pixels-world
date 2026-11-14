@@ -72,6 +72,7 @@ export class Plant implements Interactable, Destructible {
       c = this.config;
 
     return (
+      this.model.snapshot().state !== 'tipped' &&
       !this.support.snapshot().dropping &&
       standingStill(context) &&
       p.x >= c.x + c.reach.left &&

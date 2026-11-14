@@ -199,3 +199,16 @@ for (const outcome of ['success', 'failed'] as const)
     expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();
     expect(await page.evaluate(() => localStorage.getItem('pixels-world.storage'))).toBeNull();
   });
+
+test('Gekippte Pflanze gibt den überlappenden Knabberbereich für ihren Nachbarn frei', async ({
+  page,
+}) => {
+  await start(page, 'herb-neighbors');
+  await until(page, (s) => s.plants[0].state === 'tipped');
+  await until(page, (s) => s.plants[1].state === 'nibbling');
+  expect((await observe(page)).plants[1].damage).toBe(1);
+  expect((await observe(page)).pixel.x).toBe(150);
+  await until(page, (s) => s.plants[1].state === 'tipped');
+  expect((await observe(page)).plants.map((plant) => plant.events)).toEqual([2, 2]);
+  expect((await observe(page)).chaos.score).toBe(24);
+});
