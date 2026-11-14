@@ -1,3 +1,4 @@
+import type { Pantry } from './game/objects/Pantry';
 import type { Plant } from './game/objects/Plant';
 import type { EndingAnimation } from './game/actors/sara-endings';
 import type { EndingPresentation } from './game/domain/ending-presentation';
@@ -32,6 +33,7 @@ export interface GameTestState {
   readonly albumDiscovery: AlbumDiscovery | null;
   readonly album: ReturnType<RoundAlbum['snapshot']>;
   readonly wallPlacements: readonly WallPlacement[];
+  readonly pantry: readonly ReturnType<Pantry['snapshot']>[];
   readonly plants: readonly ReturnType<Plant['supportedSnapshot']>[];
   readonly dishes: readonly ReturnType<Dish['snapshot']>[];
   readonly foodBags: readonly ReturnType<FoodBag['snapshot']>[];

@@ -1,5 +1,7 @@
 /** Reuse bundled game PNGs; undiscovered entries never render an image element. */
 export const ALBUM_ART: Readonly<Record<string, string>> = {
+  'pantry-jar': new URL('../../../assets/objects/pantry/jar.png', import.meta.url).href,
+  'pantry-tin': new URL('../../../assets/objects/pantry/tin.png', import.meta.url).href,
   'herb-basil': new URL('../../../assets/objects/herbs/basil-intact.png', import.meta.url).href,
   'herb-parsley': new URL('../../../assets/objects/herbs/parsley-intact.png', import.meta.url).href,
   'herb-mint': new URL('../../../assets/objects/herbs/mint-intact.png', import.meta.url).href,

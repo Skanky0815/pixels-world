@@ -1,3 +1,4 @@
+import { PANTRY_PROFILES, isPantryAppearance } from '../assets/pantry-appearance.ts';
 import { isPlantAppearance } from '../assets/plant-appearance.ts';
 import { DISH_PROFILES, isDishAppearance } from '../assets/dish-appearance.ts';
 import type { GoalDefinition } from '../domain/main-goal.ts';
@@ -86,6 +87,8 @@ function validateObjectRules(value: ObjectDefinition, path: string) {
   if (value.kind === 'vase') return validateVase(value, path);
 
   if (value.kind === 'dish') return validateDish(value, path);
+
+  if (value.kind === 'pantry') return validatePantry(value, path);
   record(value.rules, `${path}.rules`);
 
   if (value.kind === 'food-bag') return validateToppling(value.rules, path);
@@ -127,6 +130,13 @@ function validateCapabilities(value: ObjectDefinition, path: string) {
     !a.capabilities.every((capability) => value.capabilities.includes(capability))
   )
     fail(`${path}.capabilities`, 'capabilities do not match implemented asset');
+}
+
+function validatePantry(value: Extract<ObjectDefinition, { kind: 'pantry' }>, path: string) {
+  if (!isPantryAppearance(value.appearance))
+    fail(`${path}.appearance`, 'unknown pantry appearance');
+  integer(value.points, `${path}.points`);
+  color(value.color, `${path}.color`);
 }
 
 function validateDish(value: Extract<ObjectDefinition, { kind: 'dish' }>, path: string) {
@@ -436,6 +446,8 @@ class RoomResolver {
 
     if (d.kind === 'dish') return this.resolveDish(instance, d, path, support);
 
+    if (d.kind === 'pantry') return this.resolvePantry(instance, d, path, support);
+
     if (d.kind === 'food-bag') return this.resolveFoodBag(instance, d, path, support);
 
     if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
@@ -703,7 +715,48 @@ class RoomResolver {
     };
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Grafik, physische Maße und Auflage werden aus demselben registrierten Geschirrprofil aufgelöst.
+  // eslint-disable-next-line max-lines-per-function -- Registrierte Behältermaße und echte Auflage werden gemeinsam in den Laufzeitvertrag aufgelöst.
+  private resolvePantry(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'pantry' }>,
+    path: string,
+    support: Bounds,
+  ): ResolvedObject {
+    const p = instance.placement;
+    const shape = PANTRY_PROFILES[d.appearance];
+
+    bounds(
+      {
+        x: p.x - shape.width / 2,
+        y: support.y - shape.height,
+        width: shape.width,
+        height: shape.height,
+      },
+      this.room,
+      `${path}.geometry`,
+    );
+    supportFits(p.x - shape.width / 2, shape.width, support, `${path}.placement`);
+
+    return {
+      id: instance.id,
+      variant: instance.variant,
+      asset: d.asset,
+      kind: 'pantry',
+      config: {
+        id: instance.id,
+        x: p.x,
+        shelfY: support.y,
+        support,
+        points: d.points,
+        color: d.color,
+        appearance: d.appearance,
+        floorY: this.room.floor.y,
+        roomWidth: this.room.width,
+      },
+    };
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Grafik-, Geometrie- und Auflagenvertrag bleibt zusammen.
   private resolveDish(
     instance: ObjectInstance,
     d: Extract<ObjectDefinition, { kind: 'dish' }>,
@@ -765,7 +818,7 @@ class RoomResolver {
         object.kind === 'picture' ||
         object.kind === 'carpet'
           ? object.config.rules.points
-          : object.kind === 'vase' || object.kind === 'dish'
+          : object.kind === 'vase' || object.kind === 'dish' || object.kind === 'pantry'
             ? object.config.points
             : object.kind === 'plant'
               ? object.config.rules.nibbleValue + object.config.rules.tipValue

@@ -189,6 +189,16 @@ per Tastatur erreichbar; neue Platzierungen benötigen denselben Spieltest.
 
 Die [Grafiken, Quellen und Prompts](../../assets/objects/dishes/README.md) liegen zusammen. Die DEV-Räume `dish-cups`, `dish-plates`, `dish-mixed` und `dish-incoming` isolieren reale gleiche und fremde Kontakte. Die öffentliche Küche behält einen friedlichen Sprungweg über Hocker und Tisch zum Napf; Albumfunde verlangen tatsächlichen Bruch und erfolgreiche Versöhnung. Die Erfolgsfassung v1 bleibt eingefroren. Neue Ziele und „Pixels Meisterwerk II“ zählen den erweiterten Katalog; freigespielte alte Erfolge bleiben erhalten.
 
+## Vorratsbehälter und unterschiedliche Endzustände
+
+`pantry` ergänzt Vorratsglas und Keksdose als Varianten derselben Behälterfamilie. Beide verwenden `Breakable` mit den vorhandenen Körpern, Collider-Verbindungen, Schub-/Fallregeln, Auflagenverlust und derselben Schadenshistorie wie Vasen und Geschirr. `pantry-appearance.ts` hält Maße, Masse, Bruch-/Öffnungsschwellen und begrenzte Enddarstellung zusammen. Das optionale `end`-Profil lässt das Glas einmalig mit `break` enden und die Dose mit `spill`; Vasen und Geschirr behalten ihre bisherigen Regeln.
+
+Eingehende und ausgehende Kontakte einschließlich gleicher Instanzen laufen durch `ImpactWorld`. Ruhende beziehungsweise schwache Kontakte verursachen keinen Schaden. Bis zum Endzustand können bewegte Behälter Ketten auslösen; die beendeten Behälter und ihre begrenzten Inhalte wirken nicht weiter als Schadensquelle. Die Endbilder bleiben innerhalb der Raumgrenzen. Bei späterem Auflagenverlust folgen bereits verstreute Inhalte dem Fall zum Boden ohne weitere Wertung. Pause, Fokusverlust, reduzierte Bewegung, Reset und Szenenwechsel verwenden die gemeinsamen Grenzen.
+
+Die vorhandenen Dekorations-Pools auf Tisch, Arbeitsplatte und Wandregal wählen auch die beiden Behälter; Kräuterplätze und der freie Napfbereich bleiben erhalten. Grafikquellen, vollständige Prompts und Export stehen [bei den Assets](../../assets/objects/pantry/README.md). Spiel und Playground laden dieselben Grafiken bereits für einen späteren Raumwechsel.
+
+Albumfund und vollständig ruinierte Variante verlangen den jeweiligen tatsächlichen Endzustand plus erfolgreiche Versöhnung. Die Familie `pantry` zählt für den neuen Zerstörungssatz bei Glasbruch oder ausgelaufener Dose; der Varianten-Erfolg verlangt beide. Frühere Kategorien, der feste Zerstörungssatz `DESTRUCTION_TARGETS_V2` und bisherige Meisterwerke bleiben eingefroren. Neue Kategorie-, Zerstörungs- und Gesamterfolge erhalten eigene Fassungen; Speicherwahl und gemeinsame einmalige Bannerfolge bleiben unverändert. Die handgebauten DEV-Räume `pantry-*` isolieren gleiche und fremde Kontakte sowie verlorene Auflagen für echte Bedienungstests.
+
 ## Futterbeutel und gemeinsames Umkippen
 
 `food-bag` ist ein zufällig platzierbarer mittelgroßer Dekorationsgegenstand mit

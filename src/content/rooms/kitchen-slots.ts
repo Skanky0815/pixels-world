@@ -1,3 +1,4 @@
+import { PANTRY_VARIANTS } from '../objects/pantry.ts';
 import { HERB_VARIANTS } from '../objects/herbs.ts';
 import type { RoomDefinition } from '../../game/content/definitions.ts';
 import type { WallSlots } from '../../game/content/wall-slots.ts';
@@ -8,10 +9,11 @@ const decoration = { capacity: 'medium', categories: ['decoration'], pool: [] } 
 
 /** Real validated slots; kitchen-specific pools are enabled with their object issues. */
 const dishes = ['cream-cup', 'cream-plate'] as const;
+const clutter = [...dishes, ...PANTRY_VARIANTS];
 
 export const KITCHEN_TABLE_SLOTS = {
   count: { easy: 1, normal: 1, hard: 1 },
-  entries: [{ ...decoration, id: 'table-1', x: 204, pool: dishes }],
+  entries: [{ ...decoration, id: 'table-1', x: 204, pool: clutter }],
 } satisfies SurfaceSlots;
 
 /** The left landing and the counter from world x=800 onwards stay clear. */
@@ -19,7 +21,7 @@ export const KITCHEN_COUNTER_SLOTS = {
   count: { easy: 2, normal: 2, hard: 2 },
   entries: [
     { ...decoration, id: 'counter-herb', x: 40, categories: ['plant'], pool: HERB_VARIANTS },
-    { ...decoration, id: 'counter-1', x: 124, pool: dishes },
+    { ...decoration, id: 'counter-1', x: 124, pool: clutter },
   ],
 } satisfies SurfaceSlots;
 
@@ -30,7 +32,7 @@ export const KITCHEN_WALL_SHELF_SLOTS = {
     id: `pantry-${index + 1}`,
     x,
     categories: index === 0 ? ['plant'] : ['decoration'],
-    pool: index === 0 ? HERB_VARIANTS : dishes,
+    pool: index === 0 ? HERB_VARIANTS : clutter,
   })),
 } satisfies SurfaceSlots;
 

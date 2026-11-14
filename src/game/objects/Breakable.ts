@@ -14,13 +14,22 @@ export interface BreakableProfile {
   readonly breakSpeed: number;
   readonly texture?: string;
   readonly shardTexture?: string;
+  readonly end?: {
+    readonly state: 'broken' | 'opened';
+    readonly event: 'break' | 'spill';
+    readonly texture: string;
+    readonly width: number;
+    readonly height: number;
+    readonly shards: number;
+  };
 }
 
-export type BreakableState = 'resting' | 'moving' | 'falling' | 'broken';
+export type BreakableState = 'resting' | 'moving' | 'falling' | 'broken' | 'opened';
 export interface BreakableConfig {
   readonly id: string;
   readonly x: number;
   readonly shelfY: number;
+  readonly support?: Bounds;
   readonly points: number;
   readonly color: number;
   readonly appearance?: string;
@@ -40,6 +49,8 @@ export class Breakable implements Destructible, ObjectLifecycle {
   private readonly history = new DamageHistory();
   private readonly shards: Phaser.GameObjects.Container;
   private readonly config: BreakableConfig;
+  private finished: Phaser.GameObjects.Image | null = null;
+  private supportReleased = false;
   private readonly profile: BreakableProfile;
 
   // eslint-disable-next-line max-lines-per-function -- Texturerzeugung, Body und Splittercontainer werden gemeinsam aus einer Bruchobjekt-Konfiguration initialisiert.
@@ -68,7 +79,7 @@ export class Breakable implements Destructible, ObjectLifecycle {
   }
 
   push(direction: number) {
-    if (this.phase === 'broken') return;
+    if (this.ended()) return;
     this.phase = 'moving';
     this.collider.setImmovable(false);
     (this.collider.body as Phaser.Physics.Arcade.Body).setAllowGravity(true);
@@ -80,7 +91,7 @@ export class Breakable implements Destructible, ObjectLifecycle {
     this.push(direction);
     this.pixelPassing = true;
 
-    if (this.phase !== 'broken')
+    if (!this.ended())
       this.collider.setAngle(motionPreferences.snapshot().reduced ? 0 : direction * 65);
   }
 
@@ -93,7 +104,10 @@ export class Breakable implements Destructible, ObjectLifecycle {
   releaseSupport(shelf: Bounds) {
     const body = this.collider.body as Phaser.Physics.Arcade.Body;
 
-    if (this.phase === 'broken' || !onShelf(body, shelf)) return;
+    if (!onShelf(body, shelf)) return;
+    this.supportReleased = true;
+
+    if (this.ended()) return this.dropContents();
     this.phase = 'moving';
     this.awaitingDrop = true;
     this.collider.setImmovable(false);
@@ -104,7 +118,7 @@ export class Breakable implements Destructible, ObjectLifecycle {
   updateFall(pixel: InteractionContext['pixel']) {
     this.allowsPixelCollision(pixel);
 
-    if (this.phase === 'resting' || this.phase === 'broken') return;
+    if (this.phase === 'resting' || this.ended()) return;
     const body = this.collider.body as Phaser.Physics.Arcade.Body;
 
     this.fallSpeed = Math.max(this.fallSpeed, body.velocity.y);
@@ -160,8 +174,8 @@ export class Breakable implements Destructible, ObjectLifecycle {
       id: this.id,
       bounds: { x: body.left, y: body.top, width: body.width, height: body.height },
       mass: this.profile.mass,
-      enabled: this.phase !== 'broken',
-      moving: this.phase !== 'resting' && this.phase !== 'broken',
+      enabled: !this.ended(),
+      moving: this.phase !== 'resting' && !this.ended(),
       surface: 'solid',
       velocityX: body.velocity.x,
       velocityY: body.velocity.y || this.fallSpeed,
@@ -193,36 +207,105 @@ export class Breakable implements Destructible, ObjectLifecycle {
   }
 
   private acceptsImpact(hit: ImpactHit) {
-    return this.phase !== 'broken' && hit.power >= 30 && (!hit.counter || hit.power >= 140);
+    return !this.ended() && hit.power >= 30 && (!hit.counter || hit.power >= 140);
   }
 
   breakOnFloor() {
-    if (this.phase === 'resting' || this.phase === 'broken') return;
-    this.phase = 'broken';
+    if (this.phase === 'resting' || this.ended()) return;
+    this.phase = this.profile.end?.state ?? 'broken';
     this.collider.disableBody(true, true);
-    const event = chaosEvent(this.id, 'break', 1, this.config.points);
+    const event = chaosEvent(this.id, this.profile.end?.event ?? 'break', 1, this.config.points);
 
     this.history.record(event);
 
     this.scatterShards();
+    this.showContents();
 
     return event;
   }
 
   // eslint-disable-next-line max-lines-per-function -- Jeder Splitter wird in einer Schleife mit seinem ausgeschriebenen Tween-Vertrag erzeugt.
   private scatterShards() {
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < (this.profile.end?.shards ?? 7); i++) {
       const shard = this.createShard(i);
 
       this.shards.add(shard);
       this.scene.tweens.add({
         targets: shard,
         x: Math.max(4, Math.min(this.collider.x + (i - 3) * 9, this.config.roomWidth - 4)),
-        y: this.config.floorY - 2 - (i % 2),
+        y: this.debrisBaseline() - 2 - (i % 2),
         angle: i * 31,
         duration: 240,
       });
     }
+  }
+
+  private ended() {
+    return this.phase === 'broken' || this.phase === 'opened';
+  }
+
+  private debrisBaseline() {
+    if (!this.profile.end || this.supportReleased) return this.config.floorY;
+    const body = this.collider.body as Phaser.Physics.Arcade.Body;
+
+    return body.blocked.down || (this.config.support && onShelf(body, this.config.support))
+      ? Math.min(this.config.floorY, body.bottom)
+      : this.config.floorY;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Ein begrenzter Endzustand erhält tatsächlichen Aufprallanker, Raumgrenzen und einen kurzen pausierbaren Streu-Tween.
+  private showContents() {
+    const end = this.profile.end;
+
+    if (!end) return;
+    const x = Math.max(
+      end.width / 2,
+      Math.min(this.collider.x, this.config.roomWidth - end.width / 2),
+    );
+    const y = this.debrisBaseline();
+
+    this.finished = this.scene.add.image(x, y, end.texture).setOrigin(0.5, 1).setDepth(2);
+
+    if (motionPreferences.snapshot().reduced) return;
+    this.finished.setY(Math.min(this.collider.y, y - 8)).setScale(0.85, 1);
+    this.scene.tweens.add({ targets: this.finished, y, scaleX: 1, duration: 240 });
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Endbild und vorhandene Splitter verlieren gemeinsam ihre Auflage, ohne einen weiteren Schaden auszulösen.
+  private dropContents() {
+    if (!this.finished || !this.profile.end) return;
+    this.scene.tweens.killTweensOf(this.finished);
+    this.scene.tweens.killTweensOf(this.shards.list);
+    this.scene.tweens.add({
+      targets: this.finished,
+      y: this.config.floorY,
+      scaleX: 1,
+      duration: 450,
+    });
+
+    if (this.shards.length === 0) return;
+    this.scene.tweens.add({ targets: this.shards.list, y: this.config.floorY - 2, duration: 450 });
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der flache nur lesbare Endbildvertrag bleibt vollständig sichtbar.
+  protected contentsSnapshot() {
+    return this.finished
+      ? {
+          visible: this.finished.visible,
+          texture: this.finished.texture.key,
+          x: this.finished.x,
+          y: this.finished.y,
+          width: this.finished.displayWidth,
+          height: this.finished.displayHeight,
+        }
+      : null;
+  }
+
+  private clearContents() {
+    if (!this.finished) return;
+    this.scene.tweens.killTweensOf(this.finished);
+    this.finished.destroy();
+    this.finished = null;
   }
 
   private prepareFallback() {
@@ -268,6 +351,8 @@ export class Breakable implements Destructible, ObjectLifecycle {
   // eslint-disable-next-line max-lines-per-function -- Darstellung, Kollisionskörper und Fallenergie werden gemeinsam auf den Spawnzustand zurückgesetzt.
   reset() {
     this.phase = 'resting';
+    this.supportReleased = false;
+    this.clearContents();
     this.fallSpeed = 0;
     this.awaitingDrop = false;
     this.pixelPassing = false;
@@ -291,6 +376,8 @@ export class Breakable implements Destructible, ObjectLifecycle {
   }
 
   destroy() {
+    this.clearContents();
+    this.scene.tweens.killTweensOf(this.shards.list);
     this.collider.destroy();
     this.shards.destroy(true);
   }

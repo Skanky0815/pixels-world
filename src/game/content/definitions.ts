@@ -1,3 +1,5 @@
+import type { PantryAppearance } from '../assets/pantry-appearance';
+import type { PantryConfig } from '../objects/Pantry';
 import type { PlantAppearance } from '../assets/plant-appearance';
 import type { DishConfig } from '../objects/Dish.ts';
 import type { DishAppearance } from '../assets/dish-appearance.ts';
@@ -38,6 +40,13 @@ interface Base {
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
+  | (Base & {
+      readonly kind: 'pantry';
+      readonly asset: 'pantry';
+      readonly appearance: PantryAppearance;
+      readonly points: number;
+      readonly color: number;
+    })
   | (Base & {
       readonly kind: 'dish';
       readonly asset: 'dish';
@@ -178,6 +187,7 @@ interface ResolvedBase {
   readonly asset: AssetKey;
 }
 export type ResolvedObject =
+  | (ResolvedBase & { readonly kind: 'pantry'; readonly config: PantryConfig })
   | (ResolvedBase & { readonly kind: 'dish'; readonly config: DishConfig })
   | (ResolvedBase & { readonly kind: 'food-bag'; readonly config: FoodBagConfig })
   | (ResolvedBase & { readonly kind: 'carpet'; readonly config: CarpetConfig })

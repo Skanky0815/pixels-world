@@ -1,5 +1,12 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  saraDamagePantryJar0: 'One less pantry jar. That was hardly necessary, Pixel.',
+  saraDamagePantryJar1: 'The pasta was better off inside the jar.',
+  saraDamagePantryJar2: 'First the shards, then we talk, Pixel.',
+  saraDamagePantryTin0: 'You found the biscuit tin. And scattered everything inside.',
+  saraDamagePantryTin1: 'The tin was closed. There was a reason for that, Pixel.',
+  saraDamagePantryTin2: 'Biscuits, lid, cat. All in different places.',
+
   kitchenTitle: '02 / KITCHEN',
   saraDamageDish0: 'Pixel, the crockery really did nothing to you.',
   saraDamageDish1: 'I see you have already cleared the table. Very thoroughly.',

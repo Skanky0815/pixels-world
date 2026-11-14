@@ -45,11 +45,22 @@ export const ACHIEVEMENT_CATEGORIES_V3 = [
     targets: ['plant.catgrass', 'plant.basil', 'plant.parsley', 'plant.mint'],
   },
 ] as const;
+/** Pantry objectives extend the collection without changing earlier category targets. */
+export const ACHIEVEMENT_CATEGORIES_V4 = [
+  {
+    id: 'pantry',
+    name: { de: 'Alle Vorratsbehälter', en: 'All pantry containers' },
+    targets: ['pantry.jar', 'pantry.tin'],
+  },
+] as const;
 export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
   ...new Set(
-    [...ACHIEVEMENT_CATEGORIES, ...ACHIEVEMENT_CATEGORIES_V2, ...ACHIEVEMENT_CATEGORIES_V3].flatMap(
-      (category) => [...category.targets],
-    ),
+    [
+      ...ACHIEVEMENT_CATEGORIES,
+      ...ACHIEVEMENT_CATEGORIES_V2,
+      ...ACHIEVEMENT_CATEGORIES_V3,
+      ...ACHIEVEMENT_CATEGORIES_V4,
+    ].flatMap((category) => [...category.targets]),
   ),
 ]);
 export const SHELF_TARGET_NAMES: Readonly<

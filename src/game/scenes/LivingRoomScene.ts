@@ -1,3 +1,4 @@
+import { preloadPantryArt, pantryArtReady } from '../assets/pantry-art';
 import { AlbumBanners } from '../ui/AlbumBanners';
 import { EndingPresentation } from '../domain/ending-presentation';
 import { preloadSaraEndingArt } from '../assets/sara-ending-art';
@@ -158,6 +159,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadDialoguePortraits(this);
     preloadVaseArt(this);
     preloadDishArt(this);
+    preloadPantryArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);
@@ -238,7 +240,12 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private roomArtReady() {
-    return kitchenArtReady(this) && this.textures.exists('food-bowl') && herbArtReady(this);
+    return (
+      kitchenArtReady(this) &&
+      this.textures.exists('food-bowl') &&
+      herbArtReady(this) &&
+      pantryArtReady(this)
+    );
   }
 
   private refreshCaption() {
@@ -403,6 +410,7 @@ export class LivingRoomScene extends Phaser.Scene {
             pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
             foodBags: this.built.foodBags.map((bag) => bag.snapshot()),
+            pantry: this.built.pantry.map((item) => item.snapshot()),
             plants: this.built.plants.map((plant) => plant.supportedSnapshot()),
             dishes: this.built.dishes.map((dish) => dish.snapshot()),
             objects: this.built.entries.map((entry) => ({
