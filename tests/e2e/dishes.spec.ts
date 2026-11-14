@@ -84,6 +84,7 @@ test(
     await page.locator('#game').focus();
     await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
     expect((await observe(page)).room.id).toBe('kitchen');
+    expect((await observe(page)).room.artReady).toBe(true);
     await page.clock.runFor(32);
     await climbToCounter(page);
     await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);

@@ -82,7 +82,12 @@ export interface GameTestState {
   readonly blurListeners: number;
   readonly scene: string;
   readonly frame: number;
-  readonly room: { readonly id: string; readonly width: number; readonly height: number };
+  readonly room: {
+    readonly id: string;
+    readonly width: number;
+    readonly height: number;
+    readonly artReady: boolean;
+  };
   readonly camera: {
     readonly x: number;
     readonly y: number;

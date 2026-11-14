@@ -108,7 +108,7 @@ export const de = {
   roomsTitle: 'Wo geht’s heute hin, Pixel?',
   roomsAvailable: 'Bereit fürs Chaos',
   roomsLater: 'Kommt später',
-  roomsEnter: 'Ab ins Wohnzimmer →',
+  roomsEnter: 'Zimmer betreten →',
   roomsBack: 'Zimmer wechseln',
   roomsPreview: 'Wohnzimmer mit Pixel, Sofa und Vorhang',
 

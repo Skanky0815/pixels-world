@@ -18,7 +18,7 @@ import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
 import { preloadFoodBagArt } from '../assets/food-bag-art';
 import { preloadBookArt } from '../assets/book-art';
-import { preloadKitchenArt } from '../assets/kitchen-art';
+import { kitchenArtReady, preloadKitchenArt } from '../assets/kitchen-art';
 import { preloadRoomArt } from '../assets/room-art';
 import { preloadShelfArt } from '../assets/shelf-art';
 import type { Shelf } from '../objects/Shelf';
@@ -164,13 +164,13 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadShelfArt(this);
     preloadRoomArt(this);
 
-    if (this.room.definition.environment === 'kitchen-preview') preloadKitchenArt(this);
+    preloadKitchenArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
     preloadFavoriteBallArt(this);
 
-    if (this.room.goal.kind === 'food') preloadFoodBowlArt(this);
+    preloadFoodBowlArt(this);
     this.preloadSprite(this.room.definition.pixelAsset);
     this.preloadSprite('sara');
   }
@@ -233,6 +233,10 @@ export class LivingRoomScene extends Phaser.Scene {
     const definition = id ? playableRoom(id) : undefined;
 
     if (definition) this.baseRoom = resolveRoom(definition, OBJECTS);
+  }
+
+  private roomArtReady() {
+    return kitchenArtReady(this) && this.textures.exists('food-bowl');
   }
 
   private refreshCaption() {
@@ -387,6 +391,7 @@ export class LivingRoomScene extends Phaser.Scene {
               id: this.room.definition.id,
               width: this.room.definition.width,
               height: this.room.definition.height,
+              artReady: this.roomArtReady(),
             },
             wallPlacements: this.room.definition.wallPlacements ?? [],
             shelves: this.shelves.map((shelf) => shelf.snapshot()),
