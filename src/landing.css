@@ -637,7 +637,7 @@ body.landing-page {
   }
 }
 
-.landing-help {
+.landing-teaser {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -645,22 +645,22 @@ body.landing-page {
   padding: clamp(20px, 4vw, 32px);
   margin-bottom: 48px;
 }
-.landing-help > div {
+.landing-teaser > div {
   flex: 1 1 360px;
   min-width: 0;
 }
-.landing-help > img {
+.landing-teaser > img {
   flex-shrink: 0;
   width: 128px;
   height: 128px;
   image-rendering: pixelated;
 }
-.landing-help h2 {
+.landing-teaser h2 {
   margin: 0 0 16px;
   font-size: clamp(20px, 2.5vw, 28px);
   line-height: 1.4;
 }
-.landing-help p {
+.landing-teaser p {
   margin: 0;
   max-width: 650px;
   color: #c1afa0;

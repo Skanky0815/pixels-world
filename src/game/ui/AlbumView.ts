@@ -1,6 +1,8 @@
+import { ACHIEVEMENTS } from '../../content/achievements';
+import { achievementsMarkup, ACHIEVEMENT_PAGE_SIZE } from './achievement-markup';
 import { closeButtonMarkup } from '../../ui/button';
 import { albumEntries } from '../../content/album';
-import type { AlbumEntry, AlbumRoom } from '../../content/album/discovery';
+import type { AlbumEntry } from '../../content/album/discovery';
 import { albumCollection } from '../../settings/album';
 import { t, onLanguageChange } from '../../i18n/locale';
 import {
@@ -9,11 +11,13 @@ import {
   ALBUM_PAGE_SIZE,
   albumTabs,
   albumTile,
-  ALBUM_ROOMS,
+  ALBUM_CHAPTERS,
+  type AlbumChapter,
   roomName,
   escape,
 } from './album-markup';
 import './album.css';
+import './achievements.css';
 
 export class AlbumView {
   private readonly root = document.createElement('dialog');
@@ -26,8 +30,9 @@ export class AlbumView {
 
   private readonly unsubscribe: () => void;
   private readonly language: () => void;
-  private room: AlbumRoom = 'living-room';
+  private room: AlbumChapter = 'living-room';
   private selected?: string;
+  private selectedAchievement = ACHIEVEMENTS[0].id;
   private page = 0;
   private detail = false;
 
@@ -69,12 +74,18 @@ export class AlbumView {
   }
 
   private refresh() {
-    if (!albumCollection.snapshot().discovered.length) this.detail = false;
+    const available =
+      this.room === 'achievements'
+        ? albumCollection.achievementSnapshot().unlocked.length
+        : albumCollection.snapshot().discovered.length;
+
+    if (!available) this.detail = false;
 
     if (this.opened) this.render();
   }
 
   private resizePages() {
+    if (this.room === 'achievements') return this.refresh();
     const selected = this.visibleEntries().findIndex((entry) => entry.id === this.selected);
     const anchor = this.detail && selected >= 0 ? selected : this.page * this.pageSize;
 
@@ -84,7 +95,11 @@ export class AlbumView {
   }
 
   private visibleEntries() {
-    return this.entries.filter((entry) => entry.rooms.includes(this.room));
+    const room = this.room;
+
+    return room === 'achievements'
+      ? []
+      : this.entries.filter((entry) => entry.rooms.includes(room));
   }
 
   // eslint-disable-next-line max-lines-per-function -- Re-Render erhält den Fokus und zeigt Metadaten ausschließlich für bereits freigeschaltete IDs.
@@ -99,17 +114,50 @@ export class AlbumView {
       entries.find((entry) => entry.id === this.selected && found.has(entry.id)) ??
       entries.find((entry) => found.has(entry.id));
 
-    this.selected = selected?.id;
+    if (this.room !== 'achievements') this.selected = selected?.id;
     this.root.setAttribute('aria-label', t('albumTitle'));
     this.root.dataset.detail = String(this.detail);
+    this.root.dataset.chapter = this.room;
     const message = this.storageMessage(snapshot.storage);
 
-    this.root.innerHTML = `<header class="popup-heading">${closeButtonMarkup(t('albumClose'), 'data-action="close" data-focus="close"')}<div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${t('albumOverall', { found: found.size, total: this.entries.length })}${this.sessionHint(snapshot.storage)}</p></div></header>
-      ${albumTabs(this.room, this.entries)}
-      <div id="album-room" role="tabpanel" aria-labelledby="album-tab-${this.room}">${this.roomMarkup(entries, found, selected)}</div>
+    this.root.innerHTML = `<header class="popup-heading">${closeButtonMarkup(t('albumClose'), 'data-action="close" data-focus="close"')}<div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${this.overall(found.size)}${this.sessionHint(snapshot.storage)}</p></div></header>
+      ${this.bookmarks()}
+      <div id="album-room" role="tabpanel" aria-labelledby="album-tab-${this.room}">${this.chapterMarkup(entries, found, selected)}</div>
       ${message ? `<footer>${message}</footer>` : ''}`;
 
     if (focus) this.root.querySelector<HTMLElement>(`[data-focus="${focus}"]`)?.focus();
+  }
+
+  private bookmarks() {
+    return albumTabs(this.room, this.entries, this.detail && this.compact.matches);
+  }
+
+  private overall(found: number) {
+    return this.room === 'achievements'
+      ? t('achievementRounds', { count: albumCollection.achievementSnapshot().reconciliations })
+      : t('albumOverall', { found, total: this.entries.length });
+  }
+
+  private chapterMarkup(
+    entries: readonly AlbumEntry[],
+    found: ReadonlySet<string>,
+    selected?: AlbumEntry,
+  ) {
+    return this.room === 'achievements'
+      ? this.achievementMarkup()
+      : this.roomMarkup(entries, found, selected);
+  }
+
+  private achievementMarkup() {
+    const last = Math.ceil(ACHIEVEMENTS.length / ACHIEVEMENT_PAGE_SIZE) - 1;
+
+    this.page = Math.max(0, Math.min(this.page, last));
+
+    return achievementsMarkup(
+      albumCollection.achievementSnapshot(),
+      this.selectedAchievement,
+      this.page,
+    );
   }
 
   // eslint-disable-next-line max-lines-per-function -- Kapitel, Zähler und eine begrenzte Objektseite bilden einen gemeinsamen Buchaufbau.
@@ -161,15 +209,22 @@ export class AlbumView {
       return;
     }
 
-    if (ALBUM_ROOMS.includes(target.dataset.room as AlbumRoom))
-      this.selectRoom(target.dataset.room as AlbumRoom);
+    if (ALBUM_CHAPTERS.includes(target.dataset.room as AlbumChapter))
+      this.selectRoom(target.dataset.room as AlbumChapter);
 
     this.selectEntry(target.dataset.entry);
+    this.selectAchievement(target.dataset.achievement);
 
     this.render();
     const back = this.root.querySelector<HTMLElement>('.album-overview');
 
     if (this.detail && back?.getClientRects().length) back.focus();
+  }
+
+  private selectAchievement(id?: string) {
+    if (!id || !albumCollection.achievementSnapshot().unlocked.includes(id)) return;
+    this.selectedAchievement = id;
+    this.detail = true;
   }
 
   private selectEntry(index?: string) {
@@ -201,7 +256,11 @@ export class AlbumView {
   private overview() {
     this.detail = false;
     this.render();
-    this.root.querySelector<HTMLElement>('.album-tile[aria-pressed="true"]')?.focus();
+    this.root
+      .querySelector<HTMLElement>(
+        '.album-tile[aria-pressed="true"], .achievement-tile[aria-pressed="true"], .album-pagination button:not(:disabled)',
+      )
+      ?.focus();
   }
 
   // eslint-disable-next-line max-lines-per-function -- Seitenwechsel begrenzen die Objektliste und halten den Tastaturfokus an einer bedienbaren Seitentaste.
@@ -230,9 +289,10 @@ export class AlbumView {
     }
   }
 
-  private selectRoom(room: AlbumRoom) {
+  private selectRoom(room: AlbumChapter) {
+    if (this.room !== room) this.page = 0;
     this.room = room;
-    this.page = 0;
+    this.pageSize = this.compact.matches ? 6 : ALBUM_PAGE_SIZE;
     this.detail = false;
   }
 
@@ -243,10 +303,13 @@ export class AlbumView {
 
     if (!['ArrowLeft', 'ArrowRight'].includes(event.code)) return;
     event.preventDefault();
-    const index = ALBUM_ROOMS.indexOf(this.room);
+    const index = ALBUM_CHAPTERS.indexOf(this.room);
 
     this.selectRoom(
-      ALBUM_ROOMS[(index + (event.code === 'ArrowRight' ? 1 : 3)) % ALBUM_ROOMS.length],
+      ALBUM_CHAPTERS[
+        (index + (event.code === 'ArrowRight' ? 1 : ALBUM_CHAPTERS.length - 1)) %
+          ALBUM_CHAPTERS.length
+      ],
     );
     this.render();
     this.root.querySelector<HTMLElement>(`[data-room="${this.room}"]`)?.focus();

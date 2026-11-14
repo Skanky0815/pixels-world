@@ -336,13 +336,20 @@ Balancings.
 
 ## Album und lokale Sammlung
 
-`AlbumCollection` speichert ausschließlich stabile, bekannte Album-IDs unter
-`pixels-world.album`, nicht Instanzen, Punkte oder laufende Runden. Version 1 enthält
-`discovered`; Version 0 mit `unlocked` wird migriert. Fremde IDs und Duplikate zählen
-nicht. Korrupte Daten führen zu einem leeren Album mit Hinweis, blockierter Speicher
-zu sitzungsweitem Fortschritt. Neuere Speicherversionen werden bis zu einem bewusst
-bestätigten Album-Reset nicht überschrieben. Ein Runden-Reset löscht bestätigte
-Einträge nicht.
+`AlbumCollection` speichert stabile Album-IDs und langfristigen Erfolgsfortschritt
+gemeinsam unter `pixels-world.album`, nicht Instanzen oder laufende Runden. Version 2
+enthält `discovered` und `achievements` mit Versöhnungszähler, bestätigten Objektarten
+und freigeschalteten Erfolgs-IDs. Das optionale Feld `ruinedVariants` ergänzt
+vollständig ruinierte Varianten. Fehlt es in einem älteren Speicherstand, beginnt
+nur diese neue Variantenliste leer; vorhandene Erfolge und Zähler bleiben erhalten.
+Version 0 (`unlocked`) und Version 1 (`discovered`)
+bleiben lesbar; alte Albumseiten bleiben erhalten, historische Versöhnungen werden
+nicht aus Funden geschätzt. Fremde IDs und Duplikate zählen nicht. Fehlerhafte
+Erfolgsdaten setzen nur den Erfolgsteil zurück und erhalten gültige Albumseiten.
+Blockierter Speicher lässt den Fortschritt für die Sitzung benutzbar. Neuere
+Speicherversionen werden bis zum bestätigten Album-Reset nicht überschrieben.
+Ein Runden-Reset löscht bestätigten Fortschritt nicht; der Album-Reset löscht
+Entdeckungen und Erfolge zusammen.
 
 Nach erfolgreichem `ChaosScore.awardEvent` sammelt `RoundAlbum` neue Entdeckungen
 nur im Speicher der laufenden Szene, dedupliziert nach stabiler Album-ID. Diese
@@ -353,8 +360,9 @@ Heimkehr, erfolgreiche Versöhnung und Auswertung sind erreicht. Bei gescheitert
 Versöhnung werden alle Vormerkungen verworfen, auch mit bereits verdienten
 Teilherzen; bestätigte Einträge bleiben erhalten. Der friedliche Abschluss
 bleibt ohne Minispiel positiv, erzeugt aber keine Funde.
-Bei Erfolg übergibt `RoundAlbum.confirm` einmalig alle IDs an `AlbumCollection.unlockAll`;
-ein vollständiger Speichervorgang und eine Benachrichtigung übernehmen den Batch.
+Bei Erfolg bestätigt `RoundAlbum.confirm` Albumfunde und Erfolge einmalig über
+`AlbumCollection.completeRound`; ein gemeinsamer Speichervorgang und eine
+Benachrichtigung übernehmen den vollständigen Batch.
 Bereits bekannte IDs zählen nicht erneut. Wiederholtes Rendern und Sprachwechsel
 schreiben nicht erneut. Die Auswertung zeigt die Anzahl tatsächlich neuer Einträge
 oder bei Scheitern ausdrücklich, warum keine neuen Einträge gespeichert wurden.
@@ -362,15 +370,49 @@ Künftige Freischaltungen lesen ausschließlich die bestätigte Sammlung; Skins
 werden hier nicht implementiert. Der nur lesbare E2E-Vertrag zeigt getrennte,
 eingefrorene `pending`-/`confirmed`-Listen unter `album`.
 
-`RoundAlbum.savedDiscoveries()` hält nur die beim Abschluss erfolgreich dauerhaft
-gespeicherten neuen IDs fest. Sitzungsfunde, Schreibfehler und geschützte neuere
-Speicherversionen erzeugen keine Banner; späteres Aktivieren des Speicherns
-kündigt diese Runde nicht nachträglich an. `AlbumBanners` zeigt diese Liste einmalig
-in Fundreihenfolge über dem unteren Spielfeld, drei Sekunden je Eintrag. Die
+`RoundAlbum.confirmedBanners()` hält neue bestätigte IDs unabhängig von der
+Speicherwahl fest: zuerst Albumfunde in Fundreihenfolge, danach Erfolge in
+Katalogreihenfolge. Auch Sitzungsfunde und nicht dauerhaft speicherbare Erfolge
+werden gefeiert; die neutrale Freischaltmeldung behauptet keine Speicherung.
+Späteres Aktivieren des Speicherns wiederholt keine Banner. `AlbumBanners` zeigt
+diese Liste einmalig über dem unteren Spielfeld, drei Sekunden je Eintrag. Die
 szenengebundene Warteschlange nutzt dieselbe aktive Spielzeit wie der Abschluss
 (Pause, Album und unsichtbarer Tab halten sie an), verändert weder Spielfeldgröße
 noch Fokus und wird beim Szenenwechsel entfernt. Bild und DE-/EN-Titel kommen aus
-dem Albumkatalog. Reduzierte Bewegung unterdrückt die Einblendbewegung.
+den beiden Katalogen. Reduzierte Bewegung unterdrückt die Einblendbewegung.
+
+Die datengetriebenen Definitionen in `content/achievements.ts` legen vier
+Versöhnungsschwellen (1, 10, 50, 100) und den festen Zerstörungskatalog der ersten
+Erfolgsversion fest. Nur eine vollständig erfolgreiche Versöhnung erhöht den
+Zähler; friedliche Abschlüsse ohne Minispiel tun das nicht. Schaden wird über
+bereits akzeptierte Chaosereignisse vorgemerkt: Vase gebrochen, Sofa Stufe 6,
+Vorhang Stufe 8, Pflanze umgekippt, Bücher oder Bild gefallen, Regal eingestürzt.
+Die sieben Objektarten werden rundenübergreifend aus erfolgreichen Runden gesammelt;
+Varianten und zufällige Spawns erweitern diesen festen Katalog nicht. Bekannte
+Erfolge bleiben freigeschaltet. Neue Weltobjekte brauchen gegebenenfalls eine neue
+Erfolgsdefinition statt einer stillen Änderung des vorhandenen Ziels.
+`AchievementProgress` führt gespeicherte Basis und ungespeicherte erfolgreiche
+Runden getrennt, damit Einschalten der Speicherwahl vorhandenen Fortschritt
+übernimmt und wiederholtes Umschalten keine Runden doppelt zählt.
+
+Die sieben Kategorien in `content/achievement-categories.ts` frieren ihre jeweils
+veröffentlichten Varianten ein: vier Vasen, zwei Bücheranordnungen, drei Bilder,
+ein Sofa, ein Vorhang, ein Katzengras und zwei zerstörbare Regalvarianten. Das
+unzerstörbare Regal und Vorschauobjekte gehören nicht dazu. Jeder vollständige
+Schadenszustand bestätigt eine stabile Varianten-ID; mehrere Instanzen derselben
+Variante zählen einmal. Teilbeschädigungen und bloße Albumfunde reichen nicht.
+Auch diese Listen werden erst nach erfolgreicher Versöhnung übernommen. Frühere
+Albumfunde oder allgemeine Objektart-Fortschritte werden nicht als unbekannte
+historische Varianten interpretiert.
+
+Der Erfolge-Reiter ist das fünfte Lesezeichen desselben Albumdialogs. Gesperrte
+Erfolge zeigen ihren Fortschritt in der Übersicht, sind aber nicht anklickbar.
+Detailseiten öffnen ausschließlich bereits freigespielte Erfolge; ohne einen
+solchen Erfolg zeigt die Desktopseite einen neutralen Platzhalter. Vier Einträge
+pro Buchseite halten die Übersicht begrenzt. Desktop zeigt Liste und Detail
+nebeneinander; kompakte Geräte wechseln zwischen Übersicht und Detail. Im kurzen
+Querformat stehen die Seitentasten neben dem Titel; das aktive Lesezeichen
+„← Erfolge“ führt zurück zur Übersicht.
 
 Der szenengebundene `AlbumView` zeigt das freigegebene Buchlayout als nativen Dialog.
 Einführung und Pause-Menü öffnen dasselbe Album, pausieren dabei das Spiel und lösen
@@ -479,3 +521,22 @@ separaten Timer oder nachgeholte Hintergrundzeit. Ein neuer Szenenaufbau ersetzt
 das Modell und alle Darstellungen. Reduzierte Bewegung unterdrückt Ballrollen,
 Schritte, Ausrichtung und Drehungen; der ruhige Blick/Blinzler und dieselbe Dauer
 bleiben. Änderungen der Bewegungspräferenz wirken auch im geöffneten Pause-Menü.
+
+Raum-Erfolge verwenden die festen veröffentlichten Ziele aus
+`content/achievement-rooms.ts`: je ein Erfolg für alle spielbaren Räume auf
+Leicht, Normal und Schwer, zusätzlich je Raum ein friedlicher Abschluss auf Schwer.
+Nur erreichtes Hauptziel plus erfolgreicher Abschluss zählt; Timer ohne Ziel,
+Abbruch und gescheiterte Versöhnung zählen nicht. Friedliche Abschlüsse ohne
+Minispiel zählen hier, erhöhen aber keinen Versöhnungszähler. „Sanfte Pfoten“
+verlangt zusätzlich den friedlichen Null-Schaden-Abschluss auf Schwer. Schwierigkeit
+und Raum-ID stammen aus der gespielten Runde; Schwer erfüllt nicht automatisch Leicht.
+DEV-Räume und zukünftige Platzhalter sind ausgeschlossen. Die optionalen
+`completedRooms`-IDs werden ohne historische Vermutungen migriert, dedupliziert
+und gemeinsam gespeichert bzw. zurückgesetzt. Neue Räume erweitern einen neuen
+versionierten Zielsatz; bereits freigespielte Erfolge bleiben erhalten.
+
+„Pixels Meisterwerk“ verlangt alle anderen IDs derselben Katalogversion, niemals
+sich selbst. Die Freischaltprüfung arbeitet in Katalogreihenfolge und bestätigt
+Einzelerfolge vor dem Gesamterfolg im selben Batch. Dadurch erscheint sein Banner
+direkt nach dem letzten erforderlichen Erfolg; Reload oder wiederholte Ergebnisse
+feiern ihn nicht erneut. Änderungen am Zielkatalog müssen diese Version mitpflegen.

@@ -1,7 +1,15 @@
 import { currentLanguage, t } from '../../i18n/locale';
-import type { AlbumEntry, AlbumRoom } from '../../content/album/discovery';
+import type { AlbumEntry } from '../../content/album/discovery';
 import { ALBUM_ART } from './album-art';
 import { roomIcon } from './album-room-icons';
+export const ALBUM_CHAPTERS = [
+  'living-room',
+  'kitchen',
+  'bedroom',
+  'study',
+  'achievements',
+] as const;
+export type AlbumChapter = (typeof ALBUM_CHAPTERS)[number];
 export const ALBUM_ROOMS = ['living-room', 'kitchen', 'bedroom', 'study'] as const;
 const ROOM_KEYS = {
   'living-room': 'albumLivingRoom',
@@ -10,8 +18,8 @@ const ROOM_KEYS = {
   study: 'albumStudy',
 } as const;
 
-export function roomName(room: AlbumRoom) {
-  return t(ROOM_KEYS[room]);
+export function roomName(room: AlbumChapter) {
+  return room === 'achievements' ? t('albumAchievements') : t(ROOM_KEYS[room]);
 }
 
 export function escape(value: string) {
@@ -25,16 +33,15 @@ export function entryImage(entry: AlbumEntry) {
   return `<img src="${escape(ALBUM_ART[entry.asset])}" alt="${escape(entry.name[currentLanguage()])}" draggable="false">`;
 }
 
-export function albumTabs(room: AlbumRoom, entries: readonly AlbumEntry[]) {
-  const index = ALBUM_ROOMS.indexOf(room);
-  const marker = (id: AlbumRoom) => {
-    const exists = entries.some((entry) => entry.rooms.includes(id));
+export function albumTabs(room: AlbumChapter, entries: readonly AlbumEntry[], overview = false) {
+  const marker = (id: AlbumChapter) => {
+    const exists = id === 'achievements' || entries.some((entry) => entry.rooms.includes(id));
     const label = `${roomName(id)}${exists ? '' : ` ${t('albumSoon')}`}`;
 
-    return `<button type="button" class="album-bookmark" role="tab" id="album-tab-${id}" aria-controls="album-room" aria-selected="${id === room}" aria-label="${escape(label)}" title="${escape(label)}" data-room="${id}" data-focus="room-${id}">${roomIcon(id)}</button>`;
+    return `<button type="button" class="album-bookmark" role="tab" id="album-tab-${id}" aria-controls="album-room" aria-selected="${id === room}" aria-label="${escape(label)}" title="${escape(label)}" data-room="${id}" data-focus="room-${id}">${roomIcon(id)}${id === 'achievements' ? `<span>${overview && id === room ? '← ' : ''}${t('albumAchievements')}</span>` : ''}</button>`;
   };
 
-  return `<nav class="album-tabs" role="tablist" aria-label="${t('albumRooms')}"><div class="album-tabs-coming">${ALBUM_ROOMS.slice(index).map(marker).join('')}</div><div class="album-tabs-turned">${ALBUM_ROOMS.slice(0, index).map(marker).join('')}</div></nav>`;
+  return `<nav class="album-tabs" role="tablist" aria-label="${t('albumRooms')}"><div class="album-tabs-coming">${ALBUM_CHAPTERS.map(marker).join('')}</div></nav>`;
 }
 
 export const ALBUM_PAGE_SIZE = 9;

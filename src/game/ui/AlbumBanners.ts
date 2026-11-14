@@ -1,9 +1,26 @@
+import { ACHIEVEMENTS } from '../../content/achievements';
+import { ACHIEVEMENT_ART } from './achievement-markup';
 import './album-banners.css';
 import { motionPreferences } from '../../settings/motion';
 import { AlbumBannerQueue } from '../album/banner-queue';
 import { INTERACTABLE_ALBUM } from '../../content/album';
 import { currentLanguage, t } from '../../i18n/locale';
 import { ALBUM_ART } from './album-art';
+
+const BANNER_ENTRIES = [
+  ...Object.values(INTERACTABLE_ALBUM).map((entry) => ({
+    id: entry.id,
+    name: entry.name,
+    image: ALBUM_ART[entry.asset],
+    label: 'albumEntryUnlocked' as const,
+  })),
+  ...ACHIEVEMENTS.map((entry) => ({
+    id: entry.id,
+    name: entry.name,
+    image: ACHIEVEMENT_ART[entry.art],
+    label: 'achievementNew' as const,
+  })),
+];
 
 /** A scene-owned, non-interactive announcement inside the existing game field. */
 export class AlbumBanners {
@@ -42,14 +59,14 @@ export class AlbumBanners {
 
     if (key === this.rendered) return;
     this.rendered = key;
-    const entry = Object.values(INTERACTABLE_ALBUM).find((entry) => entry.id === id);
+    const entry = BANNER_ENTRIES.find((entry) => entry.id === id);
 
     this.root.hidden = !entry;
     this.root.dataset.entry = entry?.id ?? '';
-    this.label.textContent = entry ? t('albumEntryUnlocked') : '';
+    this.label.textContent = entry ? t(entry.label) : '';
     this.title.textContent = entry?.name[currentLanguage()] ?? '';
 
-    if (entry) this.art.src = ALBUM_ART[entry.asset];
+    if (entry) this.art.src = entry.image;
     else this.art.removeAttribute('src');
   }
 

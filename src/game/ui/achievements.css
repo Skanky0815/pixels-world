@@ -1,0 +1,259 @@
+/* Five fixed bookmarks retain their positions when changing chapters. */
+.album-dialog .album-tabs {
+  display: flex;
+  padding-inline: 0;
+}
+.album-dialog .album-tabs-coming {
+  gap: 2px;
+}
+.album-dialog .album-bookmark[data-room='achievements'] {
+  --room-marker: #dabc78;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 76px;
+  flex-basis: 76px;
+  font-size: 11px;
+}
+.album-bookmark[data-room='achievements'] svg {
+  width: 20px;
+  height: 20px;
+}
+.achievement-story,
+.achievement-index {
+  min-height: 0;
+  min-width: 0;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+}
+.achievement-story {
+  border-right: 1px solid #b18c64;
+  background: linear-gradient(to right, transparent 90%, #5d422330);
+}
+.achievement-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.achievement-heading img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+.achievement-heading > div {
+  min-width: 0;
+}
+.achievement-state {
+  color: #665337;
+  font-size: 12px;
+  margin-bottom: 4px !important;
+}
+.achievement-story progress {
+  width: 100%;
+  height: 8px;
+  min-height: 8px;
+  border: 0;
+  accent-color: #6b7545;
+}
+.achievement-count {
+  font-weight: bold;
+  font-size: 12px;
+}
+.achievement-targets {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.achievement-story blockquote {
+  margin: 4px 0 0;
+  border-left: 3px solid #9f6b36;
+  padding-left: 12px;
+  font:
+    italic 16px/1.4 Georgia,
+    serif;
+}
+.achievement-story cite {
+  display: block;
+  font:
+    11px/1.4 ui-monospace,
+    monospace;
+  margin-top: 5px;
+}
+.achievement-list {
+  display: grid;
+  grid-template-rows: repeat(4, minmax(44px, 1fr));
+  gap: 6px;
+  flex: 1;
+  min-height: 194px;
+}
+.album-dialog .achievement-tile {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 2px 8px;
+  align-content: center;
+  text-align: left;
+  padding: 6px 8px;
+  color: #493925;
+  background: #fff2d866;
+  border: 1px solid #9a7c58;
+  min-height: 44px;
+}
+.album-dialog .achievement-tile[aria-pressed='true'] {
+  background: #e8c78b80;
+  border: 2px solid #966a37;
+  padding: 5px 7px;
+}
+.achievement-mark {
+  grid-row: 1 / 3;
+  align-self: center;
+  color: #5b6538;
+  font-size: 22px;
+}
+.achievement-tile strong {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.album-dialog .achievement-tile small {
+  font-size: 11px;
+  color: #665337;
+}
+.achievement-total-compact {
+  display: none;
+}
+
+@media (max-width: 600px), (max-height: 550px) {
+  .achievement-story,
+  .achievement-index {
+    padding: 12px;
+    gap: 8px;
+  }
+  .achievement-story {
+    display: none;
+    border: 0;
+    background: none;
+  }
+  .album-dialog[data-detail='true'] .achievement-story {
+    display: flex;
+  }
+  .album-dialog[data-detail='true'] .achievement-index {
+    display: none;
+  }
+  .achievement-total-wide {
+    display: none;
+  }
+  .achievement-total-compact {
+    display: inline;
+  }
+  .achievement-heading img {
+    width: 48px;
+    height: 48px;
+  }
+  .achievement-story:is([data-metric='destruction'], [data-metric='variants']) blockquote {
+    display: none;
+  }
+}
+@media (max-height: 550px) and (orientation: landscape) {
+  .album-dialog[data-chapter='achievements'][data-detail='true']
+    .album-bookmark[data-room='achievements'] {
+    width: 96px;
+    flex-basis: 96px;
+  }
+  .achievement-index,
+  .achievement-story {
+    padding: 8px;
+    gap: 4px;
+  }
+  .achievement-index {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 44px minmax(94px, 1fr);
+    padding: 4px;
+  }
+  .achievement-list {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(44px, 1fr));
+    min-height: 94px;
+  }
+  .achievement-index h3 {
+    font-size: 14px;
+  }
+  .album-dialog .achievement-tile {
+    grid-template-columns: 16px minmax(0, 1fr);
+    padding: 4px 6px;
+    gap: 1px 5px;
+  }
+  .album-dialog .achievement-tile[aria-pressed='true'] {
+    padding: 3px 5px;
+  }
+  .achievement-tile strong,
+  .album-dialog .achievement-tile small {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+  .achievement-mark {
+    font-size: 18px;
+  }
+  .achievement-story .album-overview,
+  .achievement-story blockquote {
+    display: none;
+  }
+  .achievement-heading img {
+    width: 32px;
+    height: 32px;
+  }
+  .achievement-description,
+  .achievement-targets {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .achievement-story:is([data-metric='destruction'], [data-metric='variants'])
+    .achievement-description,
+  .achievement-story:is([data-metric='destruction'], [data-metric='variants']) progress {
+    display: none;
+  }
+  .achievement-targets {
+    columns: 2;
+    column-gap: 20px;
+  }
+}
+
+.achievement-targets .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.achievements-spread {
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+.achievement-story > * {
+  flex-shrink: 0;
+}
+.achievement-targets li {
+  position: relative;
+}
+
+.album-dialog .achievement-tile:disabled {
+  cursor: default;
+  background: #b18c5520;
+  border-style: dashed;
+  opacity: 1;
+}
+.achievement-empty .album-mystery {
+  min-height: 100px;
+}

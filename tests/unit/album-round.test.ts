@@ -110,8 +110,15 @@ test('Rundenabschluss übernimmt alle Funde mit genau einem Schreibvorgang und e
   assert.equal(Object.isFrozen(round.savedDiscoveries()), true);
   assert.equal(notifications, 1);
   assert.deepEqual(JSON.parse(storage.getItem()!), {
-    version: 1,
+    version: 2,
     discovered: ['vase.blue', 'couch.cozy'],
+    achievements: {
+      reconciliations: 1,
+      ruined: [],
+      ruinedVariants: [],
+      completedRooms: [],
+      unlocked: ['achievement.angel-1'],
+    },
   });
   assert.deepEqual(round.snapshot().pending, []);
   assert.equal(round.snapshot().completed, true);
@@ -167,9 +174,9 @@ test('Bereits bestätigte Varianten zählen nicht erneut, auch bei konkurrierend
   collection.unlock('vase.blue');
   assert.deepEqual(round.confirm(finish(game(), true)), []);
   assert.deepEqual(round.savedDiscoveries(), []);
-  assert.equal(storage.writes(), 1);
+  assert.equal(storage.writes(), 2);
   assert.deepEqual(new RoundAlbum(collection).confirm(finish(game(), true)), []);
-  assert.equal(storage.writes(), 1);
+  assert.equal(storage.writes(), 3);
 });
 
 test('Migration, geschützter neuerer Speicher und blockierter Storage bleiben erhalten', () => {
@@ -203,7 +210,7 @@ test('Migration, geschützter neuerer Speicher und blockierter Storage bleiben e
   assert.equal(ALBUM_STORAGE_KEY, 'pixels-world.album');
 });
 
-test('Banner erhalten nur die im Moment des Abschlusses erfolgreich gespeicherten IDs', () => {
+test('Banner zeigen neue Freischaltungen auch ohne dauerhafte Speicherung und werden nicht nachgeholt', () => {
   for (const [storage, remember] of [
     [memory(), false],
     [memory(JSON.stringify({ version: 9, discovered: ['future'] })), true],
@@ -223,6 +230,7 @@ test('Banner erhalten nur die im Moment des Abschlusses erfolgreich gespeicherte
     round.record('vase.blue');
     assert.deepEqual(round.confirm(finish(game(), true)), ['vase.blue']);
     assert.deepEqual(round.savedDiscoveries(), []);
+    assert.ok(round.confirmedBanners().includes('vase.blue'));
     collection.setRemember(true);
     round.confirm(finish(game(), true));
     assert.deepEqual(round.savedDiscoveries(), []);

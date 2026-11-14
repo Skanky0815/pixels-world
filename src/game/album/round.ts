@@ -1,3 +1,5 @@
+import { destructionTarget, type DestructionTarget } from '../../content/achievements.ts';
+import type { ChaosEvent } from '../domain/chaos-event.ts';
 import type { AlbumCollection } from './collection.ts';
 import type { RoundResult } from '../domain/round-result.ts';
 
@@ -6,6 +8,9 @@ const EMPTY: readonly string[] = Object.freeze([]);
 /** Scene-owned provisional discoveries never enter storage or the album view. */
 export class RoundAlbum {
   private readonly pending = new Set<string>();
+  private readonly ruined = new Set<DestructionTarget>();
+  private readonly variants = new Set<string>();
+  private banners: readonly string[] = EMPTY;
   private saved: readonly string[] = EMPTY;
   private confirmed: readonly string[] | null = null;
   private readonly collection: AlbumCollection;
@@ -21,19 +26,50 @@ export class RoundAlbum {
     return true;
   }
 
+  recordDamage(event: ChaosEvent, object?: string, variant?: string) {
+    const target = destructionTarget(event, object);
+
+    if (this.confirmed || !target) return;
+    this.ruined.add(target);
+
+    if (variant) this.variants.add(variant);
+  }
+
   /** Resolve once: success commits the batch, failed reconciliation discards it. */
-  confirm(result: RoundResult | null) {
+  // eslint-disable-next-line max-lines-per-function -- Bestätigung und gemeinsames Verwerfen aller rundenbezogenen Vormerkungen bilden eine Transaktion.
+  confirm(result: RoundResult | null, roomId?: string) {
     if (!result) return EMPTY;
 
     if (this.confirmed) return this.confirmed;
     this.confirmed = EMPTY;
 
-    if (result.outcome === 'success') this.confirmed = this.collection.unlockAll(this.pending);
+    if (result.outcome === 'success') this.commit(result, roomId);
 
     if (this.collection.snapshot().storage === 'ready') this.saved = this.confirmed;
     this.pending.clear();
+    this.ruined.clear();
+    this.variants.clear();
 
     return this.confirmed;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Alle bestätigten Funde und Erfolge teilen dieselbe Freischaltungs- und Bannerentscheidung.
+  private commit(result: RoundResult, roomId?: string) {
+    const batch = this.collection.completeRound(
+      this.pending,
+      this.ruined,
+      !result.peaceful,
+      this.variants,
+      completedRooms(result, roomId),
+    );
+
+    this.confirmed = batch.entries;
+
+    this.banners = Object.freeze([...batch.entries, ...batch.achievements]);
+  }
+
+  confirmedBanners() {
+    return this.banners;
   }
 
   savedDiscoveries() {
@@ -47,4 +83,14 @@ export class RoundAlbum {
       completed: this.confirmed !== null,
     });
   }
+}
+
+function completedRooms(result: RoundResult, roomId?: string) {
+  if (!result.goalReached || !roomId) return [];
+  const rooms = [`${result.difficulty}/${roomId}`];
+
+  if (result.difficulty === 'hard' && result.peaceful && result.score === 0)
+    rooms.push(`hard-peaceful/${roomId}`);
+
+  return rooms;
 }
