@@ -15,4 +15,4 @@ Pixels Fressanimation verwendet die vorhandenen Pixel-Bilder 13 (Absenken), 23/2
 (Knabbern) und 2 (Aufrichten), ergänzt um kurze Ausrichtung mit den Gehbildern.
 Alle Posen behalten den Fußanker auf derselben Arbeitsplatte; Physik und Wertung
 stehen während des sichtbaren Fressmoments still. Bei reduzierter Bewegung bleibt
-die Knabberpose ruhig. Die Raumvorschau bleibt bis zur Küchenfreigabe DEV-Inhalt.
+die Knabberpose ruhig. Der Napf gehört mit der öffentlich auswählbaren Küche zum Album; die separate DEV-Vorschau bleibt ein Testraum.

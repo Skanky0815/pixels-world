@@ -41,6 +41,4 @@ Die obere Bildkante liegt jeweils auf der Plattformoberfläche, die Füße am Ra
 Grafik, Auflagehöhe und Kollisionsmaße sind gemeinsam zu pflegen; keine nachträgliche
 Änderung der Sprungroute allein zur Bildanpassung.
 
-`src/game/assets/kitchen-art.ts` lädt das Set für den Küchenraum. Der Grundraum bleibt
-zunächst eine DEV-Vorschau; die öffentliche Raumfreigabe und das echte Napfziel
-sind davon getrennt.
+`src/game/assets/kitchen-art.ts` lädt das Set für den Küchenraum. Die öffentliche Küche und die separate DEV-Vorschau teilen dieselben Grafiken und Auflagen; der echte Napf ist das geschützte Hauptziel.

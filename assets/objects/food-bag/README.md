@@ -27,6 +27,6 @@ die Fallrichtung. Bei reduzierter Bewegung entfallen zusätzliches Wackeln und
 Rotation, aktive Zeit, reale Lage und Schadensgrenzen bleiben gleich.
 Die gemeinsamen Aufprall-Samples der Bücher begleiten das Umkippen.
 
-Der Beutel bleibt bis zur Küchenfreigabe `previewOnly`. Sein Albumfund verlangt
+Der Beutel gehört mit der öffentlich auswählbaren Küche zum veröffentlichten Album. Sein Albumfund verlangt
 den vollständig ausgelaufenen Zustand (`spill`, Stufe 1); Auflage, Napfkontakt und
 veröffentlichte Erfolgsziele werden davon getrennt behandelt.

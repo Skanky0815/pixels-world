@@ -1,3 +1,5 @@
+import { DISH_ROOMS } from './dish-lab.ts';
+import { KITCHEN } from './kitchen.ts';
 import { FOOD_BAG_ROOMS } from './food-bag-lab.ts';
 import { IMPACT_ROOMS } from './impact-lab.ts';
 import { LIVING_ROOM } from './living-room.ts';
@@ -5,11 +7,13 @@ import { COZY_REMIX } from './cozy-remix.ts';
 import { KITCHEN_PREVIEW } from './kitchen-preview.ts';
 
 export const ROOMS = {
+  kitchen: KITCHEN,
   'living-room': LIVING_ROOM,
   'cozy-remix': COZY_REMIX,
   'kitchen-preview': KITCHEN_PREVIEW,
   ...IMPACT_ROOMS,
   ...FOOD_BAG_ROOMS,
+  ...DISH_ROOMS,
 } as const;
 export function selectRoom(id: string | null, variants: boolean) {
   if (!variants || !id) return LIVING_ROOM;

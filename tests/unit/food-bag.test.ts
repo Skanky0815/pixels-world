@@ -106,18 +106,18 @@ test('Spillfund, konkrete Sara-Reaktion und gemeinsame Erfolgsbestätigung bleib
   }
 });
 
-test('Unveröffentlichter Beutel ändert weder eingefrorene Erfolgsziele noch die veröffentlichte Sammlung', () => {
+test('Veröffentlichter Beutel erweitert die Sammlung, während die erste Erfolgsfassung eingefroren bleibt', () => {
   assert.equal(
     albumEntries(false).some((entry) => entry.id === 'food-bag.dry'),
-    false,
+    true,
   );
   assert.equal(
     albumEntries(true).some((entry) => entry.id === 'food-bag.dry'),
     true,
   );
-  assert.equal(destructionTarget(chaosEvent('bag', 'spill', 1, 18), 'food-bag'), undefined);
-  assert.equal(DESTRUCTION_TARGETS.length, 7);
-  assert.equal(DESTRUCTION_VARIANTS.includes('food-bag.dry'), false);
+  assert.equal(destructionTarget(chaosEvent('bag', 'spill', 1, 18), 'food-bag'), 'food-bag');
+  assert.equal(DESTRUCTION_TARGETS.length, 9);
+  assert.equal(DESTRUCTION_VARIANTS.includes('food-bag.dry'), true);
   assert.equal(
     ACHIEVEMENTS.find((entry) => entry.id === 'achievement.masterpiece-v1')?.threshold,
     16,

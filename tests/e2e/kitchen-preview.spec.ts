@@ -68,14 +68,19 @@ for (const [difficulty, viewport] of [
   });
 }
 
-test('Produktion ignoriert die Küchenvorschau und lässt die öffentliche Küche gesperrt', async ({
+test('Produktion isoliert die DEV-Vorschau und bietet die Küche in der Raumauswahl an', async ({
   page,
 }) => {
   await page.goto('http://127.0.0.1:4175/pixels-world/play.html?room=kitchen-preview');
   await waitForLoadingScreen(page);
   await expect(page.locator('h1 span').first()).toContainText('WOHNZIMMER');
   await page.locator('[data-menu-play]').click();
-  await expect(page.locator('.room-choice').filter({ hasText: 'Küche' })).toBeDisabled();
+  await expect(page.locator('.room-choice').filter({ hasText: 'Küche' })).toBeEnabled();
+  await page.locator('[data-room-choice="kitchen"]').click();
+  await page.locator('[data-room-start="kitchen"]').click();
+  await page.clock.runFor(96);
+  await expect(page.locator('h1 span').first()).toHaveText('02 / KÜCHE');
+  await expect(page.locator('.start-screen')).toContainText('Der Magen knurrt.');
   expect(await page.evaluate(() => typeof window.__pixelTest)).toBe('undefined');
 });
 
@@ -122,6 +127,8 @@ test(
 
     expect(ending.result?.outcome).toBe('success');
     expect(ending.result?.peaceful).toBe(true);
+    expect(ending.chaos.score).toBe(0);
+    expect(ending.dishes.every((dish) => dish.state === 'resting' && dish.shards === 0)).toBe(true);
     expect(ending.album.confirmed).toContain('goal.food-bowl');
     await expect(page.locator('.album-banner')).toHaveAttribute('data-entry', 'goal.food-bowl');
     expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();

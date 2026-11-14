@@ -31,7 +31,7 @@ test(
     await expect(page.locator('main > header')).toHaveCount(1);
     await expect(page.locator('main > footer')).toHaveCount(1);
     await expect(rooms.locator('.room-choice')).toHaveCount(4);
-    await expect(rooms.locator('.room-choice:disabled')).toHaveCount(3);
+    await expect(rooms.locator('.room-choice:disabled')).toHaveCount(2);
     await expect
       .poll(() =>
         rooms
@@ -59,7 +59,7 @@ test(
     await page.locator('[data-pause-resume]').click();
     await expect(rooms).toContainText('Where to today, Pixel?');
     await expect(rooms).toContainText('Kitchen');
-    await rooms.locator('[data-room-choice]').focus();
+    await rooms.locator('[data-room-choice="kitchen"]').focus();
     await page.keyboard.press('Tab');
     await expect(rooms.locator('[data-room-start]')).toBeFocused();
     await page.keyboard.press('Enter');

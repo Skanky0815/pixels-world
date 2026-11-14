@@ -6,6 +6,7 @@ import './room-selection.css';
 
 /** Menu presentation only: the scene owns room selection, reset and start state. */
 export class RoomSelection {
+  private selected = 'living-room';
   private readonly root = document.createElement('section');
   private readonly back = document.createElement('button');
   private readonly portrait = matchMedia('(orientation: portrait) and (max-width: 1024px)');
@@ -34,6 +35,9 @@ export class RoomSelection {
       'click',
       (event) => {
         if ((event.target as Element).closest('[data-rooms-menu]')) return openMenu();
+        const card = (event.target as Element).closest<HTMLButtonElement>('[data-room-choice]');
+
+        if (card?.dataset.roomChoice) return this.select(card.dataset.roomChoice);
         const id = (event.target as Element).closest<HTMLButtonElement>('[data-room-start]')
           ?.dataset.roomStart;
 
@@ -81,10 +85,17 @@ export class RoomSelection {
     const focused = this.root.contains(document.activeElement);
 
     this.root.setAttribute('aria-label', t('roomsTitle'));
-    this.root.innerHTML = markup();
+    this.root.innerHTML = markup(this.selected);
     this.back.textContent = t('roomsBack');
 
     if (focused) this.root.querySelector<HTMLButtonElement>('[data-room-start]')?.focus();
+  }
+
+  private select(id: string) {
+    if (!playableRoom(id)) return;
+    this.selected = id;
+    this.refresh();
+    this.root.querySelector<HTMLButtonElement>(`[data-room-choice="${id}"]`)?.focus();
   }
 
   destroy() {
@@ -96,19 +107,20 @@ export class RoomSelection {
   }
 }
 
-function roomCard(choice: (typeof ROOM_CHOICES)[number]) {
+function roomCard(choice: (typeof ROOM_CHOICES)[number], selected: string) {
   const playable = Boolean(choice.definition);
-  const picture = playable
-    ? `<img src="${preview}" alt="${t('roomsPreview')}" width="936" height="527">`
-    : roomIcon(choice.id);
+  const picture =
+    choice.id === 'living-room'
+      ? `<img src="${preview}" alt="${t('roomsPreview')}" width="936" height="527">`
+      : roomIcon(choice.id);
 
-  return `<button type="button" class="room-choice${playable ? ' room-choice-selected' : ''}" ${playable ? `data-room-choice="${choice.id}" aria-pressed="true"` : 'disabled'}>
+  return `<button type="button" class="room-choice${choice.id === selected ? ' room-choice-selected' : ''}" ${playable ? `data-room-choice="${choice.id}" aria-pressed="${choice.id === selected}"` : 'disabled'}>
     <span class="room-choice-picture">${picture}</span><span class="room-choice-copy"><strong>${translateExact(choice.name)}</strong><span>${t(playable ? 'roomsAvailable' : 'roomsLater')}</span></span></button>`;
 }
 
-function markup() {
-  const selected = ROOM_CHOICES.find((choice) => choice.definition);
+function markup(id: string) {
+  const selected = ROOM_CHOICES.find((choice) => choice.id === id && choice.definition);
 
-  return `<div class="room-selection-heading"><h2>${t('roomsTitle')}</h2><button type="button" class="ui-button" data-rooms-menu>${t('menuBack')}</button></div><div class="room-choices">${ROOM_CHOICES.map(roomCard).join('')}</div>
+  return `<div class="room-selection-heading"><h2>${t('roomsTitle')}</h2><button type="button" class="ui-button" data-rooms-menu>${t('menuBack')}</button></div><div class="room-choices">${ROOM_CHOICES.map((choice) => roomCard(choice, id)).join('')}</div>
     <div class="room-selection-start"><button type="button" class="ui-button" data-room-start="${selected?.id ?? ''}" ${selected ? '' : 'disabled'}>${t('roomsEnter')}</button></div>`;
 }

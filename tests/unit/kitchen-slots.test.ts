@@ -24,13 +24,14 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
 
       assert.deepEqual(room, populate(seed, difficulty));
       assert.equal(
-        room.objects.filter((o) => o.variant !== 'dry-food-bag').length,
+        room.objects.filter((o) => OBJECTS[o.variant as keyof typeof OBJECTS].kind === 'picture')
+          .length,
         difficulty === 'easy' ? 1 : 2,
       );
-      assert.ok(
-        room.objects
-          .filter((o) => o.variant !== 'dry-food-bag')
-          .every((o) => OBJECTS[o.variant as keyof typeof OBJECTS].kind === 'picture'),
+      assert.equal(
+        room.objects.filter((o) => OBJECTS[o.variant as keyof typeof OBJECTS].kind === 'dish')
+          .length,
+        difficulty === 'easy' ? 4 : difficulty === 'normal' ? 5 : 7,
       );
       assert.equal(room.objects.filter((o) => o.variant === 'dry-food-bag').length, 1);
       assert.equal(room.platforms.length, 5);
@@ -39,12 +40,12 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
     }
 });
 
-// eslint-disable-next-line max-lines-per-function -- Reservierungen für fehlende Objektfamilien bleiben leer und außerhalb von Saras und Pixels Zielbereich.
-test('Küchen-Objektslots belegen nur den Futterbeutel und lassen den Napfbereich frei', () => {
+// eslint-disable-next-line max-lines-per-function -- Belegte Slots bleiben validiert und außerhalb von Saras und Pixels Zielbereich.
+test('Küchen-Objektslots erlauben Geschirr und lassen den Napfbereich frei', () => {
   for (const platform of KITCHEN_PREVIEW.platforms) {
     if (!('slots' in platform)) continue;
-    assert.deepEqual(platform.slots.count, { easy: 0, normal: 0, hard: 0 });
-    assert.ok(platform.slots.entries.every((slot) => slot.pool.length === 0));
+    assert.ok(platform.slots.count.easy > 0);
+    assert.ok(platform.slots.entries.every((slot) => slot.pool.length > 0));
   }
 
   const counter = KITCHEN_PREVIEW.platforms.find((p) => p.id === 'kitchen-counter')!;

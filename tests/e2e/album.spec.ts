@@ -367,7 +367,7 @@ test('Veröffentlichtes Album zählt keine unerreichbare DEV-Variante', async ({
   await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
   await waitForLoadingScreen(page);
   await (await introAction(page, 'album')).click();
-  await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 0 von 13');
+  await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 0 von 17');
   await expect(page.locator('.album-tile:disabled')).toHaveCount(9);
   await expect(page.locator('.album-dialog img')).toHaveCount(0);
 });

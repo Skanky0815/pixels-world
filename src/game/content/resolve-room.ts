@@ -1,3 +1,4 @@
+import { DISH_PROFILES, isDishAppearance } from '../assets/dish-appearance.ts';
 import type { GoalDefinition } from '../domain/main-goal.ts';
 import { GOAL_ALBUM } from '../../content/album/goals.ts';
 import { validateCarpetRules } from '../interactions/carpet-hairball.ts';
@@ -79,9 +80,11 @@ function validateObject(value: ObjectDefinition, path: string) {
   validateObjectSpawn(value, path);
 }
 
-// eslint-disable-next-line max-lines-per-function -- Der diskriminierte Regelvertrag bleibt neben der Auswahl seiner konkreten Validierung sichtbar.
+// eslint-disable-next-line complexity, max-lines-per-function -- Die vollständige Auswahl aller registrierten Objekttypen bleibt explizit.
 function validateObjectRules(value: ObjectDefinition, path: string) {
   if (value.kind === 'vase') return validateVase(value, path);
+
+  if (value.kind === 'dish') return validateDish(value, path);
   record(value.rules, `${path}.rules`);
 
   if (value.kind === 'food-bag') return validateToppling(value.rules, path);
@@ -123,6 +126,12 @@ function validateCapabilities(value: ObjectDefinition, path: string) {
     !a.capabilities.every((capability) => value.capabilities.includes(capability))
   )
     fail(`${path}.capabilities`, 'capabilities do not match implemented asset');
+}
+
+function validateDish(value: Extract<ObjectDefinition, { kind: 'dish' }>, path: string) {
+  if (!isDishAppearance(value.appearance)) fail(`${path}.appearance`, 'unknown dish appearance');
+  integer(value.points, `${path}.points`);
+  color(value.color, `${path}.color`);
 }
 
 function validateVase(value: Extract<ObjectDefinition, { kind: 'vase' }>, path: string) {
@@ -421,6 +430,8 @@ class RoomResolver {
 
     if (d.kind === 'plant') return this.resolvePlant(instance, d, path, support);
 
+    if (d.kind === 'dish') return this.resolveDish(instance, d, path, support);
+
     if (d.kind === 'food-bag') return this.resolveFoodBag(instance, d, path, support);
 
     if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
@@ -679,6 +690,46 @@ class RoomResolver {
     };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Grafik, physische Maße und Auflage werden aus demselben registrierten Geschirrprofil aufgelöst.
+  private resolveDish(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'dish' }>,
+    path: string,
+    support: Bounds,
+  ): ResolvedObject {
+    const p = instance.placement;
+    const shape = DISH_PROFILES[d.appearance];
+
+    bounds(
+      {
+        x: p.x - shape.width / 2,
+        y: support.y - shape.height,
+        width: shape.width,
+        height: shape.height,
+      },
+      this.room,
+      `${path}.geometry`,
+    );
+    supportFits(p.x - shape.width / 2, shape.width, support, `${path}.placement`);
+
+    return {
+      id: instance.id,
+      variant: instance.variant,
+      asset: d.asset,
+      kind: 'dish',
+      config: {
+        id: instance.id,
+        x: p.x,
+        shelfY: support.y,
+        points: d.points,
+        color: d.color,
+        appearance: d.appearance,
+        floorY: this.room.floor.y,
+        roomWidth: this.room.width,
+      },
+    };
+  }
+
   run(): ResolvedRoom {
     const { room } = this;
     const objects = room.objects.map((instance) => this.resolve(instance));
@@ -701,7 +752,7 @@ class RoomResolver {
         object.kind === 'picture' ||
         object.kind === 'carpet'
           ? object.config.rules.points
-          : object.kind === 'vase'
+          : object.kind === 'vase' || object.kind === 'dish'
             ? object.config.points
             : object.kind === 'plant'
               ? object.config.rules.nibbleValue + object.config.rules.tipValue

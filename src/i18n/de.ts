@@ -1,4 +1,8 @@
 export const de = {
+  kitchenTitle: '02 / KÜCHE',
+  saraDamageDish0: 'Pixel, das Geschirr hat dir wirklich nichts getan.',
+  saraDamageDish1: 'Ich sehe, du hast schon abgeräumt. Sehr gründlich sogar.',
+  saraDamageDish2: 'Tassen und Teller sind keine Wurfspielzeuge, Pixel.',
   kitchenPreviewTitle: '02 / KÜCHE · DEV-VORSCHAU',
   foodBowlGoal: 'Erreiche deinen Futternapf auf der Arbeitsplatte',
   foodBowlMotivation: 'Der Magen knurrt. Zum Glück führt ein Weg zum Napf.',
@@ -494,7 +498,7 @@ export const de = {
   climbCurtain: 'Vorhang klettern',
   restart: 'Neustart',
   pixelSLivingRoomUseArrow:
-    'Pixels Wohnzimmer. Pfeiltasten zum Laufen und Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',
+    'Pixels Zimmer. Pfeiltasten zum Laufen und Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',
   saraInnocentLook: 'Da bist du ja. Den unschuldigen Blick hast du jedenfalls geübt.',
   saraYourVersion: 'Ich setze mich erst mal. Du erzählst mir dann deine Version.',
   saraLittleHousemate: 'Hallo, kleiner Mitbewohner. War’s ohne mich sehr langweilig?',

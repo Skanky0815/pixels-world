@@ -63,7 +63,7 @@ test('Napffund ist ein eigenes friedliches Albumereignis; Schäden und öffentli
   assert.equal(discoverGoalAlbum({ ...definition, albumVariant: undefined }), null);
   assert.equal(
     albumEntries(false).some((e) => e.id === found?.entryId),
-    false,
+    true,
   );
   assert.equal(
     albumEntries(true).some((e) => e.id === found?.entryId),

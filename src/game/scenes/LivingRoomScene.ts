@@ -26,6 +26,7 @@ import { preloadFavoriteBallArt } from '../assets/favorite-ball-art';
 import { preloadCatgrassArt } from '../assets/catgrass-art';
 import { preloadCurtainArt } from '../assets/curtain-art';
 import { preloadCouchArt } from '../assets/couch-art';
+import { preloadDishArt } from '../assets/dish-art';
 import { preloadVaseArt } from '../assets/vase-art';
 import { difficultyPreferences } from '../../settings/difficulty';
 import { difficultyRoom, difficultyTimer, type Difficulty } from '../../content/difficulty';
@@ -155,6 +156,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadSaraEndingArt(this);
     preloadDialoguePortraits(this);
     preloadVaseArt(this);
+    preloadDishArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);
@@ -394,6 +396,7 @@ export class LivingRoomScene extends Phaser.Scene {
             pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
             foodBags: this.built.foodBags.map((bag) => bag.snapshot()),
+            dishes: this.built.dishes.map((dish) => dish.snapshot()),
             objects: this.built.entries.map((entry) => ({
               id: entry.object.id,
               kind: entry.definition.kind,
@@ -464,8 +467,14 @@ export class LivingRoomScene extends Phaser.Scene {
     this.vases = this.built.vases;
 
     this.pixel = new Pixel(this, this.room.spawn);
-    connectObjectPhysics(this, this.built, this.pixel, this.platforms, floor, (event) =>
-      this.processDamage(event),
+    connectObjectPhysics(
+      this,
+      this.built,
+      this.pixel,
+      this.platforms,
+      floor,
+      (event) => this.processDamage(event),
+      () => this.canPlay(),
     );
     this.initializeReturn();
   }
@@ -765,6 +774,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private setWorldActive(active: boolean) {
+    for (const object of this.built.breakables) object.setSimulationActive(active);
     const returning = this.activity.active && this.returning.snapshot().stage === 'walking';
 
     if (active || returning) this.physics.world.resume();

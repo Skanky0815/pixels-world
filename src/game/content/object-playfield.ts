@@ -10,7 +10,7 @@ import {
   type InteractionContext,
   type Bounds,
 } from '../interactions/contracts';
-import type { Vase } from '../objects/Vase';
+import type { Breakable } from '../objects/Breakable';
 import type { buildObjects } from './build-objects';
 import type { RoomDefinition } from './definitions';
 import { drawRoom } from './draw-room';
@@ -66,13 +66,14 @@ export function connectObjectPhysics(
   platforms: Phaser.Physics.Arcade.StaticGroup,
   floor: Phaser.GameObjects.Rectangle,
   damage: Damage,
+  canInteract: () => boolean = () => true,
 ) {
   objects.impacts.setDamage((event) => damage(event));
 
   for (const couch of objects.couches) platforms.add(couch.platform);
   scene.physics.add.collider(pixel.collider, platforms);
 
-  for (const vase of objects.vases) {
+  for (const vase of objects.breakables) {
     scene.physics.add.collider(vase.collider, platforms, (_object, surface) => {
       objects.impacts.collide(vase);
 
@@ -83,7 +84,7 @@ export function connectObjectPhysics(
       pixel.collider,
       vase.collider,
       () => pushVase(pixel, vase),
-      () => vase.allowsPixelCollision(pixel.snapshot()),
+      () => canInteract() && vase.allowsPixelCollision(pixel.snapshot()),
     );
   }
 
@@ -91,10 +92,10 @@ export function connectObjectPhysics(
 }
 
 function connectVases(scene: Phaser.Scene, objects: Objects) {
-  for (let a = 0; a < objects.vases.length; a++)
-    for (let b = a + 1; b < objects.vases.length; b++) {
-      const first = objects.vases[a],
-        second = objects.vases[b];
+  for (let a = 0; a < objects.breakables.length; a++)
+    for (let b = a + 1; b < objects.breakables.length; b++) {
+      const first = objects.breakables[a],
+        second = objects.breakables[b];
 
       scene.physics.add.collider(first.collider, second.collider, () =>
         objects.impacts.collide(first, second),
@@ -102,7 +103,7 @@ function connectVases(scene: Phaser.Scene, objects: Objects) {
     }
 }
 
-function pushVase(pixel: Pixel, vase: Vase) {
+function pushVase(pixel: Pixel, vase: Breakable) {
   const body = vase.collider.body as Phaser.Physics.Arcade.Body;
   const pixelBody = pixel.collider.body as Phaser.Physics.Arcade.Body;
 
@@ -124,11 +125,11 @@ export function advanceObjectInteractions(
   shelves: readonly Shelf[] = [],
 ) {
   updateShelves(shelves, pixel, time, damage);
-  const supported = [...objects.vases, ...objects.books, ...objects.foodBags];
+  const supported = [...objects.breakables, ...objects.books, ...objects.foodBags];
 
   releaseShelves(shelves, supported, objects.impacts);
 
-  for (const vase of objects.vases) {
+  for (const vase of objects.breakables) {
     vase.updateFall(pixel.snapshot());
   }
 

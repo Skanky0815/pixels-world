@@ -27,6 +27,54 @@ const picture = {
 } as const;
 
 export const OBJECTS = {
+  'cream-cup': {
+    kind: 'dish',
+    asset: 'dish',
+    appearance: 'cup',
+    points: 20,
+    color: 0xe6cf9c,
+    capabilities: ['push', 'damage'],
+    spawn: { size: 'small', category: 'decoration', random: true, support: 'any-surface' },
+    album: {
+      id: 'dish.cup',
+      asset: 'dish-cup',
+      rooms: ['kitchen'],
+      condition: { kind: 'break', stage: 1 },
+      name: { de: 'Die kleine Tasse', en: 'The little mug' },
+      fluff: {
+        de: 'Ein Henkel. Viele gute Vorsätze. Jetzt Scherben.',
+        en: 'One handle. So many good intentions. Now shards.',
+      },
+      sara: {
+        de: 'Pixel, das war meine Lieblingstasse. Schon wieder.',
+        en: 'Pixel, that was my favourite mug. Again.',
+      },
+    },
+  },
+  'cream-plate': {
+    kind: 'dish',
+    asset: 'dish',
+    appearance: 'plate',
+    points: 16,
+    color: 0xe6cf9c,
+    capabilities: ['push', 'damage'],
+    spawn: { size: 'small', category: 'decoration', random: true, support: 'any-surface' },
+    album: {
+      id: 'dish.plate',
+      asset: 'dish-plate',
+      rooms: ['kitchen'],
+      condition: { kind: 'break', stage: 1 },
+      name: { de: 'Der cremefarbene Teller', en: 'The cream plate' },
+      fluff: {
+        de: 'Flach angefangen. Noch flacher geendet.',
+        en: 'Started flat. Ended even flatter.',
+      },
+      sara: {
+        de: 'Der durfte auf dem Tisch bleiben, Pixel.',
+        en: 'It was allowed to stay on the table, Pixel.',
+      },
+    },
+  },
   'dry-food-bag': {
     kind: 'food-bag',
     asset: 'food-bag',
@@ -36,7 +84,6 @@ export const OBJECTS = {
     album: {
       id: 'food-bag.dry',
       asset: 'food-bag-intact',
-      previewOnly: true,
       rooms: ['kitchen'],
       name: { de: 'Der Trockenfutterbeutel', en: 'The dry-food bag' },
       condition: { kind: 'spill', stage: 1 },
@@ -79,7 +126,7 @@ export const OBJECTS = {
     album: {
       id: 'picture.pixel',
       name: { de: 'Pixels Porträt', en: 'Pixel’s portrait' },
-      rooms: ['living-room'],
+      rooms: ['living-room', 'kitchen'],
       asset: 'picture-pixel',
       condition: { kind: 'picture-fall', stage: 1 },
       fluff: { de: 'Kunstkritik mit Pfoteneinsatz.', en: 'Art criticism, paws first.' },
@@ -95,7 +142,7 @@ export const OBJECTS = {
     album: {
       id: 'picture.berlin',
       name: { de: 'Berliner Fernsehturm', en: 'Berlin TV tower' },
-      rooms: ['living-room'],
+      rooms: ['living-room', 'kitchen'],
       asset: 'picture-berlin',
       condition: { kind: 'picture-fall', stage: 1 },
       fluff: {
@@ -114,7 +161,7 @@ export const OBJECTS = {
     album: {
       id: 'picture.cozy',
       name: { de: 'Gemütliche Ecke', en: 'Cozy nook' },
-      rooms: ['living-room'],
+      rooms: ['living-room', 'kitchen'],
       asset: 'picture-cozy',
       condition: { kind: 'picture-fall', stage: 1 },
       fluff: {

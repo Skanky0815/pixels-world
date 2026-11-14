@@ -1,3 +1,5 @@
+import type { DishConfig } from '../objects/Dish.ts';
+import type { DishAppearance } from '../assets/dish-appearance.ts';
 import type { FoodBagConfig } from '../objects/FoodBag.ts';
 import type { TopplingRules } from '../interactions/toppling.ts';
 import type { HomecomingSide } from './homecoming-layout.ts';
@@ -35,6 +37,13 @@ interface Base {
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
+  | (Base & {
+      readonly kind: 'dish';
+      readonly asset: 'dish';
+      readonly appearance: DishAppearance;
+      readonly points: number;
+      readonly color: number;
+    })
   | (Base & {
       readonly kind: 'food-bag';
       readonly asset: 'food-bag';
@@ -167,6 +176,7 @@ interface ResolvedBase {
   readonly asset: AssetKey;
 }
 export type ResolvedObject =
+  | (ResolvedBase & { readonly kind: 'dish'; readonly config: DishConfig })
   | (ResolvedBase & { readonly kind: 'food-bag'; readonly config: FoodBagConfig })
   | (ResolvedBase & { readonly kind: 'carpet'; readonly config: CarpetConfig })
   | (ResolvedBase & { readonly kind: 'picture'; readonly config: WallPictureConfig })
