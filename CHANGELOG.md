@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.6.0](https://github.com/Skanky0815/pixels-world/compare/v0.5.1...v0.6.0) (2026-11-14)
+## [0.6.1](https://github.com/Skanky0815/pixels-world/compare/v0.5.1...v0.6.1) (2026-11-14)
 
 
 ### Features
