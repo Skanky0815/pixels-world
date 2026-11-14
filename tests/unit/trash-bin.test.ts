@@ -33,8 +33,8 @@ const result: RoundResult = {
 
 test('Mülleimerbilder sind echte begrenzte PNGs mit transparentem Hintergrund und 2×2-Clustern', () => {
   for (const [name, width, height] of [
-    ['intact', 40, 48],
-    ['spilled', 110, 38],
+    ['intact', 48, 60],
+    ['spilled', 132, 46],
   ] as const) {
     const image = PNG.sync.read(
       readFileSync(new URL(`../../assets/objects/trash-bin/${name}.png`, import.meta.url)),

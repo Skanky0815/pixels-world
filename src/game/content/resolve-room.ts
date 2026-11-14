@@ -699,7 +699,7 @@ class RoomResolver {
     if (d.kind === 'trash-bin' && support.y !== this.room.floor.y)
       fail(`${path}.placement`, 'trash bin needs floor support');
     const shape = d.kind === 'trash-bin' ? TRASH_BIN_PROFILE : { width: 32, height: 44 };
-    const reach = d.kind === 'trash-bin' ? 134 : 120;
+    const reach = d.kind === 'trash-bin' ? 156 : 120;
 
     bounds(
       { x: p.x - reach / 2, y: support.y - shape.height, width: reach, height: shape.height },

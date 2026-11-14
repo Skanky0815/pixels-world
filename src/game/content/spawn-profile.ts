@@ -81,7 +81,7 @@ function objectSize(object: ObjectDefinition) {
     return spawnSizeFor(shape.width, shape.height);
   }
 
-  if (object.kind === 'trash-bin') return spawnSizeFor(40, 48);
+  if (object.kind === 'trash-bin') return spawnSizeFor(48, 60);
 
   if (object.kind === 'food-bag') return spawnSizeFor(32, 44);
 

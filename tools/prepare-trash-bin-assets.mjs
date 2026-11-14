@@ -4,8 +4,8 @@ import { PNG } from 'pngjs';
 
 const root = new URL('../assets/objects/trash-bin/', import.meta.url);
 const jobs = [
-  { name: 'intact', width: 40, height: 48 },
-  { name: 'spilled', width: 110, height: 38 },
+  { name: 'intact', width: 48, height: 60 },
+  { name: 'spilled', width: 132, height: 46 },
 ];
 
 function bounds(image) {
