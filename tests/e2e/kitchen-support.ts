@@ -36,7 +36,10 @@ export async function climbToCounter(page: Page) {
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 398) < 2);
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 410);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 328) < 2);
-  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 520);
-  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 700);
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 480);
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 675);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 800);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
+  await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 860);
 }

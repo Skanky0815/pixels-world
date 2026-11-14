@@ -154,8 +154,8 @@ test('Blockierter Lese-/Schreibzugriff verliert keine sitzungsweite Entdeckung',
 });
 
 test('Veröffentlichte Sammlung enthält keine nur im DEV-Raum erreichbare Variante', () => {
-  assert.equal(albumEntries(false).length, 13);
-  assert.equal(albumEntries(true).length, 16);
+  assert.equal(albumEntries(false).length, 17);
+  assert.equal(albumEntries(true).length, 18);
   assert.equal(
     albumEntries(false).some((entry) => entry.id === 'couch.worn'),
     false,

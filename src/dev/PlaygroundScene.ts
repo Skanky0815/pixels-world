@@ -10,6 +10,7 @@ import type { Shelf } from '../game/objects/Shelf';
 import { preloadCatgrassArt } from '../game/assets/catgrass-art';
 import { preloadCurtainArt } from '../game/assets/curtain-art';
 import { preloadCouchArt } from '../game/assets/couch-art';
+import { preloadDishArt } from '../game/assets/dish-art';
 import { preloadVaseArt } from '../game/assets/vase-art';
 import Phaser from 'phaser';
 import { ASSETS } from '../game/assets/definitions';
@@ -58,6 +59,7 @@ export class PlaygroundScene extends Phaser.Scene {
   preload() {
     preloadObjectAudio(this);
     preloadVaseArt(this);
+    preloadDishArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);

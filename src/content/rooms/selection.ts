@@ -1,3 +1,4 @@
+import { KITCHEN } from './kitchen.ts';
 import { LIVING_ROOM } from './living-room.ts';
 import type { RoomDefinition } from '../../game/content/definitions.ts';
 import type { AlbumRoom } from '../album/discovery.ts';
@@ -12,7 +13,7 @@ interface RoomChoice {
 /** Public availability is separate from DEV fixtures and the physical room data. */
 export const ROOM_CHOICES: readonly RoomChoice[] = [
   { id: LIVING_ROOM.id, name: copy('albumLivingRoom'), definition: LIVING_ROOM },
-  { id: 'kitchen', name: copy('albumKitchen') },
+  { id: 'kitchen', name: copy('albumKitchen'), definition: KITCHEN },
   { id: 'bedroom', name: copy('albumBedroom') },
   { id: 'study', name: copy('albumStudy') },
 ];

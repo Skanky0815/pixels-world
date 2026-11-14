@@ -7,8 +7,17 @@ const object = (id: string, variant: string, x: number, surfaceId = 'floor'): Ob
   placement: { mode: 'surface', x, surfaceId },
 });
 
+const supports = KITCHEN_PREVIEW.platforms.map((p) => ({ ...p, slots: undefined }));
+
 function lab(id: string, objects: readonly ObjectInstance[]): RoomDefinition {
-  return { ...KITCHEN_PREVIEW, id, wallSlots: undefined, objectSlots: [], objects };
+  return {
+    ...KITCHEN_PREVIEW,
+    id,
+    wallSlots: undefined,
+    objectSlots: [],
+    platforms: supports,
+    objects,
+  };
 }
 
 /** Authored DEV contacts use real keyboard routes and real adapters, never state setters. */
@@ -30,7 +39,7 @@ export const FOOD_BAG_ROOMS = {
     ...lab('food-bag-support', [object('shelf-bag', 'dry-food-bag', 120, 'bag-shelf')]),
     spawn: { x: 36, surfaceId: 'bag-shelf' },
     platforms: [
-      ...KITCHEN_PREVIEW.platforms,
+      ...supports,
       {
         id: 'bag-shelf',
         asset: 'wood-shelf',

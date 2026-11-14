@@ -24,8 +24,23 @@ export const ACHIEVEMENT_CATEGORIES = [
     targets: ['shelf.fragile', 'shelf.normal'],
   },
 ] as const;
+/** New categories extend the current collection; v1 categories retain their exact original targets. */
+export const ACHIEVEMENT_CATEGORIES_V2 = [
+  {
+    id: 'food-bags',
+    name: { de: 'Alle Futterbeutel', en: 'All food bags' },
+    targets: ['food-bag.dry'],
+  },
+  {
+    id: 'dishes',
+    name: { de: 'Das ganze Geschirr', en: 'All the crockery' },
+    targets: ['dish.cup', 'dish.plate'],
+  },
+] as const;
 export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze(
-  ACHIEVEMENT_CATEGORIES.flatMap((category) => [...category.targets]),
+  [...ACHIEVEMENT_CATEGORIES, ...ACHIEVEMENT_CATEGORIES_V2].flatMap((category) => [
+    ...category.targets,
+  ]),
 );
 export const SHELF_TARGET_NAMES: Readonly<
   Record<string, { readonly de: string; readonly en: string }>

@@ -18,7 +18,7 @@ import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
 import { preloadFoodBagArt } from '../assets/food-bag-art';
 import { preloadBookArt } from '../assets/book-art';
-import { preloadKitchenArt } from '../assets/kitchen-art';
+import { kitchenArtReady, preloadKitchenArt } from '../assets/kitchen-art';
 import { preloadRoomArt } from '../assets/room-art';
 import { preloadShelfArt } from '../assets/shelf-art';
 import type { Shelf } from '../objects/Shelf';
@@ -26,6 +26,7 @@ import { preloadFavoriteBallArt } from '../assets/favorite-ball-art';
 import { preloadCatgrassArt } from '../assets/catgrass-art';
 import { preloadCurtainArt } from '../assets/curtain-art';
 import { preloadCouchArt } from '../assets/couch-art';
+import { preloadDishArt } from '../assets/dish-art';
 import { preloadVaseArt } from '../assets/vase-art';
 import { difficultyPreferences } from '../../settings/difficulty';
 import { difficultyRoom, difficultyTimer, type Difficulty } from '../../content/difficulty';
@@ -155,6 +156,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadSaraEndingArt(this);
     preloadDialoguePortraits(this);
     preloadVaseArt(this);
+    preloadDishArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);
@@ -162,13 +164,13 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadShelfArt(this);
     preloadRoomArt(this);
 
-    if (this.room.definition.environment === 'kitchen-preview') preloadKitchenArt(this);
+    preloadKitchenArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
     preloadFavoriteBallArt(this);
 
-    if (this.room.goal.kind === 'food') preloadFoodBowlArt(this);
+    preloadFoodBowlArt(this);
     this.preloadSprite(this.room.definition.pixelAsset);
     this.preloadSprite('sara');
   }
@@ -231,6 +233,10 @@ export class LivingRoomScene extends Phaser.Scene {
     const definition = id ? playableRoom(id) : undefined;
 
     if (definition) this.baseRoom = resolveRoom(definition, OBJECTS);
+  }
+
+  private roomArtReady() {
+    return kitchenArtReady(this) && this.textures.exists('food-bowl');
   }
 
   private refreshCaption() {
@@ -385,6 +391,7 @@ export class LivingRoomScene extends Phaser.Scene {
               id: this.room.definition.id,
               width: this.room.definition.width,
               height: this.room.definition.height,
+              artReady: this.roomArtReady(),
             },
             wallPlacements: this.room.definition.wallPlacements ?? [],
             shelves: this.shelves.map((shelf) => shelf.snapshot()),
@@ -394,6 +401,7 @@ export class LivingRoomScene extends Phaser.Scene {
             pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
             foodBags: this.built.foodBags.map((bag) => bag.snapshot()),
+            dishes: this.built.dishes.map((dish) => dish.snapshot()),
             objects: this.built.entries.map((entry) => ({
               id: entry.object.id,
               kind: entry.definition.kind,
@@ -464,8 +472,14 @@ export class LivingRoomScene extends Phaser.Scene {
     this.vases = this.built.vases;
 
     this.pixel = new Pixel(this, this.room.spawn);
-    connectObjectPhysics(this, this.built, this.pixel, this.platforms, floor, (event) =>
-      this.processDamage(event),
+    connectObjectPhysics(
+      this,
+      this.built,
+      this.pixel,
+      this.platforms,
+      floor,
+      (event) => this.processDamage(event),
+      () => this.canPlay(),
     );
     this.initializeReturn();
   }
@@ -765,6 +779,7 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private setWorldActive(active: boolean) {
+    for (const object of this.built.breakables) object.setSimulationActive(active);
     const returning = this.activity.active && this.returning.snapshot().stage === 'walking';
 
     if (active || returning) this.physics.world.resume();

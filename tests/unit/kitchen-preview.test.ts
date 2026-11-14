@@ -7,10 +7,10 @@ import { playableRoom } from '../../src/content/rooms/selection.ts';
 import { resolveRoom } from '../../src/game/content/resolve-room.ts';
 import type { RoomDefinition } from '../../src/game/content/definitions.ts';
 
-test('Unfertige Küchenvorschau bleibt außerhalb der öffentlichen Auswahl und Produktions-URL', () => {
+test('Küche ist öffentlich auswählbar; die separate DEV-Vorschau bleibt in Produktion isoliert', () => {
   assert.equal(selectRoom('kitchen-preview', true), KITCHEN_PREVIEW);
   assert.equal(selectRoom('kitchen-preview', false).id, 'living-room');
-  assert.equal(playableRoom('kitchen'), undefined);
+  assert.equal(playableRoom('kitchen')?.id, 'kitchen');
   assert.equal(playableRoom('kitchen-preview'), undefined);
   assert.equal(resolveRoom(KITCHEN_PREVIEW, OBJECTS).goal.surfaceY, 258);
 });

@@ -20,3 +20,8 @@ const ART = {
 export function preloadKitchenArt(scene: Phaser.Scene) {
   for (const [name, url] of Object.entries(ART)) scene.load.image(`kitchen-${name}`, url);
 }
+
+/** Room changes restart the scene without another preload phase. */
+export function kitchenArtReady(scene: Phaser.Scene) {
+  return Object.keys(ART).every((name) => scene.textures.exists(`kitchen-${name}`));
+}

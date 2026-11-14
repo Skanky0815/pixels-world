@@ -14,7 +14,7 @@ test('Raum startet und zeichnet sichtbaren Inhalt', async ({ page }) => {
     bodyWidth: 52,
     bodyHeight: 52,
   });
-  expect(snapshot.room).toEqual({ id: 'living-room', width: 960, height: 540 });
+  expect(snapshot.room).toEqual({ id: 'living-room', width: 960, height: 540, artReady: true });
   // Sample the composited browser screenshot; WebGL's back buffer may already be cleared.
   const bounds = await page.locator('canvas').boundingBox();
 

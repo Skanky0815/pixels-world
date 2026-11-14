@@ -4,7 +4,7 @@ Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms
 
 ## Öffentliche Zimmerauswahl
 
-Die DEV-Vorschau `play.html?room=kitchen-preview` zeigt den Küchen-Grundraum aus
+Die öffentliche Küche und die separate DEV-Vorschau `play.html?room=kitchen-preview` teilen den Küchen-Grundraum aus
 [#57](https://github.com/Skanky0815/pixels-world/issues/57): Spawn links, Hocker,
 Tisch und Arbeitsplatte rechts sowie zwei feste Wandregale. Alle Auflagen sind standfest und verwenden
 dieselbe Plattform-/Kontaktlogik wie die Regale. Die [Küchengrafiken](../../assets/environment/kitchen/README.md) werden an
@@ -19,8 +19,7 @@ Seite. Ohne Angabe bleibt der bisherige Auftritt von rechts erhalten.
 Die [Küchen-Slots](rooms/kitchen-slots.ts) reservieren Plätze auf Tisch,
 Arbeitsplatte, beiden Regalen und am Boden. Diese verwenden schon den gemeinsamen
 Slot-Vertrag: Der Boden-Slot `food-bag` enthält bereits einen Trockenfutterbeutel
-je Schwierigkeitsgrad. Die übrigen Pools bleiben leer und ihre Dichten null;
-#226–#229 schalten ihre echten Varianten dort gezielt frei. Kräuter auf erhöhten Flächen benötigen vorher #229.
+je Schwierigkeitsgrad. Tasse und Teller belegen Tisch, Arbeitsplatte und beide Regale über dieselbe seeded Auswahl; die Dichten steigen auf den Wandregalen mit der Schwierigkeit. Weitere Varianten folgen in #227–#229. Kräuter auf erhöhten Flächen benötigen vorher #229.
 Zwei Wandbereiche verwenden die vorhandenen interaktiven Bildvarianten; Leicht
 belegt einen, Normal/Schwer beide. Regale bleiben feste Raumgeometrie. Saras
 Bodenbereich, der Ausstieg vom Tisch und der Napfplatz sind zusätzlich als
@@ -29,10 +28,9 @@ Arbeitsplatte ohne Gegenstands-Slots.
 Am geschützten Zielplatz steht der echte Futternapf aus #230. Nach dem Fund
 frisst Pixel kurz, bevor die gemeinsame Heimkehr beginnt. Der optionale Futterbeutel
 steht darunter im vorhandenen Boden-Slot als eigener Chaosgegenstand. Die Vorschau verwendet eine eigene Raum-ID,
-zählt nicht für Küchen-/Raumerfolge und bleibt in der öffentlichen Auswahl
-deaktiviert. Produktions-URLs ignorieren die DEV-Raumauswahl weiterhin.
+zählt nicht für Küchen-/Raumerfolge. Die öffentliche Definition `kitchen` ist in der Raumauswahl freigeschaltet und zählt für die neuen Raumziele. Produktions-URLs ignorieren die DEV-Raumauswahl weiterhin.
 
-[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Küche, Schlafzimmer und Arbeitszimmer bleiben bis zu ihrer Umsetzung deaktiviert. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ in Optionen, Einführung und Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
+[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Wohnzimmer und Küche sind auswählbar; Schlafzimmer und Arbeitszimmer bleiben bis zu ihrer Umsetzung deaktiviert. Die gewählte Karte und der Startknopf beziehen sich auf dieselbe Raum-ID. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ in Optionen, Einführung und Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
 
 Die Spielhülle verwendet dieselben Header-/Footer-Bausteine aus `src/ui/game-shell/` für Auswahl, Einführung und Runde. Vite setzt das native HTML bereits beim Ausliefern zusammen; Rechtslinks bleiben ohne zusätzliches Browser-JavaScript vorhanden. Die bestehenden Album-/Optionsbuttons bleiben im Header, statt je Ansicht neu angelegt zu werden.
 
@@ -183,10 +181,15 @@ Reduzierte Bewegung zeigt eine ruhige Fresspose ohne wiederholtes Knabbern.
 Ein optionaler `albumVariant` aus dem [Zielkatalog](album/goals.ts) erzeugt
 `goal-reached` als friedlichen Albumfund, kein Schadensereignis. Vormerkung,
 erfolgreiche Bestätigung, Speicherwahl und einmalige Banner verwenden dieselben
-Systeme wie alle anderen Albumfunde. Der Napf bleibt bis zur Küchenveröffentlichung
-`previewOnly`; versionierte Zerstörungs-/Raumerfolge bleiben unverändert.
+Systeme wie alle anderen Albumfunde. Der Napf gehört mit der öffentlichen Küche zum Album; als friedliches Ziel erweitert er keine Zerstörungskategorie. Bestehende Erfolgsfassungen behalten ihre Ziele.
 Die aktuelle Platzierung am oberen Regal ist in beiden Räumen schadenfrei
 per Tastatur erreichbar; neue Platzierungen benötigen denselben Spieltest.
+
+## Geschirr und gemeinsamer Bruch
+
+`dish` verwendet `Breakable` mit derselben Körper-, Schub-, Fall- und einmaligen Schadenslogik wie Vasen. Das explizite Profil in `dish-appearance.ts` hält Maße, Masse und Bruchschwellen für Tasse und Teller zusammen. Leichte Fremdstöße unter 30 bewirken nichts, stärkere verschieben das Geschirr; erst die Profilschwelle löst Bruch aus. Eingehende und ausgehende Kontakte aller Typen und gleicher Instanzen verwenden `ImpactWorld`. Sieben begrenzte PNG-Scherben ersetzen das intakte Objekt; Reset stellt Körper, Auflage, Energie und Historie wieder her. Nach dem Hauptziel können Heimkehrbewegungen keine weiteren Gegenstände verschieben oder Schäden auslösen.
+
+Die [Grafiken, Quellen und Prompts](../../assets/objects/dishes/README.md) liegen zusammen. Die DEV-Räume `dish-cups`, `dish-plates`, `dish-mixed` und `dish-incoming` isolieren reale gleiche und fremde Kontakte. Die öffentliche Küche behält einen friedlichen Sprungweg über Hocker und Tisch zum Napf; Albumfunde verlangen tatsächlichen Bruch und erfolgreiche Versöhnung. Die Erfolgsfassung v1 bleibt eingefroren. Neue Ziele und „Pixels Meisterwerk II“ zählen den erweiterten Katalog; freigespielte alte Erfolge bleiben erhalten.
 
 ## Futterbeutel und gemeinsames Umkippen
 
@@ -213,9 +216,7 @@ ist kein Fund. Die bestehende Schadenszahl schließt einen friedlichen Abschluss
 auch bei einem konfigurierten Punktwert null aus. Saras Reaktion kennt den
 Futterbeutel als eigenen Schaden. Bestätigung/Verwerfen, Speicherung und einmalige
 Banner nutzen die gemeinsame Albumtransaktion. Der Napf bleibt ein geschütztes
-anderes Ziel. Beutel und Napf sind bis zur Raumveröffentlichung `previewOnly`;
-veröffentlichte v1-Erfolgsziele ändern sich nicht. Beim Freigeben der Küche in #57
-neue Kategorien-/Objektziele und „Pixels Meisterwerk“ passend versionieren.
+anderes Ziel. Beutel und Napf sind mit der Küche veröffentlicht. Die v1-Erfolgsziele bleiben unverändert; eigene neue Kategorie-, Zerstörungs-, Raum- und Meisterwerk-Erfolge erweitern die Sammlung.
 
 Die DEV-Räume `food-bag-warning`, `food-bag-impact`, `food-bag-chain` und
 `food-bag-support` stellen echte Kontakte, gleiche Instanzen und Auflagenverlust

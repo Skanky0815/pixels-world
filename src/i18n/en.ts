@@ -1,5 +1,9 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  kitchenTitle: '02 / KITCHEN',
+  saraDamageDish0: 'Pixel, the crockery really did nothing to you.',
+  saraDamageDish1: 'I see you have already cleared the table. Very thoroughly.',
+  saraDamageDish2: 'Cups and plates are not throwing toys, Pixel.',
   kitchenPreviewTitle: '02 / KITCHEN · DEV PREVIEW',
   foodBowlGoal: 'Reach your food bowl on the counter',
   foodBowlMotivation: 'Your tummy is rumbling. Luckily, there is a way to the bowl.',
@@ -103,7 +107,7 @@ export const en: Record<keyof typeof de, string> = {
   roomsTitle: 'Where to today, Pixel?',
   roomsAvailable: 'Ready for chaos',
   roomsLater: 'Coming later',
-  roomsEnter: 'Into the living room →',
+  roomsEnter: 'Enter room →',
   roomsBack: 'Choose a room',
   roomsPreview: 'Living room with Pixel, sofa and curtain',
 
@@ -489,7 +493,7 @@ export const en: Record<keyof typeof de, string> = {
   climbCurtain: 'Climb curtain',
   restart: 'Restart',
   pixelSLivingRoomUseArrow:
-    "Pixel's living room. Use arrow keys to move and climb, Space to jump. Click the room to focus.",
+    "Pixel's room. Use arrow keys to move and climb, Space to jump. Click the room to focus.",
   saraInnocentLook: 'There you are. You’ve certainly practised that innocent look.',
   saraYourVersion: 'I’ll sit down first. Then you can tell me your side of the story.',
   saraLittleHousemate: 'Hello, little housemate. Was it terribly boring without me?',

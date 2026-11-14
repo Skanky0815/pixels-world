@@ -81,9 +81,11 @@ function achievementStory(entry: AchievementDefinition, data: AchievementData) {
     <blockquote>${escape(entry.quote[lang])}<cite>— Sara</cite></blockquote></section>`;
 }
 
+// eslint-disable-next-line complexity -- Zielnamen werden aus den bestehenden Katalogen ohne doppelte Namenslisten aufgelöst.
 function targetName(id: string) {
   return (
     ACHIEVEMENTS.find((entry) => entry.id === id)?.name ??
+    DESTRUCTION_TARGETS.find((entry) => entry.id === id)?.name ??
     ACHIEVEMENT_ROOMS.find((room) => room.id === id.split('/')[1])?.name ??
     Object.values(INTERACTABLE_ALBUM).find((entry) => entry.id === id)?.name ??
     SHELF_TARGET_NAMES[id] ?? { de: id, en: id }

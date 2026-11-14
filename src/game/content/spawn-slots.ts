@@ -1,5 +1,6 @@
 import { overlaps, shuffled } from './slot-geometry.ts';
 import { populateWallSlots } from './wall-slots.ts';
+import { DISH_PROFILES } from '../assets/dish-appearance.ts';
 import { ASSETS } from '../assets/definitions.ts';
 import { filterSpawnCandidates, type SpawnSlotFilter } from './spawn-profile.ts';
 import { resolveRoom } from './resolve-room.ts';
@@ -364,6 +365,8 @@ function looseAsset(kind: ResolvedObject['kind']) {
 }
 
 function candidateSize(definition: ObjectDefinition) {
+  if (definition.kind === 'dish') return DISH_PROFILES[definition.appearance];
+
   if (definition.kind === 'couch')
     return { width: definition.geometry.width + 18, height: definition.geometry.seatRise + 60 };
 

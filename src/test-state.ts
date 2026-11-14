@@ -6,6 +6,7 @@ import type { AlbumDiscovery } from './content/album/discovery';
 import type { RoundAlbum } from './game/album/round';
 import type { WallPlacement } from './game/content/wall-slots';
 import type { Shelf } from './game/objects/Shelf';
+import type { Dish } from './game/objects/Dish';
 import type { FoodBag } from './game/objects/FoodBag';
 import type { BookStack } from './game/objects/BookStack';
 import type { GoalView } from './game/ui/GoalView';
@@ -30,6 +31,7 @@ export interface GameTestState {
   readonly albumDiscovery: AlbumDiscovery | null;
   readonly album: ReturnType<RoundAlbum['snapshot']>;
   readonly wallPlacements: readonly WallPlacement[];
+  readonly dishes: readonly ReturnType<Dish['snapshot']>[];
   readonly foodBags: readonly ReturnType<FoodBag['snapshot']>[];
   readonly books: readonly ReturnType<BookStack['snapshot']>[];
   readonly shelves: readonly ReturnType<Shelf['snapshot']>[];
@@ -80,7 +82,12 @@ export interface GameTestState {
   readonly blurListeners: number;
   readonly scene: string;
   readonly frame: number;
-  readonly room: { readonly id: string; readonly width: number; readonly height: number };
+  readonly room: {
+    readonly id: string;
+    readonly width: number;
+    readonly height: number;
+    readonly artReady: boolean;
+  };
   readonly camera: {
     readonly x: number;
     readonly y: number;

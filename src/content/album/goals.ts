@@ -4,7 +4,6 @@ import type { GoalAlbumEntry } from './discovery.ts';
 export const GOAL_ALBUM = {
   'food-bowl': {
     id: 'goal.food-bowl',
-    previewOnly: true,
     asset: 'food-bowl',
     rooms: ['kitchen'],
     name: { de: 'Pixels Futternapf', en: 'Pixel’s food bowl' },

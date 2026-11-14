@@ -15,6 +15,7 @@ import {
 } from '../../src/game/content/spawn-profile.ts';
 
 const shelf: SpawnSlotFilter = { capacity: 'small', categories: ['decoration'], support: 'raised' };
+const dishes = ['cream-cup', 'cream-plate'];
 const vases = ['small-vase', 'blue-vase', 'heirloom-vase', 'mellow-vase'];
 const books = ['reading-books', 'upright-books'];
 
@@ -43,7 +44,7 @@ test('Alle Bestandsvarianten haben passende Größe, Kategorie und Spawn-Eignung
       random: false,
       reason: 'room-fixture',
     });
-  assert.deepEqual(filterSpawnCandidates(OBJECTS, shelf), vases);
+  assert.deepEqual(filterSpawnCandidates(OBJECTS, shelf), [...dishes, ...vases]);
 });
 
 // eslint-disable-next-line max-lines-per-function -- Die vollständige 3×3-Matrix deckt passende und zu große Inhalte für jede Größenklasse ab.
@@ -75,24 +76,29 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), [
+    ...dishes,
     'dry-food-bag',
     'catgrass',
     ...vases,
     ...books,
   ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, support: 'raised' }), [
+    ...dishes,
     'dry-food-bag',
     ...vases,
     ...books,
   ]);
-  assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, capacity: 'small' }), vases);
+  assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, capacity: 'small' }), [
+    ...dishes,
+    ...vases,
+  ]);
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['automatic', 'damage'] }),
     ['dry-food-bag', 'catgrass', ...books],
   );
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['push', 'damage'] }),
-    vases,
+    [...dishes, ...vases],
   );
   assert.equal(
     fitsSpawnSlot(OBJECTS['small-vase'].spawn, ['push'], {
@@ -113,6 +119,7 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, all), [
+    ...dishes,
     'dry-food-bag',
     'catgrass',
     ...vases,

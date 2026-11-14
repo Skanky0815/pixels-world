@@ -1,3 +1,5 @@
+import { Breakable } from '../objects/Breakable';
+import { Dish } from '../objects/Dish';
 import { FoodBag } from '../objects/FoodBag';
 import { Carpet } from '../objects/Carpet';
 import { ImpactWorld } from '../domain/impact-world';
@@ -23,6 +25,8 @@ export function buildObjects(scene: Phaser.Scene, room: ResolvedRoom) {
 // eslint-disable-next-line max-lines-per-function, complexity -- Der vollständige diskriminierte Switch zeigt die registrierten Objektadapter ohne versteckte Fallthroughs.
 function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
   switch (definition.kind) {
+    case 'dish':
+      return new Dish(scene, definition.config);
     case 'food-bag':
       return new FoodBag(scene, definition.config);
     case 'carpet':
@@ -44,10 +48,11 @@ function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
 
 // eslint-disable-next-line max-lines-per-function -- Der typisierte Rückgabevertrag und seine stabil geordneten Objektgruppen bleiben zusammen.
 function groupObjects(
-  objects: (Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet | FoodBag)[],
+  objects: (Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet | FoodBag | Dish)[],
   entries: {
     readonly definition: ResolvedObject;
-    readonly object: Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet | FoodBag;
+    readonly object:
+      Couch | Curtain | Plant | Vase | BookStack | WallPicture | Carpet | FoodBag | Dish;
   }[],
 ) {
   return {
@@ -56,6 +61,8 @@ function groupObjects(
     couches: objects.filter((object) => object instanceof Couch),
     curtains: objects.filter((object) => object instanceof Curtain),
     plants: objects.filter((object) => object instanceof Plant),
+    breakables: objects.filter((object) => object instanceof Breakable),
+    dishes: objects.filter((object) => object instanceof Dish),
     vases: objects.filter((object) => object instanceof Vase),
     pictures: objects.filter((object) => object instanceof WallPicture),
     foodBags: objects.filter((object) => object instanceof FoodBag),

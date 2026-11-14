@@ -99,6 +99,8 @@ export class AchievementProgress {
   private targetSet(metric: AchievementDefinition['metric']) {
     if (metric === 'all') return this.unlocked;
 
+    if (metric === 'destruction') return this.ruined;
+
     return metric === 'rooms' ? this.completedRooms : this.ruinedVariants;
   }
 

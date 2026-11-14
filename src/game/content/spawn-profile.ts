@@ -1,3 +1,4 @@
+import { DISH_PROFILES } from '../assets/dish-appearance.ts';
 import { ASSETS } from '../assets/definitions.ts';
 import type { Capability, ObjectCatalog, ObjectDefinition } from './definitions.ts';
 
@@ -26,6 +27,7 @@ export interface SpawnSlotFilter {
 }
 const CATEGORIES = {
   vase: 'decoration',
+  dish: 'decoration',
   books: 'decoration',
   'food-bag': 'decoration',
   picture: 'decoration',
@@ -60,9 +62,15 @@ export function spawnSizeFor(width: number, height: number): SpawnSize {
   return 'large';
 }
 
-// eslint-disable-next-line max-lines-per-function -- Die vollständige Typauswahl verwendet reale registrierte Grafikmaße statt einer zweiten Größentabelle.
+// eslint-disable-next-line complexity, max-lines-per-function -- Die vollständige Auswahl aller registrierten Objekttypen bleibt explizit.
 function objectSize(object: ObjectDefinition) {
   if (object.kind === 'carpet') return spawnSizeFor(object.geometry.width, object.geometry.height);
+
+  if (object.kind === 'dish') {
+    const shape = DISH_PROFILES[object.appearance];
+
+    return spawnSizeFor(shape.width, shape.height);
+  }
 
   if (object.kind === 'food-bag') return spawnSizeFor(32, 44);
 

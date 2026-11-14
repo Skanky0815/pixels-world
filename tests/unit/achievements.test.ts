@@ -57,10 +57,10 @@ function ruin(round: RoundAlbum, index: number) {
   round.recordDamage(chaosEvent('instance', target.event, target.stage, 1), target.object);
 }
 
-test('Die sieben festen Ziele verlangen den endgültigen Zustand, nicht irgendeinen Schaden', () => {
+test('Alle versionierten Ziele verlangen den endgültigen Zustand, nicht irgendeinen Schaden', () => {
   assert.deepEqual(
     DESTRUCTION_TARGETS.map((target) => target.id),
-    ['vase', 'couch', 'curtain', 'plant', 'books', 'picture', 'shelf'],
+    ['vase', 'couch', 'curtain', 'plant', 'books', 'picture', 'shelf', 'food-bag', 'dish'],
   );
   assert.equal(DESTRUCTION_TARGETS[1].stage, COUCH_SCRATCH.maxDamage);
   assert.equal(DESTRUCTION_TARGETS[2].stage, CURTAIN_SLIDE.maxDamage);
@@ -345,7 +345,7 @@ test('Jede feste Kategorie hat erreichbare veröffentlichte Varianten und schalt
   const { albumEntries } = await import('../../src/content/album/index.ts');
   const published = new Set(albumEntries(false).map((entry) => entry.id));
 
-  assert.equal(DESTRUCTION_VARIANTS.length, 14);
+  assert.equal(DESTRUCTION_VARIANTS.length, 17);
   assert.ok(!DESTRUCTION_VARIANTS.includes('couch.worn'));
   assert.ok(!DESTRUCTION_VARIANTS.includes('shelf.stable'));
 
@@ -486,10 +486,15 @@ test('Meisterwerk zählt alle anderen Erfolge, schaltet im letzten Batch frei un
     unlocked: [],
   });
   assert.ok(!progress.snapshot().unlocked.includes('achievement.masterpiece-v1'));
-  assert.deepEqual(progress.confirm(false, [], [], ['hard-peaceful/living-room']), [
-    'achievement.peaceful-living-room-v1',
-    'achievement.masterpiece-v1',
-  ]);
+  assert.deepEqual(
+    progress.confirm(false, [], [], ['hard-peaceful/living-room', 'hard-peaceful/kitchen']),
+    [
+      'achievement.peaceful-living-room-v1',
+      'achievement.masterpiece-v1',
+      'achievement.peaceful-kitchen-v1',
+      'achievement.masterpiece-v2',
+    ],
+  );
   assert.equal(progress.snapshot().unlocked.length, ACHIEVEMENTS.length);
   const reload = new AchievementProgress();
 
