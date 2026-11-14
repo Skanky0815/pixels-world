@@ -14,6 +14,7 @@ export const ASSETS = {
   'room-panel': { kind: 'tile' },
   'room-floor': { kind: 'tile' },
   'room-ceiling': { kind: 'tile' },
+  'kitchen-wall-cabinet': { kind: 'decoration' },
   'room-window': { kind: 'decoration' },
   'room-picture': { kind: 'decoration' },
   'room-door': { kind: 'decoration' },

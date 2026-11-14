@@ -1,24 +1,48 @@
 import type Phaser from 'phaser';
 import type { RoomDefinition } from './definitions';
 
-/** Provisional code-native room art, replaced by approved kitchen assets later. */
-// eslint-disable-next-line max-lines-per-function -- Wand, Fliesenspiegel und Boden bilden gemeinsam die vorläufige Raumkulisse.
+/** Kitchen modules repeat independently of room width and camera padding. */
+// eslint-disable-next-line max-lines-per-function -- Putz, Boden und Deckenabschluss teilen Raumgrenzen und weltfeste Kachelursprünge.
 export function drawKitchenPreview(scene: Phaser.Scene, room: RoomDefinition, padding: number) {
-  const g = scene.add.graphics();
   const x = -padding;
   const width = room.width + padding * 2;
 
-  g.fillStyle(room.wallColor).fillRect(x, 0, width, room.floor.y);
-  g.fillStyle(0xb3bab0).fillRect(x, room.floor.y - 340, width, 340);
+  scene.add
+    .tileSprite(x, 0, width, room.floor.y, 'kitchen-plaster')
+    .setOrigin(0)
+    .setTileScale(2)
+    .setTilePosition(x / 2, 0);
+  scene.add
+    .tileSprite(x, room.floor.y, width, room.height - room.floor.y, 'kitchen-floor-tiles')
+    .setOrigin(0)
+    .setTilePosition(x, 0);
+  scene.add
+    .tileSprite(x, 0, width, 14, 'room-ceiling')
+    .setOrigin(0)
+    .setTileScale(2)
+    .setTilePosition(x / 2, 0);
+  drawBacksplash(scene, room);
+}
 
-  for (let y = room.floor.y - 338; y < room.floor.y; y += 26)
-    for (let tileX = x; tileX < room.width + padding; tileX += 64)
-      g.fillStyle(0xe0dfcc).fillRect(tileX + 2, y, 60, 24);
-  g.fillStyle(0x67665f).fillRect(x, room.floor.y, width, room.height - room.floor.y);
+// eslint-disable-next-line max-lines-per-function -- Fliesen schließen direkt an die tatsächlichen Ober- und Unterschrankgrenzen an.
+function drawBacksplash(scene: Phaser.Scene, room: RoomDefinition) {
+  const counter = room.platforms.find((p) => p.appearance === 'counter')?.bounds;
+  const cabinet = room.decorations.find(
+    (d) => d.kind === 'image' && d.asset === 'kitchen-wall-cabinet',
+  );
 
-  for (let y = room.floor.y + 2; y < room.height; y += 36)
-    for (let tileX = x; tileX < room.width + padding; tileX += 48)
-      g.fillStyle(room.floor.color).fillRect(tileX + 2, y, 46, 34);
-  g.fillStyle(0x666c65).fillRect(x, 0, width, 12);
-  g.fillStyle(0xe0dfcc).fillRect(x, 12, width, 4);
+  if (!counter) return;
+  const top =
+    cabinet?.kind === 'image'
+      ? cabinet.bounds.y + cabinet.bounds.height
+      : Math.max(0, counter.y - 128);
+
+  if (top >= counter.y) return;
+  scene.add
+    .tileSprite(counter.x, top, counter.width, counter.y - top, 'kitchen-wall-tiles')
+    .setOrigin(0);
+  scene.add
+    .graphics()
+    .lineStyle(2, 0x9b8464)
+    .strokeRect(counter.x, top, counter.width, counter.y - top);
 }

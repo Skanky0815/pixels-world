@@ -14,6 +14,7 @@ import { discoverAlbum, INTERACTABLE_ALBUM } from '../../content/album';
 import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
 import { preloadBookArt } from '../assets/book-art';
+import { preloadKitchenArt } from '../assets/kitchen-art';
 import { preloadRoomArt } from '../assets/room-art';
 import { preloadShelfArt } from '../assets/shelf-art';
 import type { Shelf } from '../objects/Shelf';
@@ -151,6 +152,8 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadBookArt(this);
     preloadShelfArt(this);
     preloadRoomArt(this);
+
+    if (this.room.definition.environment === 'kitchen-preview') preloadKitchenArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);

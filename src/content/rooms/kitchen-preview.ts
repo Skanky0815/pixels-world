@@ -1,7 +1,7 @@
 import { copy } from '../../i18n/locale.ts';
 import type { RoomDefinition } from '../../game/content/definitions.ts';
 
-/** DEV only: fixed route and provisional art, not the published kitchen or its food goal. */
+/** DEV only: fixed route and kitchen art, not the published kitchen or its food goal. */
 export const KITCHEN_PREVIEW = {
   id: 'kitchen-preview',
   caption: copy('kitchenPreviewTitle'),
@@ -11,7 +11,7 @@ export const KITCHEN_PREVIEW = {
   height: 540,
   pixelAsset: 'pixel',
   spawn: { x: 110, surfaceId: 'floor' },
-  wallColor: 0xc3c9bc,
+  wallColor: 0xd9c1a3,
   floor: {
     id: 'floor',
     y: 468,
@@ -56,11 +56,11 @@ export const KITCHEN_PREVIEW = {
   decorations: [
     { kind: 'image', asset: 'room-door', bounds: { x: 0, y: 252, width: 112, height: 216 } },
     { kind: 'image', asset: 'room-window', bounds: { x: 430, y: 48, width: 112, height: 184 } },
-    { kind: 'rect', bounds: { x: 620, y: 52, width: 340, height: 78 }, color: 0x393b40 },
-    { kind: 'rect', bounds: { x: 628, y: 60, width: 154, height: 62 }, color: 0x585b59 },
-    { kind: 'rect', bounds: { x: 790, y: 60, width: 162, height: 62 }, color: 0x585b59 },
-    { kind: 'rect', bounds: { x: 766, y: 90, width: 4, height: 20 }, color: 0xb8ac8b },
-    { kind: 'rect', bounds: { x: 802, y: 90, width: 4, height: 20 }, color: 0xb8ac8b },
+    {
+      kind: 'image',
+      asset: 'kitchen-wall-cabinet',
+      bounds: { x: 620, y: 52, width: 340, height: 78 },
+    },
   ],
   objects: [],
 } as const satisfies RoomDefinition;

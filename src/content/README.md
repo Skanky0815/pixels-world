@@ -7,8 +7,8 @@ Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms
 Die DEV-Vorschau `play.html?room=kitchen-preview` zeigt den Küchen-Grundraum aus
 [#57](https://github.com/Skanky0815/pixels-world/issues/57): Spawn links, Hocker,
 Tisch und Arbeitsplatte rechts. Alle drei Auflagen sind standfest und verwenden
-dieselbe Plattform-/Kontaktlogik wie die Regale. Die vorläufige Möbelgrafik wird
-direkt aus den Kollisionsmaßen gezeichnet; Tisch-/Hockerbeine sind reine Dekoration
+dieselbe Plattform-/Kontaktlogik wie die Regale. Die [Küchengrafiken](../../assets/environment/kitchen/README.md) werden an
+denselben Auflagen und Bodenankern ausgerichtet; Tisch-/Hockerbeine sind reine Dekoration
 und bleiben durchlässig, die Küchenzeile besitzt einen geschlossenen Körper bis
 zum Boden. `appearance` erlaubt dafür `stool`, `table` oder `counter` ausschließlich
 mit stabiler Auflage. Oberhalb hängende Schränke sind vorerst reine Kulisse.
