@@ -5,12 +5,15 @@ import { installFollowCamera } from '../follow-camera-preview';
 import { loadingScreen } from '../../loading-screen';
 import { preloadObjectAudio } from '../assets/object-audio';
 import { preloadDialoguePortraits, DIALOGUE_PORTRAITS } from '../assets/dialogue-portraits';
+import { FoodEating, foodEatingPose, foodEatingPlacement } from '../domain/food-eating';
+import { PEACEFUL_FOOD_LINES } from '../../content/peaceful-goal';
+import { preloadFoodBowlArt } from '../assets/food-bowl-art';
 import { BallPlay, ballPlayPose, ballPlayPlacement } from '../domain/ball-play';
 import { motionPreferences } from '../../settings/motion';
 import { preloadCarpetArt } from '../assets/carpet-art';
 import { albumCollection } from '../../settings/album';
 import { RoundAlbum } from '../album/round';
-import { discoverAlbum, INTERACTABLE_ALBUM } from '../../content/album';
+import { discoverGoalAlbum, discoverAlbum, INTERACTABLE_ALBUM } from '../../content/album';
 import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
 import { preloadBookArt } from '../assets/book-art';
@@ -86,6 +89,10 @@ export class LivingRoomScene extends Phaser.Scene {
   private goal!: MainGoal;
   private goalView!: GoalView;
   private ballPlay = new BallPlay();
+  private foodEating = new FoodEating();
+  private foodEatingLayout!: ReturnType<typeof foodEatingPlacement>;
+  private foodEatingOrigin = 0;
+  private foodEatingVisualX = 0;
   private ballPlayLayout!: ReturnType<typeof ballPlayPlacement>;
   private ballPlayOrigin = 0;
   private ballPlayVisualX = 0;
@@ -158,6 +165,8 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
     preloadFavoriteBallArt(this);
+
+    if (this.room.goal.kind === 'food') preloadFoodBowlArt(this);
     this.preloadSprite(this.room.definition.pixelAsset);
     this.preloadSprite('sara');
   }
@@ -399,6 +408,7 @@ export class LivingRoomScene extends Phaser.Scene {
             intro: this.startScreen.snapshot(),
             goal: this.goal.snapshot(),
             ballPlay: this.ballPlay.snapshot(),
+            foodEating: this.foodEating.snapshot(),
             goalView: this.goalView.snapshot(),
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
@@ -492,6 +502,7 @@ export class LivingRoomScene extends Phaser.Scene {
     const room = this.room.definition;
 
     this.ballPlay = new BallPlay();
+    this.foodEating = new FoodEating();
     this.mobile = new MobileReadout();
     this.feedback = new GameFeedback(this);
     this.controls = new InputController(this);
@@ -536,6 +547,8 @@ export class LivingRoomScene extends Phaser.Scene {
     const unsubscribe = onLanguageChange(() => this.refreshLanguage());
     const unsubscribeMotion = motionPreferences.subscribe(() => {
       if (this.ballPlay.snapshot().active) this.renderBallPlay();
+
+      if (this.foodEating.snapshot().active) this.renderFoodEating();
 
       if (this.round.snapshot().phase === 'reconciliation') this.renderCharmMotion();
       this.presentEnding();
@@ -685,12 +698,12 @@ export class LivingRoomScene extends Phaser.Scene {
       hud: this.hud.snapshot(),
       feedback: this.feedback.readable(),
       homecoming:
-        this.peacefulGoal.snapshot().line && this.ballPlay.snapshot().active
+        this.peacefulGoal.snapshot().line && this.goalActionActive()
           ? 'dialogue'
           : this.homecoming.snapshot().stage,
       dialogue: this.sara.snapshot().dialogueText,
       portrait: this.sara.portraitId(),
-      welcome: this.ballPlay.snapshot().active && !!this.peacefulGoal.snapshot().line,
+      welcome: this.goalActionActive() && !!this.peacefulGoal.snapshot().line,
       charmStage: this.charm.snapshot().stage,
       charm: this.charmView.readableText(),
       result: this.resultView.snapshot(),
@@ -744,7 +757,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.setWorldActive(active);
     this.pixel.setPaused(!this.activity.active || !this.started);
     this.sara.setPaused(!this.activity.active);
-    this.audio.setActive(this.activity.active && this.started && !this.ballPlay.snapshot().active);
+    this.audio.setActive(this.activity.active && this.started && !this.goalActionActive());
     this.renderHud();
   }
 
@@ -766,6 +779,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (input.confirmPressed && this.resultView.snapshot()) return this.scene.restart({});
 
     if (this.ballPlay.snapshot().active) this.advanceBallPlay(elapsed);
+    else if (this.foodEating.snapshot().active) this.advanceFoodEating(elapsed);
     else if (this.canPlay()) this.playFrame(input, elapsed);
     else this.advanceHomecoming(input, elapsed);
     this.presentFeedback(elapsed);
@@ -782,6 +796,7 @@ export class LivingRoomScene extends Phaser.Scene {
       charm: this.charm.snapshot(),
       outcome: this.resultView.snapshot()?.outcome ?? null,
       peaceful: this.resultView.snapshot()?.peaceful,
+      goalAction: this.goalActionActive() ? this.room.goal.kind : undefined,
     });
   }
 
@@ -804,7 +819,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.goal.finish(this.round.snapshot().endReason ?? 'timer');
     this.beginPeacefulGoal();
 
-    if (this.round.snapshot().endReason === 'goal') this.beginBallPlay();
+    if (this.round.snapshot().endReason === 'goal') this.beginGoalAction();
     else this.startHomecoming();
   }
 
@@ -818,6 +833,7 @@ export class LivingRoomScene extends Phaser.Scene {
         this.chaos.count,
         this.random,
         this.previousPeaceful.get(key),
+        this.room.goal.kind === 'food' ? PEACEFUL_FOOD_LINES : undefined,
       )
     )
       return;
@@ -832,6 +848,68 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (line && this.homecoming.snapshot().stage === 'waiting') this.sara.renderWelcome(copy(line));
     else this.sara.render(this.homecoming.snapshot(), this.returning.snapshot().stage === 'seated');
+  }
+
+  private goalActionActive() {
+    return this.ballPlay.snapshot().active || this.foodEating.snapshot().active;
+  }
+
+  private beginGoalAction() {
+    const discovery = discoverGoalAlbum(this.room.goal);
+
+    if (discovery) {
+      this.roundAlbum.record(discovery.entryId);
+      this.lastAlbumDiscovery = discovery;
+      this.events.emit('album-discovered', discovery);
+    }
+
+    if (this.room.goal.kind === 'food') this.beginFoodEating();
+    else this.beginBallPlay();
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Die reale Auflage und Pixels Anfangsposition verankern gemeinsam die Fressanimation.
+  private beginFoodEating() {
+    const goal = this.room.goal;
+    const shelf = this.room.definition.platforms.find((p) => p.id === goal.surfaceId);
+    const left = shelf?.bounds.x ?? 0;
+    const right = shelf ? left + shelf.bounds.width : this.room.definition.width;
+
+    this.foodEatingLayout = foodEatingPlacement(goal.x, left, right);
+    this.foodEatingOrigin = this.pixel.x;
+    this.foodEating.start();
+    this.syncActivity();
+    this.renderFoodEating();
+  }
+
+  private advanceFoodEating(elapsed: number) {
+    const finished = this.foodEating.advance(elapsed);
+
+    this.renderFoodEating();
+
+    if (finished) {
+      this.pixel.finishGoalAction(this.foodEatingVisualX);
+      this.startHomecoming();
+    }
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Kopf-/Pfotenanker, sichere Position und Napftiefe werden aus derselben aktiven Zeit präsentiert.
+  private renderFoodEating() {
+    const pose = foodEatingPose(
+      this.foodEating.snapshot().elapsedMs,
+      motionPreferences.snapshot().reduced,
+    );
+    const { anchorX, faceLeft } = this.foodEatingLayout;
+
+    this.foodEatingVisualX =
+      this.foodEatingOrigin + (anchorX - this.foodEatingOrigin) * pose.alignment;
+    this.pixel.presentGoalAction(
+      pose.frame,
+      pose.scale,
+      this.foodEatingVisualX - this.foodEatingOrigin,
+      pose.alignment < 1 ? anchorX < this.foodEatingOrigin : faceLeft,
+    );
+    this.goalView.presentEating(this.foodEating.snapshot().active);
+    this.goalView.render(this.goal.snapshot(), true);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die echte Zielfläche bestimmt die sichere rein visuelle Bewegung auf demselben Regal.
@@ -854,7 +932,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.renderBallPlay();
 
     if (finished) {
-      this.pixel.finishBallPlay(this.ballPlayVisualX);
+      this.pixel.finishGoalAction(this.ballPlayVisualX);
       this.startHomecoming();
     }
   }
@@ -879,7 +957,7 @@ export class LivingRoomScene extends Phaser.Scene {
         : !pose.faceLeft;
 
     this.ballPlayVisualX = aligned + direction * pose.step;
-    this.pixel.presentBallPlay(
+    this.pixel.presentGoalAction(
       frame,
       pose.scale,
       this.ballPlayVisualX - this.ballPlayOrigin,
@@ -891,7 +969,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Aktionssound und Zielanzeige enden gemeinsam vor der unveränderten Heimkehr.
   private startHomecoming() {
-    if (this.ballPlay.snapshot().active) return;
+    if (this.goalActionActive()) return;
     this.audio.updatePixel('idle', this.pixel.y);
     const score = this.round.snapshot().finalChaosScore;
 

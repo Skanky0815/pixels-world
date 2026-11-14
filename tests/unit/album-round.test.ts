@@ -25,12 +25,15 @@ function memory(raw: string | null = null) {
   };
 }
 
-function game(score = 25) {
-  const round = new RoundController({ minDurationMs: 1, maxDurationMs: 1 });
+function game(score = 25, goalReached = false) {
+  const round = new RoundController({
+    minDurationMs: goalReached ? 100 : 1,
+    maxDurationMs: goalReached ? 100 : 1,
+  });
   const home = new HomecomingSequence();
   const charm = new Reconciliation(() => 0);
 
-  round.advance(1, score);
+  round.advance(1, score, true, goalReached);
   home.start(score, () => 0);
   home.advance(2100);
   home.confirm();
@@ -258,5 +261,29 @@ test('Erfolgreicher Schreibversuch nach korrupten Daten oder vorigem Speicherfeh
     round.confirm(finish(game(), true));
     assert.equal(collection.snapshot().storage, 'ready');
     assert.deepEqual(round.savedDiscoveries(), ['vase.blue']);
+  }
+});
+
+test('Napffund erscheint nur nach erfolgreicher Versöhnung und über die gemeinsame einmalige Bannerfolge ohne Speicherwahl', () => {
+  for (const success of [true, false]) {
+    const collection = new AlbumCollection(new Set(['goal.food-bowl']), undefined, false);
+    const round = new RoundAlbum(collection);
+
+    assert.equal(round.record('goal.food-bowl'), true);
+    assert.equal(round.record('goal.food-bowl'), false);
+    assert.deepEqual(collection.snapshot().discovered, []);
+    const result = finish(game(25, true), success);
+
+    assert.ok(result?.goalReached);
+    round.confirm(result, 'kitchen-preview');
+    assert.deepEqual(collection.snapshot().discovered, success ? ['goal.food-bowl'] : []);
+    assert.equal(
+      round.confirmedBanners().filter((id) => id === 'goal.food-bowl').length,
+      success ? 1 : 0,
+    );
+    assert.deepEqual(round.savedDiscoveries(), []);
+    const again = new RoundAlbum(collection);
+
+    assert.equal(again.record('goal.food-bowl'), !success);
   }
 });

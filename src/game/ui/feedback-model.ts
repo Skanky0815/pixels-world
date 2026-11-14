@@ -11,6 +11,7 @@ export interface FeedbackState {
   readonly charm: ReconciliationSnapshot;
   readonly outcome: 'success' | 'failed' | null;
   readonly peaceful?: boolean;
+  readonly goalAction?: 'food' | 'toy';
 }
 export interface FeedbackMessage {
   readonly id: number;
@@ -99,6 +100,8 @@ function phaseTone(phase: string) {
 }
 
 function feedbackPhase(state: FeedbackState) {
+  if (state.goalAction) return state.goalAction === 'food' ? 'eating' : 'playing';
+
   if (state.peaceful && state.outcome) return 'peaceful';
 
   return state.outcome ?? state.round.phase;

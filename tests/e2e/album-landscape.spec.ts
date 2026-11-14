@@ -1,5 +1,6 @@
 /* eslint-disable max-lines-per-function -- Zusammenhängende Bedienwege prüfen Geometrie, echte Touch-Aktionen und erhaltene Auswahl gemeinsam. */
 import type { Page } from '@playwright/test';
+import { ALBUM_ROOMS } from '../../src/game/ui/album-markup';
 import { albumEntries } from '../../src/content/album/index';
 import { changeLanguage, openPause } from './pause-support';
 import { introAction, test, expect, loadIntro } from './support';
@@ -64,7 +65,7 @@ async function expectDetailFits(page: Page) {
   expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
 }
 
-async function checkEveryDetail(page: Page) {
+async function checkChapterDetails(page: Page) {
   const album = page.locator('.album-dialog');
   const seen = new Set<string>();
 
@@ -90,10 +91,26 @@ async function checkEveryDetail(page: Page) {
     await album.locator('[data-action="page-next"]').tap();
   }
 
-  expect(seen.size).toBe(savedEntries.length);
+  return seen;
+}
 
-  while (!(await album.locator('[data-action="page-previous"]').isDisabled()))
-    await album.locator('[data-action="page-previous"]').tap();
+async function checkEveryDetail(page: Page) {
+  const album = page.locator('.album-dialog');
+  const seen = new Set<string>();
+
+  for (const room of ALBUM_ROOMS.filter((id) =>
+    albumEntries(true).some((e) => e.rooms.includes(id)),
+  )) {
+    await album.locator(`[data-room="${room}"]`).tap();
+    const entries = await checkChapterDetails(page);
+
+    for (const entry of entries) seen.add(`${room}/${entry}`);
+  }
+
+  expect(seen.size).toBe(
+    albumEntries(true).reduce((total, entry) => total + entry.rooms.length, 0),
+  );
+  await album.locator('[data-room="living-room"]').tap();
 }
 
 test.describe('Album im Smartphone-Querformat', () => {
@@ -132,7 +149,7 @@ test.describe('Album im Smartphone-Querformat', () => {
       await expect(album.locator('.album-story')).toHaveAttribute('aria-label', selected);
       await expect(album.locator('.album-story')).toBeVisible();
       await album.getByRole('button', { name: 'Zur Übersicht', exact: true }).tap();
-      await album.getByRole('tab', { name: 'Küche später', exact: true }).tap();
+      await album.getByRole('tab', { name: 'Schlafzimmer später', exact: true }).tap();
       await expect(album.locator('.album-empty')).toContainText(
         'Dieser Raum hat noch keine Album-Einträge.',
       );

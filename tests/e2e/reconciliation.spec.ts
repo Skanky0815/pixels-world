@@ -1,3 +1,4 @@
+import { albumEntries } from '../../src/content/album/index.ts';
 import {
   introAction,
   test,
@@ -227,7 +228,9 @@ test(
       await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
     ).toEqual(['vase.blue']);
     await page.locator('.album-toggle').click();
-    await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+    await expect(page.locator('.album-overall')).toHaveText(
+      `Insgesamt: 1 von ${albumEntries(true).length}`,
+    );
     await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
     await page.locator('.album-dialog [data-action="close"]').click();
     await test.info().attach('versoehnung-gescheitert', {
@@ -242,7 +245,9 @@ test(
     await page.reload();
     await waitForGame(page);
     await (await introAction(page, 'album')).click();
-    await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
+    await expect(page.locator('.album-overall')).toHaveText(
+      `Insgesamt: 1 von ${albumEntries(true).length}`,
+    );
   },
 );
 

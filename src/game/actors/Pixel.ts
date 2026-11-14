@@ -101,7 +101,7 @@ export class Pixel {
   }
 
   /** Presentation only: the successful goal freezes the real body until homecoming. */
-  presentBallPlay(frame: number, scale: number, offset: number, faceLeft: boolean) {
+  presentGoalAction(frame: number, scale: number, offset: number, faceLeft: boolean) {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
 
     this.visual
@@ -113,7 +113,7 @@ export class Pixel {
   }
 
   /** Hand the visible final shelf position back to normal movement without a visual jump. */
-  finishBallPlay(x: number) {
+  finishGoalAction(x: number) {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
 
     body.reset(x, this.sprite.y);

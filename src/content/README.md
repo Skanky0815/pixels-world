@@ -25,8 +25,9 @@ belegt einen, Normal/Schwer beide. Regale bleiben feste Raumgeometrie. Saras
 Bodenbereich, der Ausstieg vom Tisch und der Napfplatz sind zusätzlich als
 Navigationsfreiräume markiert. Der Bereich ab Welt-x=800 bleibt auf der
 Arbeitsplatte ohne Gegenstands-Slots.
-Der vorhandene Ball markiert lediglich den späteren Napfplatz als DEV-Testziel;
-der echte Futternapf folgt in #230. Die Vorschau verwendet eine eigene Raum-ID,
+Am geschützten Zielplatz steht der echte Futternapf aus #230. Nach dem Fund
+frisst Pixel kurz, bevor die gemeinsame Heimkehr beginnt. Der optionale Futterbeutel
+bleibt ein eigener Chaosgegenstand und ist noch nicht belegt. Die Vorschau verwendet eine eigene Raum-ID,
 zählt nicht für Küchen-/Raumerfolge und bleibt in der öffentlichen Auswahl
 deaktiviert. Produktions-URLs ignorieren die DEV-Raumauswahl weiterhin.
 
@@ -164,12 +165,25 @@ Schadensdialoge erst regulär ein Objekt beschädigen und anschließend über
 
 ## Hauptziel pro Raum
 
-`RoomDefinition.goal` enthält genau ein festes Ziel: ID, `kind: toy`,
+`RoomDefinition.goal` enthält genau ein festes Ziel: ID, `kind: toy | food`,
 Bezeichnung/Motivation, `surfaceId`, X-Position und `dwellMs`. Die bestehende
 Auflagenauflösung prüft Position und eindeutige ID vor dem Szenenstart.
 Das Ziel ist ein nicht zerstörbares Spielobjekt mit eigener reiner Kontaktlogik,
 kein zusätzlicher Chaosobjekt-Typ oder Punktelieferant. Der erste akzeptierte
 Rundenabschluss (Ziel oder Deadline) führt in den vorhandenen Heimkehrablauf.
+`goal.spawn.category` entspricht dem Zieltyp; beide Typen bleiben von Zufallsslots
+ausgeschlossen. Der Napf besitzt keinen Chaos-Collider: Kontakte mit Pixel und
+allen Gegenstandsarten verschieben oder beschädigen ihn nicht, und er übt selbst
+keine Impulse aus. Die gesamte sichtbare Breite muss auf der festen Auflage liegen.
+Fressanimation und Ballspiel verändern weder Wertung noch Rundentimer oder
+Interaktionen; Pause/Fokusverlust halten ihre aktive Zeit an, Reset verwirft sie.
+Reduzierte Bewegung zeigt eine ruhige Fresspose ohne wiederholtes Knabbern.
+
+Ein optionaler `albumVariant` aus dem [Zielkatalog](album/goals.ts) erzeugt
+`goal-reached` als friedlichen Albumfund, kein Schadensereignis. Vormerkung,
+erfolgreiche Bestätigung, Speicherwahl und einmalige Banner verwenden dieselben
+Systeme wie alle anderen Albumfunde. Der Napf bleibt bis zur Küchenveröffentlichung
+`previewOnly`; versionierte Zerstörungs-/Raumerfolge bleiben unverändert.
 Die aktuelle Platzierung am oberen Regal ist in beiden Räumen schadenfrei
 per Tastatur erreichbar; neue Platzierungen benötigen denselben Spieltest.
 

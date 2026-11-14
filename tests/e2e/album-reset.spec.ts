@@ -1,3 +1,4 @@
+import { albumEntries } from '../../src/content/album/index.ts';
 /* eslint-disable max-lines-per-function -- Eine echte laufende Runde verbindet Bestätigung, Sprachwechsel, Pause und getrennte Speicherzustände. */
 import {
   introAction,
@@ -100,13 +101,17 @@ test(
     });
     await options.locator('[data-pause-resume]').click();
     await page.locator('.album-toggle').click();
-    await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
+    await expect(page.locator('.album-overall')).toHaveText(
+      `Overall: 0 of ${albumEntries(true).length}`,
+    );
     await expect(page.locator('.album-dialog img')).toHaveCount(0);
     await expect(page.locator('.album-dialog [data-album-reset]')).toHaveCount(0);
     await page.reload();
     await waitForGame(page);
     await (await introAction(page, 'album')).click();
-    await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');
+    await expect(page.locator('.album-overall')).toHaveText(
+      `Overall: 0 of ${albumEntries(true).length}`,
+    );
     await expect(page.locator('[data-pause-album-reset]')).toHaveCount(1);
   },
 );
