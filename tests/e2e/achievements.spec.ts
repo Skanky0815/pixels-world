@@ -99,7 +99,7 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   expect(await savedProgress(page)).toEqual(progress);
   await (await introAction(page, 'album')).click();
   await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
-  await expect(page.locator('.achievement-index')).toContainText('4 von 25 freigeschaltet');
+  await expect(page.locator('.achievement-index')).toContainText('4 von 27 freigeschaltet');
   await expect(page.locator('.album-overall')).toHaveText('10 erfolgreiche Versöhnungen');
 });
 
@@ -127,7 +127,7 @@ for (const mobile of [false, true])
       await expect(album.locator('.achievement-tile')).toHaveCount(4);
       await expect(album.locator('.album-progress')).toHaveAttribute(
         'aria-label',
-        '12 von 25 freigeschaltet',
+        '13 von 27 freigeschaltet',
       );
       await expect(page.getByRole('button', { name: /Unschuldsengel IV/ })).toBeDisabled();
       const second = page.getByRole('button', { name: /Unschuldsengel II Freigeschaltet/ });
@@ -282,8 +282,10 @@ test('Meisterwerk erscheint direkt hinter dem letzten noch fehlenden Erfolg', as
   await page.clock.runFor(3100);
   await expect(banner).toHaveAttribute('data-entry', 'achievement.masterpiece-v2');
   await page.clock.runFor(3100);
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.masterpiece-v3');
+  await page.clock.runFor(3100);
   await expect(banner).toBeHidden();
-  expect((await savedProgress(page)).unlocked).toHaveLength(25);
+  expect((await savedProgress(page)).unlocked).toHaveLength(27);
   await page.locator('.album-toggle').click();
   await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
 

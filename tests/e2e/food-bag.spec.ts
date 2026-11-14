@@ -1,8 +1,7 @@
-import type { GameTestState } from '../../src/test-state';
 /* eslint-disable max-lines-per-function -- Reale Kontakte, gerichtete Ketten und gemeinsame Runden-/Albumgrenzen werden über echte Bedienung geprüft. */
 import { test, expect, waitForGame } from './support';
 import type { Page } from '@playwright/test';
-import { observe, until, move, climbToCounter } from './kitchen-support';
+import { observe, until, move, climbToCounter, finishCharm } from './kitchen-support';
 import { TouchDriver } from './touch-support';
 
 async function start(page: Page, room = 'kitchen-preview') {
@@ -137,35 +136,6 @@ test('Verlorene Auflage lässt den Beutel tatsächlich zum Boden fallen und Rese
   expect((await observe(page)).foodBags[0].y).toBe(340);
   expect((await observe(page)).foodBags[0].state).toBe('upright');
 });
-
-async function pressCharmArrow(page: Page, input: GameTestState['reconciliation']) {
-  if (!input.expected) throw new Error('Sichtbarer Pfeil fehlt');
-  const arrow = { left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', down: 'ArrowDown' }[
-    input.expected
-  ];
-
-  await move(
-    page,
-    [arrow],
-    (s) => s.reconciliation.stage !== 'input' || s.reconciliation.step > input.step,
-  );
-}
-
-async function finishCharm(page: Page, success: boolean) {
-  while (!['complete', 'failed'].includes((await observe(page)).reconciliation.stage)) {
-    const input = (await observe(page)).reconciliation;
-
-    if (input.stage === 'reading' || input.stage === 'feedback')
-      await move(page, ['Space'], (s) => s.reconciliation.stage === 'cue');
-    else if (input.stage === 'cue') await until(page, (s) => s.reconciliation.stage === 'input');
-    else if (input.stage === 'input') {
-      if (!success) await page.clock.runFor(input.inputMs + 32);
-      else {
-        await pressCharmArrow(page, input);
-      }
-    } else await until(page, (s) => s.reconciliation.stage === 'complete');
-  }
-}
 
 for (const outcome of ['success', 'failed'] as const)
   test(`Beutelschaden verhindert friedlichen Abschluss; ${outcome} bestätigt oder verwirft Napf- und Beutelfund gemeinsam`, async ({

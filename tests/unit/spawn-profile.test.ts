@@ -1,3 +1,4 @@
+import { HERB_VARIANTS } from '../../src/content/objects/herbs.ts';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { OBJECTS } from '../../src/content/objects/catalog.ts';
@@ -76,6 +77,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), [
+    ...HERB_VARIANTS,
     ...dishes,
     'dry-food-bag',
     'catgrass',
@@ -83,6 +85,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
     ...books,
   ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, support: 'raised' }), [
+    ...HERB_VARIANTS,
     ...dishes,
     'dry-food-bag',
     ...vases,
@@ -94,7 +97,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
   ]);
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['automatic', 'damage'] }),
-    ['dry-food-bag', 'catgrass', ...books],
+    [...HERB_VARIANTS, 'dry-food-bag', 'catgrass', ...books],
   );
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['push', 'damage'] }),
@@ -119,6 +122,7 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, all), [
+    ...HERB_VARIANTS,
     ...dishes,
     'dry-food-bag',
     'catgrass',
@@ -172,17 +176,15 @@ test('Fehlende und inkonsistente Metadaten scheitern vor dem Engine-Start', () =
 });
 
 // eslint-disable-next-line max-lines-per-function -- Drei unzulässige Freigaben prüfen die typabhängigen Ausschlüsse vor dem Engine-Start.
-test('Auflagegebundene Objekte und Hauptziel behalten ihre Platzierungsgrenzen', () => {
-  assert.throws(
-    () =>
-      resolveRoom(LIVING_ROOM, {
-        ...OBJECTS,
-        catgrass: {
-          ...OBJECTS.catgrass,
-          spawn: { ...OBJECTS.catgrass.spawn, support: 'any-surface' },
-        },
-      }),
-    /floor support/,
+test('Pflanzen erlauben erhöhte Auflagen; Möbel und Hauptziel behalten ihre Platzierungsgrenzen', () => {
+  assert.doesNotThrow(() =>
+    resolveRoom(LIVING_ROOM, {
+      ...OBJECTS,
+      catgrass: {
+        ...OBJECTS.catgrass,
+        spawn: { ...OBJECTS.catgrass.spawn, support: 'any-surface' },
+      },
+    }),
   );
   const couchSpawn = { size: 'large', category: 'furniture', random: true, support: 'any-surface' };
 

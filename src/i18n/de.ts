@@ -547,9 +547,9 @@ export const de = {
   saraDamageCurtain5:
     'Der Riss im Vorhang ist nicht zu übersehen. Jetzt kommen wir erst mal zur Ruhe.',
   saraDamagePlant0: 'Da liegt ein Blumentopf. Du schaust, als wäre das Absicht gewesen.',
-  saraDamagePlant1: 'Der Topf ist umgekippt. Dein Katzengras wollte bestimmt nicht umziehen.',
+  saraDamagePlant1: 'Der Topf ist umgekippt. Deine Pflanze wollte bestimmt nicht umziehen.',
   saraDamagePlant2: 'Der Topf ist umgekippt. Die Erde gehört eigentlich hinein.',
-  saraDamagePlant3: 'Ich wollte das Katzengras gießen. Jetzt muss ich erst den Topf aufstellen.',
+  saraDamagePlant3: 'Ich wollte die Pflanze gießen. Jetzt muss ich erst den Topf aufstellen.',
   saraDamagePlant4:
     'Der Topf liegt da, die Erde auch. Du hilfst wenigstens mit einem unschuldigen Blick.',
   saraDamagePlant5:

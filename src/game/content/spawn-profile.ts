@@ -132,11 +132,7 @@ function validateRandomObject(object: ObjectDefinition, path: string) {
   if (object.kind === 'curtain' || object.kind === 'picture' || object.kind === 'carpet')
     fail(path, 'structural object must stay fixed');
 
-  if (
-    (object.kind === 'plant' || object.kind === 'couch') &&
-    object.spawn.random &&
-    object.spawn.support !== 'floor'
-  )
+  if (object.kind === 'couch' && object.spawn.random && object.spawn.support !== 'floor')
     fail(`${path}.support`, `${object.kind} requires fixed floor support`);
 }
 

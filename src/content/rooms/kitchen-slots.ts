@@ -1,3 +1,4 @@
+import { HERB_VARIANTS } from '../objects/herbs.ts';
 import type { RoomDefinition } from '../../game/content/definitions.ts';
 import type { WallSlots } from '../../game/content/wall-slots.ts';
 import { WALL_SLOTS } from './wall-slots.ts';
@@ -15,8 +16,11 @@ export const KITCHEN_TABLE_SLOTS = {
 
 /** The left landing and the counter from world x=800 onwards stay clear. */
 export const KITCHEN_COUNTER_SLOTS = {
-  count: { easy: 1, normal: 1, hard: 1 },
-  entries: [{ ...decoration, id: 'counter-1', x: 124, pool: dishes }],
+  count: { easy: 2, normal: 2, hard: 2 },
+  entries: [
+    { ...decoration, id: 'counter-herb', x: 40, categories: ['plant'], pool: HERB_VARIANTS },
+    { ...decoration, id: 'counter-1', x: 124, pool: dishes },
+  ],
 } satisfies SurfaceSlots;
 
 export const KITCHEN_WALL_SHELF_SLOTS = {
@@ -25,7 +29,8 @@ export const KITCHEN_WALL_SHELF_SLOTS = {
     ...decoration,
     id: `pantry-${index + 1}`,
     x,
-    pool: dishes,
+    categories: index === 0 ? ['plant'] : ['decoration'],
+    pool: index === 0 ? HERB_VARIANTS : dishes,
   })),
 } satisfies SurfaceSlots;
 

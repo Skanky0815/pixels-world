@@ -31,7 +31,7 @@ export async function move(page: Page, keys: string[], check: (state: GameTestSt
   }
 }
 
-export async function climbToCounter(page: Page) {
+export async function climbToCounterLanding(page: Page) {
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 255);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 398) < 2);
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 410);
@@ -39,7 +39,40 @@ export async function climbToCounter(page: Page) {
   await move(page, ['ArrowRight'], (s) => s.pixel.x >= 480);
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 675);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
+}
+
+export async function climbToCounter(page: Page) {
+  await climbToCounterLanding(page);
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 800);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
   await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 860);
+}
+
+async function pressCharmArrow(page: Page, input: GameTestState['reconciliation']) {
+  if (!input.expected) throw new Error('Sichtbarer Pfeil fehlt');
+  const arrow = { left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', down: 'ArrowDown' }[
+    input.expected
+  ];
+
+  await move(
+    page,
+    [arrow],
+    (s) => s.reconciliation.stage !== 'input' || s.reconciliation.step > input.step,
+  );
+}
+
+export async function finishCharm(page: Page, success: boolean) {
+  while (!['complete', 'failed'].includes((await observe(page)).reconciliation.stage)) {
+    const input = (await observe(page)).reconciliation;
+
+    if (input.stage === 'reading' || input.stage === 'feedback')
+      await move(page, ['Space'], (s) => s.reconciliation.stage === 'cue');
+    else if (input.stage === 'cue') await until(page, (s) => s.reconciliation.stage === 'input');
+    else if (input.stage === 'input') {
+      if (!success) await page.clock.runFor(input.inputMs + 32);
+      else {
+        await pressCharmArrow(page, input);
+      }
+    } else await until(page, (s) => s.reconciliation.stage === 'complete');
+  }
 }

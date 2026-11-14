@@ -345,7 +345,7 @@ test('Jede feste Kategorie hat erreichbare veröffentlichte Varianten und schalt
   const { albumEntries } = await import('../../src/content/album/index.ts');
   const published = new Set(albumEntries(false).map((entry) => entry.id));
 
-  assert.equal(DESTRUCTION_VARIANTS.length, 17);
+  assert.equal(DESTRUCTION_VARIANTS.length, 20);
   assert.ok(!DESTRUCTION_VARIANTS.includes('couch.worn'));
   assert.ok(!DESTRUCTION_VARIANTS.includes('shelf.stable'));
 
@@ -493,6 +493,7 @@ test('Meisterwerk zählt alle anderen Erfolge, schaltet im letzten Batch frei un
       'achievement.masterpiece-v1',
       'achievement.peaceful-kitchen-v1',
       'achievement.masterpiece-v2',
+      'achievement.masterpiece-v3',
     ],
   );
   assert.equal(progress.snapshot().unlocked.length, ACHIEVEMENTS.length);

@@ -539,9 +539,9 @@ export const en: Record<keyof typeof de, string> = {
   saraDamageCurtain4: 'There’s a tear in the curtain. That’s enough climbing for today.',
   saraDamageCurtain5: 'That tear in the curtain is hard to miss. Let’s have a quiet moment now.',
   saraDamagePlant0: 'A flowerpot on its side. You look as though that was the plan.',
-  saraDamagePlant1: 'The pot’s tipped over. I don’t think your cat grass wanted to move.',
+  saraDamagePlant1: 'The pot’s tipped over. I don’t think your plant wanted to move.',
   saraDamagePlant2: 'The pot’s tipped over. The soil is supposed to go inside it.',
-  saraDamagePlant3: 'I was going to water the cat grass. First I’ll have to stand the pot up.',
+  saraDamagePlant3: 'I was going to water the plant. First I’ll have to stand the pot up.',
   saraDamagePlant4:
     'The pot’s down, and so is the soil. At least you’re helping with an innocent look.',
   saraDamagePlant5: 'The plant has had enough adventures today. Let’s put its pot back upright.',

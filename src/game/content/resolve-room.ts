@@ -1,3 +1,4 @@
+import { isPlantAppearance } from '../assets/plant-appearance.ts';
 import { DISH_PROFILES, isDishAppearance } from '../assets/dish-appearance.ts';
 import type { GoalDefinition } from '../domain/main-goal.ts';
 import { GOAL_ALBUM } from '../../content/album/goals.ts';
@@ -159,6 +160,9 @@ function validateToppling(
 
 // eslint-disable-next-line max-lines-per-function -- Zeitparameter, Punktwerte und Reichweite bilden gemeinsam den Pflanzenvertrag.
 function validatePlant(value: Extract<ObjectDefinition, { kind: 'plant' }>, path: string) {
+  if (value.appearance !== undefined && !isPlantAppearance(value.appearance))
+    fail(`${path}.appearance`, 'unknown plant appearance');
+
   for (const key of ['delayMs', 'nibbleMs', 'warningMs'] as const)
     number(value.rules[key], `${path}.rules.${key}`, Number.EPSILON);
   integer(value.rules.nibbleValue, `${path}.rules.nibbleValue`);
@@ -588,7 +592,16 @@ class RoomResolver {
     return {
       ...base,
       kind: 'plant',
-      config: { id: instance.id, x: p.x, floorY: support.y, reach: d.reach, rules: d.rules },
+      config: {
+        id: instance.id,
+        x: p.x,
+        floorY: room.floor.y,
+        support,
+        roomWidth: room.width,
+        appearance: d.appearance,
+        reach: d.reach,
+        rules: d.rules,
+      },
     };
   }
 
