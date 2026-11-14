@@ -123,6 +123,7 @@ export class AlbumCollection {
         ALBUM_STORAGE_KEY,
         JSON.stringify({ version: 1, discovered: [...this.found] }),
       );
+      this.status = 'ready';
     } catch {
       this.status = 'unavailable';
     }

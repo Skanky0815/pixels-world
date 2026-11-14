@@ -120,7 +120,7 @@ export class TouchControls {
   };
 
   private readonly keyUp = (event: KeyboardEvent) => {
-    if (!['Enter', ' '].includes(event.key)) return;
+    if (!this.button(event.target) || !['Enter', ' '].includes(event.key)) return;
     event.preventDefault();
     event.stopPropagation();
     this.actions.release(-1);

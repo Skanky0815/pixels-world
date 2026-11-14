@@ -8,6 +8,7 @@ import './room-selection.css';
 export class RoomSelection {
   private readonly root = document.createElement('section');
   private readonly back = document.createElement('button');
+  private readonly portrait = matchMedia('(orientation: portrait) and (max-width: 1024px)');
   private readonly abort = new AbortController();
   private readonly unsubscribe: () => void;
   // eslint-disable-next-line max-lines-per-function -- Auswahl und Rückkehr teilen eine szenengebundene DOM-Lebensdauer und dieselben vorhandenen Menübuttons.
@@ -25,6 +26,8 @@ export class RoomSelection {
     const options = { signal: this.abort.signal };
 
     this.back.addEventListener('click', returnToRooms, options);
+    this.back.addEventListener('keydown', this.key, options);
+    this.back.addEventListener('keyup', this.key, options);
     this.root.addEventListener('keydown', this.key, options);
     this.root.addEventListener('keyup', this.key, options);
     this.root.addEventListener(
@@ -67,6 +70,11 @@ export class RoomSelection {
 
   showReturn(visible: boolean) {
     this.back.hidden = !visible || this.opened;
+
+    if (this.back.hidden) return;
+    const parent = document.querySelector(this.portrait.matches ? '.touch-actions' : '#game');
+
+    if (parent && this.back.parentElement !== parent) parent.append(this.back);
   }
 
   private refresh() {

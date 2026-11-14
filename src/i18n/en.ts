@@ -1,5 +1,6 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  albumEntryUnlocked: 'New album entry unlocked',
   mainMenu: 'Main menu',
   menuReady: 'Ready for chaos, Pixel?',
   menuWelcome: 'One room. One cat. Your chaos.',
