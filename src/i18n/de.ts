@@ -1,4 +1,5 @@
 export const de = {
+  albumEntryUnlocked: 'Neuer Album-Eintrag freigeschaltet',
   mainMenu: 'Hauptmenü',
   menuReady: 'Bereit für Chaos, Pixel?',
   menuWelcome: 'Ein Zimmer. Eine Katze. Dein Chaos.',

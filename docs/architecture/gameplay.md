@@ -362,6 +362,16 @@ Künftige Freischaltungen lesen ausschließlich die bestätigte Sammlung; Skins
 werden hier nicht implementiert. Der nur lesbare E2E-Vertrag zeigt getrennte,
 eingefrorene `pending`-/`confirmed`-Listen unter `album`.
 
+`RoundAlbum.savedDiscoveries()` hält nur die beim Abschluss erfolgreich dauerhaft
+gespeicherten neuen IDs fest. Sitzungsfunde, Schreibfehler und geschützte neuere
+Speicherversionen erzeugen keine Banner; späteres Aktivieren des Speicherns
+kündigt diese Runde nicht nachträglich an. `AlbumBanners` zeigt diese Liste einmalig
+in Fundreihenfolge über dem unteren Spielfeld, drei Sekunden je Eintrag. Die
+szenengebundene Warteschlange nutzt dieselbe aktive Spielzeit wie der Abschluss
+(Pause, Album und unsichtbarer Tab halten sie an), verändert weder Spielfeldgröße
+noch Fokus und wird beim Szenenwechsel entfernt. Bild und DE-/EN-Titel kommen aus
+dem Albumkatalog. Reduzierte Bewegung unterdrückt die Einblendbewegung.
+
 Der szenengebundene `AlbumView` zeigt das freigegebene Buchlayout als nativen Dialog.
 Einführung und Pause-Menü öffnen dasselbe Album, pausieren dabei das Spiel und lösen
 gehaltene Eingaben. Beim Schließen wird der vorherige Menü-/Pausenzustand respektiert.

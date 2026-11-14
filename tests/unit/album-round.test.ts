@@ -106,6 +106,8 @@ test('Rundenabschluss übernimmt alle Funde mit genau einem Schreibvorgang und e
   assert.deepEqual(round.confirm(result), ['vase.blue', 'couch.cozy']);
   assert.equal(round.record('plant.grass'), false);
   assert.equal(storage.writes(), 1);
+  assert.deepEqual(round.savedDiscoveries(), ['vase.blue', 'couch.cozy']);
+  assert.equal(Object.isFrozen(round.savedDiscoveries()), true);
   assert.equal(notifications, 1);
   assert.deepEqual(JSON.parse(storage.getItem()!), {
     version: 1,
@@ -136,6 +138,7 @@ test('Nur vollständige Versöhnung bestätigt Funde; Scheitern verwirft sie auc
       collection.snapshot().discovered,
       success ? ['couch.cozy', 'vase.blue'] : ['couch.cozy'],
     );
+    assert.deepEqual(round.savedDiscoveries(), success ? ['vase.blue'] : []);
     assert.deepEqual(round.snapshot().pending, []);
     assert.equal(storage.writes(), success ? 1 : 0);
 
@@ -163,6 +166,7 @@ test('Bereits bestätigte Varianten zählen nicht erneut, auch bei konkurrierend
   round.record('vase.blue');
   collection.unlock('vase.blue');
   assert.deepEqual(round.confirm(finish(game(), true)), []);
+  assert.deepEqual(round.savedDiscoveries(), []);
   assert.equal(storage.writes(), 1);
   assert.deepEqual(new RoundAlbum(collection).confirm(finish(game(), true)), []);
   assert.equal(storage.writes(), 1);
@@ -197,4 +201,54 @@ test('Migration, geschützter neuerer Speicher und blockierter Storage bleiben e
   assert.deepEqual(session.confirm(finish(game(), true)), ['vase.blue']);
   assert.equal(blocked.snapshot().storage, 'unavailable');
   assert.equal(ALBUM_STORAGE_KEY, 'pixels-world.album');
+});
+
+test('Banner erhalten nur die im Moment des Abschlusses erfolgreich gespeicherten IDs', () => {
+  for (const [storage, remember] of [
+    [memory(), false],
+    [memory(JSON.stringify({ version: 9, discovered: ['future'] })), true],
+    [
+      {
+        getItem: () => null,
+        setItem: () => {
+          throw new Error('quota');
+        },
+      },
+      true,
+    ],
+  ] as const) {
+    const collection = new AlbumCollection(ids, storage, remember);
+    const round = new RoundAlbum(collection);
+
+    round.record('vase.blue');
+    assert.deepEqual(round.confirm(finish(game(), true)), ['vase.blue']);
+    assert.deepEqual(round.savedDiscoveries(), []);
+    collection.setRemember(true);
+    round.confirm(finish(game(), true));
+    assert.deepEqual(round.savedDiscoveries(), []);
+  }
+});
+
+test('Erfolgreicher Schreibversuch nach korrupten Daten oder vorigem Speicherfehler erlaubt Banner', () => {
+  let blocked = true;
+  const storage = {
+    getItem: () => null,
+    setItem: () => {
+      if (blocked) throw new Error('quota');
+    },
+  };
+  const recovered = new AlbumCollection(ids, storage);
+
+  recovered.unlock('couch.cozy');
+  assert.equal(recovered.snapshot().storage, 'unavailable');
+  blocked = false;
+
+  for (const collection of [recovered, new AlbumCollection(ids, memory('{'))]) {
+    const round = new RoundAlbum(collection);
+
+    round.record('vase.blue');
+    round.confirm(finish(game(), true));
+    assert.equal(collection.snapshot().storage, 'ready');
+    assert.deepEqual(round.savedDiscoveries(), ['vase.blue']);
+  }
 });

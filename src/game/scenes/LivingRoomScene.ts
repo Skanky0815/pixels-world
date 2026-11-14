@@ -1,3 +1,4 @@
+import { AlbumBanners } from '../ui/AlbumBanners';
 import { EndingPresentation } from '../domain/ending-presentation';
 import { preloadSaraEndingArt } from '../assets/sara-ending-art';
 import { installFollowCamera } from '../follow-camera-preview';
@@ -97,6 +98,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private charm!: Reconciliation;
   private charmPresentation!: CharmPresentation;
   private ending = new EndingPresentation();
+  private albumBanners!: AlbumBanners;
   private resultView!: RoundResultView;
   private charmView!: ReconciliationView;
   private homecoming!: HomecomingSequence;
@@ -500,6 +502,7 @@ export class LivingRoomScene extends Phaser.Scene {
       backgroundDoor: room.decorations.some((d) => d.kind === 'image' && d.asset === 'room-door'),
     });
     this.charmView = new ReconciliationView(this, room.width, room.floor.y);
+    this.albumBanners = new AlbumBanners();
     this.resultView = new RoundResultView(this, room.width);
     this.startScreen = new StartScreen(!this.started && !this.choosingRoom, this.room.goal, () =>
       this.returnToRooms(),
@@ -550,6 +553,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.sara.destroy();
     this.charmView.destroy();
     this.resultView.destroy();
+    this.albumBanners.destroy();
     this.startScreen.destroy();
     this.roomSelection.destroy();
     this.goalView.destroy();
@@ -959,6 +963,8 @@ export class LivingRoomScene extends Phaser.Scene {
     );
     this.presentEnding();
     this.resultView.render(result, this.roundAlbum.confirm(result).length);
+
+    if (result) this.albumBanners.show(this.roundAlbum.savedDiscoveries(), elapsed);
     this.controls.showRestart(result !== null);
     this.roomSelection.showReturn(result !== null);
   }

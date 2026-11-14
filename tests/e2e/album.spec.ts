@@ -110,6 +110,7 @@ for (const mobile of [false, true]) {
         expect((await state(page)).album.pending).toEqual(['couch.cozy']);
         const result = await finishAlbumRound(page, false);
 
+        await expect(page.locator('.album-banner')).toBeHidden();
         expect(result.outcome).toBe('failed');
         expect(result.newDiscoveries).toBe(0);
         expect(result.albumText).toBe('Neue Album-Einträge: 0 · Versöhnung nicht geschafft.');
@@ -170,7 +171,28 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   expect(result.outcome).toBe('success');
   expect(result.newDiscoveries).toBe(2);
   expect(result.albumText).toBe('Neue Album-Einträge: 2');
-  await page.clock.runFor(3000);
+  const banner = page.locator('.album-banner');
+
+  await expect(banner).toBeVisible();
+  await expect(banner).toHaveAttribute('data-entry', 'couch.cozy');
+  await expect(banner).toContainText('Neuer Album-Eintrag freigeschaltet');
+  await expect(banner.locator('strong')).toHaveText('Das gemütliche Sofa');
+  await bannerFits(page);
+  await test
+    .info()
+    .attach('album-banner-desktop', { body: await page.screenshot(), contentType: 'image/png' });
+  const field = await page.locator('#game').boundingBox();
+
+  await page.clock.runFor(3100);
+  await expect(banner).toHaveAttribute('data-entry', 'plant.catgrass');
+  await openFromMenu(page);
+  await page.clock.runFor(4000);
+  await expect(banner).toHaveAttribute('data-entry', 'plant.catgrass');
+  await page.locator('.album-dialog [data-action="close"]').click();
+  await page.locator('[data-pause-resume]').click();
+  await page.clock.runFor(3300);
+  await expect(banner).toBeHidden();
+  expect(await page.locator('#game').boundingBox()).toEqual(field);
   expect((await state(page)).result?.newDiscoveries).toBe(2);
   expect((await state(page)).album).toEqual({
     pending: [],
@@ -238,6 +260,7 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
   await page.locator('[data-remember-album]').check();
   await page.locator('[data-pause-resume]').click();
   await finishAlbumRound(page, true);
+  await expect(page.locator('.album-banner')).toBeHidden();
   await openFromMenu(page);
   await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 1 von 14');
   await expect(page.locator('.album-dialog footer [role="status"]')).toContainText(
@@ -345,5 +368,82 @@ test.describe('Mobile Buchseiten', () => {
     await expect(page.locator('.album-toggle')).toHaveCount(1);
     await page.clock.runFor(160);
     expect((await state(page)).round.elapsedMs).toBeGreaterThan(paused.round.elapsedMs);
+  });
+});
+
+async function bannerFits(page: Page) {
+  const banner = await page.locator('.album-banner').boundingBox();
+  const game = await page.locator('#game').boundingBox();
+
+  expect(banner!.x).toBeGreaterThanOrEqual(game!.x);
+  expect(banner!.y).toBeGreaterThanOrEqual(game!.y);
+  expect(banner!.x + banner!.width).toBeLessThanOrEqual(game!.x + game!.width);
+  expect(banner!.y + banner!.height).toBeLessThanOrEqual(game!.y + game!.height);
+
+  for (const selector of ['.room-selection-return', '.mobile-dialogue', '.touch-actions button']) {
+    for (const element of await page.locator(selector).all()) {
+      if (!(await element.isVisible())) continue;
+      const box = await element.boundingBox();
+
+      expect(
+        box!.x + box!.width <= banner!.x ||
+          box!.x >= banner!.x + banner!.width ||
+          box!.y + box!.height <= banner!.y ||
+          box!.y >= banner!.y + banner!.height,
+      ).toBe(true);
+    }
+  }
+}
+
+test.describe('Album-Banner auf dem Handy', () => {
+  test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+  test('Einzelfund bleibt bei Drehung erreichbar und respektiert reduzierte Bewegung', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => localStorage.setItem('pixels-world.reduced-motion', 'true'));
+    await scratch(page);
+    await finishAlbumRound(page, true);
+    const banner = page.locator('.album-banner');
+
+    await expect(banner).toBeVisible();
+    await expect(banner).toHaveAttribute('data-entry', 'couch.cozy');
+    await expect(banner).toHaveCSS('animation-name', 'none');
+    expect(
+      await banner
+        .locator('img')
+        .evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0),
+    ).toBe(true);
+    await bannerFits(page);
+    await test
+      .info()
+      .attach('album-banner-hoch', { body: await page.screenshot(), contentType: 'image/png' });
+
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 568, height: 320 },
+      { width: 844, height: 390 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.clock.runFor(100);
+      await bannerFits(page);
+    }
+
+    await test
+      .info()
+      .attach('album-banner-quer', { body: await page.screenshot(), contentType: 'image/png' });
+    await page.locator('.album-toggle').click();
+    await page.clock.runFor(4000);
+    await page.keyboard.press('Escape');
+    await expect(banner).toBeVisible();
+    await page.clock.runFor(3300);
+    await expect(banner).toBeHidden();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.clock.runFor(100);
+    await page.locator('.room-selection-return').focus();
+    await page.keyboard.press('Space');
+    await page.clock.runFor(160);
+    await expect(page.locator('.room-selection')).toBeVisible();
+    await expect(banner).toHaveCount(1);
+    await expect(banner).toBeHidden();
   });
 });

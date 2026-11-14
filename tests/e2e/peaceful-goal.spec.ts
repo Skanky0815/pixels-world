@@ -40,6 +40,7 @@ test(
     });
     await page.keyboard.down('Space');
     await until(page, (s) => s.result !== null);
+    await expect(page.locator('.album-banner')).toBeHidden();
     expect((await state(page)).feedback.text).toContain('Ball found. Everything in one piece.');
     await page.clock.runFor(3000);
     const ended = await state(page);
