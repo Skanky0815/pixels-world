@@ -41,6 +41,7 @@ function strings(value: unknown): string[] {
   return value;
 }
 
+// eslint-disable-next-line max-lines-per-function -- Bekannte Erfolgsdaten werden zusammen mit dem optionalen neuen Variantenfeld validiert.
 function achievements(value: unknown): AchievementData {
   const data = value as AchievementData | undefined;
 
@@ -50,6 +51,7 @@ function achievements(value: unknown): AchievementData {
   return {
     reconciliations: data.reconciliations,
     ruined: strings(data.ruined),
+    ruinedVariants: strings(data.ruinedVariants ?? []),
     unlocked: strings(data.unlocked),
   };
 }

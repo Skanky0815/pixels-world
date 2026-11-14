@@ -130,6 +130,7 @@ test('Ergebniswiederholung, später Schaden und Reload zählen keine zweite Rund
   assert.deepEqual(reload.achievementSnapshot(), {
     reconciliations: 1,
     ruined: ['vase'],
+    ruinedVariants: [],
     unlocked: ['achievement.angel-1'],
   });
   assert.equal(storage.writes(), 1);
@@ -148,6 +149,7 @@ test('Zerstörung wird über erfolgreiche Runden gesammelt, duplizierte Kontakte
     assert.deepEqual(collection.achievementSnapshot(), {
       reconciliations: 0,
       ruined: [],
+      ruinedVariants: [],
       unlocked: [],
     });
     assert.deepEqual(round.savedBanners(), []);
@@ -195,6 +197,7 @@ test('Katalogfremde Ziele zählen nicht; bekannte Erfolge bleiben bei späteren 
       achievements: {
         reconciliations: 100,
         ruined: ['vase', 'future', 'vase'],
+        ruinedVariants: [],
         unlocked: [ACHIEVEMENTS[0].id, 'achievement.destruction-v1', 'future'],
       },
     }),
@@ -204,6 +207,7 @@ test('Katalogfremde Ziele zählen nicht; bekannte Erfolge bleiben bei späteren 
   assert.deepEqual(collection.achievementSnapshot(), {
     reconciliations: 100,
     ruined: ['vase'],
+    ruinedVariants: [],
     unlocked: [
       ACHIEVEMENTS[0].id,
       'achievement.destruction-v1',
@@ -224,7 +228,7 @@ test('Fehlerhafte Erfolgsdaten verlieren keine gültigen Albumseiten; neuere For
     {},
     { reconciliations: -1 },
     { reconciliations: 1.5 },
-    { reconciliations: 12, ruined: [7], unlocked: [] },
+    { reconciliations: 12, ruined: [7], ruinedVariants: [], unlocked: [] },
   ]) {
     const collection = new AlbumCollection(
       ids,
@@ -251,7 +255,12 @@ test('Opt-in übernimmt gespeicherte und ungespeicherte Runden; Umschalten dupli
     JSON.stringify({
       version: 2,
       discovered: ['vase.blue'],
-      achievements: { reconciliations: 9, ruined: ['vase'], unlocked: ['achievement.angel-1'] },
+      achievements: {
+        reconciliations: 9,
+        ruined: ['vase'],
+        ruinedVariants: [],
+        unlocked: ['achievement.angel-1'],
+      },
     }),
   );
   const collection = new AlbumCollection(ids, storage, false);
@@ -271,7 +280,12 @@ test('Opt-in übernimmt gespeicherte und ungespeicherte Runden; Umschalten dupli
   const reload = new AlbumCollection(ids, storage);
 
   assert.deepEqual(reload.snapshot().discovered, []);
-  assert.deepEqual(reload.achievementSnapshot(), { reconciliations: 0, ruined: [], unlocked: [] });
+  assert.deepEqual(reload.achievementSnapshot(), {
+    reconciliations: 0,
+    ruined: [],
+    ruinedVariants: [],
+    unlocked: [],
+  });
 });
 
 test('Blockierter Speicher bleibt sitzungsweit benutzbar und kündigt keine dauerhaften Erfolge an', () => {
@@ -287,4 +301,102 @@ test('Blockierter Speicher bleibt sitzungsweit benutzbar und kündigt keine daue
   assert.equal(collection.achievementSnapshot().reconciliations, 1);
   assert.deepEqual(collection.achievementSnapshot().unlocked, ['achievement.angel-1']);
   assert.deepEqual(round.savedBanners(), []);
+});
+
+test('Kategorie zählt vollständig ruinierte Varianten über Runden, niemals bloße Albumfunde oder doppelte Instanzen', () => {
+  const storage = memory();
+  const collection = new AlbumCollection(ids, storage);
+  const first = new RoundAlbum(collection);
+
+  first.record('vase.blue');
+  first.recordDamage(chaosEvent('blue-1', 'break', 1, 1), 'vase', 'vase.blue');
+  first.recordDamage(chaosEvent('blue-2', 'break', 1, 1), 'vase', 'vase.blue');
+  first.confirm(success);
+  assert.deepEqual(collection.achievementSnapshot().ruinedVariants, ['vase.blue']);
+  assert.ok(!collection.achievementSnapshot().unlocked.includes('achievement.category-vases-v1'));
+  const failure = new RoundAlbum(collection);
+
+  failure.recordDamage(chaosEvent('gold', 'break', 1, 1), 'vase', 'vase.gold');
+  failure.confirm(failed);
+  assert.deepEqual(collection.achievementSnapshot().ruinedVariants, ['vase.blue']);
+  const next = new RoundAlbum(new AlbumCollection(ids, storage));
+
+  for (const variant of ['vase.terracotta', 'vase.gold', 'vase.mellow'])
+    next.recordDamage(chaosEvent(variant, 'break', 1, 1), 'vase', variant);
+  next.confirm(success);
+  next.confirm(success);
+  assert.deepEqual(next.savedBanners(), ['achievement.category-vases-v1']);
+  assert.ok(
+    new AlbumCollection(ids, storage)
+      .achievementSnapshot()
+      .unlocked.includes('achievement.category-vases-v1'),
+  );
+});
+
+test('Jede feste Kategorie hat erreichbare veröffentlichte Varianten und schaltet nur ihren vollständigen Satz frei', async () => {
+  const { ACHIEVEMENT_CATEGORIES, DESTRUCTION_VARIANTS, SHELF_TARGET_NAMES } =
+    await import('../../src/content/achievement-categories.ts');
+  const { albumEntries } = await import('../../src/content/album/index.ts');
+  const published = new Set(albumEntries(false).map((entry) => entry.id));
+
+  assert.equal(DESTRUCTION_VARIANTS.length, 14);
+  assert.ok(!DESTRUCTION_VARIANTS.includes('couch.worn'));
+  assert.ok(!DESTRUCTION_VARIANTS.includes('shelf.stable'));
+
+  for (const category of ACHIEVEMENT_CATEGORIES) {
+    const progress = new AchievementProgress();
+    const targetId = `achievement.category-${category.id}-v1`;
+
+    for (const id of category.targets) assert.ok(published.has(id) || id in SHELF_TARGET_NAMES);
+    assert.deepEqual(
+      progress.confirm(true, [], category.targets.slice(0, -1)).filter((id) => id === targetId),
+      [],
+    );
+    assert.deepEqual(
+      progress.confirm(true, [], category.targets).filter((id) => id === targetId),
+      [targetId],
+    );
+    assert.deepEqual(
+      progress.confirm(true, [], category.targets).filter((id) => id === targetId),
+      [],
+    );
+  }
+});
+
+test('Frühe Schadensstufen, Vorschauvarianten und unbekannte Varianten erfüllen keine Kategorie', () => {
+  const collection = new AlbumCollection(new Set(['couch.cozy']), memory());
+  const round = new RoundAlbum(collection);
+
+  round.record('couch.cozy');
+  round.recordDamage(chaosEvent('couch', 'scratch', 1, 1), 'couch', 'couch.cozy');
+  round.recordDamage(chaosEvent('dev', 'scratch', 6, 1), 'couch', 'couch.worn');
+  round.recordDamage(chaosEvent('future', 'break', 1, 1), 'vase', 'future');
+  round.confirm(success);
+  assert.deepEqual(collection.achievementSnapshot().ruinedVariants, []);
+  assert.ok(
+    !collection.achievementSnapshot().unlocked.some((id) => id.startsWith('achievement.category-')),
+  );
+});
+
+test('Vorheriges Format ohne Variantenfeld behält Erfolge und Zähler, ohne unbekannte Varianten nachträglich zu erfinden', () => {
+  const storage = memory(
+    JSON.stringify({
+      version: 2,
+      discovered: ['vase.blue'],
+      achievements: {
+        reconciliations: 10,
+        ruined: ['vase'],
+        unlocked: ['achievement.angel-1', 'achievement.angel-10'],
+      },
+    }),
+  );
+  const collection = new AlbumCollection(ids, storage);
+
+  assert.equal(collection.achievementSnapshot().reconciliations, 10);
+  assert.deepEqual(collection.achievementSnapshot().ruinedVariants, []);
+  assert.deepEqual(collection.achievementSnapshot().unlocked, [
+    'achievement.angel-1',
+    'achievement.angel-10',
+  ]);
+  assert.equal(collection.snapshot().storage, 'ready');
 });

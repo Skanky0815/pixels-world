@@ -10,7 +10,7 @@ import { motionPreferences } from '../../settings/motion';
 import { preloadCarpetArt } from '../assets/carpet-art';
 import { albumCollection } from '../../settings/album';
 import { RoundAlbum } from '../album/round';
-import { discoverAlbum } from '../../content/album';
+import { discoverAlbum, INTERACTABLE_ALBUM } from '../../content/album';
 import type { AlbumDiscovery } from '../../content/album/discovery';
 import { preloadPictureArt } from '../assets/picture-art';
 import { preloadBookArt } from '../assets/book-art';
@@ -571,7 +571,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private processDamage(event: ChaosEvent | undefined) {
     if (!this.canPlay() || !event || !this.chaos.awardEvent(event)) return;
     this.reactionDamage.record(event, this.damagedObjectKind(event.objectId));
-    this.roundAlbum.recordDamage(event, this.damagedObjectKind(event.objectId));
+    this.recordDestruction(event);
     this.audio.playDamage(event);
     this.events.emit('object-damaged', event);
     this.discoverAlbum(event);
@@ -583,6 +583,28 @@ export class LivingRoomScene extends Phaser.Scene {
     if (entry) return entry.definition.kind;
 
     return this.shelves.some((shelf) => shelf.id === objectId) ? 'shelf' : undefined;
+  }
+
+  private recordDestruction(event: ChaosEvent) {
+    this.roundAlbum.recordDamage(
+      event,
+      this.damagedObjectKind(event.objectId),
+      this.damagedVariant(event.objectId),
+    );
+  }
+
+  private damagedVariant(objectId: string) {
+    const entry = this.built.entries.find((entry) => entry.object.id === objectId);
+
+    if (entry) {
+      const variant = INTERACTABLE_ALBUM[entry.definition.variant];
+
+      return variant?.previewOnly ? undefined : variant?.id;
+    }
+
+    const shelf = this.shelves.find((shelf) => shelf.id === objectId);
+
+    return shelf ? `shelf.${shelf.snapshot().stability}` : undefined;
   }
 
   private discoverAlbum(event: ChaosEvent) {

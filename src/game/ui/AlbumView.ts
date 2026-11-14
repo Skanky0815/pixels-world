@@ -1,5 +1,5 @@
 import { ACHIEVEMENTS } from '../../content/achievements';
-import { achievementsMarkup } from './achievement-markup';
+import { achievementsMarkup, ACHIEVEMENT_PAGE_SIZE } from './achievement-markup';
 import { closeButtonMarkup } from '../../ui/button';
 import { albumEntries } from '../../content/album';
 import type { AlbumEntry } from '../../content/album/discovery';
@@ -74,13 +74,18 @@ export class AlbumView {
   }
 
   private refresh() {
-    if (this.room !== 'achievements' && !albumCollection.snapshot().discovered.length)
-      this.detail = false;
+    const available =
+      this.room === 'achievements'
+        ? albumCollection.achievementSnapshot().unlocked.length
+        : albumCollection.snapshot().discovered.length;
+
+    if (!available) this.detail = false;
 
     if (this.opened) this.render();
   }
 
   private resizePages() {
+    if (this.room === 'achievements') return this.refresh();
     const selected = this.visibleEntries().findIndex((entry) => entry.id === this.selected);
     const anchor = this.detail && selected >= 0 ? selected : this.page * this.pageSize;
 
@@ -139,8 +144,20 @@ export class AlbumView {
     selected?: AlbumEntry,
   ) {
     return this.room === 'achievements'
-      ? achievementsMarkup(albumCollection.achievementSnapshot(), this.selectedAchievement)
+      ? this.achievementMarkup()
       : this.roomMarkup(entries, found, selected);
+  }
+
+  private achievementMarkup() {
+    const last = Math.ceil(ACHIEVEMENTS.length / ACHIEVEMENT_PAGE_SIZE) - 1;
+
+    this.page = Math.max(0, Math.min(this.page, last));
+
+    return achievementsMarkup(
+      albumCollection.achievementSnapshot(),
+      this.selectedAchievement,
+      this.page,
+    );
   }
 
   // eslint-disable-next-line max-lines-per-function -- Kapitel, Zähler und eine begrenzte Objektseite bilden einen gemeinsamen Buchaufbau.
@@ -205,7 +222,7 @@ export class AlbumView {
   }
 
   private selectAchievement(id?: string) {
-    if (!id || !ACHIEVEMENTS.some((entry) => entry.id === id)) return;
+    if (!id || !albumCollection.achievementSnapshot().unlocked.includes(id)) return;
     this.selectedAchievement = id;
     this.detail = true;
   }
@@ -241,7 +258,7 @@ export class AlbumView {
     this.render();
     this.root
       .querySelector<HTMLElement>(
-        '.album-tile[aria-pressed="true"], .achievement-tile[aria-pressed="true"]',
+        '.album-tile[aria-pressed="true"], .achievement-tile[aria-pressed="true"], .album-pagination button:not(:disabled)',
       )
       ?.focus();
   }
@@ -273,8 +290,9 @@ export class AlbumView {
   }
 
   private selectRoom(room: AlbumChapter) {
+    if (this.room !== room) this.page = 0;
     this.room = room;
-    this.page = 0;
+    this.pageSize = this.compact.matches ? 6 : ALBUM_PAGE_SIZE;
     this.detail = false;
   }
 

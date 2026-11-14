@@ -339,7 +339,10 @@ Balancings.
 `AlbumCollection` speichert stabile Album-IDs und langfristigen Erfolgsfortschritt
 gemeinsam unter `pixels-world.album`, nicht Instanzen oder laufende Runden. Version 2
 enthält `discovered` und `achievements` mit Versöhnungszähler, bestätigten Objektarten
-und freigeschalteten Erfolgs-IDs. Version 0 (`unlocked`) und Version 1 (`discovered`)
+und freigeschalteten Erfolgs-IDs. Das optionale Feld `ruinedVariants` ergänzt
+vollständig ruinierte Varianten. Fehlt es in einem älteren Speicherstand, beginnt
+nur diese neue Variantenliste leer; vorhandene Erfolge und Zähler bleiben erhalten.
+Version 0 (`unlocked`) und Version 1 (`discovered`)
 bleiben lesbar; alte Albumseiten bleiben erhalten, historische Versöhnungen werden
 nicht aus Funden geschätzt. Fremde IDs und Duplikate zählen nicht. Fehlerhafte
 Erfolgsdaten setzen nur den Erfolgsteil zurück und erhalten gültige Albumseiten.
@@ -392,10 +395,24 @@ Erfolgsdefinition statt einer stillen Änderung des vorhandenen Ziels.
 Runden getrennt, damit Einschalten der Speicherwahl vorhandenen Fortschritt
 übernimmt und wiederholtes Umschalten keine Runden doppelt zählt.
 
-Der Erfolge-Reiter ist das fünfte Lesezeichen desselben Albumdialogs. Auch gesperrte
-Erfolge sind anwählbar und zeigen Bedingung, Fortschritt und Status. Desktop zeigt
-Liste und Detail nebeneinander; kompakte Geräte wechseln zwischen Übersicht und
-Detail. Im kurzen Querformat führt das aktive Lesezeichen „← Erfolge“ zurück.
+Die sieben Kategorien in `content/achievement-categories.ts` frieren ihre jeweils
+veröffentlichten Varianten ein: vier Vasen, zwei Bücheranordnungen, drei Bilder,
+ein Sofa, ein Vorhang, ein Katzengras und zwei zerstörbare Regalvarianten. Das
+unzerstörbare Regal und Vorschauobjekte gehören nicht dazu. Jeder vollständige
+Schadenszustand bestätigt eine stabile Varianten-ID; mehrere Instanzen derselben
+Variante zählen einmal. Teilbeschädigungen und bloße Albumfunde reichen nicht.
+Auch diese Listen werden erst nach erfolgreicher Versöhnung übernommen. Frühere
+Albumfunde oder allgemeine Objektart-Fortschritte werden nicht als unbekannte
+historische Varianten interpretiert.
+
+Der Erfolge-Reiter ist das fünfte Lesezeichen desselben Albumdialogs. Gesperrte
+Erfolge zeigen ihren Fortschritt in der Übersicht, sind aber nicht anklickbar.
+Detailseiten öffnen ausschließlich bereits freigespielte Erfolge; ohne einen
+solchen Erfolg zeigt die Desktopseite einen neutralen Platzhalter. Vier Einträge
+pro Buchseite halten die Übersicht begrenzt. Desktop zeigt Liste und Detail
+nebeneinander; kompakte Geräte wechseln zwischen Übersicht und Detail. Im kurzen
+Querformat stehen die Seitentasten neben dem Titel; das aktive Lesezeichen
+„← Erfolge“ führt zurück zur Übersicht.
 
 Der szenengebundene `AlbumView` zeigt das freigegebene Buchlayout als nativen Dialog.
 Einführung und Pause-Menü öffnen dasselbe Album, pausieren dabei das Spiel und lösen

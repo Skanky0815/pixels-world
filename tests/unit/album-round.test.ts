@@ -112,7 +112,12 @@ test('Rundenabschluss übernimmt alle Funde mit genau einem Schreibvorgang und e
   assert.deepEqual(JSON.parse(storage.getItem()!), {
     version: 2,
     discovered: ['vase.blue', 'couch.cozy'],
-    achievements: { reconciliations: 1, ruined: [], unlocked: ['achievement.angel-1'] },
+    achievements: {
+      reconciliations: 1,
+      ruined: [],
+      ruinedVariants: [],
+      unlocked: ['achievement.angel-1'],
+    },
   });
   assert.deepEqual(round.snapshot().pending, []);
   assert.equal(round.snapshot().completed, true);

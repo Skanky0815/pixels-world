@@ -1,10 +1,13 @@
 export const de = {
+  achievementEmptyTitle: 'Deine Erfolge warten auf dich',
+  achievementEmptyText: 'Hier kannst du deine freigespielten Erfolge ansehen.',
   albumAchievements: 'Erfolge',
   achievementOverall: '{found} von {total} freigeschaltet',
   achievementUnlocked: 'Freigeschaltet',
   achievementLocked: 'Noch gesperrt',
   achievementNew: 'Neuer Erfolg freigeschaltet',
   achievementReconciliations: '{count} / {total} Versöhnungen',
+  achievementVariants: '{count} / {total} Varianten',
   achievementObjects: '{count} / {total} Objektarten',
   achievementRounds: '{count} erfolgreiche Versöhnungen',
   achievementObjectTargets: 'Fester Objektkatalog',

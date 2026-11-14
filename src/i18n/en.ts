@@ -1,11 +1,14 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  achievementEmptyTitle: 'Your achievements are waiting',
+  achievementEmptyText: 'You can view your unlocked achievements here.',
   albumAchievements: 'Achievements',
   achievementOverall: '{found} of {total} unlocked',
   achievementUnlocked: 'Unlocked',
   achievementLocked: 'Locked',
   achievementNew: 'New achievement unlocked',
   achievementReconciliations: '{count} / {total} reconciliations',
+  achievementVariants: '{count} / {total} variants',
   achievementObjects: '{count} / {total} object types',
   achievementRounds: '{count} successful reconciliations',
   achievementObjectTargets: 'Fixed object catalogue',

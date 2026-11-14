@@ -33,7 +33,7 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
   expect(JSON.parse(migrated!)).toEqual({
     version: 2,
     discovered: ['vase.blue'],
-    achievements: { reconciliations: 0, ruined: [], unlocked: [] },
+    achievements: { reconciliations: 0, ruined: [], ruinedVariants: [], unlocked: [] },
   });
   await page.locator('[data-remember-album]').uncheck();
   expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBe(migrated);

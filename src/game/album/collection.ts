@@ -64,10 +64,16 @@ export class AlbumCollection {
     return this.achievements.snapshot();
   }
 
-  completeRound(ids: Iterable<string>, targets: Iterable<DestructionTarget>, reconciled: boolean) {
+  // eslint-disable-next-line max-lines-per-function -- Albumfunde, Zähler und Varianten werden atomar mit genau einem Schreibvorgang bestätigt.
+  completeRound(
+    ids: Iterable<string>,
+    targets: Iterable<DestructionTarget>,
+    reconciled: boolean,
+    variants: Iterable<string> = [],
+  ) {
     const added = [...new Set(ids)].filter((id) => this.canUnlock(id));
     const before = this.achievements.snapshot();
-    const earned = this.achievements.confirm(reconciled, targets);
+    const earned = this.achievements.confirm(reconciled, targets, variants);
 
     for (const id of added) this.found.add(id);
 

@@ -32,6 +32,7 @@ test(
             achievements: {
               reconciliations: 9,
               ruined: ['vase'],
+              ruinedVariants: [],
               unlocked: ['achievement.angel-1'],
             },
           }),
@@ -89,7 +90,7 @@ test(
       await page.evaluate(
         () => JSON.parse(localStorage.getItem('pixels-world.album')!).achievements,
       ),
-    ).toEqual({ reconciliations: 0, ruined: [], unlocked: [] });
+    ).toEqual({ reconciliations: 0, ruined: [], ruinedVariants: [], unlocked: [] });
     await options.locator('[data-pause-resume]').click();
     await page.locator('.album-toggle').click();
     await expect(page.locator('.album-overall')).toHaveText('Overall: 0 of 14');

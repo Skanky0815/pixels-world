@@ -89,10 +89,10 @@
 }
 .achievement-list {
   display: grid;
-  grid-template-rows: repeat(5, minmax(44px, 1fr));
+  grid-template-rows: repeat(4, minmax(44px, 1fr));
   gap: 6px;
   flex: 1;
-  min-height: 244px;
+  min-height: 194px;
 }
 .album-dialog .achievement-tile {
   display: grid;
@@ -156,7 +156,7 @@
     width: 48px;
     height: 48px;
   }
-  .achievement-story[data-metric='destruction'] blockquote {
+  .achievement-story:is([data-metric='destruction'], [data-metric='variants']) blockquote {
     display: none;
   }
 }
@@ -171,8 +171,16 @@
     padding: 8px;
     gap: 4px;
   }
+  .achievement-index {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 44px minmax(94px, 1fr);
+    padding: 4px;
+  }
   .achievement-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(44px, 1fr));
     min-height: 94px;
   }
@@ -208,8 +216,9 @@
     font-size: 12px;
     line-height: 1.4;
   }
-  .achievement-story[data-metric='destruction'] .achievement-description,
-  .achievement-story[data-metric='destruction'] progress {
+  .achievement-story:is([data-metric='destruction'], [data-metric='variants'])
+    .achievement-description,
+  .achievement-story:is([data-metric='destruction'], [data-metric='variants']) progress {
     display: none;
   }
   .achievement-targets {
@@ -237,4 +246,14 @@
 }
 .achievement-targets li {
   position: relative;
+}
+
+.album-dialog .achievement-tile:disabled {
+  cursor: default;
+  background: #b18c5520;
+  border-style: dashed;
+  opacity: 1;
+}
+.achievement-empty .album-mystery {
+  min-height: 100px;
 }

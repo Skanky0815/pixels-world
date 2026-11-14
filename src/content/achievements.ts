@@ -1,3 +1,4 @@
+import { ACHIEVEMENT_CATEGORIES } from './achievement-categories.ts';
 import type { ChaosEvent } from '../game/domain/chaos-event.ts';
 
 type Localized = { readonly de: string; readonly en: string };
@@ -6,7 +7,8 @@ export interface AchievementDefinition {
   readonly name: Localized;
   readonly description: Localized;
   readonly quote: Localized;
-  readonly metric: 'reconciliations' | 'destruction';
+  readonly metric: 'reconciliations' | 'destruction' | 'variants';
+  readonly targets?: readonly string[];
   readonly threshold: number;
   readonly art: 'love' | 'chaos';
 }
@@ -86,6 +88,21 @@ const angel = (threshold: number, tier: string, de: string, en: string): Achieve
   art: 'love',
 });
 
+// eslint-disable-next-line max-lines-per-function -- Eine Kategorie bündelt ihren stabilen Zielkatalog mit den lokalisierten Metadaten.
+const categories: readonly AchievementDefinition[] = ACHIEVEMENT_CATEGORIES.map((category) => ({
+  id: `achievement.category-${category.id}-v1`,
+  name: category.name,
+  description: {
+    de: 'Alle Varianten dieser Kategorie vollständig ruinieren – über mehrere erfolgreich versöhnte Runden.',
+    en: 'Fully ruin every variant in this category across successfully reconciled rounds.',
+  },
+  quote: { de: 'Das nenne ich konsequent, Pixel.', en: 'That is what I call commitment, Pixel.' },
+  metric: 'variants',
+  threshold: category.targets.length,
+  targets: category.targets,
+  art: 'chaos',
+}));
+
 export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
   angel(
     1,
@@ -111,6 +128,7 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     'Hundertmal. Und ich falle immer noch darauf rein.',
     'A hundred times. And I still fall for it.',
   ),
+  ...categories,
   {
     id: 'achievement.destruction-v1',
     name: { de: 'Meister der Zerstörung', en: 'Master of destruction' },

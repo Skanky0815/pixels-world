@@ -1,3 +1,5 @@
+import { SHELF_TARGET_NAMES } from '../../content/achievement-categories.ts';
+import { INTERACTABLE_ALBUM } from '../../content/album/index.ts';
 import {
   ACHIEVEMENTS,
   DESTRUCTION_TARGETS,
@@ -5,14 +7,19 @@ import {
 } from '../../content/achievements.ts';
 import type { AchievementData } from '../album/achievements.ts';
 import { currentLanguage, t } from '../../i18n/locale.ts';
-import { escape } from './album-markup.ts';
+import { escape, albumPagination } from './album-markup.ts';
 
 export const ACHIEVEMENT_ART = {
   love: new URL('../../../assets/community/slack-v1/pixel_love.png', import.meta.url).href,
   chaos: new URL('../../../assets/community/slack-v1/pixel_chaos.png', import.meta.url).href,
 } as const;
 
+export const ACHIEVEMENT_PAGE_SIZE = 4;
+
 export function achievementCount(entry: AchievementDefinition, data: AchievementData) {
+  if (entry.metric === 'variants')
+    return entry.targets?.filter((id) => data.ruinedVariants?.includes(id)).length ?? 0;
+
   return Math.min(
     entry.threshold,
     entry.metric === 'reconciliations' ? data.reconciliations : data.ruined.length,
@@ -23,27 +30,37 @@ export function achievementOverall(data: AchievementData) {
   return t('achievementOverall', { found: data.unlocked.length, total: ACHIEVEMENTS.length });
 }
 
-export function achievementsMarkup(data: AchievementData, selected: string) {
-  const entry = ACHIEVEMENTS.find((entry) => entry.id === selected) ?? ACHIEVEMENTS[0];
+// eslint-disable-next-line max-lines-per-function -- Auswahl nur freigespielter Erfolge und begrenzte Buchseiten bilden eine gemeinsame Ansicht.
+export function achievementsMarkup(data: AchievementData, selected: string, page = 0) {
+  const unlocked = ACHIEVEMENTS.filter((entry) => data.unlocked.includes(entry.id));
+  const visible = ACHIEVEMENTS.slice(
+    page * ACHIEVEMENT_PAGE_SIZE,
+    (page + 1) * ACHIEVEMENT_PAGE_SIZE,
+  );
+  const entry = unlocked.find((entry) => entry.id === selected) ?? unlocked[0];
 
   return `<div class="album-spread achievements-spread">
-    ${achievementStory(entry, data)}
+    ${entry ? achievementStory(entry, data) : achievementPlaceholder()}
     <section class="achievement-index"><div class="album-index-header"><h3>${t('albumAchievements')}</h3><p class="album-progress" aria-label="${escape(achievementOverall(data))}"><span class="achievement-total-wide">${achievementOverall(data)}</span><span class="achievement-total-compact" aria-hidden="true">${data.unlocked.length} / ${ACHIEVEMENTS.length}</span></p></div>
-    <div class="achievement-list">${ACHIEVEMENTS.map((entry) => achievementTile(entry, data, selected)).join('')}</div>
-    </section></div>`;
+    <div class="achievement-list">${visible.map((item) => achievementTile(item, data, entry?.id)).join('')}</div>
+    ${albumPagination(page, Math.ceil(ACHIEVEMENTS.length / ACHIEVEMENT_PAGE_SIZE))}</section></div>`;
 }
 
 function progress(entry: AchievementDefinition, data: AchievementData) {
   const key =
-    entry.metric === 'reconciliations' ? 'achievementReconciliations' : 'achievementObjects';
+    entry.metric === 'variants'
+      ? 'achievementVariants'
+      : entry.metric === 'reconciliations'
+        ? 'achievementReconciliations'
+        : 'achievementObjects';
 
   return t(key, { count: achievementCount(entry, data), total: entry.threshold });
 }
 
-function achievementTile(entry: AchievementDefinition, data: AchievementData, selected: string) {
+function achievementTile(entry: AchievementDefinition, data: AchievementData, selected?: string) {
   const earned = data.unlocked.includes(entry.id);
 
-  return `<button type="button" class="achievement-tile" data-achievement="${entry.id}" data-focus="${entry.id}" aria-pressed="${entry.id === selected}"><span class="achievement-mark" aria-hidden="true">${earned ? '✓' : '○'}</span><strong>${escape(entry.name[currentLanguage()])}</strong><small>${earned ? t('achievementUnlocked') : progress(entry, data)}</small></button>`;
+  return `<button type="button" class="achievement-tile" ${earned ? '' : 'disabled'} data-achievement="${entry.id}" data-focus="${entry.id}" aria-pressed="${entry.id === selected}"><span class="achievement-mark" aria-hidden="true">${earned ? '✓' : '○'}</span><strong>${escape(entry.name[currentLanguage()])}</strong><small>${earned ? t('achievementUnlocked') : progress(entry, data)}</small></button>`;
 }
 
 // eslint-disable-next-line max-lines-per-function -- Zugänglicher Status, Fortschritt und feste Objektziele teilen eine Detailansicht ohne zweite Fortschrittsquelle.
@@ -51,7 +68,7 @@ function achievementStory(entry: AchievementDefinition, data: AchievementData) {
   const lang = currentLanguage();
   const earned = data.unlocked.includes(entry.id);
   const count = achievementCount(entry, data);
-  const targets = entry.metric === 'destruction' ? targetList(data) : '';
+  const targets = entry.metric !== 'reconciliations' ? targetList(data, entry) : '';
 
   return `<section class="achievement-story" data-metric="${entry.metric}">
     <button type="button" class="album-overview ui-button" data-action="overview" data-focus="achievement-overview">${t('albumOverview')}</button>
@@ -62,6 +79,23 @@ function achievementStory(entry: AchievementDefinition, data: AchievementData) {
     <blockquote>${escape(entry.quote[lang])}<cite>— Sara</cite></blockquote></section>`;
 }
 
-function targetList(data: AchievementData) {
-  return `<ul class="achievement-targets" aria-label="${t('achievementObjectTargets')}">${DESTRUCTION_TARGETS.map((target) => `<li><span aria-hidden="true">${data.ruined.includes(target.id) ? '✓' : '○'}</span> <span class="sr-only">${data.ruined.includes(target.id) ? t('achievementDone') : t('achievementMissing')}: </span>${escape(target.name[currentLanguage()])}</li>`).join('')}</ul>`;
+function targetName(id: string) {
+  return (
+    Object.values(INTERACTABLE_ALBUM).find((entry) => entry.id === id)?.name ??
+    SHELF_TARGET_NAMES[id] ?? { de: id, en: id }
+  );
+}
+
+function targetList(data: AchievementData, entry: AchievementDefinition) {
+  const targets =
+    entry.metric === 'variants'
+      ? (entry.targets ?? []).map((id) => ({ id, name: targetName(id) }))
+      : DESTRUCTION_TARGETS;
+  const found = entry.metric === 'variants' ? (data.ruinedVariants ?? []) : data.ruined;
+
+  return `<ul class="achievement-targets" aria-label="${t('achievementObjectTargets')}">${targets.map((target) => `<li><span aria-hidden="true">${found.includes(target.id) ? '✓' : '○'}</span> <span class="sr-only">${found.includes(target.id) ? t('achievementDone') : t('achievementMissing')}: </span>${escape(target.name[currentLanguage()])}</li>`).join('')}</ul>`;
+}
+
+function achievementPlaceholder() {
+  return `<section class="achievement-story achievement-empty"><div class="album-mystery" aria-hidden="true">★</div><h3>${t('achievementEmptyTitle')}</h3><p>${t('achievementEmptyText')}</p></section>`;
 }

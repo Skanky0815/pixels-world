@@ -1,3 +1,4 @@
+import { DESTRUCTION_VARIANTS } from '../../src/content/achievement-categories';
 /* eslint-disable max-lines-per-function -- Tatsächlicher Rundenabschluss und Gerätewechsel prüfen den zusammenhängenden Erfolgsvertrag. */
 import {
   test,
@@ -11,12 +12,12 @@ import {
 } from './support';
 import { finishAlbumRound } from './album-support';
 import { seedRoundRandom } from './round-clock';
-import { changeLanguage } from './pause-support';
+import { changeLanguage, openPause } from './pause-support';
 import type { Page } from '@playwright/test';
 
-async function seed(page: Page, count: number, ruined: string[]) {
+async function seed(page: Page, count: number, ruined: string[], variants: readonly string[] = []) {
   await page.addInitScript(
-    ({ count, ruined }) => {
+    ({ count, ruined, variants }) => {
       localStorage.setItem('pixels-world.storage', '{"album":true,"offline":false}');
 
       if (!localStorage.getItem('pixels-world.album'))
@@ -25,11 +26,16 @@ async function seed(page: Page, count: number, ruined: string[]) {
           JSON.stringify({
             version: 2,
             discovered: [],
-            achievements: { reconciliations: count, ruined, unlocked: ['achievement.angel-1'] },
+            achievements: {
+              reconciliations: count,
+              ruined,
+              ruinedVariants: variants,
+              unlocked: ['achievement.angel-1'],
+            },
           }),
         );
     },
-    { count, ruined },
+    { count, ruined, variants },
   );
 }
 
@@ -56,6 +62,7 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   expect(progress.unlocked).toEqual([
     'achievement.angel-1',
     'achievement.angel-10',
+    'achievement.category-couches-v1',
     'achievement.destruction-v1',
   ]);
   await expect(banner).toHaveAttribute('data-entry', 'couch.cozy');
@@ -70,6 +77,9 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
     )
     .toBe(true);
   await page.clock.runFor(3100);
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.category-couches-v1');
+  await expect(banner).toContainText('Alle Sofas');
+  await page.clock.runFor(3100);
   await expect(banner).toHaveAttribute('data-entry', 'achievement.destruction-v1');
   await expect(banner).toContainText('Meister der Zerstörung');
   await page.clock.runFor(3100);
@@ -80,7 +90,7 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   expect(await savedProgress(page)).toEqual(progress);
   await (await introAction(page, 'album')).click();
   await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
-  await expect(page.locator('.achievement-index')).toContainText('3 von 5 freigeschaltet');
+  await expect(page.locator('.achievement-index')).toContainText('4 von 12 freigeschaltet');
   await expect(page.locator('.album-overall')).toHaveText('10 erfolgreiche Versöhnungen');
 });
 
@@ -91,24 +101,35 @@ for (const mobile of [false, true])
       isMobile: mobile,
       viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 },
     });
-    test('Reiter, gesperrte Details, Fortschritt und Sprache bleiben erreichbar', async ({
+    test('Gesperrte Erfolge, Seiten und freigespielte Details bleiben bedienbar', async ({
       page,
     }) => {
-      await seed(page, 24, ['vase', 'couch', 'curtain', 'plant']);
+      await seed(
+        page,
+        24,
+        ['vase', 'couch', 'curtain', 'plant', 'books', 'picture', 'shelf'],
+        DESTRUCTION_VARIANTS,
+      );
       await loadIntro(page);
       await (await introAction(page, 'album')).click();
       await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
       const album = page.locator('.album-dialog');
 
-      await expect(album.locator('.achievement-tile')).toHaveCount(5);
+      await expect(album.locator('.achievement-tile')).toHaveCount(4);
       await expect(album.locator('.album-progress')).toHaveAttribute(
         'aria-label',
-        '2 von 5 freigeschaltet',
+        '10 von 12 freigeschaltet',
       );
-      await page.getByRole('button', { name: /Unschuldsengel IV/ }).click();
-      await expect(album.locator('.achievement-count')).toHaveText('24 / 100 Versöhnungen');
-      await expect(album.locator('.achievement-state')).toHaveText('Noch gesperrt');
-      await expect(album.locator('progress')).toHaveAttribute('value', '24');
+      await expect(page.getByRole('button', { name: /Unschuldsengel IV/ })).toBeDisabled();
+      const second = page.getByRole('button', { name: /Unschuldsengel II Freigeschaltet/ });
+
+      await second.focus();
+      await page.keyboard.press('Tab');
+      await expect(album.locator('[data-action="page-next"]')).toBeFocused();
+      await second.click();
+      await expect(album.locator('.achievement-count')).toHaveText('10 / 10 Versöhnungen');
+      await expect(album.locator('.achievement-state')).toContainText('Freigeschaltet');
+      await expect(album.locator('progress')).toHaveAttribute('value', '10');
 
       for (const viewport of mobile
         ? [
@@ -119,11 +140,21 @@ for (const mobile of [false, true])
         : [{ width: 1280, height: 900 }]) {
         await page.setViewportSize(viewport);
         await page.clock.runFor(64);
+        await firstAchievementPage(album);
+        await assertFits(album);
+        await album.locator('[data-action="page-next"]').click();
+        await assertFits(album);
+        await page.getByRole('button', { name: /Alle Vasen/ }).click();
+        await expect(album.locator('.achievement-count')).toHaveText('4 / 4 Varianten');
+        await expect(album.locator('.achievement-targets li')).toHaveCount(4);
+        await assertFits(album);
         await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
+        await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 3');
+        await album.locator('[data-action="page-next"]').click();
         await assertFits(album);
         await page.getByRole('button', { name: /Meister der Zerstörung/ }).click();
         await expect(album.locator('.achievement-targets li')).toHaveCount(7);
-        await expect(album.locator('.achievement-count')).toHaveText('4 / 7 Objektarten');
+        await expect(album.locator('.achievement-count')).toHaveText('7 / 7 Objektarten');
         await assertFits(album);
         await album.locator('.achievement-targets li').last().scrollIntoViewIfNeeded();
         await expect(album.locator('.achievement-targets li').last()).toBeInViewport();
@@ -136,10 +167,20 @@ for (const mobile of [false, true])
       await page.keyboard.press('Escape');
       await changeLanguage(page, 'en');
       await (await introAction(page, 'album')).click();
+      await expect(page.getByRole('tab', { name: 'Achievements', exact: true })).toBeVisible();
+      await firstAchievementPage(album);
+      await expect(page.getByRole('button', { name: /Little angel III/ })).toBeDisabled();
+      await page.getByRole('button', { name: /Little angel II Unlocked/ }).click();
+      await expect(album.locator('.achievement-count')).toHaveText('10 / 10 reconciliations');
+      await expect(album.locator('.achievement-state')).toContainText('Unlocked');
+      await page.keyboard.press('Escape');
+      await openPause(page);
+      await page.locator('[data-album-reset="ask"]').click();
+      await page.locator('[data-album-reset="confirm"]').click();
+      await page.locator('[data-pause-album]').click();
       await page.getByRole('tab', { name: 'Achievements', exact: true }).click();
-      await page.getByRole('button', { name: /Little angel III/ }).click();
-      await expect(album.locator('.achievement-count')).toHaveText('24 / 50 reconciliations');
-      await expect(album.locator('.achievement-state')).toHaveText('Locked');
+      await expect(album.locator('.achievement-tile:not(:disabled)')).toHaveCount(0);
+      await expect(album.locator('.achievement-state')).toHaveCount(0);
       await page.keyboard.press('Escape');
     });
   });
@@ -167,4 +208,12 @@ async function assertFits(album: ReturnType<Page['locator']>) {
   expect(geometry.indexOverflow).toBeLessThanOrEqual(1);
 
   if (geometry.landscape) expect(geometry.storyOverflow).toBeLessThanOrEqual(1);
+}
+
+async function firstAchievementPage(album: ReturnType<Page['locator']>) {
+  await album.locator('#album-tab-achievements').click();
+
+  for (let index = 0; index < 2; index++)
+    if (await album.locator('[data-action="page-previous"]').isEnabled())
+      await album.locator('[data-action="page-previous"]').click();
 }

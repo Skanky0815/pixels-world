@@ -9,6 +9,7 @@ const EMPTY: readonly string[] = Object.freeze([]);
 export class RoundAlbum {
   private readonly pending = new Set<string>();
   private readonly ruined = new Set<DestructionTarget>();
+  private readonly variants = new Set<string>();
   private banners: readonly string[] = EMPTY;
   private saved: readonly string[] = EMPTY;
   private confirmed: readonly string[] | null = null;
@@ -25,13 +26,17 @@ export class RoundAlbum {
     return true;
   }
 
-  recordDamage(event: ChaosEvent, object?: string) {
+  recordDamage(event: ChaosEvent, object?: string, variant?: string) {
     const target = destructionTarget(event, object);
 
-    if (!this.confirmed && target) this.ruined.add(target);
+    if (this.confirmed || !target) return;
+    this.ruined.add(target);
+
+    if (variant) this.variants.add(variant);
   }
 
   /** Resolve once: success commits the batch, failed reconciliation discards it. */
+  // eslint-disable-next-line max-lines-per-function -- Bestätigung und gemeinsames Verwerfen aller rundenbezogenen Vormerkungen bilden eine Transaktion.
   confirm(result: RoundResult | null) {
     if (!result) return EMPTY;
 
@@ -43,12 +48,19 @@ export class RoundAlbum {
     if (this.collection.snapshot().storage === 'ready') this.saved = this.confirmed;
     this.pending.clear();
     this.ruined.clear();
+    this.variants.clear();
 
     return this.confirmed;
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Alle bestätigten Funde und Erfolge teilen dieselbe dauerhafte Bannerentscheidung.
   private commit(result: RoundResult) {
-    const batch = this.collection.completeRound(this.pending, this.ruined, !result.peaceful);
+    const batch = this.collection.completeRound(
+      this.pending,
+      this.ruined,
+      !result.peaceful,
+      this.variants,
+    );
 
     this.confirmed = batch.entries;
 
