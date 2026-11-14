@@ -1,3 +1,4 @@
+import { preloadTableclothArt, tableclothArtReady } from '../assets/tablecloth-art';
 import { preloadTrashBinArt, trashBinArtReady } from '../assets/trash-bin-art';
 import { preloadPantryArt, pantryArtReady } from '../assets/pantry-art';
 import { AlbumBanners } from '../ui/AlbumBanners';
@@ -162,6 +163,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadDishArt(this);
     preloadPantryArt(this);
     preloadTrashBinArt(this);
+    preloadTableclothArt(this);
     preloadCarpetArt(this);
     preloadPictureArt(this);
     preloadBookArt(this);
@@ -247,7 +249,8 @@ export class LivingRoomScene extends Phaser.Scene {
       this.textures.exists('food-bowl') &&
       herbArtReady(this) &&
       pantryArtReady(this) &&
-      trashBinArtReady(this)
+      trashBinArtReady(this) &&
+      tableclothArtReady(this)
     );
   }
 
@@ -412,6 +415,7 @@ export class LivingRoomScene extends Phaser.Scene {
             carpets: this.built.carpets.map((carpet) => carpet.snapshot()),
             pictures: this.built.pictures.map((picture) => picture.snapshot()),
             books: this.built.books.map((books) => books.snapshot()),
+            tablecloths: this.built.tablecloths.map((cloth) => cloth.snapshot()),
             trashBins: this.built.trashBins.map((bin) => bin.snapshot()),
             foodBags: this.built.foodBags.map((bag) => bag.snapshot()),
             pantry: this.built.pantry.map((item) => item.snapshot()),
@@ -622,7 +626,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.reactionDamage.record(event, this.damagedObjectKind(event.objectId));
     this.recordDestruction(event);
     this.audio.playDamage(event);
-    this.events.emit('object-damaged', event);
+    this.events.emit('object-damaged', event, this.damagedObjectKind(event.objectId));
     this.discoverAlbum(event);
   }
 

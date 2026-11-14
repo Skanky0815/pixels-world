@@ -23,6 +23,14 @@ export const DAMAGE_FEEDBACK: Record<DamageKind, TextKey> = {
   'picture-fall': 'feedbackPicture',
   hairball: 'feedbackHairball',
 };
+/** Object-specific wording for shared event kinds; the same single score channel remains. */
+export const OBJECT_DAMAGE_FEEDBACK: Readonly<
+  Record<string, Partial<Record<DamageKind, TextKey>>>
+> = {
+  tablecloth: { spill: 'feedbackTablecloth' },
+  'trash-bin': { spill: 'feedbackTrashBin' },
+  pantry: { spill: 'feedbackPantryTin' },
+};
 export const PHASE_FEEDBACK: Record<
   RoundPhase | 'success' | 'failed' | 'peaceful' | 'eating' | 'playing',
   TextKey

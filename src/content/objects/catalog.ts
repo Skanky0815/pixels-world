@@ -1,3 +1,4 @@
+import { TABLECLOTHS } from './tablecloth.ts';
 import { TRASH_BINS } from './trash-bin.ts';
 import { PANTRY } from './pantry.ts';
 import { HERBS } from './herbs.ts';
@@ -30,6 +31,7 @@ const picture = {
 } as const;
 
 export const OBJECTS = {
+  ...TABLECLOTHS,
   ...PANTRY,
   ...TRASH_BINS,
   ...HERBS,

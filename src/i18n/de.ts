@@ -1,4 +1,13 @@
 export const de = {
+  feedbackTablecloth: 'Decke abgezogen! +{v0}',
+  feedbackTrashBin: 'Müll verteilt! +{v0}',
+  feedbackPantryTin: 'Kekse verteilt! +{v0}',
+
+  tableclothWarning: 'Vorsicht, die Decke rutscht …',
+  saraDamageTablecloth0: 'Du hast wirklich gründlich abgeräumt, Pixel.',
+  saraDamageTablecloth1: 'Die Tischdecke durfte auf dem Tisch bleiben.',
+  saraDamageTablecloth2: 'Erst heben, dann tragen. Nicht ziehen, Pixel.',
+
   saraDamageTrashBin0: 'Der Deckel war drauf, Pixel. Das war Absicht.',
   saraDamageTrashBin1: 'Du musst wirklich nicht alles auspacken, was raschelt.',
   saraDamageTrashBin2: 'Jetzt liegt sogar der Müll daneben. Sehr gründlich, Pixel.',

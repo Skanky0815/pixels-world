@@ -1,3 +1,4 @@
+import { validateTableclothRules } from '../interactions/tablecloth-pulling.ts';
 import { TRASH_BIN_PROFILE } from '../assets/trash-bin-profile.ts';
 import { PANTRY_PROFILES, isPantryAppearance } from '../assets/pantry-appearance.ts';
 import { isPlantAppearance } from '../assets/plant-appearance.ts';
@@ -90,6 +91,8 @@ function validateObjectRules(value: ObjectDefinition, path: string) {
   if (value.kind === 'dish') return validateDish(value, path);
 
   if (value.kind === 'pantry') return validatePantry(value, path);
+
+  if (value.kind === 'tablecloth') return validateCloth(value, path);
   record(value.rules, `${path}.rules`);
 
   if (value.kind === 'food-bag' || value.kind === 'trash-bin')
@@ -105,6 +108,17 @@ function validateObjectRules(value: ObjectDefinition, path: string) {
   validateGeometry(value, path);
 
   if (value.kind === 'couch') validateCouch(value, path);
+}
+
+function validateCloth(value: Extract<ObjectDefinition, { kind: 'tablecloth' }>, path: string) {
+  record(value.geometry, `${path}.geometry`);
+  number(value.geometry.width, `${path}.geometry.width`, 100);
+  number(value.geometry.hang, `${path}.geometry.hang`, 32);
+  record(value.rules, `${path}.rules`);
+  validateTableclothRules(value.rules);
+
+  if (value.rules.travel < value.geometry.width + 16)
+    fail(`${path}.rules.travel`, 'cloth cannot leave its table');
 }
 
 function validateCarpet(value: Extract<ObjectDefinition, { kind: 'carpet' }>, path: string) {
@@ -440,6 +454,8 @@ class RoomResolver {
     if (p.mode !== 'surface') fail(`${path}.placement`, 'object needs support surface');
     const support = this.surface(p.surfaceId, `${path}.placement.surfaceId`);
 
+    if (d.kind === 'tablecloth') return this.resolveCloth(instance, d, path, support);
+
     if (d.kind === 'carpet') return this.resolveCarpet(instance, d, path, support);
 
     if (d.kind === 'couch') return this.resolveCouch(instance, d, path, support);
@@ -456,6 +472,46 @@ class RoomResolver {
     if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
 
     return this.resolveVase(instance, d, path, support);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Deckenbreite, erreichbare Zugkante, freie Auflage und vollständiger Laufzeitvertrag werden gemeinsam validiert.
+  private resolveCloth(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'tablecloth' }>,
+    path: string,
+    support: Bounds,
+  ): ResolvedObject {
+    const x = instance.placement.x - d.geometry.width / 2;
+
+    supportFits(x, d.geometry.width, support, `${path}.placement`);
+    bounds(
+      { x, y: support.y - 6, width: d.geometry.width + 12, height: d.geometry.hang + 6 },
+      this.room,
+      `${path}.geometry`,
+    );
+
+    bounds(
+      { x: x + d.geometry.width - 56, y: this.room.floor.y - 36, width: 112, height: 36 },
+      this.room,
+      `${path}.endGeometry`,
+    );
+
+    if (support.y + d.geometry.hang > this.room.floor.y)
+      fail(`${path}.placement`, 'cloth needs raised support');
+
+    return {
+      id: instance.id,
+      variant: instance.variant,
+      asset: d.asset,
+      kind: 'tablecloth',
+      config: {
+        id: instance.id,
+        surface: { x, y: support.y, width: d.geometry.width, height: support.height },
+        hang: d.geometry.hang,
+        floorY: this.room.floor.y,
+        rules: d.rules,
+      },
+    };
   }
 
   // eslint-disable-next-line max-lines-per-function -- Sichtbarer Teppich, Interaktionsboden und Raumprüfung verwenden denselben Auflageanker.
@@ -821,6 +877,7 @@ class RoomResolver {
 
     for (const object of objects) {
       maximum +=
+        object.kind === 'tablecloth' ||
         object.kind === 'food-bag' ||
         object.kind === 'trash-bin' ||
         object.kind === 'books' ||

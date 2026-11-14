@@ -27,6 +27,7 @@ export interface SpawnSlotFilter {
   readonly requiredCapabilities?: readonly Capability[];
 }
 const CATEGORIES = {
+  tablecloth: 'furniture',
   vase: 'decoration',
   dish: 'decoration',
   pantry: 'decoration',
@@ -67,6 +68,9 @@ export function spawnSizeFor(width: number, height: number): SpawnSize {
 
 // eslint-disable-next-line complexity, max-lines-per-function -- Die vollständige Auswahl aller registrierten Objekttypen bleibt explizit.
 function objectSize(object: ObjectDefinition) {
+  if (object.kind === 'tablecloth')
+    return spawnSizeFor(object.geometry.width, object.geometry.hang);
+
   if (object.kind === 'carpet') return spawnSizeFor(object.geometry.width, object.geometry.height);
 
   if (object.kind === 'pantry') {
@@ -140,7 +144,7 @@ export function validateObjectSpawn(object: ObjectDefinition, path: string) {
 }
 
 function validateRandomObject(object: ObjectDefinition, path: string) {
-  if (object.kind === 'curtain' || object.kind === 'picture' || object.kind === 'carpet')
+  if (['tablecloth', 'curtain', 'picture', 'carpet'].includes(object.kind))
     fail(path, 'structural object must stay fixed');
 
   if (object.kind === 'couch' && object.spawn.random && object.spawn.support !== 'floor')

@@ -114,7 +114,7 @@ function pushVase(pixel: Pixel, vase: Breakable) {
 }
 
 /** Same ordered object/actor step for the game and isolated object tests. */
-// eslint-disable-next-line max-lines-per-function -- Auswahl, Bewegung, unveränderlicher Kontakt und Interaktionsfolge bleiben als ein fachlicher Frame zusammen.
+// eslint-disable-next-line max-lines-per-function, complexity -- Auswahl, Bewegung, unveränderlicher Kontakt und Interaktionsfolge bleiben als ein fachlicher Frame zusammen.
 export function advanceObjectInteractions(
   objects: Objects,
   pixel: Pixel,
@@ -126,6 +126,7 @@ export function advanceObjectInteractions(
 ) {
   updateShelves(shelves, pixel, time, damage);
   const supported = [
+    ...objects.tablecloths,
     ...objects.breakables,
     ...objects.books,
     ...objects.topplingContainers,
@@ -154,6 +155,7 @@ export function advanceObjectInteractions(
   objects.books.forEach((books) => damage(books.update(context, true).event));
   objects.topplingContainers.forEach((bag) => damage(bag.update(context, true).event));
 
+  const clothAction = advanceCloths(objects, context, damage);
   const interaction = updateGroundInteractions(objects.ground, context);
 
   damage(interaction.event);
@@ -161,7 +163,13 @@ export function advanceObjectInteractions(
   releaseShelves(shelves, supported, objects.impacts, damage);
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
-  pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
+
+  if (clothAction) pixel.faceToward(clothAction.x);
+  pixel.present(
+    time,
+    clothAction ? 'wobbling' : interaction.action,
+    surface?.snapshot().state === 'sliding',
+  );
 }
 
 function updateShelves(shelves: readonly Shelf[], pixel: Pixel, time: number, damage: Damage) {
@@ -185,4 +193,25 @@ function releaseShelves(
       if (event) damage(event);
     }
   }
+}
+
+// eslint-disable-next-line max-lines-per-function -- Geordnete Stoffzüge übertragen Bewegung und kausale Herkunft gemeinsam auf unterstützte Oberflächenobjekte.
+function advanceCloths(objects: Objects, context: InteractionContext, damage: Damage) {
+  const active = objects.tablecloths.find((cloth) => cloth.eligible(context));
+
+  for (const cloth of objects.tablecloths) {
+    const { event, drag } = cloth.update(context, cloth === active);
+
+    damage(event);
+
+    if (!drag) continue;
+
+    for (const { object } of objects.entries)
+      if ('dragOnSurface' in object && object.dragOnSurface(drag.surface, drag.area, drag.dx))
+        objects.impacts.inheritSupport(cloth, object);
+  }
+
+  return active && active.snapshot().state !== 'displaced'
+    ? { x: active.impactBody().bounds.x + active.impactBody().bounds.width }
+    : null;
 }

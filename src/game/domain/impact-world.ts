@@ -101,8 +101,7 @@ export class ImpactWorld {
   private approaching(a: ImpactBody, b: ImpactBody, v: Motion) {
     const oldA = this.previous.get(a.id) ?? a,
       oldB = this.previous.get(b.id) ?? b;
-    const dx = oldB.bounds.x + oldB.bounds.width / 2 - oldA.bounds.x - oldA.bounds.width / 2;
-    const dy = oldB.bounds.y + oldB.bounds.height / 2 - oldA.bounds.y - oldA.bounds.height / 2;
+    const { dx, dy } = approachDirection(oldA.bounds, oldB.bounds);
 
     return dx * v.vx + dy * v.vy > 0;
   }
@@ -249,4 +248,17 @@ function interval(
     last = (b + sizeB - a) / velocity;
 
   return [Math.min(first, last), Math.max(first, last)];
+}
+
+/** A wide surface is approached at its nearest point, not at its distant center. */
+
+function approachDirection(a: Bounds, b: Bounds) {
+  const x = a.x + a.width / 2,
+    y = a.y + a.height / 2;
+  const dx = Math.max(b.x, Math.min(x, b.x + b.width)) - x;
+  const dy = Math.max(b.y, Math.min(y, b.y + b.height)) - y;
+
+  return dx !== 0 || dy !== 0
+    ? { dx, dy }
+    : { dx: b.x + b.width / 2 - x, dy: b.y + b.height / 2 - y };
 }
