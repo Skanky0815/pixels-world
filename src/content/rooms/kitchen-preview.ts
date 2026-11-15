@@ -22,7 +22,7 @@ export const KITCHEN_PREVIEW = {
     { x: 304, y: 248, width: 320, height: 80 },
     { x: 800, y: 138, width: 140, height: 120 },
   ],
-  width: 960,
+  width: 1320,
   height: 540,
   pixelAsset: 'pixel',
   spawn: { x: 110, surfaceId: 'floor' },
@@ -83,6 +83,25 @@ export const KITCHEN_PREVIEW = {
       bounds: { x: 276, y: 218, width: 136, height: 16 },
       durability: { stability: 'stable' },
       slots: KITCHEN_WALL_SHELF_SLOTS,
+    },
+    {
+      id: 'kitchen-fridge',
+      asset: 'wood-shelf',
+      appearance: 'fridge',
+      bounds: { x: 1040, y: 148, width: 160, height: 320 },
+      durability: { stability: 'stable' },
+      slots: {
+        count: { easy: 1, normal: 1, hard: 1 },
+        entries: [
+          {
+            id: 'fridge-tin',
+            x: 80,
+            capacity: 'medium',
+            categories: ['decoration'],
+            pool: ['biscuit-tin'],
+          },
+        ],
+      },
     },
   ],
   decorations: [

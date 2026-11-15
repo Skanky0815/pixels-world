@@ -96,6 +96,16 @@ export class Pixel {
     });
   }
 
+  hideInFurniture(hidden: boolean) {
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+
+    if (hidden && body.enable) body.reset(body.center.x, body.bottom - 16 * SCALE);
+    this.visual.setVisible(!hidden);
+    body.enable = !hidden;
+
+    if (hidden) this.sprite.setVelocity(0, 0);
+  }
+
   faceToward(x: number) {
     this.sprite.setFlipX(this.x > x);
   }
@@ -330,6 +340,7 @@ export class Pixel {
       grounded: body.blocked.down,
       climbing: this.climbing,
       gravity: body.allowGravity,
+      visible: this.visual.visible,
       animation: this.sprite.anims.currentAnim?.key ?? null,
       animationFrame: this.frame,
       flipX: this.flipX,

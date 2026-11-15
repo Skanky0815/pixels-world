@@ -11,7 +11,12 @@ const image = (name: string) => PNG.sync.read(readFileSync(new URL(`kitchen-${na
 test('Küchenmöbel passen exakt zu ihren Auflagen und behalten transparente Zwischenräume', () => {
   for (const platform of KITCHEN_PREVIEW.platforms) {
     if (!('appearance' in platform)) continue;
-    const png = image(platform.appearance);
+    const png =
+      platform.appearance === 'fridge'
+        ? PNG.sync.read(
+            readFileSync(new URL('../../assets/objects/fridge/upright.png', import.meta.url)),
+          )
+        : image(platform.appearance);
 
     assert.equal(png.width, platform.bounds.width);
     assert.equal(png.height, KITCHEN_PREVIEW.floor.y - platform.bounds.y);

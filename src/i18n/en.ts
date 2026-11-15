@@ -1,5 +1,11 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  feedbackFridge: 'Fridge rummaged!',
+  fridgeRummaging: 'Rumble … rustle …',
+  fridgeWarning: 'What are you planning?',
+  saraDamageFridge0: 'There is some suspicious rustling in there.',
+  saraDamageFridge1: 'The groceries were already sorted, Pixel.',
+  saraDamageFridge2: 'Pixel. Even the shelves inside the fridge are crooked now.',
   feedbackTablecloth: 'Cloth pulled off! +{v0}',
   feedbackTrashBin: 'Rubbish scattered! +{v0}',
   feedbackPantryTin: 'Biscuits scattered! +{v0}',
@@ -476,8 +482,8 @@ export const en: Record<keyof typeof de, string> = {
   yourMainGoal: 'Your main goal',
   moveAndSteerInMidAir: 'Move and steer in mid-air',
   spaceLabel: 'Space',
-  jumpAndLeapOffTheCurtain: 'Jump and leap off the curtain',
-  climbTheCurtain: 'Climb fabric',
+  jumpAndLeapOffTheCurtain: 'Jump and leap off',
+  climbTheCurtain: 'Climb',
   restartTheRound: 'Restart the round',
   makingAmendsPressTheBigArrow:
     'Making amends: press the big arrow in time. Read at your own pace, then press Space to continue. The game pauses when it loses focus.',
@@ -509,7 +515,7 @@ export const en: Record<keyof typeof de, string> = {
   pixelSWorldLivingRoomPrototype: "Pixel's World · Living room",
   move: 'Move',
   jumpLabel: 'Jump',
-  climbCurtain: 'Climb fabric',
+  climbCurtain: 'Climb',
   restart: 'Restart',
   pixelSLivingRoomUseArrow:
     "Pixel's room. Use arrow keys to move and climb, Space to jump. Click the room to focus.",

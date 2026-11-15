@@ -69,6 +69,9 @@ export const ACHIEVEMENT_CATEGORIES_V6 = [
     targets: ['tablecloth.warm'],
   },
 ] as const;
+export const ACHIEVEMENT_CATEGORIES_V7 = [
+  { id: 'fridges', name: { de: 'Kühl geblieben', en: 'Keeping cool' }, targets: ['fridge.cream'] },
+] as const;
 export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
   ...new Set(
     [
@@ -78,6 +81,7 @@ export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
       ...ACHIEVEMENT_CATEGORIES_V4,
       ...ACHIEVEMENT_CATEGORIES_V5,
       ...ACHIEVEMENT_CATEGORIES_V6,
+      ...ACHIEVEMENT_CATEGORIES_V7,
     ].flatMap((category) => [...category.targets]),
   ),
 ]);

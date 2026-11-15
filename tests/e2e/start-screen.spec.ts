@@ -16,7 +16,7 @@ test('Kurze Einführung zeigt Ziel und Steuerung; vor dem Start bleiben Uhr, Sch
     'Leertaste drücken, um zu starten',
   );
   await expect(intro.getByRole('img', { name: 'Leertaste', exact: true })).toHaveText('␣');
-  await expect(intro).toContainText('Springen und vom Vorhang abspringen');
+  await expect(intro).toContainText('Springen und abspringen');
   await expect(intro.getByRole('complementary', { name: 'Dein Hauptziel' })).toContainText(
     'Lieblingsball',
   );

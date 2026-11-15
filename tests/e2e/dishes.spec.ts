@@ -39,7 +39,11 @@ for (const room of ['dish-cups', 'dish-plates', 'dish-mixed'])
       expect(
         broken.dishes.filter((dish) => dish.state === 'broken').every((dish) => dish.shards === 7),
       ).toBe(true);
-      expect(broken.album.pending).toContain(room === 'dish-plates' ? 'dish.plate' : 'dish.cup');
+
+      for (const appearance of ['cup', 'plate'])
+        expect(broken.album.pending.includes(`dish.${appearance}`)).toBe(
+          broken.dishes.some((dish) => dish.appearance === appearance && dish.state === 'broken'),
+        );
       expect(broken.pixel.x).toBeLessThan(192);
       await info.attach(room, { body: await page.screenshot(), contentType: 'image/png' });
       await page.clock.runFor(1000);

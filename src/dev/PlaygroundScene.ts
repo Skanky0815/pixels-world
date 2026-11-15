@@ -8,6 +8,7 @@ import { preloadPictureArt } from '../game/assets/picture-art';
 import { preloadFoodBagArt } from '../game/assets/food-bag-art';
 import { preloadBookArt } from '../game/assets/book-art';
 import { preloadRoomArt } from '../game/assets/room-art';
+import { preloadFridgeArt } from '../game/assets/fridge-art';
 import { preloadShelfArt } from '../game/assets/shelf-art';
 import type { Shelf } from '../game/objects/Shelf';
 import { preloadHerbArt } from '../game/assets/herb-art';
@@ -72,6 +73,7 @@ export class PlaygroundScene extends Phaser.Scene {
     preloadBookArt(this);
     preloadFoodBagArt(this);
     preloadShelfArt(this);
+    preloadFridgeArt(this);
     preloadRoomArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);

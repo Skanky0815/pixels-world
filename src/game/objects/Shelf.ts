@@ -1,7 +1,8 @@
+import { FridgeArt } from './fridge-art';
 import type Phaser from 'phaser';
 import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import type { RoomDefinition, Decoration } from '../content/definitions';
-import type { InteractionContext } from '../interactions/contracts';
+import type { Bounds, InteractionContext } from '../interactions/contracts';
 import { DamageHistory } from '../domain/chaos-event';
 import { ShelfStability, shelfWobbleAngle } from '../domain/shelf-stability';
 import { ShelfArt } from './shelf-art';
@@ -20,7 +21,7 @@ export class Shelf {
   private readonly model: ShelfStability;
   private readonly history = new DamageHistory();
   private readonly graphic: Phaser.GameObjects.Container;
-  private readonly art: ShelfArt | StaticFurnitureArt;
+  private readonly art: ShelfArt | StaticFurnitureArt | FridgeArt;
   private readonly decorations: readonly ShelfDecoration[];
 
   // eslint-disable-next-line max-lines-per-function -- Content, Grafik und unveränderlicher statischer Körper werden für dieselbe Regalfläche gemeinsam erzeugt.
@@ -46,14 +47,17 @@ export class Shelf {
     this.decorations = decorations.filter(
       (d): d is ShelfDecoration => d.kind === 'rect' && d.supportedBy === this.id,
     );
-    this.art = definition.appearance
-      ? new StaticFurnitureArt(scene, b, floorY, definition.appearance)
-      : new ShelfArt(scene, b, this.decorations);
+    this.art =
+      definition.appearance === 'fridge'
+        ? new FridgeArt(scene, b, floorY, this.id)
+        : definition.appearance
+          ? new StaticFurnitureArt(scene, b, floorY, definition.appearance)
+          : new ShelfArt(scene, b, this.decorations);
     this.graphic = this.art.root;
     this.draw();
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Landung, einmaliges Ereignis und dazu konsistente Körper-/Bildänderung bilden einen gemeinsamen Zustandsschritt.
+  // eslint-disable-next-line max-lines-per-function, complexity -- Landung, einmaliges Ereignis und dazu konsistente Körper-/Bildänderung bilden einen gemeinsamen Zustandsschritt.
   update(pixel: InteractionContext['pixel'], time: number) {
     const previous = this.model.snapshot();
     const before = previous.landings;
@@ -76,7 +80,7 @@ export class Shelf {
           this.bounds.y +
             (this.floorY - this.art.debrisBottom - this.bounds.y) * this.fallProgress ** 2,
         );
-    } else
+    } else if (!this.fridge)
       this.graphic.setAngle(
         state === 'intact' || this.wobbleStartedAt === null
           ? 0
@@ -96,11 +100,16 @@ export class Shelf {
       enabled: true,
       surface: 'solid',
       moving: collapsed && this.fallProgress < 1,
-      bounds: { ...this.bounds, y: this.graphic.y, height: this.art.boardHeight },
+      bounds: {
+        ...this.bounds,
+        y: this.fridge ? this.bounds.y : this.graphic.y,
+        height: this.art.boardHeight,
+      },
     };
   }
 
   receiveImpact(hit: ImpactHit) {
+    if (this.fridge) return this.fridge.receiveImpact(hit);
     this.wobbleStartedAt = hit.time;
     const events = this.impactEvents(hit.power);
 
@@ -122,6 +131,24 @@ export class Shelf {
     (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable = false;
     this.collapseStartedAt ??= time;
     this.draw();
+  }
+
+  get fridge() {
+    return this.art instanceof FridgeArt ? this.art : undefined;
+  }
+
+  get isFridge() {
+    return Boolean(this.fridge);
+  }
+
+  climbAreas(): Bounds[] {
+    if (!this.fridge) return [];
+    const b = this.bounds;
+
+    return [
+      { x: b.x - 12, y: b.y, width: 24, height: this.floorY - b.y },
+      { x: b.x + b.width - 12, y: b.y, width: 24, height: this.floorY - b.y },
+    ];
   }
 
   consumeSupportLoss() {
@@ -155,6 +182,7 @@ export class Shelf {
     this.art.render(this.model.snapshot());
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Physische Auflage und optionaler Innenraumzustand bleiben gemeinsam beobachtbar.
   private artSnapshot() {
     return {
       boardHeight: this.art.boardHeight,
@@ -162,6 +190,8 @@ export class Shelf {
       angle: this.graphic.angle,
       y: this.graphic.y,
       fallProgress: this.fallProgress,
+      isFridge: this.isFridge,
+      fridge: this.fridge?.snapshot() ?? null,
       enabled: (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable,
     };
   }
@@ -170,7 +200,7 @@ export class Shelf {
     return {
       id: this.id,
       ...this.model.snapshot(),
-      ...this.history.snapshot(),
+      ...(this.fridge?.damageSnapshot() ?? this.history.snapshot()),
       ...this.artSnapshot(),
     };
   }
@@ -184,7 +214,8 @@ export class Shelf {
     this.supportLost = false;
     this.history.reset();
     (this.platform.body as Phaser.Physics.Arcade.StaticBody).enable = true;
-    this.graphic.setAngle(0).setY(this.definition.bounds.y);
+    this.graphic.setAngle(0).setY(this.fridge ? this.floorY : this.definition.bounds.y);
+    this.fridge?.reset();
     this.draw();
   }
 
