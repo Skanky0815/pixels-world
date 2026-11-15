@@ -92,6 +92,14 @@
       border-radius: 8px;
       overflow-wrap: anywhere;
     }
+    .mobile-dialogue[data-entry-side='left']:not([hidden]) {
+      left: auto;
+      right: 8px;
+    }
+    #play-area:has(.mobile-dialogue[data-entry-side='left']:not([hidden])) .mobile-hud {
+      left: 8px;
+      right: auto;
+    }
 
     .mobile-dialogue:has(.mobile-key:not(:empty)):not([hidden]) {
       grid-template-columns: minmax(0, 1fr) 48px;

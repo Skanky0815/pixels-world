@@ -25,7 +25,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   });
   expect(active.round.returnAtMs).toBeGreaterThanOrEqual(45_000);
   expect(active.round.returnAtMs).toBeLessThanOrEqual(78_750);
-  expect(active.hud.scoreText).toBe('CHAOS: 0');
+  expect(active.chaos.score).toBe(0);
   await openPause(page);
   await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
   await expect(page.locator('[data-difficulty-current]')).toContainText('Aktuelle Runde: Schwer');
@@ -46,7 +46,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   expect(next.goalView).toMatchObject({ ballVisible: true, markerVisible: true, markerWidth: 36 });
   expect(next.round.returnAtMs).toBeGreaterThanOrEqual(90_000);
   expect(next.round.returnAtMs).toBeLessThanOrEqual(157_500);
-  expect(next.hud.scoreText).toBe('CHAOS: 0');
+  expect(next.chaos.score).toBe(0);
   await page.reload();
   await waitForGame(page);
   expect((await state(page)).difficulty).toBe('easy');

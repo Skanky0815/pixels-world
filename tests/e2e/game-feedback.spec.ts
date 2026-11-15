@@ -14,7 +14,7 @@ async function expectFeedback(
   await expect(page.locator('.mobile-notice')).toHaveText((await state(page)).feedback.text);
 }
 
-test('Punktefeedback zeigt echte Punkte, friert mit Pause ein und bleibt nach Reset einmalig', async ({
+test('Schadensfeedback bleibt ohne Punktzahlen lesbar, pausiert und startet nach Reset einmalig', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Echte Sofaaktion, Pause, Ablauf und Neustart prüfen denselben szenengebundenen Darstellungszyklus.
 }, testInfo) => {
@@ -25,9 +25,7 @@ test('Punktefeedback zeigt echte Punkte, friert mit Pause ein und bleibt nach Re
   const before = await state(page);
 
   expect(before.feedback.messages.score?.value).toBe(OBJECTS['cozy-couch'].rules.damageValue);
-  await expect(page.locator('.mobile-notice')).toContainText(
-    `+${OBJECTS['cozy-couch'].rules.damageValue}`,
-  );
+  await expect(page.locator('.mobile-notice')).toContainText('Kratzen');
   await expectFeedbackCorner(page);
   await testInfo.attach('desktop-score-feedback', {
     body: await page.screenshot(),
@@ -153,9 +151,7 @@ test.describe('Feedback im Handheld mit reduzierter Bewegung', () => {
     await besideCouch(page);
     await until(page, (s) => s.couch.damage === 1);
     expect((await state(page)).feedback.reduced).toBe(true);
-    await expect(page.locator('.mobile-hud')).toContainText(
-      `+${OBJECTS['cozy-couch'].rules.damageValue}`,
-    );
+    await expect(page.locator('.mobile-hud')).toContainText('Kratzen');
     await expect(page.locator('.game-feedback-layer')).not.toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,

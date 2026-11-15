@@ -347,10 +347,12 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
 - Desktop-Standardkamera vergleichen: moderater Zoom,
   Tastatursteuerung und unveränderte Objektpositionen; Status und linke Dialogkarte
   bleiben unabhängig von der Kamera lesbar. Die größere Desktopkarte mit größerer
-  Schrift muss auch während der Gesten links neben beiden Figuren bleiben. Fenster über die Kompaktgrenze verkleinern
+  Schrift muss auch während der Gesten gegenüber Saras Eintrittsseite bleiben.
+  Wohnzimmer: Sara rechts, Karte links; Küche: Sara links, Karte rechts. Fenster über die Kompaktgrenze verkleinern
   und wieder vergrößern; klassische Ansicht mit `?camera=room` vergleichen.
-- HUD: Punktestand und kurze Aktionsrückmeldungen bleiben sichtbar; Schwierigkeitsgrad
-  steht in den Optionen. Zielstatus und Versuchszähler erscheinen weder im Spiel
+- Rückmeldungen: Während der Runde erscheinen nur kurze qualitative Hinweise, keine
+  Chaos-Gesamtpunkte oder numerischen Schadenspunkte. Die Wertung bleibt im Ergebnis
+  sichtbar; der Schwierigkeitsgrad steht in den Optionen. Zielstatus und Versuchszähler erscheinen weder im Spiel
   noch im Ergebnis. Ball, Zielmarker und Herzfortschritt bleiben erhalten.
 - DE/EN in Einführung, Dialog, Versöhnung und Ergebnis wechseln: Runde bleibt
   erhalten. Auswahl wird beim Reload wiederhergestellt; gesperrter Speicher

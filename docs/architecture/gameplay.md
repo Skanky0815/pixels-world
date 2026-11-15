@@ -248,6 +248,12 @@ auch auf Desktop, damit ein Größenwechsel mit DOM-Dialog keinen Rendererwechse
 oder Szenenneustart benötigt:
 [ADR 0002](../adr/0002-mobile-text-rendering.md).
 
+Dialog und Versöhnung nutzen die freie Seite gegenüber Saras Eintrittsseite: bei
+Eintritt von links rechts, bei Eintritt von rechts links. Canvas und DOM folgen
+demselben Raumvertrag. Während der Runde zeigen Rückmeldungen keine Zahlen;
+Schadensereignisse und Ledger werten unverändert weiter, die Punktzahl erscheint
+im Ergebnis.
+
 Sprite-Quellen, Palette, Raster und Exporte liegen bei
 [Pixel](../../assets/pixel/README.md) und [Sara](../../assets/sara/README.md).
 Nur gepackte Runtime-Assets werden geladen. Dev-Vergleich und E2E-Instrumentierung

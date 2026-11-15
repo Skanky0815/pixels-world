@@ -60,7 +60,7 @@ test.describe('Lokalisierte Touch-Runde', () => {
 
     await changeLanguage(page, 'en');
     await expect(page.locator('[data-control="jump"]')).toHaveText('Jump');
-    await expect(page.locator('.mobile-hud')).toContainText('CHAOS: 0');
+    await expect(page.locator('.mobile-hud')).not.toContainText('CHAOS:');
     await expect(page.locator('.mobile-hud')).not.toContainText(/MOOD|time|soon/i);
     await expect(page.locator('.mobile-goal')).toHaveCount(0);
     await useIdleFrames(page);

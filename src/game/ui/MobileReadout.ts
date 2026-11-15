@@ -1,13 +1,13 @@
 import { MobileResultCard } from './MobileResultCard';
 import { t } from '../../i18n/locale.ts';
-import type { GameHud } from './GameHud';
+import type { HomecomingSide } from '../content/homecoming-layout';
 import type { ReconciliationView } from './ReconciliationView';
 import type { ResultViewSnapshot } from './RoundResultView';
 import { DIALOGUE_PORTRAITS } from '../assets/dialogue-portraits';
 import type { DialoguePortrait } from '../domain/dialogue-portrait';
 interface Readout {
   readonly started: boolean;
-  readonly hud: ReturnType<GameHud['snapshot']>;
+  readonly entrySide: HomecomingSide;
   readonly homecoming: string;
   readonly dialogue: string;
   readonly portrait: DialoguePortrait | null;
@@ -22,7 +22,6 @@ interface Readout {
 export class MobileReadout {
   private readonly hud = document.createElement('section');
   private readonly status = document.createElement('p');
-  private readonly score = document.createElement('span');
   private readonly notice = document.createElement('span');
   private readonly panel = document.createElement('section');
   private readonly message = document.createElement('p');
@@ -39,7 +38,7 @@ export class MobileReadout {
     this.hud.setAttribute('aria-label', t('gameStatus'));
     this.status.setAttribute('role', 'status');
     this.notice.className = 'mobile-notice';
-    this.status.append(this.score, this.notice);
+    this.status.append(this.notice);
     this.hud.append(this.status);
     this.panel.className = 'mobile-dialogue';
     this.panel.setAttribute('aria-label', t('gameDialogue'));
@@ -75,7 +74,6 @@ export class MobileReadout {
     this.hud.hidden = !state.started;
     this.panel.setAttribute('aria-label', t('gameDialogue'));
     this.timer.setAttribute('aria-label', t('timeLeftForInput'));
-    setText(this.score, state.hud.scoreText);
     setText(this.notice, state.feedback.text);
     this.notice.dataset.feedback = state.feedback.tone;
     this.resultCard.render(state.result);
@@ -84,6 +82,7 @@ export class MobileReadout {
 
     this.panel.hidden = !text.message;
     this.panel.dataset.placement = state.welcome ? 'welcome' : 'dialogue';
+    this.panel.dataset.entrySide = state.entrySide;
     this.renderPortrait(text.portrait);
     setText(this.message, text.message);
     setText(this.quote, text.quote);

@@ -126,7 +126,7 @@ test(
     expect(complete.homecoming.stage).toBe('complete');
     expect(complete.sara.animationKey).toBe('sara-idle');
     expect(complete.sara.dialogueText).toContain('VERSÖHNUNG');
-    expect(complete.hud.scoreText).not.toContain('VORSCHAU');
+    await expect(page.locator('.mobile-hud')).not.toContainText(/CHAOS:|VORSCHAU/);
     await test.info().attach('reconciliation-start', {
       body: await page.screenshot(),
       contentType: 'image/png',
@@ -148,7 +148,7 @@ test(
     expect(fresh.round.phase).toBe('chaos');
     expect(fresh.round.elapsedMs).toBeLessThan(500);
     expect(fresh.round.finalChaosScore).toBeNull();
-    expect(fresh.hud.scoreText).toBe('CHAOS: 0');
+    expect(fresh.chaos.score).toBe(0);
     expect(fresh.chaos.score).toBe(0);
     expect(fresh.homecoming.stage).toBe('waiting');
     expect(fresh.homecoming.selection).toBeNull();

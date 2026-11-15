@@ -32,7 +32,7 @@ for (const viewport of [
     expect(
       await page.locator('canvas').evaluate((node) => getComputedStyle(node).imageRendering),
     ).toBe('pixelated');
-    await expect(page.getByRole('region', { name: 'Spielstatus' })).toContainText('CHAOS:');
+    await expect(page.getByRole('region', { name: 'Spielstatus' })).not.toContainText('CHAOS:');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
