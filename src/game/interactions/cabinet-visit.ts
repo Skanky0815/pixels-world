@@ -58,9 +58,10 @@ export class CabinetVisit {
     touching: boolean,
     climbing = false,
     handle = false,
+    rising = false,
   ) {
     if (this.snapshot().captured || this.state === 'open') return;
-    this.trackJump(started, grounded, climbing);
+    this.trackJump(started, grounded, climbing, rising);
 
     if (grounded || !touching || !this.jumpArmed) return;
 
@@ -73,8 +74,10 @@ export class CabinetVisit {
     return this.bumps;
   }
 
-  private trackJump(started: boolean, grounded: boolean, climbing: boolean) {
-    if (grounded || climbing) this.jumpArmed = started && grounded && !climbing;
+  private trackJump(started: boolean, grounded: boolean, climbing: boolean, rising: boolean) {
+    if (climbing) this.jumpArmed = false;
+    else if (started && grounded) this.jumpArmed = true;
+    else if (grounded && !rising) this.jumpArmed = false;
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die begrenzten Türphasen teilen aktive Zeit und liefern genau ein Abschlussereignis.

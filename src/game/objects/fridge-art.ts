@@ -82,6 +82,7 @@ export class FridgeArt implements Interactable {
       Math.abs(p.left + p.bodyWidth - this.b.x) <= 2 &&
         p.top < this.b.y + 184 &&
         p.bottom > this.b.y + 94,
+      p.velocityY < 0,
     );
     const event = this.model.update(context.delta);
 

@@ -43,6 +43,21 @@ function jump(cabinet: CabinetVisit, handle: boolean) {
   cabinet.observeJump(false, false, true, false, handle);
 }
 
+test('Verzögerter Bodenkontakt nach dem Absprung verwirft den Sprung vor Erreichen der Klinke nicht', () => {
+  const cabinet = new CabinetVisit('cabinet');
+
+  for (const count of [1, 2]) {
+    cabinet.observeJump(true, true, false, false, false, true);
+    cabinet.observeJump(false, true, false, false, false, true);
+    cabinet.observeJump(false, false, false, false, false, true);
+    assert.equal(cabinet.observeJump(false, false, true, false, true, true), count);
+
+    if (count === 1) cabinet.observeJump(false, true, false);
+  }
+
+  assert.equal(cabinet.snapshot().state, 'hanging');
+});
+
 test('Reset gibt jede Aufnahmephase frei; inaktive Zeit und Fremdtreffer überspringen das Festhalten nicht', () => {
   for (const steps of [[], [600], [600, 400], [600, 400, 200], [600, 400, 200, 1400]]) {
     const cabinet = new CabinetVisit('cabinet');
