@@ -21,7 +21,6 @@ export class FridgeArt implements Interactable {
   private readonly model: FridgeRummaging;
   private readonly history = new DamageHistory();
   private readonly graphic: Phaser.GameObjects.Image;
-  private readonly interior: Phaser.GameObjects.Graphics;
   private readonly hint: Phaser.GameObjects.Text;
   private nudgeUntil = 0;
 
@@ -36,24 +35,6 @@ export class FridgeArt implements Interactable {
     this.model = new FridgeRummaging(id);
     this.boardHeight = floorY - b.y;
     this.debrisBoardHeight = b.width;
-    this.interior = scene.add.graphics();
-    this.interior
-      .fillStyle(0x6b4633)
-      .fillRect(-b.width / 2 + 6, -this.boardHeight + 6, b.width - 12, this.boardHeight - 12);
-    this.interior
-      .fillStyle(0xe6d4ad)
-      .fillRect(-b.width / 2 + 12, -this.boardHeight + 12, b.width - 24, this.boardHeight - 26);
-
-    for (const y of [70, 144, 218]) {
-      this.interior
-        .fillStyle(0x9f7752)
-        .fillRect(-b.width / 2 + 12, -this.boardHeight + y, b.width - 24, 6);
-      this.interior
-        .fillStyle(0x91764c)
-        .fillRect(-b.width / 2 + 30, -this.boardHeight + y - 28, 22, 28);
-      this.interior.fillStyle(0xa85543).fillRect(4, -this.boardHeight + y - 22, 26, 22);
-    }
-
     this.graphic = scene.add.image(0, 0, 'fridge-upright').setOrigin(0.5, 1);
     this.hint = scene.add
       .text(0, -this.boardHeight - 68, '', {
@@ -65,7 +46,7 @@ export class FridgeArt implements Interactable {
       .setOrigin(0.5, 1)
       .setVisible(false);
     this.root = scene.add
-      .container(b.x + b.width / 2, floorY, [this.interior, this.graphic, this.hint])
+      .container(b.x + b.width / 2, floorY, [this.graphic, this.hint])
       .setDepth(0.5);
     this.root.once(
       'destroy',
@@ -137,20 +118,14 @@ export class FridgeArt implements Interactable {
   private draw(time: number) {
     const state = this.model.snapshot();
     const open = state.state === 'open';
-    const pulling = state.state === 'opening' || state.hidden;
-    const wobble = state.hidden || state.state === 'warning' || time < this.nudgeUntil;
+    const wobble = state.state === 'inside' || state.state === 'warning' || time < this.nudgeUntil;
 
     this.graphic
-      .setTexture(open ? 'fridge-open' : 'fridge-upright')
+      .setTexture(
+        open ? 'fridge-open' : state.doorState === 'ajar' ? 'fridge-ajar' : 'fridge-upright',
+      )
       .setDisplaySize(open ? this.b.width * 1.3 : this.b.width, this.boardHeight)
       .setX(open ? this.b.width * 0.15 : 0);
-    this.interior.setVisible(pulling);
-
-    if (pulling) {
-      const width = this.b.width * (1 - state.doorProgress * 0.8);
-
-      this.graphic.setDisplaySize(width, this.boardHeight).setX((this.b.width - width) / 2);
-    }
 
     this.root.setAngle(
       wobble && !motionPreferences.snapshot().reduced ? Math.sin(time / 48) * 2.5 : 0,
@@ -179,6 +154,8 @@ export class FridgeArt implements Interactable {
       ...this.history.snapshot(),
       angle: this.root.angle,
       texture: this.graphic.texture.key,
+      displayWidth: this.graphic.displayWidth,
+      displayHeight: this.graphic.displayHeight,
     };
   }
 

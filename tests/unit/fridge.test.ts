@@ -39,10 +39,17 @@ test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einma
   f.update(600);
   assert.equal(f.snapshot().state, 'opening');
   f.update(400);
+  assert.equal(f.snapshot().state, 'entering');
+  assert.equal(f.snapshot().doorState, 'ajar');
+  f.update(200);
+  assert.equal(f.snapshot().doorState, 'closed');
   assert.equal(f.snapshot().hidden, true);
   f.update(1399);
   assert.equal(f.snapshot().hidden, true);
-  assert.deepEqual(f.update(1), chaosEvent('fridge', 'spill', 1, 24));
+  assert.equal(f.update(1), undefined);
+  assert.equal(f.snapshot().state, 'reopening');
+  assert.equal(f.snapshot().hidden, true);
+  assert.deepEqual(f.update(400), chaosEvent('fridge', 'spill', 1, 24));
   assert.equal(f.snapshot().state, 'open');
   assert.equal(f.snapshot().hidden, false);
   assert.equal(bump(f), undefined);
@@ -55,6 +62,7 @@ test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einma
     hidden: false,
     captured: false,
     doorProgress: 0,
+    doorState: 'closed',
     progress: 0,
   });
 });
@@ -89,12 +97,22 @@ test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel 
   assert.equal(f.disturb(), undefined);
   f.update(600);
   f.update(400);
+  f.update(200);
   assert.equal(f.snapshot().hidden, true);
-  assert.equal(f.update(1400)?.value, 24);
+  assert.equal(f.update(1400), undefined);
+  assert.equal(f.update(400)?.value, 24);
 });
 
 test('Ungültige Zeiten, Punkte und IDs werden abgewiesen; inaktive Zeit macht keinen Fortschritt', () => {
-  for (const key of ['warningMs', 'hangingMs', 'openingMs', 'insideMs', 'points'])
+  for (const key of [
+    'warningMs',
+    'hangingMs',
+    'openingMs',
+    'enteringMs',
+    'insideMs',
+    'reopeningMs',
+    'points',
+  ])
     assert.throws(() => new FridgeRummaging('f', { ...FRIDGE_RULES, [key]: -1 }));
   assert.throws(() => new FridgeRummaging(''));
   const f = fridge();
@@ -143,6 +161,7 @@ test('Fridge graphics retain bounded transparent PNG cells and binary 2×2 clust
 
   for (const [name, width] of [
     ['upright', 160],
+    ['ajar', 160],
     ['open', 208],
   ] as const) {
     const p = PNG.sync.read(

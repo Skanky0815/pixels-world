@@ -1,5 +1,29 @@
 # Geschirr: Erzeugungsprompts
 
+## Lesbarkeit: cup und plate v2
+
+Integriertes Bildwerkzeug (`image_gen`), Bearbeitung der jeweiligen v1-Quelle; unveränderte Ergebnisse unter `sources/cup-source-v2.png` und `sources/plate-source-v2.png`. Zielmaße und Körper bleiben gleich.
+
+### cup v2
+
+```text
+Use case: precise-object-edit
+Asset type: ONE transparent pixel-art mug sprite for Pixel's World, final game size 24 by 26 pixels.
+Input image: edit target, the existing cream ceramic mug with burgundy rim and right handle.
+Primary request: improve the tiny silhouette and contrast so the mug remains unmistakably a mug against warm cream kitchen walls. Keep the same side-view shape, cream body, burgundy rim band, size proportions, and right-side handle. Make the outer contour a clearly continuous dark walnut stroke, the dark top opening large and simple, and the open loop handle slightly wider with a large truly transparent hole. Use only a few flat colors and large square pixel clusters that survive sampling to a 12 by 13 logical pixel grid. Do not add fine detail. No gradients, no soft shading, no anti-aliasing. Clean flat base.
+Composition: exactly one mug, complete isolated object with genuine transparent alpha background and generous empty transparent margin. No table, no floor, no shadow outside the mug, no text, no logo, no other objects. Preserve existing cream/bordeaux/walnut identity.
+```
+
+### plate v2
+
+```text
+Use case: precise-object-edit
+Asset type: ONE transparent low-resolution ceramic plate sprite for Pixel's World; game export 32 by 10 pixels.
+Input image: edit target, the existing long cream plate with bordeaux rim.
+Primary request: improve tiny readability against a warm cream kitchen wall. Keep one empty low SIDE-VIEW dinner plate, its warm cream ceramic, burgundy rim and walnut outline. Make a strong continuous dark walnut perimeter and dark flat underside; a broad clearly visible bordeaux rim enclosing a simple flat pale cream oval. Design as a 16 by 5 logical pixel silhouette: long shallow ellipse, clearly flatter than a bowl, with recognizable raised rim and short flat base. Large flat pixel color blocks and no fine details, NO smooth gradients, no antialiasing, no gloss. Final silhouette about 3.2 times wider than tall, complete outline especially top and bottom must survive tiny nearest-neighbor sampling.
+Composition: exactly one complete isolated plate centered on genuine transparent alpha background, generous transparent margins. No table, no floor, no external cast shadow, no food, no utensils, no cup, no extra plate, no text, no logos. Preserve existing cream/bordeaux/walnut identity.
+```
+
 Modus: integriertes Bildwerkzeug (`image_gen`), je eine neue Grafik mit transparentem Hintergrund. Die unveränderten Quellen liegen in `sources/`.
 
 ## cup

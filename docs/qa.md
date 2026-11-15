@@ -219,8 +219,13 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   aktuelle Küche. Napf über Hocker, Tisch und Kühlschrank auf allen Graden ohne
   Schaden erreichen; vor dem Napf auch zurück zum linken Eingang klettern.
   Mehrere Küchenaktionen in einer Runde kombinieren, etwa Futterbeutel, Mülleimer
-  und Klinkengriff am Kühlschrank. Pause/Fokuswechsel, einmalige Schäden, Saras
-  Heimkehr von links und Versöhnung gemeinsam prüfen. Reset stellt Möbel und
+  und Klinkengriff am Kühlschrank. Die Kühlschrankfolge ist:
+  Klinke greifen → Türspalt → Eintritt → geschlossen wackeln →
+  erneut öffnen und Pixel freigeben. Jede Aufnahmephase auch beim Rundenende
+  und mit Reset abbrechen; die Grafik bleibt unverzerrt. Pause/Fokuswechsel,
+  einmalige Schäden, Saras Heimkehr von links und Versöhnung gemeinsam prüfen.
+  Kontraste und Konturen von Tasse und Teller vor Wand, Tischdecke und Regalen
+  prüfen. Reset stellt Möbel und
   lose Gegenstände wieder her, verwirft vorgemerkte Funde und erhält zuvor
   bestätigten Fortschritt; freiwillige Speicherung bleibt ausgeschaltet.
 
@@ -233,7 +238,9 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   Touch im Hoch-/Querformat prüfen; bei verpasstem Ziel gibt es keinen Spielmoment.
 
 - Album aus Einführung und Pause öffnen: Runde bleibt stehen, Esc schließt nur das
-  oberste Album. Raum-Tabs und Gesamt-/Kapitelzähler prüfen. Vor einer echten
+  oberste Album. Im Handy-Querformat liegt „Zur Übersicht“ bei Objekten und
+  Erfolgen unten rechts und bleibt auch nach Scrollen der Erfolgsziele erreichbar.
+  Raum-Tabs und Gesamt-/Kapitelzähler prüfen. Vor einer echten
   Schadensaktion dürfen weder Bilder noch Namen unbekannter Objekte sichtbar sein.
   Nach Schaden neu öffnen, zwischen DE/EN wechseln und Rundenneustart/Reload prüfen.
   Album-Reset ausschließlich in den Optionen und erst nach Bestätigung; Abbrechen

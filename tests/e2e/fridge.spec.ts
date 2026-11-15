@@ -30,7 +30,10 @@ async function enter(page: Page) {
   expect((await observe(page)).pixel.x).toBeCloseTo(hanging.pixel.x, 1);
   await until(page, (s) => fridge(s).fridge?.state === 'opening');
   expect((await observe(page)).pixel.visible).toBe(true);
-  await until(page, (s) => fridge(s).fridge?.hidden === true);
+  expect(fridge(await observe(page)).fridge?.texture).toBe('fridge-ajar');
+  await until(page, (s) => fridge(s).fridge?.state === 'entering');
+  expect((await observe(page)).pixel.visible).toBe(false);
+  await until(page, (s) => fridge(s).fridge?.state === 'inside');
 }
 
 test('Pixel hängt an der Klinke, zieht die Tür auf und verschwindet erst danach; Innenchaos bleibt @smoke', async ({
@@ -41,12 +44,20 @@ test('Pixel hängt an der Klinke, zieht die Tür auf und verschwindet erst danac
   const hidden = await observe(page);
 
   expect(hidden.pixel.visible).toBe(false);
-  expect(fridge(hidden).fridge?.doorProgress).toBe(1);
+  expect(fridge(hidden).fridge).toMatchObject({
+    doorState: 'closed',
+    texture: 'fridge-upright',
+    displayWidth: 160,
+    displayHeight: 320,
+  });
   expect(hidden.chaos.score).toBe(0);
   await page.keyboard.down('ArrowRight');
   await page.clock.runFor(400);
   expect((await observe(page)).pixel.x).toBeCloseTo(hidden.pixel.x, 1);
   await page.keyboard.up('ArrowRight');
+  await until(page, (s) => fridge(s).fridge?.state === 'reopening');
+  expect(fridge(await observe(page)).fridge?.texture).toBe('fridge-ajar');
+  expect((await observe(page)).pixel.visible).toBe(false);
   await until(page, (s) => fridge(s).fridge?.state === 'open');
   const open = await observe(page);
 
@@ -186,7 +197,9 @@ test.describe('Kühlschrank mit Touch', () => {
 for (const [phase, remaining] of [
   ['hanging', 350],
   ['opening', 900],
+  ['entering', 1350],
   ['inside', 1600],
+  ['reopening', 3000],
 ] as const)
   test(`Timerende während ${phase} gibt Pixel für Saras Heimkehr frei, ohne Schaden zu erfinden`, async ({
     page,
@@ -200,7 +213,7 @@ for (const [phase, remaining] of [
     await page.clock.runFor(Math.max(0, round.returnAtMs - round.elapsedMs - remaining));
     await jumpAgainst(page, 2);
     await until(page, (s) => fridge(s).fridge?.state === phase);
-    expect((await observe(page)).pixel.visible).toBe(phase !== 'inside');
+    expect((await observe(page)).pixel.visible).toBe(['hanging', 'opening'].includes(phase));
     await until(page, (s) => s.round.phase !== 'chaos');
     expect((await observe(page)).pixel.visible).toBe(true);
     expect(fridge(await observe(page)).fridge?.state).toBe('idle');
