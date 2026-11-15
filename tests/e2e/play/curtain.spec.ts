@@ -1,4 +1,4 @@
-import { recordAudio, expectActiveAudio } from './audio-support';
+import { recordAudio, expectActiveAudio, useRenderCadence } from './audio-support';
 import {
   test,
   expect,
@@ -17,8 +17,15 @@ test('Vorhang: progressive Risse zählen Punkte; Weiterklettern und Absprung sto
   await recordAudio(page);
   await start(page);
   await curtain(page);
-  await holdUntil(page, ['ArrowUp'], (s) => s.pixel.y < 230);
-  await expectActiveAudio(page, 0.28, true);
+  await page.keyboard.down('ArrowUp');
+
+  try {
+    await until(page, (s) => s.pixel.y < 230);
+    await expectActiveAudio(page, 0.28, true);
+  } finally {
+    await page.keyboard.up('ArrowUp');
+  }
+
   await until(page, (s) => s.curtain!.state === 'sliding');
   const beginning = await state(page);
 
@@ -103,3 +110,30 @@ test('Vorhang: Boden löst den Griff; erneutes Klettern und Reset funktionieren'
   });
   expect((await state(page)).chaos.score).toBe(0);
 });
+
+for (const intervalMs of [8, 33])
+  test(`Vorhang-Audio bleibt bei ${intervalMs} ms Renderabstand stabil und endet beim Absprung @smoke`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Reale Vorhangroute und Quellbeobachtung prüfen beide Render-/Physikverhältnisse gemeinsam.
+  }) => {
+    await recordAudio(page);
+    await useRenderCadence(page, intervalMs);
+    await start(page);
+    await curtain(page);
+    await page.keyboard.down('ArrowUp');
+
+    try {
+      await until(page, (s) => s.pixel.climbing && s.pixel.velocityY < 0);
+      await expectActiveAudio(page, 0.28, true);
+      await expectActiveAudio(page, 0.4, false);
+    } finally {
+      await page.keyboard.up('ArrowUp');
+    }
+
+    await until(page, (s) => s.curtain!.state === 'sliding');
+    await expectActiveAudio(page, 0.4, true);
+    await expectActiveAudio(page, 0.28, false);
+    await holdUntil(page, ['Space', 'ArrowLeft'], (s) => !s.pixel.climbing);
+    await expectActiveAudio(page, 0.4, false);
+    await expectActiveAudio(page, 0.28, false);
+  });

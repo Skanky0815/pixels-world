@@ -315,8 +315,10 @@ damit Phasers globale Tastensperre native Regler und Formularbedienung nicht st�
 
 `AudioPreferences` speichert `master` und `effects` unter `pixels-world.audio`.
 `GameAudio` setzt Gesamt- × Effektpegel und übernimmt Pause/Resume von der
-Aktivitätsgrenze; Szenenabbau stoppt alte Sounds. Noch sind keine Audio-Assets
-eingebunden. E2E-Snapshots enthalten nur losgelöste Pegel/Statuswerte.
+Aktivitätsgrenze; Szenenabbau stoppt alte Sounds. Bewegungsloops verwenden Pixels
+nach realen Physikschritten erfassten `PhysicsProgress`, nicht Positionsdifferenzen
+zwischen Renderframes. Die [Audio-Assets und Quellen](../assets/audio/README.md)
+liegen bei den WAV-Dateien. E2E-Snapshots enthalten nur losgelöste Pegel/Statuswerte.
 
 ## Visuelles Feedback abstimmen
 

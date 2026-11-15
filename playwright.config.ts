@@ -34,7 +34,16 @@ export default defineConfig({
           testMatch: '**/play/tablet-layout.spec.ts',
         },
       ]
-    : [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+    : [
+        {
+          name: 'chromium',
+          use: {
+            ...devices['Desktop Chrome'],
+            // Native WebAudio läuft gegen Chromiums virtuellen Ausgabestream statt gegen schlafende oder fehlende Host-Hardware.
+            launchOptions: { args: ['--disable-audio-output'] },
+          },
+        },
+      ],
   webServer: [
     ...(servers.offline
       ? [

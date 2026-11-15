@@ -104,7 +104,7 @@ test('Lautstärke bleibt gespeichert und Neue Runde ist ausschließlich im Menü
   await effects.focus();
   await page.keyboard.press('Home');
   await page.keyboard.press('ArrowRight');
-  await expect.poll(async () => (await state(page)).audio.volume).toBeCloseTo(0.0001, 6);
+  await until(page, (s) => Math.abs(s.audio.volume - 0.0001) < 0.0000005);
   await loadIntro(page);
   await openPause(page);
   await expect(master).toHaveValue('1');
@@ -122,7 +122,7 @@ test('Lautstärke bleibt gespeichert und Neue Runde ist ausschließlich im Menü
   await until(page, (s) => s.generation > generation && s.pixel.grounded);
   expect((await state(page)).chaos.score).toBe(0);
   expect((await state(page)).active).toBe(true);
-  await expect.poll(async () => (await state(page)).audio.volume).toBeCloseTo(0.0001, 6);
+  await until(page, (s) => Math.abs(s.audio.volume - 0.0001) < 0.0000005);
   await expect(page.locator(menu)).toHaveCount(1);
   await expect(page.locator('.pause-toggle')).toHaveCount(1);
   await expect(page.locator('.touch-controls')).toHaveCount(1);

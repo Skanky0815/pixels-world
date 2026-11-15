@@ -168,18 +168,18 @@ test('Kratzen, Knabbern und Würgen haben jeweils einen abbrechbaren Aktionsloop
   const { audio, calls, removedKeys } = setup();
 
   try {
-    audio.updatePixel('scratching', 100);
+    pixelStep(audio, 'scratching', 100);
 
-    for (let i = 0; i < 100; i++) audio.updatePixel('scratching', 100);
+    for (let i = 0; i < 100; i++) pixelStep(audio, 'scratching', 100);
     assert.equal(calls.length, 1);
     assert.deepEqual(calls[0], { key: 'object-scratch-0', volume: CUE_VOLUME.scratch, loop: true });
     audio.playDamage(chaosEvent('couch', 'scratch', 1, 3));
     assert.equal(calls.length, 1);
-    audio.updatePixel('nibbling', 100);
-    audio.updatePixel('wobbling', 100);
+    pixelStep(audio, 'nibbling', 100);
+    pixelStep(audio, 'wobbling', 100);
     assert.equal(calls.length, 2);
-    audio.updatePixel('retching', 100);
-    audio.updatePixel('idle', 100);
+    pixelStep(audio, 'retching', 100);
+    pixelStep(audio, 'idle', 100);
     assert.deepEqual(
       calls.map((c) => c.key),
       ['object-scratch-0', 'object-nibble-1', 'object-retch-0'],
@@ -204,19 +204,19 @@ test('Vorhangloops folgen echter Bewegung und enden am Anschlag', () => {
   const { audio, calls, removedKeys } = setup();
 
   try {
-    audio.updatePixel('climbing', 100);
-    audio.updatePixel('climbing', 100);
+    pixelStep(audio, 'climbing', 100);
+    pixelStep(audio, 'climbing', 100);
     assert.equal(calls.length, 0);
-    audio.updatePixel('climbing', 99);
-    audio.updatePixel('climbing', 98);
+    pixelStep(audio, 'climbing', 99);
+    pixelStep(audio, 'climbing', 98);
     assert.equal(calls.length, 1);
-    audio.updatePixel('climbing', 98);
+    pixelStep(audio, 'climbing', 98);
     assert.deepEqual(removedKeys, ['object-climb-0']);
-    audio.updatePixel('sliding', 99);
-    audio.updatePixel('sliding', 100);
+    pixelStep(audio, 'sliding', 99);
+    pixelStep(audio, 'sliding', 100);
     assert.equal(calls.length, 2);
     assert.equal(calls[1].key, 'object-slide-1');
-    audio.updatePixel('idle', 101);
+    pixelStep(audio, 'idle', 101);
     assert.equal(removedKeys.length, 2);
   } finally {
     audio.destroy();
@@ -229,23 +229,23 @@ test('Aktionsloops respektieren Pause, Stummschaltung, Reset und das gemeinsame 
 
   try {
     sound.playing = [1, 2, 3];
-    audio.updatePixel('retching', 100);
+    pixelStep(audio, 'retching', 100);
     assert.equal(calls.length, 0);
     sound.playing = [];
-    audio.updatePixel('retching', 100);
+    pixelStep(audio, 'retching', 100);
     assert.equal(calls.length, 1);
     audio.setActive(false);
     audio.setActive(true);
     assert.equal(calls.length, 1);
-    audio.updatePixel('idle', 100);
+    pixelStep(audio, 'idle', 100);
     assert.equal(calls.length, 1);
-    audio.updatePixel('nibbling', 100);
+    pixelStep(audio, 'nibbling', 100);
     audioPreferences.update('effects', 0);
     assert.deepEqual(removedKeys, ['object-nibble-1']);
-    audio.updatePixel('nibbling', 100);
+    pixelStep(audio, 'nibbling', 100);
     assert.equal(calls.length, 2);
     audioPreferences.update('effects', 1);
-    audio.updatePixel('nibbling', 100);
+    pixelStep(audio, 'nibbling', 100);
     assert.equal(calls.length, 3);
     audioPreferences.update('master', 0);
     assert.equal(removedKeys.length, 2);
@@ -255,7 +255,7 @@ test('Aktionsloops respektieren Pause, Stummschaltung, Reset und das gemeinsame 
     audioPreferences.update('effects', 1);
   }
 
-  audio.updatePixel('retching', 100);
+  pixelStep(audio, 'retching', 100);
   assert.equal(calls.length, 3);
 });
 
@@ -265,25 +265,139 @@ test('Schritte brauchen tatsächlichen Bodenfortschritt und stoppen sofort ohne 
   const pixel = { x: 100, y: 400, grounded: true, climbing: false, velocityX: 230, velocityY: 0 };
 
   try {
-    audio.updateMovement('idle', pixel);
-    audio.updateMovement('idle', pixel);
+    movementStep(audio, 'idle', pixel);
+    movementStep(audio, 'idle', pixel);
     assert.equal(calls.length, 0);
-    audio.updateMovement('idle', { ...pixel, x: 110 });
-    audio.updateMovement('idle', { ...pixel, x: 120 });
+    movementStep(audio, 'idle', { ...pixel, x: 110 });
+    movementStep(audio, 'idle', { ...pixel, x: 120 });
     assert.deepEqual(calls, [{ key: 'object-walk-0', volume: CUE_VOLUME.walk, loop: true }]);
-    audio.updateMovement('idle', { ...pixel, x: 120 });
+    movementStep(audio, 'idle', { ...pixel, x: 120 });
     assert.deepEqual(removedKeys, ['object-walk-0']);
-    audio.updateMovement('idle', { ...pixel, x: 125, velocityY: -480 });
-    audio.updateMovement('idle', { ...pixel, x: 130, grounded: false });
-    audio.updateMovement('climbing', { ...pixel, x: 135, climbing: true });
-    audio.updateMovement('idle', { ...pixel, x: 140, velocityX: 0 });
+    movementStep(audio, 'idle', { ...pixel, x: 125, velocityY: -480 });
+    movementStep(audio, 'idle', { ...pixel, x: 130, grounded: false });
+    movementStep(audio, 'climbing', { ...pixel, x: 135, climbing: true });
+    movementStep(audio, 'idle', { ...pixel, x: 140, velocityX: 0 });
     assert.equal(calls.length, 1);
-    audio.updateMovement('idle', { ...pixel, x: 150 });
+    movementStep(audio, 'idle', { ...pixel, x: 150 });
     assert.equal(calls.length, 2);
-    audio.updateMovement('nibbling', { ...pixel, x: 150, velocityX: 0 });
+    movementStep(audio, 'nibbling', { ...pixel, x: 150, velocityX: 0 });
     assert.equal(calls.at(-1)?.key, 'object-nibble-0');
     assert.equal(removedKeys.at(-1), 'object-walk-1');
   } finally {
     audio.destroy();
+  }
+});
+
+const physicsSteps = new WeakMap<GameAudio, number>();
+
+function movementStep(
+  audio: GameAudio,
+  action: string,
+  pixel: Parameters<GameAudio['updateMovement']>[1],
+) {
+  const step = (physicsSteps.get(audio) ?? 0) + 1;
+
+  physicsSteps.set(audio, step);
+  audio.updateMovement(action, pixel, { step, x: pixel.x, y: pixel.y });
+}
+
+function pixelStep(audio: GameAudio, action: string, y: number) {
+  movementStep(audio, action, {
+    x: 0,
+    y,
+    grounded: false,
+    climbing: ['climbing', 'sliding'].includes(action),
+    velocityX: 0,
+    velocityY: action === 'climbing' ? -100 : 100,
+  });
+}
+
+for (const [action, cue, vx, vy] of [
+  ['idle', 'walk', 230, 0],
+  ['climbing', 'climb', 0, -100],
+  ['sliding', 'slide', 0, 40],
+] as const)
+  for (const renderFrames of [1, 2, 4])
+    // eslint-disable-next-line max-lines-per-function -- Dieselbe echte Fortschrittsfolge wird bei verschiedenen Render-/Physikverhältnissen bis zum Anschlag geprüft.
+    test(`${cue}: ${renderFrames} Renderframes pro Physikschritt unterbrechen oder starten keinen Loop neu`, () => {
+      const { audio, calls, removedKeys } = setup();
+      const pixel = {
+        x: 100,
+        y: 100,
+        grounded: action === 'idle',
+        climbing: action !== 'idle',
+        velocityX: vx,
+        velocityY: vy,
+      };
+      let progress = { step: 0, x: 100, y: 100 };
+
+      try {
+        audio.updateMovement(action, pixel, progress);
+
+        for (let step = 1; step <= 6; step++) {
+          progress = { step, x: progress.x + (vx ? 2 : 0), y: progress.y + Math.sign(vy) };
+
+          for (let render = 0; render < renderFrames; render++)
+            audio.updateMovement(action, pixel, progress);
+          assert.equal(calls.length, 1);
+          assert.equal(removedKeys.length, 0);
+        }
+
+        // A real step without body movement is a stop even with requested velocity.
+        progress = { ...progress, step: progress.step + 1 };
+        audio.updateMovement(action, pixel, progress);
+        assert.equal(removedKeys.length, 1);
+
+        for (let render = 0; render < renderFrames; render++)
+          audio.updateMovement(action, pixel, progress);
+        assert.equal(calls.length, 1);
+      } finally {
+        audio.destroy();
+      }
+    });
+
+// eslint-disable-next-line max-lines-per-function -- Ein Aktionswechsel ohne Physikschritt stoppt sofort; erst bestätigter Fortschritt startet die neue Bewegungsquelle.
+test('Aktionswechsel, Absprung und Stillstand stoppen auch ohne neuen Physikschritt', () => {
+  const { audio, calls, removedKeys } = setup();
+  const pixel = { x: 100, y: 100, grounded: false, climbing: true, velocityX: 0, velocityY: -100 };
+  const progress = { step: 1, x: 100, y: 99 };
+
+  try {
+    audio.updateMovement('climbing', pixel, { step: 0, x: 100, y: 100 });
+    audio.updateMovement('climbing', pixel, progress);
+    audio.updateMovement('sliding', { ...pixel, velocityY: 40 }, progress);
+    assert.equal(removedKeys.length, 1);
+    assert.equal(calls.length, 1);
+    audio.updateMovement('sliding', { ...pixel, velocityY: 40 }, { step: 2, x: 100, y: 100 });
+    assert.equal(calls.length, 2);
+    audio.updateMovement('idle', { ...pixel, climbing: false }, { step: 2, x: 100, y: 100 });
+    assert.equal(removedKeys.length, 2);
+  } finally {
+    audio.destroy();
+  }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Ein alter Bewegungsbefund darf nach Pause oder Mute keine neue Quelle anlegen.
+test('Pause und Mute starten bei unverändertem Physikfortschritt keinen alten Laufloop neu', () => {
+  const { audio, calls } = setup();
+  const pixel = { x: 100, y: 100, grounded: true, climbing: false, velocityX: 230, velocityY: 0 };
+  const progress = { step: 1, x: 102, y: 100 };
+
+  try {
+    audio.updateMovement('idle', pixel, { step: 0, x: 100, y: 100 });
+    audio.updateMovement('idle', pixel, progress);
+    audio.setActive(false);
+    audio.setActive(true);
+    audio.updateMovement('idle', pixel, progress);
+    assert.equal(calls.length, 1);
+    audio.updateMovement('idle', pixel, { step: 2, x: 104, y: 100 });
+    assert.equal(calls.length, 2);
+    audioPreferences.update('master', 0);
+    audioPreferences.update('master', 1);
+    audio.updateMovement('idle', pixel, { step: 2, x: 104, y: 100 });
+    assert.equal(calls.length, 2);
+  } finally {
+    audio.destroy();
+    audioPreferences.update('master', 1);
   }
 });
