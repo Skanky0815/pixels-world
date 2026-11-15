@@ -149,7 +149,7 @@ export function advanceObjectInteractions(
   const grip = surface ? undefined : findClothGrip(objects, pixel.snapshot());
 
   const fridges = shelves.flatMap((shelf) => (shelf.fridge ? [shelf.fridge] : []));
-  const insideFridge = fridges.some((fridge) => fridge.snapshot().hidden);
+  const insideFridge = fridges.some((fridge) => fridge.snapshot().captured);
   const fridgeGrip =
     !surface && !grip
       ? shelves
@@ -195,7 +195,10 @@ export function advanceObjectInteractions(
 
   if (fridgeGrip && context.pixel.climbing) pixel.faceToward(fridgeGrip.x + fridgeGrip.width / 2);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
-  pixel.hideInFurniture(fridges.some((fridge) => fridge.snapshot().hidden));
+  pixel.hideInFurniture(
+    fridges.some((fridge) => fridge.snapshot().hidden),
+    fridges.some((fridge) => fridge.snapshot().captured),
+  );
 }
 
 function updateShelves(shelves: readonly Shelf[], pixel: Pixel, time: number, damage: Damage) {

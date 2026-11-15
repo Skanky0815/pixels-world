@@ -18,7 +18,7 @@ const fridge = () => new FridgeRummaging('fridge');
 function bump(f: FridgeRummaging) {
   f.observeJump(true, true, false);
 
-  return f.observeJump(false, false, true);
+  return f.observeJump(false, false, true, false, true);
 }
 
 test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einmalig die Tür', () => {
@@ -34,6 +34,11 @@ test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einma
   f.update(10000);
   assert.equal(f.snapshot().hidden, false);
   assert.equal(bump(f), 2);
+  assert.equal(f.snapshot().state, 'hanging');
+  assert.equal(f.snapshot().hidden, false);
+  f.update(600);
+  assert.equal(f.snapshot().state, 'opening');
+  f.update(400);
   assert.equal(f.snapshot().hidden, true);
   f.update(1399);
   assert.equal(f.snapshot().hidden, true);
@@ -44,7 +49,14 @@ test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einma
   assert.equal(f.update(10000), undefined);
   assert.equal(f.disturb(), undefined);
   f.reset();
-  assert.deepEqual(f.snapshot(), { state: 'idle', bumps: 0, hidden: false, progress: 0 });
+  assert.deepEqual(f.snapshot(), {
+    state: 'idle',
+    bumps: 0,
+    hidden: false,
+    captured: false,
+    doorProgress: 0,
+    progress: 0,
+  });
 });
 
 test('Kontakt halten, neue Berührung im selben Sprung und Luftsprünge zählen nicht doppelt', () => {
@@ -75,12 +87,14 @@ test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel 
   bump(f);
   bump(f);
   assert.equal(f.disturb(), undefined);
+  f.update(600);
+  f.update(400);
   assert.equal(f.snapshot().hidden, true);
   assert.equal(f.update(1400)?.value, 24);
 });
 
 test('Ungültige Zeiten, Punkte und IDs werden abgewiesen; inaktive Zeit macht keinen Fortschritt', () => {
-  for (const key of ['warningMs', 'insideMs', 'points'])
+  for (const key of ['warningMs', 'hangingMs', 'openingMs', 'insideMs', 'points'])
     assert.throws(() => new FridgeRummaging('f', { ...FRIDGE_RULES, [key]: -1 }));
   assert.throws(() => new FridgeRummaging(''));
   const f = fridge();

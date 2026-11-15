@@ -21,10 +21,19 @@ async function enter(page: Page) {
   await jumpAgainst(page, 1);
   await until(page, (s) => s.pixel.grounded);
   await jumpAgainst(page, 2);
+  const hanging = await observe(page);
+
+  expect(fridge(hanging).fridge?.state).toBe('hanging');
+  expect(hanging.pixel.visible).toBe(true);
+  expect(hanging.pixel.visualFrame).toBe(15);
+  await page.clock.runFor(200);
+  expect((await observe(page)).pixel.x).toBeCloseTo(hanging.pixel.x, 1);
+  await until(page, (s) => fridge(s).fridge?.state === 'opening');
+  expect((await observe(page)).pixel.visible).toBe(true);
   await until(page, (s) => fridge(s).fridge?.hidden === true);
 }
 
-test('Pixel verschwindet kurz, Kühlschrank wackelt, Tür öffnet sich mit Innenchaos; Plattform und Topf bleiben stehen @smoke', async ({
+test('Pixel hängt an der Klinke, zieht die Tür auf und verschwindet erst danach; Innenchaos bleibt @smoke', async ({
   page,
 }) => {
   await start(page);
@@ -32,7 +41,7 @@ test('Pixel verschwindet kurz, Kühlschrank wackelt, Tür öffnet sich mit Innen
   const hidden = await observe(page);
 
   expect(hidden.pixel.visible).toBe(false);
-  expect(fridge(hidden).fridge?.texture).toBe('fridge-upright');
+  expect(fridge(hidden).fridge?.doorProgress).toBe(1);
   expect(hidden.chaos.score).toBe(0);
   await page.keyboard.down('ArrowRight');
   await page.clock.runFor(400);
@@ -174,24 +183,30 @@ test.describe('Kühlschrank mit Touch', () => {
   });
 });
 
-test('Timerende während des Besuchs zeigt Pixel für Saras Heimkehr wieder, ohne einen Schaden zu erfinden', async ({
-  page,
-}) => {
-  await start(page);
-  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
-  await jumpAgainst(page, 1);
-  await until(page, (s) => s.pixel.grounded);
-  const round = (await observe(page)).round;
+for (const [phase, remaining] of [
+  ['hanging', 350],
+  ['opening', 900],
+  ['inside', 1600],
+] as const)
+  test(`Timerende während ${phase} gibt Pixel für Saras Heimkehr frei, ohne Schaden zu erfinden`, async ({
+    page,
+  }) => {
+    await start(page);
+    await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
+    await jumpAgainst(page, 1);
+    await until(page, (s) => s.pixel.grounded);
+    const round = (await observe(page)).round;
 
-  await page.clock.runFor(Math.max(0, round.returnAtMs - round.elapsedMs - 350));
-  await jumpAgainst(page, 2);
-  expect((await observe(page)).pixel.visible).toBe(false);
-  await until(page, (s) => s.round.phase !== 'chaos');
-  expect((await observe(page)).pixel.visible).toBe(true);
-  expect(fridge(await observe(page)).fridge?.state).toBe('idle');
-  expect((await observe(page)).chaos.score).toBe(0);
-  expect((await observe(page)).album.pending).not.toContain('fridge.cream');
-});
+    await page.clock.runFor(Math.max(0, round.returnAtMs - round.elapsedMs - remaining));
+    await jumpAgainst(page, 2);
+    await until(page, (s) => fridge(s).fridge?.state === phase);
+    expect((await observe(page)).pixel.visible).toBe(phase !== 'inside');
+    await until(page, (s) => s.round.phase !== 'chaos');
+    expect((await observe(page)).pixel.visible).toBe(true);
+    expect(fridge(await observe(page)).fridge?.state).toBe('idle');
+    expect((await observe(page)).chaos.score).toBe(0);
+    expect((await observe(page)).album.pending).not.toContain('fridge.cream');
+  });
 
 test('Öffentliche Raumauswahl übernimmt die Küche und stellt beim Rückwechsel die Wohnzimmerbreite wieder her', async ({
   page,
@@ -216,15 +231,18 @@ test('Öffentliche Raumauswahl übernimmt die Küche und stellt beim Rückwechse
   expect((await observe(page)).room.physicsWidth).toBe(960);
 });
 
-test('Rechts zählt ebenfalls nur der zweite getrennte Ansprung als Besuch', async ({ page }) => {
+test('Die rechte Seite hat keine Klinke und startet auch beim zweiten Sprung keinen Besuch', async ({
+  page,
+}) => {
   await start(page, 'fridge-right');
   await move(page, ['Space', 'ArrowLeft'], (s) => fridge(s).fridge?.bumps === 1);
   expect((await observe(page)).pixel.visible).toBe(true);
   expect((await observe(page)).chaos.score).toBe(0);
   await until(page, (s) => s.pixel.grounded);
-  await move(page, ['Space', 'ArrowLeft'], (s) => fridge(s).fridge?.hidden === true);
-  await until(page, (s) => fridge(s).fridge?.state === 'open' && s.pixel.grounded);
-  expect(fridge(await observe(page)).fridge?.events).toBe(1);
+  await move(page, ['Space', 'ArrowLeft'], (s) => !s.pixel.grounded);
+  await until(page, (s) => s.pixel.grounded);
+  expect(fridge(await observe(page)).fridge?.events).toBe(0);
+  expect(fridge(await observe(page)).fridge?.bumps).toBe(1);
   expect((await observe(page)).pixel.visible).toBe(true);
 });
 
