@@ -1,4 +1,4 @@
-import { specArea, type QaScope } from './qa-profiles.ts';
+import { browserJobs, specArea, type QaScope } from './qa-profiles.ts';
 
 const documentation = /^(?:docs\/|.*\.md$)|^(?:LICENSE|LICENSE\..*|\.gitignore)$/;
 const sourceArt = /(?:^|\/)reference-[^/]+\/|-(?:source|preview)[^/]*\.png$|^assets\/banner\./;
@@ -23,12 +23,12 @@ export function classifyPath(path: string): QaScope {
 }
 
 function testArea(path: string): QaScope {
-  const name = /^tests\/e2e\/([^/]+)\.spec\.ts(?:$|-snapshots\/)/.exec(path)?.[1];
+  const name = path.startsWith('tests/e2e/') ? path.slice('tests/e2e/'.length) : undefined;
 
   const area = name ? specArea(name) : 'all';
 
-  // Changed gameplay specs must run beyond their optional smoke-tagged subset.
-  return area === 'play' ? 'all' : area;
+  // Changed game/integration specs must run beyond their optional tagged subset.
+  return area === 'landing' ? 'landing' : 'all';
 }
 
 function combinedScope(paths: string[]): QaScope {
@@ -50,26 +50,32 @@ export interface SelectionInput {
 
 /** Undefined paths mean incomplete/failed detection, so use the full suite. */
 export function selectQa({ event, fullRound, requested, paths }: SelectionInput) {
-  if (fullRound || event === 'workflow_call') return plan('all');
+  if (fullRound || event === 'workflow_call') return plan('all', true, 'release');
 
-  if (event === 'workflow_dispatch') return plan(manualScope(requested));
+  if (event === 'workflow_dispatch') return plan(manualScope(requested), true, event);
   const area = paths?.length ? combinedScope(paths) : 'all';
 
-  if (event === 'push') return plan('none', area !== 'none');
+  if (event === 'push') return plan('none', area !== 'none', event);
 
-  if (event === 'pull_request') return plan(area);
+  if (event === 'pull_request') return plan(area, area !== 'none', event);
 
-  return plan('all');
+  return plan('all', true, event);
 }
 
 function manualScope(requested = 'all'): QaScope {
-  if (['all', 'smoke', 'landing', 'play', 'both'].includes(requested)) return requested as QaScope;
+  if (['all', 'smoke', 'landing', 'play', 'both', 'integration'].includes(requested))
+    return requested as QaScope;
 
   throw new Error(`Ungültiger manueller QA-Umfang: ${requested}`);
 }
 
-function plan(scope: QaScope, quality = scope !== 'none') {
-  const total = scope === 'all' ? 4 : 1;
+function plan(scope: QaScope, quality: boolean, event: string) {
+  const jobs = browserJobs(scope, event);
 
-  return { scope, quality, shards: Array.from({ length: total }, (_, i) => i + 1), total };
+  return {
+    scope,
+    quality,
+    jobs,
+    reports: jobs.map((job) => `qa-test-reports-browser-${job.report}/playwright.xml`),
+  };
 }

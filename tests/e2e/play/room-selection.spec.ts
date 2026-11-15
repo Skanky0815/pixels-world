@@ -1,0 +1,151 @@
+/* eslint-disable max-lines-per-function -- Echte Auswahl, Modal-Dialoge und Rundenreset bilden die Integrationsgrenze des neuen Einstiegs. */
+import { test, expect, state, until, besideCouch, waitForGame } from '../support/support';
+
+test(
+  'Zimmerauswahl: Tastatur, echte Menüs und Rückkehr setzen eine beschädigte Runde zurück',
+  { tag: '@smoke' },
+  async ({ page }) => {
+    await page.goto('/play.html');
+    await waitForGame(page, false);
+    const mainMenu = page.locator('.game-menu');
+
+    await expect(mainMenu).toBeVisible();
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
+    await expect(page.locator('#play-area')).toBeHidden();
+    await expect(page.locator('[data-menu-play]')).toBeFocused();
+    await page.locator('[data-menu-settings]').click();
+    await expect(page.locator('[data-menu-view="settings"]')).toBeVisible();
+    await page.locator('[data-menu-back]').click();
+    const popup = page.waitForEvent('popup');
+
+    await mainMenu.locator('a[href="./help.html"]').click();
+    const help = await popup;
+
+    await expect(help).toHaveURL(/help\.html$/);
+    await help.close();
+    await page.bringToFront();
+    await page.locator('[data-menu-play]').click();
+    const rooms = page.locator('.room-selection');
+
+    await expect(rooms).toBeVisible();
+    await expect(page.locator('main > header')).toHaveCount(1);
+    await expect(page.locator('main > footer')).toHaveCount(1);
+    await expect(rooms.locator('.room-choice')).toHaveCount(4);
+    await expect(rooms.locator('.room-choice:disabled')).toHaveCount(2);
+    await expect(rooms.locator('img')).toHaveCount(2);
+    await expect
+      .poll(() =>
+        rooms
+          .locator('img')
+          .evaluateAll((images) =>
+            images.every(
+              (image) =>
+                (image as HTMLImageElement).complete &&
+                (image as HTMLImageElement).naturalWidth > 0,
+            ),
+          ),
+      )
+      .toBe(true);
+    await expect(rooms.locator('[data-room-choice="kitchen"] img')).toHaveAttribute(
+      'alt',
+      'Küche mit Pixel, Tisch, Kühlschrank und Futternapf',
+    );
+    const waiting = await state(page);
+
+    await rooms.getByRole('heading').click();
+    await page.keyboard.down('ArrowRight');
+    await page.keyboard.down('Space');
+    await page.clock.runFor(1000);
+    expect((await state(page)).started).toBe(false);
+    expect((await state(page)).round.elapsedMs).toBe(0);
+    expect((await state(page)).pixel.x).toBe(waiting.pixel.x);
+    await page.keyboard.up('ArrowRight');
+    await page.keyboard.up('Space');
+    await page.locator('main > header .album-toggle').click();
+    await expect(page.locator('.album-dialog')).toBeVisible();
+    await page.locator('.album-dialog [data-action="close"]').click();
+    await page.locator('main > header .pause-toggle').click();
+    await page.locator('[data-menu-settings]').click();
+    await page.locator('[data-language="en"]').click();
+    await page.locator('[data-pause-resume]').click();
+    await expect(rooms).toContainText('Where to today, Pixel?');
+    await expect(rooms).toContainText('Kitchen');
+    await expect(rooms.locator('[data-room-choice="kitchen"] img')).toHaveAttribute(
+      'alt',
+      'Kitchen with Pixel, table, fridge and food bowl',
+    );
+    await rooms.locator('[data-room-choice="kitchen"]').focus();
+    await page.keyboard.press('Tab');
+    await expect(rooms.locator('[data-room-start]')).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.start-screen')).toBeVisible();
+    expect((await state(page)).started).toBe(false);
+    await page.locator('[data-start-rooms]').focus();
+    await page.keyboard.press('Space');
+    await until(page, (s) => !s.intro.visible);
+    await expect(rooms).toBeVisible();
+    await rooms.locator('[data-room-start]').click();
+    await page.keyboard.down('Space');
+    await until(page, (s) => s.started);
+    await page.keyboard.up('Space');
+    await besideCouch(page);
+    await until(page, (s) => s.couch.damage === 1);
+    const played = await state(page);
+
+    await page.locator('.pause-toggle').click();
+    await page.locator('[data-pause-rooms]').click();
+    await expect(page.locator('[data-menu-view="confirm"]')).toBeVisible();
+    await page.locator('[data-menu-cancel]').click();
+    expect((await state(page)).generation).toBe(played.generation);
+    expect((await state(page)).chaos.score).toBe(played.chaos.score);
+    await page.locator('[data-pause-rooms]').click();
+    await page.locator('[data-menu-confirm]').click();
+    await until(page, (s) => s.generation > played.generation);
+    await expect(rooms).toBeVisible();
+    expect((await state(page)).chaos.score).toBe(0);
+    expect((await state(page)).couch.damage).toBe(0);
+    await expect(page.locator('canvas')).toHaveCount(1);
+    await expect(page.locator('.pause-menu')).toHaveCount(1);
+    expect((await state(page)).started).toBe(false);
+    await rooms.locator('[data-room-start]').click();
+    expect((await state(page)).room.id).toBe('living-room');
+    expect((await state(page)).round.elapsedMs).toBe(0);
+  },
+);
+
+for (const viewport of [
+  { width: 568, height: 320 },
+  { width: 390, height: 844 },
+]) {
+  test.describe(`Zimmerauswahl mit Touch ${viewport.width}×${viewport.height}`, () => {
+    test.use({ viewport, hasTouch: true, isMobile: true });
+    test(
+      'Vier Zimmer und beide Menübuttons passen; Antippen führt zur Einführung',
+      { tag: '@smoke' },
+      async ({ page }) => {
+        await page.goto('/play.html');
+        await waitForGame(page, false);
+        await page.locator('[data-menu-play]').click();
+        const rooms = page.locator('.room-selection');
+
+        expect(
+          await rooms.evaluate(
+            (root) =>
+              root.scrollHeight <= root.clientHeight + 1 && root.scrollWidth <= root.clientWidth,
+          ),
+        ).toBe(true);
+        await expect(page.locator('main > header .pause-toggle')).toBeInViewport({ ratio: 1 });
+        await expect(page.locator('main > header .album-toggle')).toBeInViewport({ ratio: 1 });
+        await expect(rooms.locator('[data-room-start]')).toBeInViewport({ ratio: 1 });
+        await page.locator('main > header .pause-toggle').tap();
+        await expect(page.locator('.pause-menu')).toBeVisible();
+        await page.locator('[data-pause-resume]').tap();
+        await rooms.locator('[data-room-start]').tap();
+        await expect(page.locator('.start-screen')).toBeVisible();
+        await page.locator('[data-start-rooms]').tap();
+        await until(page, (s) => !s.intro.visible);
+        await expect(rooms).toBeVisible();
+      },
+    );
+  });
+}

@@ -9,7 +9,7 @@ on:
       scope:
         description: Vollprüfung, gemeinsame Smoke-Auswahl oder gezielter Anwendungsbereich
         type: choice
-        options: [all, smoke, landing, play, both]
+        options: [all, smoke, landing, play, both, integration]
         default: all
         required: true
       repetitions:
@@ -60,8 +60,8 @@ jobs:
     outputs:
       scope: ${{ steps.selection.outputs.scope }}
       quality: ${{ steps.selection.outputs.quality }}
-      shards: ${{ steps.selection.outputs.shards }}
-      total: ${{ steps.selection.outputs.total }}
+      jobs: ${{ steps.selection.outputs.jobs }}
+      reports: ${{ steps.selection.outputs.reports }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -135,8 +135,9 @@ jobs:
     needs: select
     if: needs.select.result == 'success' && needs.select.outputs.scope != 'none'
     env:
-      E2E_SCOPE: ${{ needs.select.outputs.scope }}
-    name: Playwright (Chromium, Teil ${{ matrix.shard }}/${{ matrix.total }})
+      E2E_SCOPE: ${{ matrix.job.scope }}
+      E2E_ORIGIN_SCOPE: ${{ matrix.job.origin }}
+    name: Playwright (${{ matrix.job.label }}, Chromium, Teil ${{ matrix.job.shard }}/${{ matrix.job.total }})
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     container:
@@ -145,8 +146,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: ${{ fromJSON(needs.select.outputs.shards) }}
-        total: ['${{ needs.select.outputs.total }}']
+        job: ${{ fromJSON(needs.select.outputs.jobs) }}
         # Keep this version and the image digest aligned with package-lock.json.
         playwright: ['1.64.1']
     steps:
@@ -170,14 +170,14 @@ jobs:
           NODE
       - name: Browser-Szenarien
         env:
-          SHARD: ${{ matrix.shard }}
-          SHARD_TOTAL: ${{ matrix.total }}
+          SHARD: ${{ matrix.job.shard }}
+          SHARD_TOTAL: ${{ matrix.job.total }}
         run: |
           case "$E2E_REPEATS" in 1|2|3) ;; *) echo 'Ungültige Durchlaufzahl'; exit 1 ;; esac
           set -- --repeat-each="$E2E_REPEATS" --shard="$SHARD/$SHARD_TOTAL"
           npm run test:e2e -- "$@"
       - name: Geprüften Pages-Build bereitstellen
-        if: matrix.shard == 1 && env.E2E_FULL_ROUND == '1'
+        if: matrix.job.area == 'all' && matrix.job.shard == 1 && env.E2E_FULL_ROUND == '1'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: qa-pages-dist-${{ github.sha }}
@@ -196,8 +196,8 @@ jobs:
         if: ${{ always() }}
         env:
           SUMMARY_OUTCOME: ${{ steps.browser-summary.outcome }}
-          SHARD: ${{ matrix.shard }}
-          SHARD_TOTAL: ${{ matrix.total }}
+          SHARD: ${{ matrix.job.shard }}
+          SHARD_TOTAL: ${{ matrix.job.total }}
         run: |
           echo "### Browser-Teil $SHARD/$SHARD_TOTAL · $E2E_REPEATS Durchlauf/Durchläufe, null Retries" >> "$GITHUB_STEP_SUMMARY"
           echo "Vollständige Produktionszeiten: $E2E_FULL_ROUND (1 = ja, 0 = kurze Testkonfiguration)." >> "$GITHUB_STEP_SUMMARY"
@@ -210,14 +210,14 @@ jobs:
         if: ${{ always() && hashFiles('test-reports/playwright.xml') != '' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: qa-test-reports-browser-${{ matrix.shard }}
+          name: qa-test-reports-browser-${{ matrix.job.report }}
           path: test-reports/playwright.xml
           retention-days: 14
       - name: Playwright-Bericht und Fehlerartefakte
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: playwright-results-${{ matrix.shard }}
+          name: playwright-results-${{ matrix.job.report }}
           path: |
             playwright-report/
             test-results/
@@ -230,6 +230,7 @@ jobs:
     env:
       E2E_SCOPE: ${{ needs.select.outputs.scope }}
       QUALITY_REQUIRED: ${{ needs.select.outputs.quality }}
+      EXPECTED_BROWSER_REPORTS: ${{ needs.select.outputs.reports }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -271,12 +272,12 @@ jobs:
           fi
           reports=()
           if [ "$QUALITY_REQUIRED" = true ]; then reports+=(qa-test-reports-unit/unit.tap); fi
-          case "$E2E_SCOPE" in
-            smoke|landing|play|both) reports+=(qa-test-reports-browser-1/playwright.xml) ;;
-            all) reports+=(qa-test-reports-browser-{1..4}/playwright.xml) ;;
-            none) echo 'Keine Browserprüfung geplant (Main-Quality oder reine Dokumentation).' >> "$GITHUB_STEP_SUMMARY" ;;
-            *) echo 'Unbekannter E2E-Prüfumfang'; exit 1 ;;
-          esac
+          jq -e 'type == "array" and all(.[]; type == "string")' <<< "$EXPECTED_BROWSER_REPORTS" > /dev/null
+          mapfile -t browser_reports < <(jq -r '.[]' <<< "$EXPECTED_BROWSER_REPORTS")
+          reports+=("${browser_reports[@]}")
+          if [ "$E2E_SCOPE" = none ]; then
+            echo 'Keine Browserprüfung geplant (Main-Quality oder reine Dokumentation).' >> "$GITHUB_STEP_SUMMARY"
+          fi
           for report in "${reports[@]}"; do
             if [ ! -s "qa-reports/$report" ]; then
               echo "::warning::Erwarteter Report fehlt: $report"
@@ -296,7 +297,7 @@ jobs:
           SELECTION_RESULT: ${{ needs.select.result }}
         run: |
           test "$SELECTION_RESULT" = success
-          case "$E2E_SCOPE" in none|landing|play|both|smoke|all) ;; *) exit 1 ;; esac
+          case "$E2E_SCOPE" in none|landing|play|both|smoke|integration|all) ;; *) exit 1 ;; esac
           case "$QUALITY_REQUIRED" in
             true) test "$QUALITY_RESULT" = success ;;
             false) test "$QUALITY_RESULT" = skipped; test "$E2E_SCOPE" = none ;;
