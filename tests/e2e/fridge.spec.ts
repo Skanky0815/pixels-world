@@ -16,6 +16,24 @@ async function jumpAgainst(page: Page, count: number) {
   await move(page, ['Space', 'ArrowRight'], (s) => (fridge(s).fridge?.bumps ?? 0) >= count);
 }
 
+async function waitForRemaining(page: Page, remaining: number) {
+  // Phaser smooths frame deltas: approach the observed active time in bounded steps.
+  for (let step = 0; step < 500; step++) {
+    const { round } = await observe(page);
+    const gap = round.returnAtMs - round.elapsedMs - remaining;
+
+    if (gap <= 0) {
+      expect(round.phase).toBe('chaos');
+
+      return;
+    }
+
+    await page.clock.runFor(Math.min(500, Math.max(16, Math.floor(gap / 2))));
+  }
+
+  throw new Error('Aktive Küchen-Restzeit wurde nicht erreicht');
+}
+
 async function enter(page: Page) {
   await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
   await jumpAgainst(page, 1);
@@ -208,9 +226,7 @@ for (const [phase, remaining] of [
     await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
     await jumpAgainst(page, 1);
     await until(page, (s) => s.pixel.grounded);
-    const round = (await observe(page)).round;
-
-    await page.clock.runFor(Math.max(0, round.returnAtMs - round.elapsedMs - remaining));
+    await waitForRemaining(page, remaining);
     await jumpAgainst(page, 2);
     await until(page, (s) => fridge(s).fridge?.state === phase);
     expect((await observe(page)).pixel.visible).toBe(['hanging', 'opening'].includes(phase));
