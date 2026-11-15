@@ -17,7 +17,7 @@ for (const [difficulty, viewport] of [
           (value) => localStorage.setItem('pixels-world.difficulty', value),
           difficulty,
         );
-        const seed = { easy: 'pantry-easy-12', normal: 'pantry-normal-34', hard: 'pantry-hard-11' }[
+        const seed = { easy: 'pantry-easy-1', normal: 'pantry-normal-15', hard: 'pantry-hard-17' }[
           difficulty
         ];
 

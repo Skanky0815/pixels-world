@@ -1,3 +1,5 @@
+import type { TableclothConfig } from '../objects/Tablecloth';
+import type { TableclothRules } from '../interactions/tablecloth-pulling';
 import type { PantryAppearance } from '../assets/pantry-appearance';
 import type { PantryConfig } from '../objects/Pantry';
 import type { PlantAppearance } from '../assets/plant-appearance';
@@ -41,6 +43,12 @@ interface Base {
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
+  | (Base & {
+      readonly kind: 'tablecloth';
+      readonly asset: 'tablecloth';
+      readonly geometry: { readonly width: number; readonly hang: number };
+      readonly rules: TableclothRules;
+    })
   | (Base & {
       readonly kind: 'pantry';
       readonly asset: 'pantry';
@@ -193,6 +201,7 @@ interface ResolvedBase {
   readonly asset: AssetKey;
 }
 export type ResolvedObject =
+  | (ResolvedBase & { readonly kind: 'tablecloth'; readonly config: TableclothConfig })
   | (ResolvedBase & { readonly kind: 'pantry'; readonly config: PantryConfig })
   | (ResolvedBase & { readonly kind: 'dish'; readonly config: DishConfig })
   | (ResolvedBase & { readonly kind: 'trash-bin'; readonly config: TrashBinConfig })

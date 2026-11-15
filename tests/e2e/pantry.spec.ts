@@ -128,8 +128,8 @@ test('Bewegtes Vorratsglas kippt eine Pflanze ohne direkte Pixelberührung', asy
 });
 
 for (const [appearance, difficulty, seed] of [
-  ['jar', 'normal', 'pantry-normal-34'],
-  ['tin', 'easy', 'pantry-easy-12'],
+  ['jar', 'normal', 'pantry-normal-15'],
+  ['tin', 'easy', 'pantry-easy-1'],
 ] as const)
   for (const outcome of ['success', 'failed'] as const)
     test(`${appearance}: ${outcome} bestätigt oder verwirft den Behälterfund nach wirklicher Versöhnung`, async ({

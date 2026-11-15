@@ -4,6 +4,7 @@ import {
   ACHIEVEMENT_CATEGORIES_V3,
   ACHIEVEMENT_CATEGORIES_V4,
   ACHIEVEMENT_CATEGORIES_V5,
+  ACHIEVEMENT_CATEGORIES_V6,
 } from './achievement-categories.ts';
 import { ROOM_ACHIEVEMENTS_V1, ROOM_ACHIEVEMENTS_V2 } from './achievement-rooms.ts';
 import type { ChaosEvent } from '../game/domain/chaos-event.ts';
@@ -101,7 +102,7 @@ export const DESTRUCTION_TARGETS_V3 = [
     name: { de: 'Vorratsbehälter ruiniert', en: 'Pantry container ruined' },
   },
 ] as const;
-export const DESTRUCTION_TARGETS = [
+export const DESTRUCTION_TARGETS_V4 = [
   ...DESTRUCTION_TARGETS_V3,
   {
     id: 'trash-bin',
@@ -109,6 +110,16 @@ export const DESTRUCTION_TARGETS = [
     event: 'spill',
     stage: 1,
     name: { de: 'Mülleimer ausgeleert', en: 'Rubbish bin emptied' },
+  },
+] as const;
+export const DESTRUCTION_TARGETS = [
+  ...DESTRUCTION_TARGETS_V4,
+  {
+    id: 'tablecloth',
+    object: 'tablecloth',
+    event: 'spill',
+    stage: 1,
+    name: { de: 'Tischdecke abgezogen', en: 'Tablecloth pulled off' },
   },
 ] as const;
 export type DestructionTarget = (typeof DESTRUCTION_TARGETS)[number]['id'];
@@ -415,13 +426,13 @@ const BIN_OBJECTIVES: readonly AchievementDefinition[] = [
       en: 'You really left nothing untouched, Pixel.',
     },
     metric: 'destruction',
-    targets: DESTRUCTION_TARGETS.map((target) => target.id),
-    threshold: DESTRUCTION_TARGETS.length,
+    targets: DESTRUCTION_TARGETS_V4.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS_V4.length,
     art: 'chaos',
   },
 ];
 
-export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+const ACHIEVEMENTS_V5: readonly AchievementDefinition[] = [
   ...BIN_OBJECTIVES,
   {
     id: 'achievement.masterpiece-v5',
@@ -437,6 +448,63 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     metric: 'all',
     targets: BIN_OBJECTIVES.map((entry) => entry.id),
     threshold: BIN_OBJECTIVES.length,
+    art: 'love',
+  },
+];
+
+const CLOTH_OBJECTIVES: readonly AchievementDefinition[] = [
+  ...ACHIEVEMENTS_V5,
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige Anzeigenvertrag des neuen eingefrorenen Stoffziels bleibt zusammen.
+  ...ACHIEVEMENT_CATEGORIES_V6.map((category): AchievementDefinition => ({
+    id: `achievement.category-${category.id}-v6`,
+    name: category.name,
+    description: {
+      de: 'Die Tischdecke vollständig abziehen und die Runde erfolgreich versöhnen.',
+      en: 'Pull the tablecloth off completely and reconcile successfully.',
+    },
+    quote: {
+      de: 'Der Tisch ist jetzt wirklich frei, Pixel.',
+      en: 'The table really is clear now, Pixel.',
+    },
+    metric: 'variants',
+    targets: category.targets,
+    threshold: category.targets.length,
+    art: 'chaos',
+  })),
+  {
+    id: 'achievement.destruction-v6',
+    name: { de: 'Meister der Zerstörung V', en: 'Master of destruction V' },
+    description: {
+      de: 'Alle zwölf Objektarten dieser Sammlung vollständig ruinieren, über erfolgreich versöhnte Runden.',
+      en: 'Fully ruin all twelve object types in this collection across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Jetzt fehlt sogar die Tischdecke, Pixel.',
+      en: 'Even the tablecloth is gone now, Pixel.',
+    },
+    metric: 'destruction',
+    targets: DESTRUCTION_TARGETS.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS.length,
+    art: 'chaos',
+  },
+];
+
+export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+  ...CLOTH_OBJECTIVES,
+  {
+    id: 'achievement.masterpiece-v6',
+    name: { de: 'Pixels Meisterwerk VI', en: 'Pixel’s masterpiece VI' },
+    description: {
+      de: 'Alle anderen Erfolge der Sammlung mit Tischdecke freischalten.',
+      en: 'Unlock every other achievement in the tablecloth collection.',
+    },
+    quote: {
+      de: 'Du bist jetzt offiziell mit dem Abräumen fertig, Pixel.',
+      en: 'You are officially done clearing the table now, Pixel.',
+    },
+    metric: 'all',
+    targets: CLOTH_OBJECTIVES.map((entry) => entry.id),
+    threshold: CLOTH_OBJECTIVES.length,
     art: 'love',
   },
 ];

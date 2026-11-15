@@ -72,7 +72,7 @@ function reservedAreas(
   return [
     goal,
     ...room.platforms.map((p) => p.bounds),
-    ...objects.filter((o) => o.kind !== 'carpet').map(objectArea),
+    ...objects.filter((o) => o.kind !== 'carpet' && o.kind !== 'tablecloth').map(objectArea),
     ...room.decorations.flatMap((d) => (d.kind === 'rect' && d.supportedBy ? [d.bounds] : [])),
   ];
 }
@@ -80,6 +80,8 @@ function reservedAreas(
 // eslint-disable-next-line max-lines-per-function -- Der Geometrievergleich hält die vier bestehenden Objektformen gemeinsam sichtbar.
 function objectArea(object: ResolvedObject): Bounds {
   const c = object.config;
+
+  if ('surface' in c) return { ...c.surface, y: c.surface.y - 2, height: 4 };
 
   if ('area' in c) return c.area;
 

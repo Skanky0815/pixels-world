@@ -17,7 +17,7 @@ export class GameFeedback {
   private readonly nodes = new Map<FeedbackChannel, HTMLElement>();
   private readonly unsubscribe: () => void;
   private readonly unsubscribeMotion: () => void;
-  private readonly damage = (event: ChaosEvent) => this.model.damage(event);
+  private readonly damage = (event: ChaosEvent, kind?: string) => this.model.damage(event, kind);
 
   // eslint-disable-next-line max-lines-per-function -- Drei begrenzte Darstellungskanäle und ihre Szenen-/Sprach-/Motion-Bindungen teilen dieselbe Lebensdauer.
   constructor(private readonly scene: Phaser.Scene) {

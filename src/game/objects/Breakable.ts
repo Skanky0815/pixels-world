@@ -96,9 +96,34 @@ export class Breakable implements Destructible, ObjectLifecycle {
   }
 
   allowsPixelCollision(pixel: InteractionContext['pixel']) {
-    if (this.pixelPassing && !overlaps(pixel, this.impactBody().bounds)) this.pixelPassing = false;
+    const touching = overlaps(pixel, this.impactBody().bounds);
+
+    if (pixel.climbing && touching) this.pixelPassing = true;
+
+    if (this.pixelPassing && !touching) this.pixelPassing = false;
 
     return !this.pixelPassing;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Nur tatsächlicher Kontakt mit der Stoffauflage überträgt Bewegung und gibt anschließend die bestehende Fallphysik frei.
+  dragOnSurface(surface: Bounds, cloth: Bounds, dx: number) {
+    const body = this.collider.body as Phaser.Physics.Arcade.Body;
+
+    if (
+      this.ended() ||
+      !onShelf(body, surface) ||
+      body.right <= cloth.x ||
+      body.left >= cloth.x + cloth.width ||
+      dx === 0
+    )
+      return false;
+    this.phase = 'moving';
+    this.collider.setImmovable(false).setPosition(this.collider.x + dx, this.collider.y);
+    body.updateFromGameObject();
+    body.setAllowGravity(true);
+    this.spin(0);
+
+    return true;
   }
 
   releaseSupport(shelf: Bounds) {
@@ -118,8 +143,10 @@ export class Breakable implements Destructible, ObjectLifecycle {
   updateFall(pixel: InteractionContext['pixel']) {
     this.allowsPixelCollision(pixel);
 
-    if (this.phase === 'resting' || this.ended()) return;
+    if (this.ended()) return;
     const body = this.collider.body as Phaser.Physics.Arcade.Body;
+
+    if (this.phase === 'resting' && !body.allowGravity) return;
 
     this.fallSpeed = Math.max(this.fallSpeed, body.velocity.y);
 

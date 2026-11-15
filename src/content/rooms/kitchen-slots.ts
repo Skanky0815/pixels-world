@@ -12,8 +12,11 @@ const dishes = ['cream-cup', 'cream-plate'] as const;
 const clutter = [...dishes, ...PANTRY_VARIANTS];
 
 export const KITCHEN_TABLE_SLOTS = {
-  count: { easy: 1, normal: 1, hard: 1 },
-  entries: [{ ...decoration, id: 'table-1', x: 204, pool: clutter }],
+  count: { easy: 2, normal: 2, hard: 2 },
+  entries: [
+    { ...decoration, id: 'table-inner', x: 172, capacity: 'small', pool: ['cream-plate'] },
+    { ...decoration, id: 'table-1', x: 204, pool: clutter },
+  ],
 } satisfies SurfaceSlots;
 
 /** The left landing and the counter from world x=800 onwards stay clear. */

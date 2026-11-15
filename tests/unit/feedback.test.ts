@@ -114,3 +114,23 @@ test('Zielaktion kündigt Sara erst nach ihrem Ende an', () => {
     assert.equal(feedback.snapshot().messages.phase?.key, 'feedbackReturn');
   }
 });
+
+// eslint-disable-next-line max-lines-per-function -- Die gemeinsame Ereignisart behält pro Objekt ihre passende Wortwahl und einen einzigen deduplizierten Punktekanal.
+test('Gemeinsame Ausleerereignisse unterscheiden Decke, Müll, Kekse und Futter', () => {
+  for (const [kind, key] of [
+    ['tablecloth', 'feedbackTablecloth'],
+    ['trash-bin', 'feedbackTrashBin'],
+    ['pantry', 'feedbackPantryTin'],
+    ['food-bag', 'feedbackFoodBag'],
+    ['future-kind', 'feedbackFoodBag'],
+  ] as const) {
+    const feedback = new FeedbackModel();
+    const event = chaosEvent('object', 'spill', 1, 12);
+
+    feedback.damage(event, kind);
+    feedback.damage(event, kind);
+    assert.equal(feedback.snapshot().messages.score?.key, key);
+    assert.equal(feedback.snapshot().messages.score?.value, 12);
+    assert.equal(feedback.snapshot().sequence, 1);
+  }
+});

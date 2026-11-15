@@ -36,7 +36,7 @@ export async function climbToCounterLanding(page: Page) {
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 398) < 2);
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 410);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 328) < 2);
-  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 480);
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 450);
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 675);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
 }

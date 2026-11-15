@@ -1,4 +1,9 @@
-import { FEEDBACK, DAMAGE_FEEDBACK, PHASE_FEEDBACK } from '../../content/feedback.ts';
+import {
+  FEEDBACK,
+  DAMAGE_FEEDBACK,
+  OBJECT_DAMAGE_FEEDBACK,
+  PHASE_FEEDBACK,
+} from '../../content/feedback.ts';
 import type { TextKey } from '../../i18n/locale.ts';
 import type { ChaosEvent } from '../domain/chaos-event.ts';
 import type { ReconciliationSnapshot } from '../domain/reconciliation.ts';
@@ -30,10 +35,13 @@ export class FeedbackModel {
   private phase = 'intro';
   private charm: ReconciliationSnapshot | undefined;
 
-  damage(event: ChaosEvent) {
+  damage(event: ChaosEvent, objectKind?: string) {
     if (this.seen.has(event.id)) return;
     this.seen.add(event.id);
-    this.show('score', DAMAGE_FEEDBACK[event.kind], 'positive', FEEDBACK.scoreMs, event.value);
+    const key =
+      OBJECT_DAMAGE_FEEDBACK[objectKind ?? '']?.[event.kind] ?? DAMAGE_FEEDBACK[event.kind];
+
+    this.show('score', key, 'positive', FEEDBACK.scoreMs, event.value);
   }
 
   advance(delta: number, state: FeedbackState) {

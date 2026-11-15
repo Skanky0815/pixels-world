@@ -114,7 +114,7 @@ function pushVase(pixel: Pixel, vase: Breakable) {
 }
 
 /** Same ordered object/actor step for the game and isolated object tests. */
-// eslint-disable-next-line max-lines-per-function -- Auswahl, Bewegung, unveränderlicher Kontakt und Interaktionsfolge bleiben als ein fachlicher Frame zusammen.
+// eslint-disable-next-line max-lines-per-function, complexity -- Auswahl, Bewegung, unveränderlicher Kontakt und Interaktionsfolge bleiben als ein fachlicher Frame zusammen.
 export function advanceObjectInteractions(
   objects: Objects,
   pixel: Pixel,
@@ -126,6 +126,7 @@ export function advanceObjectInteractions(
 ) {
   updateShelves(shelves, pixel, time, damage);
   const supported = [
+    ...objects.tablecloths,
     ...objects.breakables,
     ...objects.books,
     ...objects.topplingContainers,
@@ -140,7 +141,15 @@ export function advanceObjectInteractions(
 
   const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));
 
-  pixel.move(input, time, delta, surface?.climbArea);
+  const grip = surface ? undefined : findClothGrip(objects, pixel.snapshot());
+
+  pixel.move(
+    input,
+    time,
+    delta,
+    surface?.climbArea ?? grip?.area,
+    grip ? { speed: grip.cloth.climbSpeed, requireUp: true } : undefined,
+  );
   const context: InteractionContext = Object.freeze({
     time,
     delta,
@@ -154,6 +163,7 @@ export function advanceObjectInteractions(
   objects.books.forEach((books) => damage(books.update(context, true).event));
   objects.topplingContainers.forEach((bag) => damage(bag.update(context, true).event));
 
+  advanceCloths(objects, context, damage, grip);
   const interaction = updateGroundInteractions(objects.ground, context);
 
   damage(interaction.event);
@@ -161,6 +171,8 @@ export function advanceObjectInteractions(
   releaseShelves(shelves, supported, objects.impacts, damage);
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
+
+  if (grip && context.pixel.climbing) pixel.faceToward(grip.area.x + grip.area.width / 2);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
 }
 
@@ -185,4 +197,43 @@ function releaseShelves(
       if (event) damage(event);
     }
   }
+}
+
+// eslint-disable-next-line max-lines-per-function, complexity -- Geordnete Stoffzüge übertragen Bewegung und kausale Herkunft gemeinsam auf unterstützte Oberflächenobjekte.
+function advanceCloths(
+  objects: Objects,
+  context: InteractionContext,
+  damage: Damage,
+  grip?: ClothGrip,
+) {
+  for (const cloth of objects.tablecloths) {
+    const { event, drag } = cloth.update(
+      context,
+      cloth === grip?.cloth && context.pixel.climbing,
+      grip?.side,
+    );
+
+    damage(event);
+
+    if (!drag) continue;
+
+    for (const { object } of objects.entries)
+      if ('dragOnSurface' in object && object.dragOnSurface(drag.surface, drag.area, drag.dx))
+        objects.impacts.inheritSupport(cloth, object);
+  }
+}
+
+type ClothGrip = {
+  readonly cloth: Objects['tablecloths'][number];
+  readonly side: -1 | 1;
+  readonly area: Bounds;
+};
+
+function findClothGrip(
+  objects: Objects,
+  pixel: InteractionContext['pixel'],
+): ClothGrip | undefined {
+  for (const cloth of objects.tablecloths)
+    for (const grip of cloth.climbAreas())
+      if (overlaps(pixel, grip.area)) return { cloth, ...grip };
 }

@@ -94,5 +94,11 @@ export const KITCHEN_PREVIEW = {
       bounds: { x: 620, y: 52, width: 340, height: 78 },
     },
   ],
-  objects: [],
+  objects: [
+    {
+      id: 'kitchen-tablecloth',
+      variant: 'warm-tablecloth',
+      placement: { mode: 'surface', surfaceId: 'kitchen-table', x: 450 },
+    },
+  ],
 } as const satisfies RoomDefinition;

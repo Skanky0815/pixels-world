@@ -61,6 +61,14 @@ export const ACHIEVEMENT_CATEGORIES_V5 = [
     targets: ['trash-bin.cream'],
   },
 ] as const;
+/** The pulled cloth extends the collection without changing released objectives. */
+export const ACHIEVEMENT_CATEGORIES_V6 = [
+  {
+    id: 'tablecloths',
+    name: { de: 'Tisch frei!', en: 'Table cleared!' },
+    targets: ['tablecloth.warm'],
+  },
+] as const;
 export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
   ...new Set(
     [
@@ -69,6 +77,7 @@ export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
       ...ACHIEVEMENT_CATEGORIES_V3,
       ...ACHIEVEMENT_CATEGORIES_V4,
       ...ACHIEVEMENT_CATEGORIES_V5,
+      ...ACHIEVEMENT_CATEGORIES_V6,
     ].flatMap((category) => [...category.targets]),
   ),
 ]);

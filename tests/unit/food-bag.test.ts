@@ -116,7 +116,7 @@ test('Veröffentlichter Beutel erweitert die Sammlung, während die erste Erfolg
     true,
   );
   assert.equal(destructionTarget(chaosEvent('bag', 'spill', 1, 18), 'food-bag'), 'food-bag');
-  assert.equal(DESTRUCTION_TARGETS.length, 11);
+  assert.equal(DESTRUCTION_TARGETS.length, 12);
   assert.equal(DESTRUCTION_VARIANTS.includes('food-bag.dry'), true);
   assert.equal(
     ACHIEVEMENTS.find((entry) => entry.id === 'achievement.masterpiece-v1')?.threshold,

@@ -1,5 +1,14 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  feedbackTablecloth: 'Cloth pulled off! +{v0}',
+  feedbackTrashBin: 'Rubbish scattered! +{v0}',
+  feedbackPantryTin: 'Biscuits scattered! +{v0}',
+
+  tableclothWarning: 'Careful, the cloth is slipping …',
+  saraDamageTablecloth0: 'You cleared the table very thoroughly, Pixel.',
+  saraDamageTablecloth1: 'The tablecloth was allowed to stay on the table.',
+  saraDamageTablecloth2: 'Lift, then carry. No pulling, Pixel.',
+
   saraDamageTrashBin0: 'The lid was on, Pixel. That was intentional.',
   saraDamageTrashBin1: 'You really do not have to unpack everything that rustles.',
   saraDamageTrashBin2: 'Even the rubbish is on the floor now. Very thorough, Pixel.',
@@ -468,7 +477,7 @@ export const en: Record<keyof typeof de, string> = {
   moveAndSteerInMidAir: 'Move and steer in mid-air',
   spaceLabel: 'Space',
   jumpAndLeapOffTheCurtain: 'Jump and leap off the curtain',
-  climbTheCurtain: 'Climb the curtain',
+  climbTheCurtain: 'Climb fabric',
   restartTheRound: 'Restart the round',
   makingAmendsPressTheBigArrow:
     'Making amends: press the big arrow in time. Read at your own pace, then press Space to continue. The game pauses when it loses focus.',
@@ -500,7 +509,7 @@ export const en: Record<keyof typeof de, string> = {
   pixelSWorldLivingRoomPrototype: "Pixel's World · Living room",
   move: 'Move',
   jumpLabel: 'Jump',
-  climbCurtain: 'Climb curtain',
+  climbCurtain: 'Climb fabric',
   restart: 'Restart',
   pixelSLivingRoomUseArrow:
     "Pixel's room. Use arrow keys to move and climb, Space to jump. Click the room to focus.",

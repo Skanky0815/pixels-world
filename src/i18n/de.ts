@@ -1,4 +1,13 @@
 export const de = {
+  feedbackTablecloth: 'Decke abgezogen! +{v0}',
+  feedbackTrashBin: 'Müll verteilt! +{v0}',
+  feedbackPantryTin: 'Kekse verteilt! +{v0}',
+
+  tableclothWarning: 'Vorsicht, die Decke rutscht …',
+  saraDamageTablecloth0: 'Du hast wirklich gründlich abgeräumt, Pixel.',
+  saraDamageTablecloth1: 'Die Tischdecke durfte auf dem Tisch bleiben.',
+  saraDamageTablecloth2: 'Erst heben, dann tragen. Nicht ziehen, Pixel.',
+
   saraDamageTrashBin0: 'Der Deckel war drauf, Pixel. Das war Absicht.',
   saraDamageTrashBin1: 'Du musst wirklich nicht alles auspacken, was raschelt.',
   saraDamageTrashBin2: 'Jetzt liegt sogar der Müll daneben. Sehr gründlich, Pixel.',
@@ -474,7 +483,7 @@ export const de = {
   moveAndSteerInMidAir: 'Laufen und im Sprung steuern',
   spaceLabel: 'Leertaste',
   jumpAndLeapOffTheCurtain: 'Springen und vom Vorhang abspringen',
-  climbTheCurtain: 'Am Vorhang klettern',
+  climbTheCurtain: 'Am Stoff klettern',
   restartTheRound: 'Runde neu starten',
   makingAmendsPressTheBigArrow:
     'Bei der Versöhnung: die große Pfeiltaste rechtzeitig drücken. Texte liest du in Ruhe und bestätigst mit Leertaste. Bei Fokusverlust pausiert das Spiel.',
@@ -506,7 +515,7 @@ export const de = {
   pixelSWorldLivingRoomPrototype: 'Pixel’s World · Wohnzimmer',
   move: 'Laufen',
   jumpLabel: 'Springen',
-  climbCurtain: 'Vorhang klettern',
+  climbCurtain: 'Stoff klettern',
   restart: 'Neustart',
   pixelSLivingRoomUseArrow:
     'Pixels Zimmer. Pfeiltasten zum Laufen und Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',

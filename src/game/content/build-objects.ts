@@ -1,3 +1,4 @@
+import { Tablecloth } from '../objects/Tablecloth';
 import { TrashBin } from '../objects/TrashBin';
 import { TopplingContainer } from '../objects/TopplingContainer';
 import { Pantry } from '../objects/Pantry';
@@ -28,6 +29,8 @@ export function buildObjects(scene: Phaser.Scene, room: ResolvedRoom) {
 // eslint-disable-next-line max-lines-per-function, complexity -- Der vollständige diskriminierte Switch zeigt die registrierten Objektadapter ohne versteckte Fallthroughs.
 function createObject(scene: Phaser.Scene, definition: ResolvedObject) {
   switch (definition.kind) {
+    case 'tablecloth':
+      return new Tablecloth(scene, definition.config);
     case 'pantry':
       return new Pantry(scene, definition.config);
     case 'dish':
@@ -67,6 +70,7 @@ function groupObjects(
     | Dish
     | Pantry
     | TrashBin
+    | Tablecloth
   )[],
   entries: {
     readonly definition: ResolvedObject;
@@ -81,11 +85,13 @@ function groupObjects(
       | FoodBag
       | Dish
       | Pantry
-      | TrashBin;
+      | TrashBin
+      | Tablecloth;
   }[],
 ) {
   return {
     impacts: new ImpactWorld(),
+    tablecloths: objects.filter((object) => object instanceof Tablecloth),
     carpets: objects.filter((object) => object instanceof Carpet),
     couches: objects.filter((object) => object instanceof Couch),
     curtains: objects.filter((object) => object instanceof Curtain),

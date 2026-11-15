@@ -46,6 +46,7 @@ test('Jeder Objekttyp kann jeden anderen einschließlich gleicher Typen treffen'
   const types = [
     'pantry',
     'trash-bin',
+    'tablecloth',
     'dish',
     'food-bag',
     'vase',
@@ -190,4 +191,23 @@ test('Neue Bewegung nach Ruhe aktiviert einen zuvor berührten Nachbarn erneut',
   move(a, 16);
   world.advance([a.item, b.item], 16);
   assert.equal(b.hits.length, 2);
+});
+
+// eslint-disable-next-line max-lines-per-function -- Ein schräger echter Treffer am Rand einer breiten Fläche darf nicht wegen ihres entfernten Mittelpunkts verloren gehen.
+test('Schräger Fall auf eine breite Fläche zählt am tatsächlichen nächsten Kontaktpunkt einmal', () => {
+  const falling = actor('jar', 190, 70),
+    cloth = actor('cloth', 0, 100);
+
+  Object.assign(cloth.body, { bounds: { x: 0, y: 100, width: 220, height: 4 }, surface: 'soft' });
+  falling.item.impactBody = () => ({ ...falling.body, bounds: { ...falling.body.bounds } });
+  const world = new ImpactWorld();
+
+  world.advance([falling.item, cloth.item], 16);
+  move(falling, 205, 98, 150, 300);
+  world.advance([falling.item, cloth.item], 16);
+  assert.equal(cloth.hits.length, 1);
+  assert.equal(cloth.hits[0].sourceId, 'jar');
+  assert.equal(cloth.hits[0].downward, true);
+  world.advance([falling.item, cloth.item], 16);
+  assert.equal(cloth.hits.length, 1);
 });

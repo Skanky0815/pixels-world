@@ -15,7 +15,7 @@ export const PLAYGROUND_OBJECTS: ObjectCatalog = OBJECTS;
 export function playgroundRoom(variant: string, catalog: ObjectCatalog = PLAYGROUND_OBJECTS) {
   if (!Object.hasOwn(catalog, variant)) throw new Error(`Unknown playground variant: ${variant}`);
   const definition = catalog[variant];
-  const elevated = definition.capabilities.includes('push');
+  const elevated = definition.capabilities.includes('push') || definition.kind === 'tablecloth';
   const surfaceId = elevated ? 'lab-shelf' : 'floor';
   const room: RoomDefinition = {
     ...LIVING_ROOM,
@@ -24,7 +24,10 @@ export function playgroundRoom(variant: string, catalog: ObjectCatalog = PLAYGRO
     width: 800,
     decorations: [],
     goal: { ...LIVING_ROOM.goal, surfaceId: 'floor', x: 700 },
-    spawn: { x: elevated ? 340 : 200, surfaceId },
+    spawn:
+      definition.kind === 'tablecloth'
+        ? { x: 550, surfaceId: 'floor' }
+        : { x: elevated ? 340 : 200, surfaceId },
     platforms: elevated
       ? [
           {
@@ -42,11 +45,13 @@ export function playgroundRoom(variant: string, catalog: ObjectCatalog = PLAYGRO
 }
 
 function placement(definition: ObjectDefinition, surfaceId: string): ObjectInstance['placement'] {
+  if (definition.kind === 'tablecloth') return { mode: 'surface', x: 400, surfaceId };
+
   if (definition.kind === 'carpet') return { mode: 'surface', x: 185, surfaceId: 'floor' };
 
   if (definition.kind === 'picture') return { mode: 'area', x: 340, y: 270 };
 
-  if (definition.capabilities.includes('climb') && 'geometry' in definition)
+  if (definition.kind === 'curtain')
     return { mode: 'area', x: 360, y: LIVING_ROOM.floor.y - definition.geometry.height };
 
   return { mode: 'surface', x: surfaceId === 'floor' ? 360 : 440, surfaceId };
