@@ -320,12 +320,14 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   und Klinkengriff am Kühlschrank. Die Kühlschrankfolge ist:
   Klinke greifen → Türspalt → Eintritt → geschlossen wackeln →
   erneut öffnen und Pixel freigeben. Jede Aufnahmephase auch beim Rundenende
-  und mit Reset abbrechen; die Grafik bleibt unverzerrt. Im DEV-Raum
-  `fridge-incoming` das Glas vom oberen Regal gegen den Kühlschrank schieben:
+  und mit Reset abbrechen; die Grafik bleibt unverzerrt. In der DEV-Spielwiese
+  `/interactable-playground.html?scenario=fridge-incoming` das Glas vom oberen Regal gegen den Kühlschrank schieben:
   Die Tür bleibt geschlossen, Pixel bleibt sichtbar und der Inhaltsschaden zählt
   einmal. Über die Arbeitsplatte zur linken Klinke zurückkehren und den Besuch
   ausführen: Die Tür öffnet vollständig, ohne weiteren Schaden zu vergeben.
-  Wackeln auch mit Pause/Fokusverlust, reduzierter Bewegung und Reset prüfen. Pause/Fokuswechsel,
+  Wackeln auch mit Fokusverlust, reduzierter Bewegung und Reset prüfen.
+  Für Menüpause, Heimkehr und Versöhnung über **Mit vollständiger Runde im Spiel
+  testen** in den regulären Rundenablauf wechseln. Pause/Fokuswechsel,
   einmalige Schäden, Saras Heimkehr von links und Versöhnung gemeinsam prüfen.
   Kontraste und Konturen von Tasse und Teller vor Wand, Tischdecke und Regalen
   prüfen. Reset stellt Möbel und

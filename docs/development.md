@@ -202,23 +202,35 @@ Pause, reduzierte Bewegung und Neustart funktionieren wie im regulären Spiel.
 Die E2E-Beobachtung enthält nur lesbare Kontaktdaten unter `objectImpacts`;
 kein Raum stellt Spielzustandssetter oder Phaser-Objekte bereit.
 
-## Einzelne Objekte ausprobieren
+## Objekte und Kontaktszenarien auf der Spielwiese prüfen
 
 Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.
 Auf der DEV-Seite führt ebenfalls **Playground** zu `/interactable-playground.html`.
-Objektauswahl und Reset bilden eine kompakte Toolbar. Auf breiten Bildschirmen
+**Testart** wechselt zwischen Einzelobjekt und Szenario; Auswahl und Reset bilden
+eine kompakte Toolbar. Auf breiten Bildschirmen
 steht die Live-Diagnose neben der höchstens 800 Pixel breiten Testszene; auf
 schmalen Geräten darunter. Die Spielwelt und Physik bleiben dabei unverändert.
-Die Auswahl stammt direkt aus dem Objektkatalog, einschließlich aller Varianten.
+Einzelobjekte stammen direkt aus dem Objektkatalog, einschließlich aller Varianten.
+Szenarien verwenden dieselben Labordefinitionen wie die DEV-/E2E-Räume, samt
+festen Möbeln, mehreren Objekten und ihrer tatsächlichen Weltgröße. Es gibt keine
+separaten Kopien der Testgeometrie. Direktlinks wie
+`/interactable-playground.html?scenario=fridge-incoming` oder `?object=cozy-couch`
+öffnen die gewünschte Auswahl; unbekannte IDs zeigen einen Hinweis und die
+Standard-Testszene.
 Pixel lässt sich ohne Rundenstart normal steuern; Sofa/Pflanze reagieren nach
 kurzem Stillstand, der Vorhang beim Klettern/Rutschen und die Vase beim Schieben
 vom Testregal. Touch-Geräte erhalten dieselbe Eingabe wie im Spiel.
 
+**Diagnoseziel** wählt ein Objekt oder Möbelstück, ohne die Szene neu zu starten.
 Die Live-Diagnose zeigt Typ, Zustand, Chaos-Punkte und die letzten Chaos-Ereignisse.
 Die Detailansicht enthält losgelöste Objekt-/Pixelwerte und Ressourcenanzahlen.
 **Szene zurücksetzen**, Debug-R und Objektwechsel entsorgen den alten Durchlauf
-und setzen Pixel, Schaden und Punkte zurück. Fokusverlust pausiert die Szene.
+und setzen Pixel, Schaden und Punkte zurück; dasselbe gilt für Szenariowechsel.
+Fokusverlust pausiert die Szene.
 Es gibt keine Heimkehr, Rundenuhr oder gespeicherten Ergebnisse.
+**Mit vollständiger Runde im Spiel testen** öffnet das gewählte Szenario im
+regulären Spiel. Dort bleiben Heimkehr-, Dialog- und Persistenzprüfungen; die
+Spielwiese bündelt die manuelle Objekt- und Kontaktdiagnose.
 
 `object-playfield.ts` verdrahtet Physik und Interaktionsschritte gemeinsam für
 Hauptspiel und Playground. Neue Katalogvarianten werden automatisch angeboten;

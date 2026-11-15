@@ -3,9 +3,7 @@ import type { Page } from '@playwright/test';
 import { test, expect, waitForLoadingScreen } from '../support/support';
 import { TouchDriver } from '../support/touch-support';
 import { OBJECTS } from '../../../game/play/content/objects/catalog';
-import type { PlaygroundScene } from '../../../game/dev/PlaygroundScene';
-
-type Snapshot = ReturnType<PlaygroundScene['snapshot']>;
+import { snapshot, untilPlayground, waitForDevReady, type Snapshot } from './playground-support';
 
 for (const [name, path, ready] of [
   ['DEV · Animationen', '/animation-compare.html', 'data-ready'],
@@ -41,38 +39,6 @@ async function assertRoomDrawn(page: Page) {
   ]);
 
   return capture;
-}
-
-async function snapshot(page: Page): Promise<Snapshot> {
-  return JSON.parse((await page.locator('#playground-diagnostics').textContent()) ?? '{}');
-}
-
-// eslint-disable-next-line max-lines-per-function -- Clock und lesbare DOM-Diagnose bilden eine gemeinsame Polling-Grenze.
-async function untilPlayground(page: Page, check: (state: Snapshot) => boolean) {
-  await expect
-    .poll(
-      async () => {
-        await page.clock.runFor(32);
-
-        return check(await snapshot(page));
-      },
-      { intervals: [0], timeout: 15_000 },
-    )
-    .toBe(true);
-}
-
-// eslint-disable-next-line max-lines-per-function -- Wie beim Spielstart muss die angehaltene Browseruhr bis zum ersten echten Szenen-Snapshot vorrücken.
-async function waitForDevReady(page: Page, attribute: string) {
-  await expect
-    .poll(
-      async () => {
-        await page.clock.runFor(32);
-
-        return page.locator('html').getAttribute(attribute);
-      },
-      { intervals: [0], timeout: 15000 },
-    )
-    .toBe('true');
 }
 
 async function loadPlayground(page: Page, variant: string) {

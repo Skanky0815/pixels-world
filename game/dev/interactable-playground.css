@@ -7,6 +7,15 @@
   margin: 0;
   gap: 6px;
 }
+.playground-toolbar label[for='playground-mode'] {
+  flex: 0 0 140px;
+}
+.playground-toolbar label[for='playground-object'] {
+  min-width: 200px;
+}
+.playground-readout select {
+  min-width: 0;
+}
 .playground-toolbar select {
   margin: 0;
 }
@@ -41,6 +50,9 @@
     flex-wrap: wrap;
   }
   .playground-toolbar label {
+    flex-basis: 100%;
+  }
+  .playground-toolbar label[for='playground-mode'] {
     flex-basis: 100%;
   }
 }
