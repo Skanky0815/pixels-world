@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.7.0](https://github.com/Skanky0815/pixels-world/compare/v0.6.1...v0.7.0) (2026-11-15)
+
+
+### Features
+
+* **content:** add a warm kitchen preview with left-side homecoming ([9930115](https://github.com/Skanky0815/pixels-world/commit/99301159e572d384669d6f5027270a6fc7ff57e6)), closes [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+* **kitchen:** add a food goal with an eating animation ([fcd2428](https://github.com/Skanky0815/pixels-world/commit/fcd2428705ff3ead9970c18f62d0f7432130d01d)), closes [#230](https://github.com/Skanky0815/pixels-world/issues/230) [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+* **kitchen:** add a toppling rubbish bin ([53ac947](https://github.com/Skanky0815/pixels-world/commit/53ac9477108a8003e7fff7e380e11417bee66c10)), closes [#228](https://github.com/Skanky0815/pixels-world/issues/228) [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+* **kitchen:** add an interactive dry food bag ([865fdb5](https://github.com/Skanky0815/pixels-world/commit/865fdb5ee2af6da63a1d9881191ce1dcb2ee262f)), closes [#230](https://github.com/Skanky0815/pixels-world/issues/230) [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+* **kitchen:** add crockery and unlock the kitchen ([6aaec61](https://github.com/Skanky0815/pixels-world/commit/6aaec613ce37b64476ac4d7d9cc66e4a755b5a4a)), closes [#226](https://github.com/Skanky0815/pixels-world/issues/226) [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+* **kitchen:** add herbs with elevated plant interactions ([fb93d6e](https://github.com/Skanky0815/pixels-world/commit/fb93d6ed75e1dfb73a44a36c75d098fe4e1461c8)), closes [#229](https://github.com/Skanky0815/pixels-world/issues/229) [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+* **kitchen:** add pantry jars and biscuit tins ([2b95295](https://github.com/Skanky0815/pixels-world/commit/2b952953cfaaeaab0c4eccdab6eeadfdb78cb1a7)), closes [#227](https://github.com/Skanky0815/pixels-world/issues/227) [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+* **kitchen:** add pullable tablecloth chains ([69f07f5](https://github.com/Skanky0815/pixels-world/commit/69f07f5d946a29c268539254fde3e8b19d962744)), closes [#27](https://github.com/Skanky0815/pixels-world/issues/27) [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+* **kitchen:** finish room presentation and album navigation ([7b09f84](https://github.com/Skanky0815/pixels-world/commit/7b09f84b62ddab88758c1cee9fd26f612cdb2e2c)), closes [#57](https://github.com/Skanky0815/pixels-world/issues/57) [#87](https://github.com/Skanky0815/pixels-world/issues/87) [#226](https://github.com/Skanky0815/pixels-world/issues/226) [#295](https://github.com/Skanky0815/pixels-world/issues/295)
+* **kitchen:** let Pixel rummage inside the fridge ([863c25b](https://github.com/Skanky0815/pixels-world/commit/863c25be4fe02fbd537330d680c2d050a610af78)), closes [#87](https://github.com/Skanky0815/pixels-world/issues/87) [#57](https://github.com/Skanky0815/pixels-world/issues/57)
+
 ## [0.6.1](https://github.com/Skanky0815/pixels-world/compare/v0.5.1...v0.6.1) (2026-11-14)
 
 
