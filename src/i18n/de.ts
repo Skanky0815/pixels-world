@@ -138,6 +138,7 @@ export const de = {
   roomsEnter: 'Zimmer betreten →',
   roomsBack: 'Zimmer wechseln',
   roomsPreview: 'Wohnzimmer mit Pixel, Sofa und Vorhang',
+  roomsKitchenPreview: 'Küche mit Pixel, Tisch, Kühlschrank und Futternapf',
 
   storageTitle: 'Auf diesem Gerät',
   storageAlbum: 'Album für später merken',

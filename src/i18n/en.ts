@@ -136,6 +136,7 @@ export const en: Record<keyof typeof de, string> = {
   roomsEnter: 'Enter room →',
   roomsBack: 'Choose a room',
   roomsPreview: 'Living room with Pixel, sofa and curtain',
+  roomsKitchenPreview: 'Kitchen with Pixel, table, fridge and food bowl',
 
   storageTitle: 'On this device',
   storageAlbum: 'Remember my album',

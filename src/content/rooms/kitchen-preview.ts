@@ -9,7 +9,7 @@ import {
 import { copy } from '../../i18n/locale.ts';
 import type { RoomDefinition } from '../../game/content/definitions.ts';
 
-/** DEV only: fixed route and kitchen art, real food goal, not yet the published kitchen. */
+/** Shared kitchen layout; this preview ID stays DEV-only, the public room uses `kitchen`. */
 export const KITCHEN_PREVIEW = {
   id: 'kitchen-preview',
   caption: copy('kitchenPreviewTitle'),

@@ -32,13 +32,24 @@ test(
     await expect(page.locator('main > footer')).toHaveCount(1);
     await expect(rooms.locator('.room-choice')).toHaveCount(4);
     await expect(rooms.locator('.room-choice:disabled')).toHaveCount(2);
+    await expect(rooms.locator('img')).toHaveCount(2);
     await expect
       .poll(() =>
         rooms
           .locator('img')
-          .evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0),
+          .evaluateAll((images) =>
+            images.every(
+              (image) =>
+                (image as HTMLImageElement).complete &&
+                (image as HTMLImageElement).naturalWidth > 0,
+            ),
+          ),
       )
       .toBe(true);
+    await expect(rooms.locator('[data-room-choice="kitchen"] img')).toHaveAttribute(
+      'alt',
+      'Küche mit Pixel, Tisch, Kühlschrank und Futternapf',
+    );
     const waiting = await state(page);
 
     await rooms.getByRole('heading').click();
@@ -59,6 +70,10 @@ test(
     await page.locator('[data-pause-resume]').click();
     await expect(rooms).toContainText('Where to today, Pixel?');
     await expect(rooms).toContainText('Kitchen');
+    await expect(rooms.locator('[data-room-choice="kitchen"] img')).toHaveAttribute(
+      'alt',
+      'Kitchen with Pixel, table, fridge and food bowl',
+    );
     await rooms.locator('[data-room-choice="kitchen"]').focus();
     await page.keyboard.press('Tab');
     await expect(rooms.locator('[data-room-start]')).toBeFocused();

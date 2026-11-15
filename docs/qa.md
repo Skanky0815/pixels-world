@@ -215,6 +215,15 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
 
+- Öffentliche Küche über die Levelauswahl starten: Das echte Raumfoto zeigt die
+  aktuelle Küche. Napf über Hocker, Tisch und Kühlschrank auf allen Graden ohne
+  Schaden erreichen; vor dem Napf auch zurück zum linken Eingang klettern.
+  Mehrere Küchenaktionen in einer Runde kombinieren, etwa Futterbeutel, Mülleimer
+  und Klinkengriff am Kühlschrank. Pause/Fokuswechsel, einmalige Schäden, Saras
+  Heimkehr von links und Versöhnung gemeinsam prüfen. Reset stellt Möbel und
+  lose Gegenstände wieder her, verwirft vorgemerkte Funde und erhält zuvor
+  bestätigten Fortschritt; freiwillige Speicherung bleibt ausgeschaltet.
+
 - Lieblingsball in beiden Räumen ohne Schaden finden: Nach dem kurzen Aufenthalt
   spielt Pixel den Ball auf dem Regal nach rechts und zurück und dreht sich mit.
   Ball und Pfoten bleiben auf dem Regal; Punkte, Objekte und Rundentimer ändern
