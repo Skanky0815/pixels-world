@@ -10,6 +10,7 @@ cp "$repo_root/tools/install-hooks.sh" "$fixture_dir/repo/tools/"
 cat > "$fixture_dir/bin/npm" <<'MOCK'
 #!/bin/sh
 printf '%s\n' "$*" >> "$NPM_LOG"
+test -z "${GIT_DIR-}${GIT_WORK_TREE-}${GIT_INDEX_FILE-}" || exit 91
 exit "${NPM_RESULT:-0}"
 MOCK
 chmod +x "$fixture_dir/bin/npm"
@@ -33,6 +34,9 @@ sh tools/install-hooks.sh > /dev/null
 test "$(git config --local --get core.hooksPath)" = .githooks
 sh tools/install-hooks.sh > /dev/null
 printf '%s\n' "$update" | sh .githooks/pre-push
+test "$(cat "$NPM_LOG")" = 'run check:pr'
+: > "$NPM_LOG"
+printf '%s\n' "$update" | GIT_DIR="$(git rev-parse --absolute-git-dir)" GIT_WORK_TREE="$PWD" GIT_INDEX_FILE="$PWD/.git/index" sh .githooks/pre-push
 test "$(cat "$NPM_LOG")" = 'run check:pr'
 if printf '%s\n' "$update" | NPM_RESULT=1 sh .githooks/pre-push > /dev/null 2>&1; then exit 1; fi
 printf 'dirty\n' >> tracked.txt

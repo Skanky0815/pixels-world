@@ -16,4 +16,6 @@ if ! git diff --quiet HEAD --; then
   echo 'Vor der Push-Prüfung getrackte Änderungen committen oder separat sichern.' >&2
   exit 1
 fi
+# Child checks create independent Git fixtures; do not redirect them into this repository.
+unset $(git rev-parse --local-env-vars)
 exec npm run check:pr

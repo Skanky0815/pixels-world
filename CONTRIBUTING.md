@@ -63,6 +63,10 @@ Verhalten nicht. Die leichtgewichtige Dokumentationsprüfung gilt für den fachl
 nötigen Prüfumfang, nicht als Anweisung zum Umgehen eines installierten Hooks.
 CI-Profile und Runnerumfang: [QA](docs/qa.md#ci-und-runnerverbrauch).
 
+Vor dem Start der QA entfernt der Hook die von Git geerbten lokalen
+Repositoryvariablen. So verwenden Git-Kommandos in isolierten Test-Repositories
+deren eigene Metadaten und verändern weder Branch noch Index des Arbeits-Repositories.
+
 ## Code-Stil und Releases
 
 [Entwicklung und Code-Stil](docs/development.md#lesbarer-typescript-code) beschreiben
