@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { drawResultHearts } from '../../src/game/ui/result-hearts.ts';
+import { drawResultHearts } from '../../game/play/ui/result-hearts.ts';
 import type Phaser from 'phaser';
 
 // eslint-disable-next-line max-lines-per-function -- Alle unterstützten Anzahlen und Teilfortschritte müssen dieselben Konturen behalten.

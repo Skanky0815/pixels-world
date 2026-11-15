@@ -1,5 +1,5 @@
-import { ROOM_COMPLETIONS } from '../../src/content/achievement-rooms';
-import { DESTRUCTION_VARIANTS } from '../../src/content/achievement-categories';
+import { ROOM_COMPLETIONS } from '../../game/play/content/achievement-rooms';
+import { DESTRUCTION_VARIANTS } from '../../game/play/content/achievement-categories';
 /* eslint-disable max-lines-per-function -- Tatsächlicher Rundenabschluss und Gerätewechsel prüfen den zusammenhängenden Erfolgsvertrag. */
 import {
   test,

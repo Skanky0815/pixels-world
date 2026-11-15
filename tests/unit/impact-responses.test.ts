@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { PlantNibbling } from '../../src/game/interactions/plant-nibbling.ts';
-import { PictureFalling, PICTURE_RULES } from '../../src/game/interactions/picture-falling.ts';
-import { ShelfStability } from '../../src/game/domain/shelf-stability.ts';
+import { PlantNibbling } from '../../game/play/interactions/plant-nibbling.ts';
+import { PictureFalling, PICTURE_RULES } from '../../game/play/interactions/picture-falling.ts';
+import { ShelfStability } from '../../game/play/domain/shelf-stability.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Ein Fremdtreffer kippt ohne erfundene Knabberstufe und bleibt bis zum Reset einmalig.
 test('Pflanze kippt durch Fremdtreffer ohne Knabberereignis', () => {

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { playgroundRoom, PLAYGROUND_OBJECTS } from '../../src/dev/playground-room.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
+import { playgroundRoom, PLAYGROUND_OBJECTS } from '../../game/dev/playground-room.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Jede echte Variante wird über denselben Resolver auf Platzierung und Isolation geprüft.
 test('Playground löst alle Katalogvarianten mit genau einem realen Objekt auf', () => {

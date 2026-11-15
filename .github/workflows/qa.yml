@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/**'
+      - 'game/**'
       - 'assets/**'
       - 'public/**'
       # Reference/source artwork and documentation are not runtime or test inputs.
@@ -35,7 +35,7 @@ on:
       - '.githooks/**'
   pull_request:
     paths:
-      - 'src/**'
+      - 'game/**'
       - 'assets/**'
       - 'public/**'
       # Reference/source artwork and documentation are not runtime or test inputs.

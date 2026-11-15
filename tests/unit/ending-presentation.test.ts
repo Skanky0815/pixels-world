@@ -1,10 +1,10 @@
 /* eslint-disable max-lines-per-function -- Abschlussauswahl, Endpose und Bewegungspräferenz werden als unabhängige sichtbare Verträge geprüft. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { EndingPresentation } from '../../src/game/domain/ending-presentation.ts';
+import { EndingPresentation } from '../../game/play/domain/ending-presentation.ts';
 import { readFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
-import { CharmMotion } from '../../src/game/domain/charm-motion.ts';
+import { CharmMotion } from '../../game/play/domain/charm-motion.ts';
 
 const seated = () => new CharmMotion().pose();
 

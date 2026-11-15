@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { PNG } from 'pngjs';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { COZY_REMIX } from '../../src/content/rooms/cozy-remix.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import { populateSpawnSlots } from '../../src/game/content/spawn-slots.ts';
-import type { RoomDefinition } from '../../src/game/content/definitions.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { COZY_REMIX } from '../../game/play/content/rooms/cozy-remix.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import { populateSpawnSlots } from '../../game/play/content/spawn-slots.ts';
+import type { RoomDefinition } from '../../game/play/content/definitions.ts';
 
 const dimensions = {
   plaster: [64, 64],

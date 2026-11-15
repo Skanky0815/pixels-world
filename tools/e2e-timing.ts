@@ -1,4 +1,4 @@
-import type { RoundConfig } from '../src/game/domain/round-controller.ts';
+import type { RoundConfig } from '../game/play/domain/round-controller.ts';
 
 export const FAST_ROUND_CONFIG = Object.freeze({
   minDurationMs: 8_000,

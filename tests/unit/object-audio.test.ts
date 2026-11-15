@@ -1,10 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { GameAudio } from '../../src/game/ui/GameAudio.ts';
-import { audioPreferences } from '../../src/settings/audio.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import { CUE_VOLUME } from '../../src/game/assets/object-cues.ts';
+import { GameAudio } from '../../game/play/ui/GameAudio.ts';
+import { audioPreferences } from '../../game/play/settings/audio.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import { CUE_VOLUME } from '../../game/play/assets/object-cues.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Der Adapter zählt reale Spiel-/Stoppaufrufe und bildet die Browser-Freigabegrenze ab.
 function setup() {

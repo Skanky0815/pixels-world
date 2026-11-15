@@ -4,11 +4,11 @@ import {
   ShelfStability,
   shelfRules,
   shelfWobbleAngle,
-} from '../../src/game/domain/shelf-stability.ts';
-import { ChaosScore } from '../../src/game/domain/chaos.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
+} from '../../game/play/domain/shelf-stability.ts';
+import { ChaosScore } from '../../game/play/domain/chaos.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
 
 function land(shelf: ShelfStability) {
   shelf.observe(false, true);

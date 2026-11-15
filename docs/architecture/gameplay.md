@@ -1,22 +1,53 @@
 # Gameplay-Architektur
 
+## Anwendungsbereiche und Auslieferung
+
+Die Anwendungsquellen liegen vollständig unter `game/`: `landingpage/` enthält
+Landingpage, Hilfe und Rechts-/Update-Seiten, `play/` das Spiel samt Content und
+UI, `shared/` gemeinsame Browser-, Sprach- und UI-Grundlagen und `dev/` lokale
+Vorschauen. Konfiguration, `tools/`, Tests, Dokumentation und Assetquellen bleiben
+auf Projektebene. Es gibt weiterhin ein npm-/Vite-Projekt und eine Ausgabe.
+
+Landingpage und Spiel importieren gemeinsame Grundlagen; sie importieren sich
+nicht gegenseitig. Gemeinsame Module importieren keine konkrete Anwendung.
+DEV-Ansichten dürfen Spielmodule verwenden; das Spiel lädt DEV-Helfer nur hinter
+`import.meta.env.DEV`. E2E-Beobachtung bleibt auf den E2E-Build begrenzt.
+`shared/base.css` enthält Tokens, Typografie und gemeinsame Seiten-/UI-Grundlagen;
+Spiel-Layout, Dialoge und Touch-Steuerung bleiben unter `play/`. Die Landingpage
+importiert weder Phaser noch das Spielstylesheet.
+
+[application-pages.ts](../../tools/application-pages.ts) ordnet die echten HTML-Quellen
+öffentlichen HTML-Einstiegen zu. Vite verarbeitet beim Build virtuelle Einstiege
+am Ausgabe-Root und liefert im Dev-Server dieselben URLs aus den echten Quellen.
+So bleiben `/`, `/play.html`, `/help.html`, `/impressum.html`, `/datenschutz.html`
+und `/update.html` unabhängig von ihren Quellordnern. Relative Links funktionieren
+weiter im Pages-Unterpfad und im entpackten ZIP. DEV-Einstiege werden nur beim
+Entwickeln zugeordnet; Produktions-/E2E-Builds enthalten sie nicht.
+
+`assets/landing`, `assets/team` und `assets/community` versorgen die statischen
+Seiten; `assets/environment`, `assets/objects`, `assets/ui` und `assets/audio` das
+Spiel. Pixel-/Sara-Grafiken werden teilweise gemeinsam verwendet. Die bestehenden
+Familienordner behalten Quellen, Lizenznachweise und reproduzierbare Exporte;
+Laufzeitimporte werden weiterhin durch Vite gebündelt. `public/` enthält statische
+Veröffentlichungsdateien wie Icons und Downloads. Speicher- und Content-IDs sowie
+Service-Worker-Scope ändern sich durch die Quellverschiebung nicht.
+
 ## Zuständigkeiten
 
-| Bereich                          | Verantwortung                                                                      |
-| -------------------------------- | ---------------------------------------------------------------------------------- |
-| `src/main.ts`                    | Kleiner Einstieg und Fehlerbehandlung vor dem Spielimport                          |
-| `src/world.ts`                   | Raumwahl und Phaser-Konfiguration                                                  |
-| `game/scenes/LivingRoomScene.ts` | Aufbau, Kollisionspaare, Frame-Reihenfolge und Lebenszyklus                        |
-| `game/input/`                    | Tastatur/Pointer, eingefrorener Input-Snapshot und Browseraktivität                |
-| `game/actors/`                   | Bewegung, Körper, sichtbare Figuren und Animationsauswahl                          |
-| `game/objects/`                  | Konkrete Möbel/Objekte mit Geometrie und eigenen Modellen                          |
-| `game/interactions/`             | Reine Handlungsmodelle und kleine Fähigkeitsverträge                               |
-| `game/domain/`                   | Runde, Hauptziel, Heimkehr, Versöhnung, Ergebnis und Score                         |
-| `game/ui/`                       | Darstellung aus lesbaren Daten, keine Punkte-/Timerentscheidungen                  |
-| `game/content/`                  | Datenvertrag, Resolver, Validierung, Objektfabrik und gemeinsame Szenenverdrahtung |
-| `src/content/`                   | Typisierte Raum-, Objekt- und Dialoginhalte                                        |
-| `src/i18n/`                      | Sprachkataloge, Formatierung und Spracheinstellung                                 |
-| `src/dev/`                       | Ausschließlich lokale Arbeitswerkzeuge                                             |
+| Bereich                               | Verantwortung                                                                          |
+| ------------------------------------- | -------------------------------------------------------------------------------------- |
+| `game/play/main.ts`                   | Kleiner Einstieg und Fehlerbehandlung vor dem Spielimport                              |
+| `game/play/world.ts`                  | Raumwahl und Phaser-Konfiguration                                                      |
+| `game/play/scenes/LivingRoomScene.ts` | Aufbau, Kollisionspaare, Frame-Reihenfolge und Lebenszyklus                            |
+| `game/play/input/`                    | Tastatur/Pointer, eingefrorener Input-Snapshot und Browseraktivität                    |
+| `game/play/actors/`                   | Bewegung, Körper, sichtbare Figuren und Animationsauswahl                              |
+| `game/play/objects/`                  | Konkrete Möbel/Objekte mit Geometrie und eigenen Modellen                              |
+| `game/play/interactions/`             | Reine Handlungsmodelle und kleine Fähigkeitsverträge                                   |
+| `game/play/domain/`                   | Runde, Hauptziel, Heimkehr, Versöhnung, Ergebnis und Score                             |
+| `game/play/ui/`                       | Darstellung aus lesbaren Daten, keine Punkte-/Timerentscheidungen                      |
+| `game/play/content/`                  | Typisierte Räume/Objekte/Dialoge, Datenvertrag, Resolver, Validierung und Objektfabrik |
+| `game/shared/i18n/`                   | Sprachkataloge, Formatierung und Spracheinstellung                                     |
+| `game/dev/`                           | Ausschließlich lokale Arbeitswerkzeuge                                                 |
 
 Es bleibt ein frontend-only npm-/Vite-Projekt. Die Figurenanimation steuert weder
 Kollisionen noch Schadensregeln. Sichtbares Sprite und fester Physikkörper sind
@@ -50,7 +81,7 @@ keinen neuen Durchlauf verändern. Der Observer liefert ausschließlich eingefro
 Kopien, niemals Engine-Objekte oder Mutatoren, und fehlt im Produktionsbuild.
 
 Die DEV-Objektszene verwendet dieselben Adapter, Eingaben und Animationsdaten.
-`game/content/object-playfield.ts` teilt Raumkörper, Collider und die geordnete
+`game/play/content/object-playfield.ts` teilt Raumkörper, Collider und die geordnete
 Objektinteraktion mit `LivingRoomScene`; Rundenuhr, Ziel und Heimkehr bleiben
 außerhalb dieses gemeinsamen Schritts. Der Playground besitzt seinen eigenen
 Score und entsorgt seine Ressourcen beim Szenenwechsel.
@@ -223,7 +254,7 @@ zeigt wieder die Einführung. R ist eine versteckte Debug-Eingabe.
 
 ## Content, Assets und mobile Darstellung
 
-[Content pflegen](../../src/content/README.md) beschreibt Vorlagen, Instanz-IDs,
+[Content pflegen](../../game/play/content/README.md) beschreibt Vorlagen, Instanz-IDs,
 Auflagen und Grenzen. Resolver validieren vor Engine-Start und beim Vite-Build,
 verändern keine Quelldaten und erzeugen keine Engine-Objekte. Neue Mechaniken
 bleiben Code; neue Platzierungen/Werte sind Content. Ein künftiger Import oder
@@ -281,7 +312,7 @@ Datenflüsse und Quellen: [rechtliche Dokumentation](../legal/phase2-review.md).
 
 ## Schwierigkeitsgrade
 
-[`src/content/difficulty.json`](../../src/content/difficulty.json) bündelt die
+[`game/play/content/difficulty.json`](../../game/play/content/difficulty.json) bündelt die
 vorläufigen Playtest-Presets. `difficulty.ts` liest und prüft sie. Normal
 verwendet unverändert die bisherigen Timer- und Charmeprofile. Leicht skaliert
 die Zeit auf 150 %, Schwer auf 75 %. Die Raumdefinition bietet optionale
@@ -332,7 +363,7 @@ Die vorhandene Content-Prüfung verlangt, dass die ganze Vase auf ihre Unterlage
 Ballroute und Erreichbarkeit nach Änderungen in beiden Räumen testen.
 Zusätzlich materialisiert `populateSpawnSlots` die optionalen lokalen Plätze eines
 Regals einmal vor dem Szenenaufbau. Dichte, Filter, Pool und Seed-Vertrag stehen
-in der [Content-Anleitung](../../src/content/README.md#zufällige-belegung-fester-regalplätze).
+in der [Content-Anleitung](../../game/play/content/README.md#zufällige-belegung-fester-regalplätze).
 Die erzeugten Instanzen verwenden dieselben Objektklassen und verlieren beim
 Herunterfallen jede Bindung an den ursprünglichen Platz.
 

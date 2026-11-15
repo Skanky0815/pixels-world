@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function -- Reale Sprünge und lesendes Clock-Polling bleiben als gemeinsame Küchenroute zusammen. */
 import { expect } from './support';
 import type { Page } from '@playwright/test';
-import type { GameTestState } from '../../src/test-state';
+import type { GameTestState } from '../../game/play/test-state';
 
 export async function observe(page: Page) {
   return page.evaluate(() => window.__pixelTest!);

@@ -6,7 +6,7 @@ import {
   type ImpactBody,
   type ImpactHit,
   type ImpactActor,
-} from '../../src/game/domain/impact-world.ts';
+} from '../../game/play/domain/impact-world.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Die Fixture stellt nur lesbare Körperdaten und empfangene Stöße ohne Engine-Zustandssetter bereit.
 function actor(id: string, x: number, y = 0) {

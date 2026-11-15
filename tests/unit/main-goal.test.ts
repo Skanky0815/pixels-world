@@ -1,11 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MainGoal, type GoalContact } from '../../src/game/domain/main-goal.ts';
-import { RoundController } from '../../src/game/domain/round-controller.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { COZY_REMIX } from '../../src/content/rooms/cozy-remix.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
+import { MainGoal, type GoalContact } from '../../game/play/domain/main-goal.ts';
+import { RoundController } from '../../game/play/domain/round-controller.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { COZY_REMIX } from '../../game/play/content/rooms/cozy-remix.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
 
 const definition = resolveRoom(LIVING_ROOM, OBJECTS).goal;
 const contact: GoalContact = {

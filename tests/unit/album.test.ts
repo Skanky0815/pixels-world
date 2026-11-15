@@ -2,11 +2,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
-import { ALBUM_ART } from '../../src/game/ui/album-art.ts';
-import { AlbumCollection, ALBUM_STORAGE_KEY } from '../../src/game/album/collection.ts';
-import { INTERACTABLE_ALBUM, discoverAlbum, albumEntries } from '../../src/content/album/index.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
+import { ALBUM_ART } from '../../game/play/ui/album-art.ts';
+import { AlbumCollection, ALBUM_STORAGE_KEY } from '../../game/play/album/collection.ts';
+import {
+  INTERACTABLE_ALBUM,
+  discoverAlbum,
+  albumEntries,
+} from '../../game/play/content/album/index.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
 const ids = new Set(Object.values(INTERACTABLE_ALBUM).map((entry) => entry.id));
 
 function memory(initial: string | null = null) {

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { PNG } from 'pngjs';
-import { KITCHEN_PREVIEW } from '../../src/content/rooms/kitchen-preview.ts';
+import { KITCHEN_PREVIEW } from '../../game/play/content/rooms/kitchen-preview.ts';
 
 const root = new URL('../../assets/environment/kitchen/', import.meta.url);
 const image = (name: string) => PNG.sync.read(readFileSync(new URL(`kitchen-${name}.png`, root)));

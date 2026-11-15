@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { test } from 'node:test';
-import { KITCHEN_PREVIEW } from '../../src/content/rooms/kitchen-preview.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { populateSpawnSlots } from '../../src/game/content/spawn-slots.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
+import { KITCHEN_PREVIEW } from '../../game/play/content/rooms/kitchen-preview.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { populateSpawnSlots } from '../../game/play/content/spawn-slots.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
 
 const Random = createRequire(import.meta.url)(
   'phaser/src/math/random-data-generator/RandomDataGenerator.js',

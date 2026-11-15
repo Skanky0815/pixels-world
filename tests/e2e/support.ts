@@ -1,6 +1,6 @@
 import { test as base, expect, type Page } from '@playwright/test';
 
-import type { GameTestState } from '../../src/test-state';
+import type { GameTestState } from '../../game/play/test-state';
 
 type RoomTestState = GameTestState & {
   couch: NonNullable<GameTestState['couch']>;

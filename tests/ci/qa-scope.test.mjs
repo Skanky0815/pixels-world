@@ -6,6 +6,9 @@ import { env } from 'node:process';
 import { log } from 'node:console';
 
 const source = readFileSync(new URL('../../.github/workflows/qa.yml', import.meta.url), 'utf8');
+// The source migration must trigger QA for both push and PR events.
+assert.equal((source.match(/- 'game\/\*\*'/g) ?? []).length, 2);
+assert.equal(source.includes("- 'src/**'"), false);
 const scope = source.match(/E2E_SCOPE: \$\{\{ (.+) \}\}/)[1];
 const shard = source.match(/shard: \$\{\{ (.+) \}\}/)[1];
 const total = source.match(/total: \$\{\{ (.+) \}\}/)[1];

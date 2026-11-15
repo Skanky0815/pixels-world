@@ -163,7 +163,7 @@ Die zwei Entscheidungswerte sind erforderlich, um die Wahl wiederherzustellen.
 Lokale Funde enthalten Varianten-IDs, keine Nutzerkennung. Es findet keine
 Übermittlung von Sammlung oder Einstellungen an den Anbieter statt. Hosting-
 und Kontaktverarbeitung nach DSGVO werden davon getrennt dargestellt. Die
-[Datenschutzhinweise](../../datenschutz.html) beschreiben Auswahl, Rücknahme,
+[Datenschutzhinweise](../../game/landingpage/datenschutz.html) beschreiben Auswahl, Rücknahme,
 Bestandserhalt und Löschung. Gesperrter Browserspeicher verhindert das Spiel nicht;
 die gewünschte Sammlung funktioniert dann für den aktuellen Besuch.
 

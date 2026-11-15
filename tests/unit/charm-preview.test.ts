@@ -6,7 +6,7 @@ import {
   CharmMotion,
   CHARM_ACTIONS,
   type CharmAction,
-} from '../../src/game/domain/charm-motion.ts';
+} from '../../game/play/domain/charm-motion.ts';
 
 const actions = Object.keys(CHARM_ACTIONS) as CharmAction[];
 

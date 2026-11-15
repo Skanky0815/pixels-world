@@ -3,20 +3,20 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
-import { Toppling, FOOD_BAG_RULES } from '../../src/game/interactions/toppling.ts';
-import { ChaosScore } from '../../src/game/domain/chaos.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import { discoverAlbum, albumEntries } from '../../src/content/album/index.ts';
+import { Toppling, FOOD_BAG_RULES } from '../../game/play/interactions/toppling.ts';
+import { ChaosScore } from '../../game/play/domain/chaos.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import { discoverAlbum, albumEntries } from '../../game/play/content/album/index.ts';
 import {
   DESTRUCTION_TARGETS,
   ACHIEVEMENTS,
   destructionTarget,
-} from '../../src/content/achievements.ts';
-import { DESTRUCTION_VARIANTS } from '../../src/content/achievement-categories.ts';
-import { AlbumCollection } from '../../src/game/album/collection.ts';
-import { RoundAlbum } from '../../src/game/album/round.ts';
-import type { RoundResult } from '../../src/game/domain/round-result.ts';
-import { ReactionDamage } from '../../src/game/domain/reaction-damage.ts';
+} from '../../game/play/content/achievements.ts';
+import { DESTRUCTION_VARIANTS } from '../../game/play/content/achievement-categories.ts';
+import { AlbumCollection } from '../../game/play/album/collection.ts';
+import { RoundAlbum } from '../../game/play/album/round.ts';
+import type { RoundResult } from '../../game/play/domain/round-result.ts';
+import { ReactionDamage } from '../../game/play/domain/reaction-damage.ts';
 
 const bag = () => new Toppling('bag', FOOD_BAG_RULES, 'spill', 'upright');
 const result: RoundResult = {

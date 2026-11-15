@@ -3,23 +3,23 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
-import { PANTRY_PROFILES } from '../../src/game/assets/pantry-appearance.ts';
-import { PANTRY } from '../../src/content/objects/pantry.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { KITCHEN } from '../../src/content/rooms/kitchen.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import type { ObjectCatalog } from '../../src/game/content/definitions.ts';
-import { discoverAlbum } from '../../src/content/album/index.ts';
+import { PANTRY_PROFILES } from '../../game/play/assets/pantry-appearance.ts';
+import { PANTRY } from '../../game/play/content/objects/pantry.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { KITCHEN } from '../../game/play/content/rooms/kitchen.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import type { ObjectCatalog } from '../../game/play/content/definitions.ts';
+import { discoverAlbum } from '../../game/play/content/album/index.ts';
 import {
   ACHIEVEMENTS,
   DESTRUCTION_TARGETS_V2,
   destructionTarget,
-} from '../../src/content/achievements.ts';
-import { AchievementProgress } from '../../src/game/album/achievements.ts';
-import { AlbumCollection } from '../../src/game/album/collection.ts';
-import { RoundAlbum } from '../../src/game/album/round.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import type { RoundResult } from '../../src/game/domain/round-result.ts';
+} from '../../game/play/content/achievements.ts';
+import { AchievementProgress } from '../../game/play/album/achievements.ts';
+import { AlbumCollection } from '../../game/play/album/collection.ts';
+import { RoundAlbum } from '../../game/play/album/round.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import type { RoundResult } from '../../game/play/domain/round-result.ts';
 const result: RoundResult = {
   score: 24,
   goalReached: true,

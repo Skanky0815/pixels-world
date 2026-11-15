@@ -2,7 +2,7 @@ import { recordAudio, expectAudio } from './audio-support';
 import { advanceRoundTo, useIdleFrames } from './round-clock';
 import { test, expect, start, state, firstVase, holdUntil, until, reset } from './support';
 import { openPause } from './pause-support';
-import { BOOK_TOPPLE } from '../../src/game/interactions/book-toppling';
+import { BOOK_TOPPLE } from '../../game/play/interactions/book-toppling';
 
 test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattform und Reset repariert', async ({
   page,

@@ -1,4 +1,4 @@
-import { DIFFICULTIES } from '../../src/content/difficulty';
+import { DIFFICULTIES } from '../../game/play/content/difficulty';
 import { startDifficulty } from './difficulty-support';
 import { test, expect, state, until, reset } from './support';
 import { climbToBall } from './goal-support';

@@ -48,6 +48,6 @@ und [Milestones](https://github.com/Skanky0815/pixels-world/milestones).
 - [Beitragsregeln und Arbeitsablauf](CONTRIBUTING.md)
 - [Qualitätsprüfungen und manueller Spieltest](docs/qa.md)
 - [Gameplay-Architektur](docs/architecture/gameplay.md)
-- [Räume, Objektvorlagen und Assets](src/content/README.md)
+- [Räume, Objektvorlagen und Assets](game/play/content/README.md)
 - [Release und GitHub Pages](docs/deployment.md)
 - [Arbeitsregeln für Agenten](AGENTS.md)

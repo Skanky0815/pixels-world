@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MotionPreferences, MOTION_STORAGE_KEY } from '../../src/settings/motion.ts';
+import { MotionPreferences, MOTION_STORAGE_KEY } from '../../game/play/settings/motion.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Gespeicherter Wunsch und wechselnde Systemeinstellung müssen unabhängig kombiniert werden.
 test('Reduzierte Bewegung respektiert das System und die gespeicherte Auswahl', () => {

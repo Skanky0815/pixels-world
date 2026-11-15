@@ -1,0 +1,136 @@
+import livingRoomPreview from '../../../assets/landing/living-room.png';
+import kitchenPreview from '../../../assets/landing/kitchen.png';
+import { ROOM_CHOICES, playableRoom } from '../content/rooms/selection';
+import { t, translateExact, onLanguageChange } from '../../shared/i18n/locale';
+import { roomIcon } from './album-room-icons';
+import './room-selection.css';
+
+const previews = {
+  'living-room': { src: livingRoomPreview, alt: 'roomsPreview', width: 1100, height: 619 },
+  kitchen: { src: kitchenPreview, alt: 'roomsKitchenPreview', width: 1100, height: 619 },
+} as const;
+
+/** Menu presentation only: the scene owns room selection, reset and start state. */
+export class RoomSelection {
+  private selected = 'living-room';
+  private readonly root = document.createElement('section');
+  private readonly back = document.createElement('button');
+  private readonly portrait = matchMedia('(orientation: portrait) and (max-width: 1024px)');
+  private readonly abort = new AbortController();
+  private readonly unsubscribe: () => void;
+  // eslint-disable-next-line max-lines-per-function -- Auswahl und Rückkehr teilen eine szenengebundene DOM-Lebensdauer und dieselben vorhandenen Menübuttons.
+  constructor(
+    visible: boolean,
+    choose: (id: string) => void,
+    returnToRooms: () => void,
+    openMenu: () => void,
+  ) {
+    this.root.className = 'room-selection';
+    this.root.inert = true;
+    this.back.className = 'ui-button room-selection-return';
+    this.back.type = 'button';
+    this.back.hidden = true;
+    const options = { signal: this.abort.signal };
+
+    this.back.addEventListener('click', returnToRooms, options);
+    this.back.addEventListener('keydown', this.key, options);
+    this.back.addEventListener('keyup', this.key, options);
+    this.root.addEventListener('keydown', this.key, options);
+    this.root.addEventListener('keyup', this.key, options);
+    this.root.addEventListener(
+      'click',
+      (event) => {
+        if ((event.target as Element).closest('[data-rooms-menu]')) return openMenu();
+        const card = (event.target as Element).closest<HTMLButtonElement>('[data-room-choice]');
+
+        if (card?.dataset.roomChoice) return this.select(card.dataset.roomChoice);
+        const id = (event.target as Element).closest<HTMLButtonElement>('[data-room-start]')
+          ?.dataset.roomStart;
+
+        if (id && playableRoom(id)) choose(id);
+      },
+      options,
+    );
+    document.getElementById('play-area')?.before(this.root);
+    document.getElementById('game')?.append(this.back);
+    this.unsubscribe = onLanguageChange(() => this.refresh());
+    this.refresh();
+    this.setVisible(visible);
+  }
+
+  get opened() {
+    return !this.root.hidden;
+  }
+
+  enable() {
+    this.root.inert = false;
+
+    if (this.opened && !document.documentElement.classList.contains('menu-open'))
+      this.root.querySelector<HTMLButtonElement>('[data-room-start]')?.focus();
+  }
+
+  private readonly key = (event: KeyboardEvent) => {
+    if (!['Escape', 'F2'].includes(event.code)) event.stopPropagation();
+  };
+
+  setVisible(visible: boolean) {
+    this.root.hidden = !visible;
+    document.documentElement.classList.toggle('room-selecting', visible);
+  }
+
+  showReturn(visible: boolean) {
+    this.back.hidden = !visible || this.opened;
+
+    if (this.back.hidden) return;
+    const parent = document.querySelector(this.portrait.matches ? '.touch-actions' : '#game');
+
+    if (parent && this.back.parentElement !== parent) parent.append(this.back);
+  }
+
+  private refresh() {
+    const focused = this.root.contains(document.activeElement);
+
+    this.root.setAttribute('aria-label', t('roomsTitle'));
+    this.root.innerHTML = markup(this.selected);
+    this.back.textContent = t('roomsBack');
+
+    if (focused) this.root.querySelector<HTMLButtonElement>('[data-room-start]')?.focus();
+  }
+
+  private select(id: string) {
+    if (!playableRoom(id)) return;
+    this.selected = id;
+    this.refresh();
+    this.root.querySelector<HTMLButtonElement>(`[data-room-choice="${id}"]`)?.focus();
+  }
+
+  destroy() {
+    this.setVisible(false);
+    this.abort.abort();
+    this.unsubscribe();
+    this.root.remove();
+    this.back.remove();
+  }
+}
+
+function roomPicture(id: (typeof ROOM_CHOICES)[number]['id']) {
+  if (id !== 'living-room' && id !== 'kitchen') return roomIcon(id);
+  const preview = previews[id];
+
+  return `<img src="${preview.src}" alt="${t(preview.alt)}" width="${preview.width}" height="${preview.height}">`;
+}
+
+function roomCard(choice: (typeof ROOM_CHOICES)[number], selected: string) {
+  const playable = Boolean(choice.definition);
+  const picture = roomPicture(choice.id);
+
+  return `<button type="button" class="room-choice${choice.id === selected ? ' room-choice-selected' : ''}" ${playable ? `data-room-choice="${choice.id}" aria-pressed="${choice.id === selected}"` : 'disabled'}>
+    <span class="room-choice-picture">${picture}</span><span class="room-choice-copy"><strong>${translateExact(choice.name)}</strong><span>${t(playable ? 'roomsAvailable' : 'roomsLater')}</span></span></button>`;
+}
+
+function markup(id: string) {
+  const selected = ROOM_CHOICES.find((choice) => choice.id === id && choice.definition);
+
+  return `<div class="room-selection-heading"><h2>${t('roomsTitle')}</h2><button type="button" class="ui-button" data-rooms-menu>${t('menuBack')}</button></div><div class="room-choices">${ROOM_CHOICES.map((choice) => roomCard(choice, id)).join('')}</div>
+    <div class="room-selection-start"><button type="button" class="ui-button" data-room-start="${selected?.id ?? ''}" ${selected ? '' : 'disabled'}>${t('roomsEnter')}</button></div>`;
+}

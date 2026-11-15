@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="age-meta-label" content="age=6" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="canonical" href="https://skanky0815.github.io/pixels-world/play.html" />
+    <meta
+      name="description"
+      content="Spiele Pixel’s World kostenlos im Browser: Erkunde als Katze das Wohnzimmer, suche den Lieblingsball und stelle optional Unfug an. Mit Tastatur oder Touch, ohne Konto."
+    />
+    <meta name="theme-color" content="#241f29" />
+    <link rel="stylesheet" href="/game/play/loading-screen.css" />
+    <title data-i18n="pixelSWorldLivingRoomPrototype">Pixel’s World · Wohnzimmer</title>
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
+  </head>
+  <body>
+    <section
+      id="loading-screen"
+      data-phase="starting"
+      aria-labelledby="loading-title"
+      aria-busy="true"
+    >
+      <div class="loading-card">
+        <p class="loading-brand">PIXEL’S WORLD</p>
+        <div class="loading-stage" aria-hidden="true">
+          <div class="loading-chase">
+            <span class="loading-pixel"></span>
+            <span class="loading-ball"><span class="loading-ball-art"></span></span>
+          </div>
+        </div>
+        <h2 id="loading-title" data-i18n="loadingTitle">Pixels Wohnzimmer wird vorbereitet …</h2>
+        <p id="loading-status" role="status" data-i18n="loadingStarting">
+          Pixel jagt schon mal den Ball.
+        </p>
+        <div
+          id="loading-progress"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-label="Ladefortschritt"
+          data-i18n-label="loadingProgress"
+        >
+          <span class="loading-fill"></span>
+        </div>
+        <p id="loading-percent" aria-hidden="true"></p>
+        <div class="loading-actions">
+          <button id="loading-skip" type="button" hidden data-i18n="loadingSkip">
+            Los geht’s!
+          </button>
+          <button id="loading-retry" type="button" hidden data-i18n="loadingRetry">
+            Erneut versuchen
+          </button>
+        </div>
+        <noscript>Bitte aktiviere JavaScript, um Pixel’s World zu spielen.</noscript>
+      </div>
+      <footer class="loading-age-footer">
+        <p class="age-rating">
+          <span data-i18n="ageRatingPrefix">Ab </span><strong class="age-number">6</strong
+          ><span data-i18n="ageRatingSuffix"> Jahren · Einstufung durch den Anbieter</span
+          ><span data-i18n="ageRatingReasons"> · Leichter Zeitdruck · Cartoon-Sachschäden</span>
+        </p>
+      </footer>
+    </section>
+    <main inert>
+      <!-- GAME_HEADER -->
+      <div id="play-area">
+        <div
+          id="game"
+          role="region"
+          aria-label="Pixel's living room. Use arrow keys to move and climb, Space to jump. Click the room to focus."
+          data-i18n-label="pixelSLivingRoomUseArrow"
+          tabindex="0"
+        ></div>
+      </div>
+      <!-- GAME_FOOTER -->
+    </main>
+    <script type="module" src="/game/play/main.ts"></script>
+  </body>
+</html>

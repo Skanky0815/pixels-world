@@ -6,7 +6,7 @@ import {
   curtainTearPosition,
   curtainTearSize,
   type TearMark,
-} from '../../src/game/objects/curtain-tear-position.ts';
+} from '../../game/play/objects/curtain-tear-position.ts';
 
 function art(name: string) {
   return PNG.sync.read(

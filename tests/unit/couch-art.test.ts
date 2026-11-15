@@ -2,15 +2,15 @@ import {
   couchScratchPosition,
   couchScratchScale,
   type ScratchMark,
-} from '../../src/game/objects/couch-scratch-position.ts';
+} from '../../game/play/objects/couch-scratch-position.ts';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { COZY_REMIX } from '../../src/content/rooms/cozy-remix.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { COZY_REMIX } from '../../game/play/content/rooms/cozy-remix.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
 
 function art(name: string) {
   return PNG.sync.read(

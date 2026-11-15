@@ -4,10 +4,10 @@ import {
   SARA_DIALOGUE,
   SARA_ROOM_DIALOGUE,
   type SaraDialogueCatalogue,
-} from '../../src/content/sara-reactions.ts';
-import { DialogueMemory, selectSaraDialogue } from '../../src/game/domain/sara-dialogue.ts';
-import { HomecomingSequence, selectReaction } from '../../src/game/domain/homecoming.ts';
-import { setLanguage, translateExact } from '../../src/i18n/locale.ts';
+} from '../../game/play/content/sara-reactions.ts';
+import { DialogueMemory, selectSaraDialogue } from '../../game/play/domain/sara-dialogue.ts';
+import { HomecomingSequence, selectReaction } from '../../game/play/domain/homecoming.ts';
+import { setLanguage, translateExact } from '../../game/shared/i18n/locale.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Alle Räume und Ärgerstufen sichern dieselbe vollständige, exklusive Auswahl ab.
 test('Jeder Raum ergänzt sechs allgemeine Zeilen um drei eigene Varianten je Stufe', () => {

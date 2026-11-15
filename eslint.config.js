@@ -44,7 +44,7 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {
-    files: ['src/**/*.ts'],
+    files: ['game/**/*.ts'],
     languageOptions: { globals: globals.browser },
     rules: { '@typescript-eslint/no-non-null-assertion': 'error' },
   },

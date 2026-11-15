@@ -17,7 +17,7 @@ Quellaufnahmen liegen unter `reference-sources/` und werden nicht gebündelt.
 
 Die Kratzaufnahme und ihre Bearbeitungen bleiben **CC BY 4.0**. Sie werden nicht
 als eigene CC0-Synthese ausgegeben. Namensnennung, Quelle, Lizenz und
-Bearbeitungshinweis stehen auch im ausgelieferten [Impressum](../../impressum.html#audio-credits).
+Bearbeitungshinweis stehen auch im ausgelieferten [Impressum](../../game/landingpage/impressum.html#audio-credits).
 Die Knabber-, Schritt- und Würgeaufnahmen behalten CC0; ihre Urheber werden freiwillig genannt.
 
 Als Eingang dient jeweils die auf der Quellseite öffentlich angebotene

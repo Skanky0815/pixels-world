@@ -32,7 +32,7 @@ und [Featurevorlagen](.github/ISSUE_TEMPLATE/feature_request.yml) unterstützen 
 technische Umsetzungsschritte und Abhängigkeiten bei der Triage ergänzen. Große Umbauten
 in einzeln funktionierende, reviewbare Schritte teilen. `Refs` kennzeichnet Teilschritte;
 das übergeordnete Issue erst bei vollständiger Abnahme schließen. Neue Objekte benötigen
-zusätzlich den [Wechselwirkungsvertrag](src/content/README.md#neue-objekte-gegenseitige-einwirkungen-planen).
+zusätzlich den [Wechselwirkungsvertrag](game/play/content/README.md#neue-objekte-gegenseitige-einwirkungen-planen).
 
 ## Prüfen und Review
 

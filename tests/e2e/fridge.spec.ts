@@ -3,7 +3,7 @@ import { test, expect, waitForGame } from './support';
 import { observe, until, move, climbToCounterLanding, finishCharm } from './kitchen-support';
 import { TouchDriver } from './touch-support';
 import type { Page } from '@playwright/test';
-import type { GameTestState } from '../../src/test-state';
+import type { GameTestState } from '../../game/play/test-state';
 const fridge = (s: GameTestState) => s.shelves.find((p) => p.isFridge)!;
 
 async function start(page: Page, room = 'fridge-visit') {

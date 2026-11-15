@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { PixelReturnController, type ReturnContact } from '../../src/game/domain/pixel-return.ts';
-import { homecomingPositions } from '../../src/game/content/homecoming-layout.ts';
+import { PixelReturnController, type ReturnContact } from '../../game/play/domain/pixel-return.ts';
+import { homecomingPositions } from '../../game/play/content/homecoming-layout.ts';
 
 const config = { width: 960, floorY: 468, targetX: 782 };
 const platforms = [

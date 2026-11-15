@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test, after } from 'node:test';
-import { PlayActivity } from '../../src/game/input/play-activity.ts';
+import { PlayActivity } from '../../game/play/input/play-activity.ts';
 
 const browserWindow = new EventTarget();
 const browserDocument = Object.assign(new EventTarget(), { hidden: false, hasFocus: () => true });

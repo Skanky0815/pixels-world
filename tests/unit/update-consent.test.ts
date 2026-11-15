@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { UpdateConsent } from '../../src/pwa/update-consent.ts';
+import { UpdateConsent } from '../../game/shared/pwa/update-consent.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Zwei Tabs müssen unabhängig zustimmen, auch wenn ein anderer das Update aktiviert.
 test('Ein anderer Tab darf eine laufende Runde nicht neu laden', async () => {

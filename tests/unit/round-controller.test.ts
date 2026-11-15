@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { RoundController, ROUND_CONFIG } from '../../src/game/domain/round-controller.ts';
+import { RoundController, ROUND_CONFIG } from '../../game/play/domain/round-controller.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Grenzwerte, Reproduzierbarkeit und einmalige Ziehung werden gemeinsam geprüft.
 test('Rückkehrdauer ist inklusiv, reproduzierbar und wird nur einmal pro Runde gewählt', () => {

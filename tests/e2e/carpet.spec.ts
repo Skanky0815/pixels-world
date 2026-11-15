@@ -1,7 +1,7 @@
 import { recordAudio, expectAudio, expectActiveAudio } from './audio-support';
 import { test, expect, start, state, until, holdUntil, reset, couch } from './support';
 import { startTouch } from './touch-support';
-import { CARPET_RULES } from '../../src/game/interactions/carpet-hairball';
+import { CARPET_RULES } from '../../game/play/interactions/carpet-hairball';
 const rug = (s: Awaited<ReturnType<typeof state>>) => s.carpets[0];
 
 for (const room of ['living-room', 'cozy-remix']) {

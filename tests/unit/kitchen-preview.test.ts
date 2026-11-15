@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { KITCHEN_PREVIEW } from '../../src/content/rooms/kitchen-preview.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { selectRoom } from '../../src/content/rooms/index.ts';
-import { playableRoom } from '../../src/content/rooms/selection.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import type { RoomDefinition } from '../../src/game/content/definitions.ts';
+import { KITCHEN_PREVIEW } from '../../game/play/content/rooms/kitchen-preview.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { selectRoom } from '../../game/play/content/rooms/index.ts';
+import { playableRoom } from '../../game/play/content/rooms/selection.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import type { RoomDefinition } from '../../game/play/content/definitions.ts';
 
 test('Küche ist öffentlich auswählbar; die separate DEV-Vorschau bleibt in Produktion isoliert', () => {
   assert.equal(selectRoom('kitchen-preview', true), KITCHEN_PREVIEW);

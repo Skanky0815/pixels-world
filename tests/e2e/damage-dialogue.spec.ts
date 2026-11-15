@@ -11,11 +11,11 @@ import {
   holdUntil,
 } from './support';
 import { advanceRoundTo, useIdleFrames } from './round-clock';
-import { SARA_DAMAGE_DIALOGUE } from '../../src/content/sara-reactions';
+import { SARA_DAMAGE_DIALOGUE } from '../../game/play/content/sara-reactions';
 import { changeLanguage } from './pause-support';
 import { startTouch } from './touch-support';
-import { de } from '../../src/i18n/de';
-import { en } from '../../src/i18n/en';
+import { de } from '../../game/shared/i18n/de';
+import { en } from '../../game/shared/i18n/en';
 import type { Page } from '@playwright/test';
 
 async function finishRound(page: Page) {

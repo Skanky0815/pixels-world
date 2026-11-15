@@ -1,14 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { PeacefulGoal } from '../../src/game/domain/peaceful-goal.ts';
-import { ChaosScore } from '../../src/game/domain/chaos.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import { RoundController } from '../../src/game/domain/round-controller.ts';
-import { HomecomingSequence } from '../../src/game/domain/homecoming.ts';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
-import { roundResult } from '../../src/game/domain/round-result.ts';
-import { PEACEFUL_GOAL_LINES, PEACEFUL_FOOD_LINES } from '../../src/content/peaceful-goal.ts';
-import { copy, resolveText } from '../../src/i18n/locale.ts';
+import { PeacefulGoal } from '../../game/play/domain/peaceful-goal.ts';
+import { ChaosScore } from '../../game/play/domain/chaos.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import { RoundController } from '../../game/play/domain/round-controller.ts';
+import { HomecomingSequence } from '../../game/play/domain/homecoming.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
+import { roundResult } from '../../game/play/domain/round-result.ts';
+import { PEACEFUL_GOAL_LINES, PEACEFUL_FOOD_LINES } from '../../game/play/content/peaceful-goal.ts';
+import { copy, resolveText } from '../../game/shared/i18n/locale.ts';
 
 function round(goal = true, score = 0) {
   const model = new RoundController({ minDurationMs: 10, maxDurationMs: 10 });

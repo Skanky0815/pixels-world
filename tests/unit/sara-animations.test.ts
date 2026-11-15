@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import fs from 'node:fs';
 import { PNG } from 'pngjs';
-import { SARA_CLIPS, SARA_SPRITE } from '../../src/game/actors/sara-animations.ts';
-import { SARA_ANIMATIONS } from '../../src/content/sara-reactions.ts';
+import { SARA_CLIPS, SARA_SPRITE } from '../../game/play/actors/sara-animations.ts';
+import { SARA_ANIMATIONS } from '../../game/play/content/sara-reactions.ts';
 
 const sheet = PNG.sync.read(
   fs.readFileSync(new URL('../../assets/sara/sara-sheet-v1.png', import.meta.url)),

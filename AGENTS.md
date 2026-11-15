@@ -20,7 +20,7 @@ Browser-based cat sandbox in Phaser 3 and TypeScript; keep it frontend-only unle
 
 ## Domain-specific reading
 
-- New world objects/variants: before planning or implementation, apply the incoming/outgoing interaction contract in src/content/README.md#neue-objekte-gegenseitige-einwirkungen-planen and #135, including same-type contacts, intentional resistance, bounded chains, unique damage, pause and reset. Record the requirements in the object issue.
+- New world objects/variants: before planning or implementation, apply the incoming/outgoing interaction contract in game/play/content/README.md#neue-objekte-gegenseitige-einwirkungen-planen and #135, including same-type contacts, intentional resistance, bounded chains, unique damage, pause and reset. Record the requirements in the object issue.
 - Movement/physics: perform the additional manual gameplay check in docs/qa.md#manueller-spieltest.
 - Raster assets/source/export: use [Pixels World Art](.agents/skills/pixels-world-art/SKILL.md) and the affected asset-family guide. The skill does not authorize unrelated gameplay changes or publishing.
 - Documentation: follow CONTRIBUTING.md#dokumentation-pflegen; update the responsible existing document with behavior changes. Preserve generated CHANGELOG, ADR rationale, legal provenance and reproducible asset instructions.

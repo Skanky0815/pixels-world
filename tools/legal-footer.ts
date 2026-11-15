@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite';
-import { buildInfoMarkup, type BuildInfo } from '../src/footer-content';
+import { buildInfoMarkup, type BuildInfo } from '../game/shared/footer-content';
 
 // eslint-disable-next-line max-lines-per-function -- Ein zusammengehöriger HTML-Transform liefert beide statischen Footer-Bausteine ohne Browser-JavaScript aus.
 export function legalFooter(info: BuildInfo, aiDisclosure: string): Plugin {

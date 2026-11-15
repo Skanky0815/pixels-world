@@ -38,7 +38,7 @@ vorher laufen. Hook-Verhalten und Grenzen:
 Während der Umsetzung die nächstliegende Prüfung auswählen und bei gemeinsam
 benutzten Modulen die betroffenen Verbraucher einbeziehen. Die Beispiele sind
 Einstiegspunkte, kein vollständiges Testinventar und kein Ersatz für `check:pr`.
-Dateien und Assertions unter [tests](../tests/) sowie [package.json](../package.json)
+Dateien und Assertions unter [tests](../tests) sowie [package.json](../package.json)
 bleiben maßgeblich. Selektive Unit-Dateien direkt an Node übergeben: Das vorhandene
 `test:unit`-Skript enthält bereits den Glob für die gesamte Suite.
 
@@ -115,7 +115,7 @@ Reduktion muss jede bisher einzigartige Prüfung einer konkreten verbleibenden
 Browser- oder Modellprüfung zugeordnet sein; weniger Fallnamen allein sind kein
 Nachweis für gleichwertige Abdeckung oder eine kürzere Laufzeit.
 
-Specs unter [tests/e2e](../tests/e2e/) verwenden die gemeinsame Gesundheits-/Clock-
+Specs unter [tests/e2e](../tests/e2e) verwenden die gemeinsame Gesundheits-/Clock-
 Fixture aus `support.ts`, echte Tastatur-/Pointer-Eingaben und eigene Browserkontexte.
 Es gibt keine Spielzustandssetter und keine für Tests exponierten Phaser-Objekte.
 `window.__pixelTest` ist ausschließlich im E2E-Build ein unveränderlicher Observer;

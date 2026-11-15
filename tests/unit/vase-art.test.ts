@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import { VASE_APPEARANCES, VASE_SHARD_FAMILY } from '../../src/game/assets/vase-appearance.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import { VASE_APPEARANCES, VASE_SHARD_FAMILY } from '../../game/play/assets/vase-appearance.ts';
 
 function art(name: string) {
   return PNG.sync.read(

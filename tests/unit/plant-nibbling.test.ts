@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { PLANT_NIBBLE, PlantNibbling } from '../../src/game/interactions/plant-nibbling.ts';
+import { PLANT_NIBBLE, PlantNibbling } from '../../game/play/interactions/plant-nibbling.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Nähe und Stillstand lösen erst nach voller Wartezeit Knabbern aus', () => {

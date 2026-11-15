@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import type { Difficulty } from '../../src/content/difficulty';
+import type { Difficulty } from '../../game/play/content/difficulty';
 import { introAction, loadIntro, until } from './support';
 
 export async function startDifficulty(page: Page, difficulty: Difficulty, path = '/') {

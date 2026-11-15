@@ -2,8 +2,8 @@ import { PNG } from 'pngjs';
 import type { Page } from '@playwright/test';
 import { test, expect, waitForLoadingScreen } from './support';
 import { TouchDriver } from './touch-support';
-import { OBJECTS } from '../../src/content/objects/catalog';
-import type { PlaygroundScene } from '../../src/dev/PlaygroundScene';
+import { OBJECTS } from '../../game/play/content/objects/catalog';
+import type { PlaygroundScene } from '../../game/dev/PlaygroundScene';
 
 type Snapshot = ReturnType<PlaygroundScene['snapshot']>;
 

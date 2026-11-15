@@ -4,8 +4,8 @@ import {
   homecomingPositions,
   homecomingCharmPose,
   homecomingPanel,
-} from '../../src/game/content/homecoming-layout.ts';
-import { CharmMotion } from '../../src/game/domain/charm-motion.ts';
+} from '../../game/play/content/homecoming-layout.ts';
+import { CharmMotion } from '../../game/play/domain/charm-motion.ts';
 
 test('Dialog und Versöhnung nutzen die freie Seite gegenüber Saras Eintritt', () => {
   for (const width of [960, 1320]) {

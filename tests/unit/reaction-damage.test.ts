@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { chaosEvent, type DamageKind } from '../../src/game/domain/chaos-event.ts';
-import { ReactionDamage } from '../../src/game/domain/reaction-damage.ts';
-import { HomecomingSequence, selectReaction } from '../../src/game/domain/homecoming.ts';
-import { DialogueMemory, selectSaraDialogue } from '../../src/game/domain/sara-dialogue.ts';
+import { chaosEvent, type DamageKind } from '../../game/play/domain/chaos-event.ts';
+import { ReactionDamage } from '../../game/play/domain/reaction-damage.ts';
+import { HomecomingSequence, selectReaction } from '../../game/play/domain/homecoming.ts';
+import { DialogueMemory, selectSaraDialogue } from '../../game/play/domain/sara-dialogue.ts';
 import {
   SARA_DAMAGE_DIALOGUE,
   type SaraDamageTopic,
   type SaraDialogueCatalogue,
-} from '../../src/content/sara-reactions.ts';
-import { setLanguage, translateExact } from '../../src/i18n/locale.ts';
+} from '../../game/play/content/sara-reactions.ts';
+import { setLanguage, translateExact } from '../../game/shared/i18n/locale.ts';
 
 const incidents: readonly [string, DamageKind, SaraDamageTopic][] = [
   ['couch', 'scratch', 'sofa'],
