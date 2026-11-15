@@ -48,7 +48,11 @@ export function selectionFromEnvironment(context = env) {
 if (argv[1] && import.meta.url === pathToFileURL(argv[1]).href) {
   if (!env.GITHUB_OUTPUT) throw new Error('GITHUB_OUTPUT fehlt');
   const selected = selectionFromEnvironment();
-  const outputs = { ...selected, shards: JSON.stringify(selected.shards) };
+  const outputs = {
+    ...selected,
+    jobs: JSON.stringify(selected.jobs),
+    reports: JSON.stringify(selected.reports),
+  };
   appendFileSync(
     env.GITHUB_OUTPUT,
     Object.entries(outputs)

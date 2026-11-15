@@ -1,107 +1,130 @@
-export type QaScope = 'none' | 'landing' | 'play' | 'both' | 'smoke' | 'all';
+export type QaScope = 'none' | 'landing' | 'play' | 'both' | 'smoke' | 'integration' | 'all';
+export type TestArea = 'landingpage' | 'play' | 'integration';
 
-// Cross-area specs include actual entry/navigation or shared publication contracts.
-export const landingSpecs = ['emoji-download', 'help', 'landing-metadata'];
-export const integrationSpecs = ['build-isolation', 'footer', 'landing', 'legal'];
-export const playSpecs = [
-  'achievements',
-  'age-rating',
-  'album',
-  'album-landscape',
-  'album-reset',
-  'ball-play',
-  'books',
-  'camera-dialogue',
-  'carpet',
-  'content',
-  'couch',
-  'curtain',
-  'damage-dialogue',
-  'desktop-camera',
-  'dev-viewer',
-  'dialogue-portraits',
-  'dialogue-side',
-  'difficulty',
-  'difficulty-help',
-  'dishes',
-  'feedback',
-  'follow-camera',
-  'food-bag',
-  'fridge',
-  'game-debug',
-  'game-feedback',
-  'hard-shelves',
-  'herbs',
-  'hud',
-  'kitchen',
-  'kitchen-preview',
-  'kitchen-standing',
-  'lifecycle',
-  'loading',
-  'localization',
-  'main-goal',
-  'movement',
-  'object-chain',
-  'object-impact-cases',
-  'pantry',
-  'pause',
-  'peaceful-goal',
-  'pictures',
-  'pixel-return',
-  'plant',
-  'playground',
-  'pwa',
-  'pwa-update',
-  'readable-desktop',
-  'reconciliation',
-  'rendering',
-  'responsive',
-  'room-selection',
-  'round',
-  'sara-dialogue',
-  'shelves',
-  'spawn-slots',
-  'start-screen',
-  'storage-choices',
-  'tablecloth',
-  'tablet-layout',
-  'touch',
-  'trash-bin',
-  'vases',
-];
+const coreIntegration = /@smoke|@integration/;
+const landingIntegration = /@smoke|@integration|@landing-transition/;
+const landingTitle = /(?:^|[\\/ ])landingpage[\\/]/;
 
-const landingFiles = [...landingSpecs, ...integrationSpecs];
-const landingTitles = new RegExp(String.raw`(?:^|[\\/ ])(?:${landingFiles.join('|')})\.spec\.ts`);
-
-function specPattern(names: string[]) {
-  return new RegExp(`(?:^|[/\\\\])(?:${names.join('|')})\\.spec\\.ts$`);
+function folders(...areas: TestArea[]) {
+  return new RegExp(String.raw`(?:^|[\\/])(?:${areas.join('|')})[\\/].*\.spec\.ts$`);
 }
 
-/** One registry drives both changed-test classification and Playwright selection. */
-export function specArea(name: string): QaScope {
-  if (landingSpecs.includes(name)) return 'landing';
+const specPath = /^(landingpage|play|integration)\/(?:[^/]+\/)*[^/]+\.spec\.ts(?:$|-snapshots\/)/;
+const areaScopes: Record<string, QaScope> = {
+  landingpage: 'landing',
+  play: 'play',
+  integration: 'both',
+};
 
-  if (integrationSpecs.includes(name)) return 'both';
-
-  return playSpecs.includes(name) ? 'play' : 'all';
+export function specArea(path: string) {
+  return areaScopes[specPath.exec(path)?.[1] ?? ''] ?? 'all';
 }
 
-// eslint-disable-next-line max-lines-per-function -- Die deklarativen Profilfälle bilden gemeinsam den Auswahlvertrag für Playwright.
-export function browserProfile(scope = 'all') {
-  if (scope === 'all') return {};
+function integrationGrep(origin: string) {
+  return origin === 'play' ? coreIntegration : landingIntegration;
+}
 
-  if (scope === 'landing') return { testMatch: specPattern(landingFiles) };
+interface BrowserProfile {
+  testMatch?: RegExp;
+  grep?: RegExp;
+}
+const landingProfile = {
+  testMatch: folders('landingpage', 'integration'),
+  grep: new RegExp(`${landingTitle.source}|${landingIntegration.source}`),
+};
+const bothProfile = {
+  testMatch: folders('landingpage', 'play', 'integration'),
+  grep: new RegExp(`${landingTitle.source}|${landingIntegration.source}`),
+};
+const profiles: Record<string, BrowserProfile> = {
+  all: {},
+  landing: landingProfile,
+  play: { testMatch: folders('play', 'integration'), grep: coreIntegration },
+  both: bothProfile,
+  smoke: bothProfile,
+  'landing-only': { testMatch: folders('landingpage') },
+  'landing-full': { testMatch: folders('landingpage') },
+  'play-only': { testMatch: folders('play'), grep: /@smoke/ },
+  'play-full': { testMatch: folders('play') },
+  'integration-full': { testMatch: folders('integration') },
+};
 
-  if (scope === 'play')
-    return {
-      testMatch: specPattern([...playSpecs, ...integrationSpecs]),
-      grep: /@smoke|@integration/,
-    };
+export function browserProfile(scope = 'all', origin = 'both'): BrowserProfile {
+  const profile =
+    scope === 'integration'
+      ? { testMatch: folders('integration'), grep: integrationGrep(origin) }
+      : profiles[scope];
 
-  if (scope === 'both' || scope === 'smoke')
-    return {
-      grep: new RegExp(`@smoke|@integration|${landingTitles.source}`),
-    };
+  if (!profile) throw new Error(`Unbekanntes Browserprofil: ${scope}`);
 
-  throw new Error(`Unbekanntes Browserprofil: ${scope}`);
+  return profile;
+}
+
+export function browserServers(scope: string) {
+  return {
+    offline: scope === 'all' || scope === 'integration-full',
+    dev: !['landing-only', 'landing-full'].includes(scope),
+  };
+}
+
+export interface BrowserJob {
+  area: string;
+  label: string;
+  scope: string;
+  origin: string;
+  shard: number;
+  total: number;
+  report: string;
+}
+
+// eslint-disable-next-line max-lines-per-function -- Ein deklarativer Matrixeintrag enthält alle zusammengehörigen Ausführungs- und Reportfelder.
+function shards(
+  area: string,
+  label: string,
+  scope: string,
+  origin: string,
+  total = 1,
+): BrowserJob[] {
+  return Array.from({ length: total }, (_, i) => ({
+    area,
+    label,
+    scope,
+    origin,
+    shard: i + 1,
+    total,
+    report: `${area}-${i + 1}`,
+  }));
+}
+
+const shortAreas: Record<string, string[]> = {
+  none: [],
+  landing: ['landing'],
+  play: ['play'],
+  both: ['landing', 'play'],
+  smoke: ['landing', 'play'],
+  integration: [],
+};
+const labels: Record<string, string> = {
+  landing: 'Landingpage',
+  play: 'Spiel',
+  integration: 'Integration',
+};
+
+export function browserJobs(scope: QaScope, event: string) {
+  if (scope === 'none') return [];
+
+  if (scope === 'all') return fullJobs(event);
+  const areas = [...shortAreas[scope], 'integration'];
+
+  return areas.flatMap((area) =>
+    shards(area, labels[area], area === 'integration' ? 'integration' : `${area}-only`, scope),
+  );
+}
+
+function fullJobs(event: string) {
+  if (event !== 'pull_request') return shards('all', 'Vollprüfung', 'all', 'all', 4);
+
+  return ['landing', 'play', 'integration'].flatMap((area) =>
+    shards(area, labels[area], `${area}-full`, 'all', area === 'play' ? 4 : 1),
+  );
 }

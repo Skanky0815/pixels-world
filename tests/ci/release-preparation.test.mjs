@@ -157,7 +157,7 @@ function githubFixture() {
       yield {
         sha: current,
         message: 'fix(test): read emoji ZIPs without system unzip',
-        files: ['tests/e2e/emoji-download.spec.ts'],
+        files: ['tests/e2e/landingpage/emoji-download.spec.ts'],
       };
       yield {
         sha: merged,

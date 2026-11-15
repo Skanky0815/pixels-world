@@ -42,12 +42,12 @@ Dateien und Assertions unter [tests](../tests) sowie [package.json](../package.j
 bleiben maßgeblich. Selektive Unit-Dateien direkt an Node übergeben: Das vorhandene
 `test:unit`-Skript enthält bereits den Glob für die gesamte Suite.
 
-| Bereich                     | Beispiele für kurze Rückkopplung                                                                                                                                                                                                                             |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Landingpage / gemeinsame UI | `npm run test:e2e -- tests/e2e/landing.spec.ts tests/e2e/footer.spec.ts`; bei gemeinsamem Footer auch die betroffenen Spiel-/Rechtsseiten berücksichtigen.                                                                                                   |
-| Gameplay / Input / Physik   | `node --experimental-strip-types --test tests/unit/input-state.test.ts tests/unit/fridge.test.ts` und `npm run test:e2e -- tests/e2e/movement.spec.ts tests/e2e/fridge.spec.ts`; je nach Änderung Kontakt-, Pause- und Resetfälle ergänzen.                  |
-| Fortschritt / Speicher      | `node --experimental-strip-types --test tests/unit/achievements.test.ts tests/unit/storage-choice.test.ts` und `npm run test:e2e -- tests/e2e/achievements.spec.ts tests/e2e/storage-choices.spec.ts`; Freischaltung, Anzeige und Reload gemeinsam beachten. |
-| Build / Release / Tools     | `npm run test:ci` für die vorhandenen CI-/Releaseverträge; `npm run build` und bei geänderten Buildgrenzen `npm run test:e2e -- tests/e2e/build-isolation.spec.ts`. Asset-Tools mit den jeweiligen Familienprüfungen und reproduzierten Exporten prüfen.     |
+| Bereich                     | Beispiele für kurze Rückkopplung                                                                                                                                                                                                                                              |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Landingpage / gemeinsame UI | `npm run test:e2e -- tests/e2e/landingpage/landing.spec.ts tests/e2e/integration/footer.spec.ts`; bei gemeinsamem Footer auch die betroffenen Spiel-/Rechtsseiten berücksichtigen.                                                                                            |
+| Gameplay / Input / Physik   | `node --experimental-strip-types --test tests/unit/input-state.test.ts tests/unit/fridge.test.ts` und `npm run test:e2e -- tests/e2e/play/movement.spec.ts tests/e2e/play/fridge.spec.ts`; je nach Änderung Kontakt-, Pause- und Resetfälle ergänzen.                         |
+| Fortschritt / Speicher      | `node --experimental-strip-types --test tests/unit/achievements.test.ts tests/unit/storage-choice.test.ts` und `npm run test:e2e -- tests/e2e/play/achievements.spec.ts tests/e2e/integration/storage-choices.spec.ts`; Freischaltung, Anzeige und Reload gemeinsam beachten. |
+| Build / Release / Tools     | `npm run test:ci` für die vorhandenen CI-/Releaseverträge; `npm run build` und bei geänderten Buildgrenzen `npm run test:e2e -- tests/e2e/integration/build-isolation.spec.ts`. Asset-Tools mit den jeweiligen Familienprüfungen und reproduzierten Exporten prüfen.          |
 
 Zwei kleine Beispiele für Umfang und Abschluss:
 
@@ -65,7 +65,7 @@ Weitere Diagnoseoptionen:
 ```sh
 npm run lint
 npm run typecheck
-npm run test:e2e -- tests/e2e/couch.spec.ts --grep 'Sofa:'
+npm run test:e2e -- tests/e2e/play/couch.spec.ts --grep 'Sofa:'
 npm run test:e2e -- --workers=1
 npm run test:e2e -- --repeat-each=3
 npm run test:e2e:debug
@@ -116,7 +116,7 @@ Browser- oder Modellprüfung zugeordnet sein; weniger Fallnamen allein sind kein
 Nachweis für gleichwertige Abdeckung oder eine kürzere Laufzeit.
 
 Specs unter [tests/e2e](../tests/e2e) verwenden die gemeinsame Gesundheits-/Clock-
-Fixture aus `support.ts`, echte Tastatur-/Pointer-Eingaben und eigene Browserkontexte.
+Fixture aus `support/support.ts`, echte Tastatur-/Pointer-Eingaben und eigene Browserkontexte.
 Es gibt keine Spielzustandssetter und keine für Tests exponierten Phaser-Objekte.
 `window.__pixelTest` ist ausschließlich im E2E-Build ein unveränderlicher Observer;
 seine Abwesenheit im Produktionsbuild wird im Browser geprüft.
@@ -146,7 +146,7 @@ Query-Steuerung. Tags, Worker und Timeouts stehen in den Specs und
 [playwright.config.ts](../playwright.config.ts), keine zweite Szenarienliste hier.
 Automatische Retries bleiben ausgeschaltet; Wiederholungen dienen einer bewusst
 gestarteten Stabilitätsprüfung. Bei Browser-Updates die Mehrfinger-Freigabe in
-`touch-support.ts` mitprüfen: Der verwendete CDP-Pfad gibt einzelne Kontakte per
+`support/touch-support.ts` mitprüfen: Der verwendete CDP-Pfad gibt einzelne Kontakte per
 gezieltem `touchEnd` frei.
 
 ## Gezielte Charakter-Bildvergleiche
@@ -168,9 +168,9 @@ abweichende Referenzen schlagen fehl und werden nicht automatisch freigegeben.
 
 ```sh
 # Bewusste Aktualisierung: beide neuen Bilder und ihren Diff vor Commit prüfen.
-npm run test:e2e -- tests/e2e/round.spec.ts tests/e2e/ball-play.spec.ts --grep 'Der Rundentimer|Ballfund:' --update-snapshots
+npm run test:e2e -- tests/e2e/play/round.spec.ts tests/e2e/play/ball-play.spec.ts --grep 'Der Rundentimer|Ballfund:' --update-snapshots
 # Ohne Aktualisierung prüfen, auch mehrfach und mit Produktionszeiten:
-E2E_FULL_ROUND=1 npm run test:e2e -- tests/e2e/round.spec.ts tests/e2e/ball-play.spec.ts --grep 'Der Rundentimer|Ballfund:' --repeat-each=3
+E2E_FULL_ROUND=1 npm run test:e2e -- tests/e2e/play/round.spec.ts tests/e2e/play/ball-play.spec.ts --grep 'Der Rundentimer|Ballfund:' --repeat-each=3
 ```
 
 Zwei ausdrücklich aktivierte Gegenproben verändern ausschließlich die
@@ -181,8 +181,8 @@ Die Proben dürfen nicht zusammen mit einer Referenzaktualisierung laufen und
 gelangen nicht in den Produktionsbuild.
 
 ```sh
-E2E_VISUAL_FAULT=missing-sara npm run test:e2e -- tests/e2e/round.spec.ts --grep 'Der Rundentimer'
-E2E_VISUAL_FAULT=pixel-size npm run test:e2e -- tests/e2e/ball-play.spec.ts --grep 'Ballfund:'
+E2E_VISUAL_FAULT=missing-sara npm run test:e2e -- tests/e2e/play/round.spec.ts --grep 'Der Rundentimer'
+E2E_VISUAL_FAULT=pixel-size npm run test:e2e -- tests/e2e/play/ball-play.spec.ts --grep 'Ballfund:'
 ```
 
 Ergebnisbilder und Diffs gehören zur Review. Die `Bildvergleich:`-Schritte im
@@ -197,16 +197,16 @@ Maßgeblich sind [.github/workflows/qa.yml](../.github/workflows/qa.yml),
 [Testregistrierung](../tools/qa-profiles.ts). Der Workflow startet für jeden PR und
 Main-Push; der Auswahljob benötigt keine npm-Installation.
 
-| Änderung / Anlass                                                                    | Geplanter Umfang                                                                             |
-| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| Nur Landingpage, Hilfe, Rechtsseiten oder deren Ressourcen                           | Quality und `landing`: statische Seiten plus echte gemeinsame Einstiegs-/Navigationsverträge |
-| Nur Spiel, Content oder Spielressourcen                                              | Quality und `play`: Spiel-Smoke plus ausdrücklich markierte `@integration`-Übergänge         |
-| Gemeinsame Styles, Sprache oder UI-Grundlagen; beide Bereiche geändert               | Quality und `both`: Landingpage-Prüfungen, Spiel-Smoke und Integration                       |
-| Build, Routing, PWA/Speicherwahl, Abhängigkeiten, QA-Werkzeuge oder unbekannte Pfade | Quality und `all`: vollständige Browsersuite                                                 |
-| Nur Dokumentation / ausgeschlossene Quellgrafiken                                    | Auswahljob und abgeschlossener Sammelcheck, ohne Quality-/Browserjob                         |
-| Main-Push                                                                            | Quality bei relevanten Änderungen, Browser bewusst nicht erneut geplant                      |
-| Manuelle QA                                                                          | Standardmäßig `all`; `landing`, `play`, `both` und `smoke` ausdrücklich wählbar              |
-| Release vor Veröffentlichung                                                         | Unbedingt `all` mit Produktionszeiten, unabhängig vom Diff und anderen Profileingaben        |
+| Änderung / Anlass                                                                    | Geplanter Umfang                                                                                         |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Nur Landingpage, Hilfe, Rechtsseiten oder deren Ressourcen                           | Quality sowie getrennte Gruppen Landingpage und Integration (`landing`)                                  |
+| Nur Spiel, Content oder Spielressourcen                                              | Quality sowie getrennte Gruppen Spiel und Integration (`play`)                                           |
+| Gemeinsame Styles, Sprache oder UI-Grundlagen; beide Bereiche geändert               | Quality sowie getrennte Gruppen Landingpage, Spiel und Integration (`both`)                              |
+| Build, Routing, PWA/Speicherwahl, Abhängigkeiten, QA-Werkzeuge oder unbekannte Pfade | Quality und vollständige Bereichsgruppen (`all`): Landingpage, Spiel auf mehreren Shards und Integration |
+| Nur Dokumentation / ausgeschlossene Quellgrafiken                                    | Auswahljob und abgeschlossener Sammelcheck, ohne Quality-/Browserjob                                     |
+| Main-Push                                                                            | Quality bei relevanten Änderungen, Browser bewusst nicht erneut geplant                                  |
+| Manuelle QA                                                                          | Standardmäßig `all`; `landing`, `play`, `both`, `smoke` und `integration` ausdrücklich wählbar           |
+| Release vor Veröffentlichung                                                         | Unbedingt `all` mit Produktionszeiten, unabhängig vom Diff und anderen Profileingaben                    |
 
 Quality umfasst weiterhin die projektweiten Lint-, Format-, Unit-, CI-, Build-
 und Abhängigkeitsprüfungen. Die lokale Pflichtprüfung `npm run check:pr` erzwingt
@@ -216,15 +216,30 @@ weiterhin alle Browserfälle. Für kurze Rückkopplung stehen zusätzlich bereit
 npm run test:e2e:landing
 npm run test:e2e:play
 npm run test:e2e:smoke
+npm run test:e2e:integration
 ```
 
-`smoke` entspricht der gemeinsamen Auswahl `both`. Gemischte Specs werden nicht
-pauschal anhand ihres Dateinamens weggelassen: `@integration` markiert beispielsweise
-Landingpage → Spielstart, Rechtslinks aus dem Spiel und öffentliche Buildpfade.
-Die Registrierung ordnet alle vorhandenen Specs zu; neue, noch nicht zugeordnete
-Testdateien erzwingen eine Vollprüfung. Änderungen an Spiel-Specs und gemeinsamen
-Testfixtures führen ebenfalls zur Vollprüfung, damit auch Fälle ohne Smoke-Tag
-aus der geänderten Datei tatsächlich laufen. Eine CI-Prüfung verhindert unbemerkte Lücken.
+Die Specs liegen unter `tests/e2e/landingpage/`, `play/` und `integration/`.
+Gemeinsame Browser-Fixtures und Treiber liegen unter `support/`, spezialisierte
+Spielhelfer bei `play/`. Referenzbilder bleiben beim zugehörigen Spec. Alle Ordner
+werden rekursiv erfasst; Specs außerhalb dieser Bereiche blockieren die CI.
+
+`smoke` entspricht der gemeinsamen Auswahl `both`. Die lokalen Gesamtprofile
+`landing` und `play` enthalten die jeweils nötigen Übergänge. In PRs werden sie in
+**disjunkte Matrixgruppen** zerlegt: Landingpage, Spiel und Integration. Die Integration
+läuft pro PR einmal. `@integration` markiert gemeinsame Übergänge; der zusätzliche
+Handy-Einstieg `@landing-transition` gehört zur Landingpage-Auswahl. Der automatische
+Abgleich verwendet die tatsächlich von Playwright gesammelten Test-IDs, prüft die
+Vereinigung der Profile und verhindert fehlende oder doppelte Fälle.
+
+Bei `all` im PR werden die vollständigen Bereichsgruppen geprüft; der Spielbereich
+ist auf Shards verteilt. Wiederverwendete Release-QA und manuelle Vollprüfung behalten
+vier Shards über die gesamte Suite. Der Release-Build stammt weiterhin aus dem ersten
+vollständigen Release-Shard. Bereichsgruppen liefern keinen Release-Buildnachweis.
+
+Neue oder geänderte Landingpage-Specs werden vollständig im passenden Bereich geprüft.
+Spiel-/Integrations-Specs und gemeinsame Testfixtures erzwingen eine Vollprüfung,
+damit auch geänderte Fälle ohne Smoke-Tag laufen. Unbekannte Pfade bleiben konservativ.
 
 Der Auswahljob vergleicht vollständige Git-Bäume: beim PR den Base-Commit mit dem
 getesteten Merge-Commit, beim Main-Push den vorherigen mit dem neuen Commit.
@@ -239,8 +254,9 @@ Der bestehende Sammelcheck `Playwright (Chromium)` bleibt der stabile Gate-Name
 für [Main-Schutz](https://github.com/Skanky0815/pixels-world/issues/342). Er verlangt
 einen erfolgreichen Auswahljob sowie genau die geplanten Quality-/Browserjobs.
 Nur ausdrücklich geplante Auslassungen für Dokumentation und Main sind zulässig;
-Fehler, Abbruch und unerwartetes Überspringen blockieren. Profil und tatsächliche
-Ausführungen stehen im Actions-Bericht. Reportdarstellung bleibt ergänzend zu den
+Fehler, Abbruch und unerwartetes Überspringen blockieren. Profil, geplante Gruppen und tatsächliche
+Ausführungen stehen im Actions-Bericht. Reports und Artefakte besitzen eindeutige
+Namen pro Gruppe und Shard; der Sammelcheck erwartet genau diese geplanten Reports. Reportdarstellung bleibt ergänzend zu den
 verbindlichen Job-Ergebnissen.
 
 Die Vollsuite behält alle Varianten und Assertions. Im Spiel-Smoke genügt beim
@@ -250,11 +266,13 @@ und Unit-/Contentprüfungen. Individuelle Kontakt-/Capture-/Kamera-/Resetverträ
 beide Charakter-Bildvergleiche sowie Erfolg und Misserfolg werden weiter geprüft.
 Keine Zustandssetter, ausgelassenen Pflichtinteraktionen oder schwächeren Assertions.
 
-Selektive Profile starten nur E2E-, Pages- und DEV-Vorschau; die zusätzlichen
-Offline-/Release-Wechselserver werden ausschließlich für `all` aufgebaut. Matrix,
-Worker, Browser-Image und Digest bleiben im Workflow bzw. Lockfile; eine Aufteilung
-auf mehr Runner ist keine automatische Ersparnis an Runner-Minuten. Laufzeiten und
-Abdeckungsabgleich gehören ins Issue/PR, keine dauerhafte Benchmarktabelle hier.
+Die reine Landingpage-Gruppe startet nur E2E- und Pages-Vorschau. Spiel- und kurze
+Integrationsgruppen verwenden zusätzlich die DEV-Vorschau; nur `all` und die
+vollständige Integrationsgruppe benötigen die Offline-/Release-Wechselserver.
+Matrix, Worker, Browser-Image und Digest bleiben im Workflow bzw. Lockfile.
+Mehr getrennte Runner bedeuten zusätzlichen Start-/Buildaufwand und sparen nicht
+automatisch Runner-Minuten. Laufzeiten und der Vorher-/Nachherabgleich gehören ins
+Issue/PR, keine dauerhafte Benchmarktabelle hier.
 Workflowänderungen zusätzlich mit Actionlint prüfen.
 
 ## Ergebnisse und Abhängigkeiten
