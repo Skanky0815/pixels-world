@@ -1,4 +1,11 @@
 export const de = {
+  feedbackFridge: 'Kühlschrank durchwühlt!',
+  fridgeRummaging: 'Rumpel … raschel …',
+  fridgeWarning: 'Wackelt … jetzt an die Klinke!',
+  fridgeHandle: 'Festhalten … Tür auf!',
+  saraDamageFridge0: 'Da drin raschelt es verdächtig.',
+  saraDamageFridge1: 'Die Lebensmittel waren schon sortiert, Pixel.',
+  saraDamageFridge2: 'Pixel. Sogar im Kühlschrank steht jetzt alles schief.',
   feedbackTablecloth: 'Decke abgezogen! +{v0}',
   feedbackTrashBin: 'Müll verteilt! +{v0}',
   feedbackPantryTin: 'Kekse verteilt! +{v0}',
@@ -482,8 +489,8 @@ export const de = {
   yourMainGoal: 'Dein Hauptziel',
   moveAndSteerInMidAir: 'Laufen und im Sprung steuern',
   spaceLabel: 'Leertaste',
-  jumpAndLeapOffTheCurtain: 'Springen und vom Vorhang abspringen',
-  climbTheCurtain: 'Am Stoff klettern',
+  jumpAndLeapOffTheCurtain: 'Springen und abspringen',
+  climbTheCurtain: 'Klettern',
   restartTheRound: 'Runde neu starten',
   makingAmendsPressTheBigArrow:
     'Bei der Versöhnung: die große Pfeiltaste rechtzeitig drücken. Texte liest du in Ruhe und bestätigst mit Leertaste. Bei Fokusverlust pausiert das Spiel.',
@@ -515,7 +522,7 @@ export const de = {
   pixelSWorldLivingRoomPrototype: 'Pixel’s World · Wohnzimmer',
   move: 'Laufen',
   jumpLabel: 'Springen',
-  climbCurtain: 'Stoff klettern',
+  climbCurtain: 'Klettern',
   restart: 'Neustart',
   pixelSLivingRoomUseArrow:
     'Pixels Zimmer. Pfeiltasten zum Laufen und Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',

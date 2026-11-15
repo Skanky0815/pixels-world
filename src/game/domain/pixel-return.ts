@@ -74,7 +74,7 @@ export class PixelReturnController {
   }
 
   private followPlatformEdge(contact: ReturnContact) {
-    if (this.exit && contact.bottom > this.exit.top + contact.height + 2) this.exit = null;
+    if (this.exit && leftSupport(contact, this.exit.top)) this.exit = null;
 
     if (this.exit || !contact.grounded || contact.bottom >= this.config.floorY - 2) return;
     const platform = this.platforms.find((candidate) => supports(candidate, contact));
@@ -125,4 +125,11 @@ function automaticInput(contact: ReturnContact, horizontal: number): InputState 
     jumpPressed: contact.grounded && blocked,
     active: true,
   });
+}
+
+function leftSupport(contact: ReturnContact, top: number) {
+  return (
+    contact.bottom > top + contact.height + 2 ||
+    (contact.grounded && Math.abs(contact.bottom - top) > 3)
+  );
 }

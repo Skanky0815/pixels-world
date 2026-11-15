@@ -36,7 +36,7 @@ import type { BookRules } from '../interactions/book-toppling.ts';
 import type { BookAppearance } from '../objects/book-art.ts';
 
 export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
-export type FurnitureAppearance = 'stool' | 'table' | 'counter';
+export type FurnitureAppearance = 'stool' | 'table' | 'counter' | 'fridge';
 interface Base {
   readonly album?: DamageAlbumEntry;
   readonly spawn: SpawnProfile;

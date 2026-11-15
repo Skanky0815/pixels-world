@@ -1,6 +1,6 @@
+import { HERB_VARIANTS } from '../objects/herbs.ts';
 import {
   KITCHEN_TABLE_SLOTS,
-  KITCHEN_COUNTER_SLOTS,
   KITCHEN_WALL_SHELF_SLOTS,
   KITCHEN_DOOR_SHELF_SLOTS,
   KITCHEN_FLOOR_SLOTS,
@@ -19,7 +19,7 @@ export const KITCHEN_PREVIEW = {
   objectSlots: KITCHEN_FLOOR_SLOTS,
   navigationClearances: [
     { x: 0, y: 276, width: 212, height: 192 },
-    { x: 304, y: 248, width: 320, height: 80 },
+    { x: 304, y: 248, width: 286, height: 80 },
     { x: 800, y: 138, width: 140, height: 120 },
   ],
   width: 960,
@@ -63,7 +63,6 @@ export const KITCHEN_PREVIEW = {
       durability: { stability: 'stable' },
     },
     {
-      slots: KITCHEN_COUNTER_SLOTS,
       id: 'kitchen-counter',
       asset: 'wood-shelf',
       appearance: 'counter',
@@ -83,6 +82,32 @@ export const KITCHEN_PREVIEW = {
       bounds: { x: 276, y: 218, width: 136, height: 16 },
       durability: { stability: 'stable' },
       slots: KITCHEN_WALL_SHELF_SLOTS,
+    },
+    {
+      id: 'kitchen-fridge',
+      asset: 'wood-shelf',
+      appearance: 'fridge',
+      bounds: { x: 608, y: 148, width: 160, height: 320 },
+      durability: { stability: 'stable' },
+      slots: {
+        count: { easy: 2, normal: 2, hard: 2 },
+        entries: [
+          {
+            id: 'fridge-herb',
+            x: 28,
+            capacity: 'medium',
+            categories: ['plant'],
+            pool: HERB_VARIANTS,
+          },
+          {
+            id: 'fridge-tin',
+            x: 136,
+            capacity: 'medium',
+            categories: ['decoration'],
+            pool: ['biscuit-tin'],
+          },
+        ],
+      },
     },
   ],
   decorations: [

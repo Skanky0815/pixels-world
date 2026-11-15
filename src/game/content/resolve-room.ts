@@ -233,10 +233,22 @@ function validateCouch(value: Extract<ObjectDefinition, { kind: 'couch' }>, path
   number(value.rules.delayMs, `${path}.rules.delayMs`);
 }
 
+function validateFridgeBody(
+  platform: RoomDefinition['platforms'][number],
+  room: RoomDefinition,
+  path: string,
+) {
+  if (platform.appearance !== 'fridge') return;
+  const b = platform.bounds;
+
+  if (b.y + b.height !== room.floor.y || b.x + b.width * 1.3 > room.width)
+    fail(path, 'fridge body or open door outside room');
+}
+
 function validatePlatformAppearance(platform: RoomDefinition['platforms'][number], path: string) {
   if (platform.appearance === undefined) return;
 
-  if (!['stool', 'table', 'counter'].includes(platform.appearance))
+  if (!['stool', 'table', 'counter', 'fridge'].includes(platform.appearance))
     fail(path, 'unknown furniture appearance');
 
   if ((platform.durability?.stability ?? 'stable') !== 'stable')
@@ -340,6 +352,7 @@ class RoomResolver {
       bounds(platform.bounds, room, `${root}.platforms.${platform.id}.bounds`);
       asset(platform.asset, 'shelf', `${root}.platforms.${platform.id}.asset`);
 
+      validateFridgeBody(platform, room, `${root}.platforms.${platform.id}`);
       validatePlatformAppearance(platform, `${root}.platforms.${platform.id}.appearance`);
 
       if (platform.durability !== undefined) {

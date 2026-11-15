@@ -27,6 +27,7 @@ export const DAMAGE_FEEDBACK: Record<DamageKind, TextKey> = {
 export const OBJECT_DAMAGE_FEEDBACK: Readonly<
   Record<string, Partial<Record<DamageKind, TextKey>>>
 > = {
+  fridge: { spill: 'feedbackFridge' },
   tablecloth: { spill: 'feedbackTablecloth' },
   'trash-bin': { spill: 'feedbackTrashBin' },
   pantry: { spill: 'feedbackPantryTin' },

@@ -4,6 +4,7 @@ import { preloadPantryArt, pantryArtReady } from '../assets/pantry-art';
 import { AlbumBanners } from '../ui/AlbumBanners';
 import { EndingPresentation } from '../domain/ending-presentation';
 import { preloadSaraEndingArt } from '../assets/sara-ending-art';
+import { configureRoomHost } from '../host-resize';
 import { installFollowCamera } from '../follow-camera-preview';
 import { loadingScreen } from '../../loading-screen';
 import { preloadObjectAudio } from '../assets/object-audio';
@@ -23,6 +24,7 @@ import { preloadFoodBagArt } from '../assets/food-bag-art';
 import { preloadBookArt } from '../assets/book-art';
 import { kitchenArtReady, preloadKitchenArt } from '../assets/kitchen-art';
 import { preloadRoomArt } from '../assets/room-art';
+import { preloadFridgeArt, fridgeArtReady } from '../assets/fridge-art';
 import { preloadShelfArt } from '../assets/shelf-art';
 import type { Shelf } from '../objects/Shelf';
 import { preloadFavoriteBallArt } from '../assets/favorite-ball-art';
@@ -169,6 +171,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadBookArt(this);
     preloadFoodBagArt(this);
     preloadShelfArt(this);
+    preloadFridgeArt(this);
     preloadRoomArt(this);
 
     preloadKitchenArt(this);
@@ -222,6 +225,8 @@ export class LivingRoomScene extends Phaser.Scene {
     this.menuHome = data.menuHome ?? this.menuHome;
     this.changeRoom(data.roomId);
     this.room = this.populateRoom();
+    configureRoomHost(this.game, this.room.definition.width, this.room.definition.height);
+    this.physics.world.setBounds(0, 0, this.room.definition.width, this.room.definition.height);
     this.refreshCaption();
 
     this.initializeRound();
@@ -243,6 +248,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (definition) this.baseRoom = resolveRoom(definition, OBJECTS);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Alle gemeinsam vorgeladenen Küchenobjekte bilden dieselbe Bereitschaftsgrenze beim Raumwechsel.
   private roomArtReady() {
     return (
       kitchenArtReady(this) &&
@@ -250,7 +256,8 @@ export class LivingRoomScene extends Phaser.Scene {
       herbArtReady(this) &&
       pantryArtReady(this) &&
       trashBinArtReady(this) &&
-      tableclothArtReady(this)
+      tableclothArtReady(this) &&
+      fridgeArtReady(this)
     );
   }
 
@@ -405,6 +412,7 @@ export class LivingRoomScene extends Phaser.Scene {
             room: {
               id: this.room.definition.id,
               width: this.room.definition.width,
+              physicsWidth: this.physics.world.bounds.width,
               height: this.room.definition.height,
               artReady: this.roomArtReady(),
             },
@@ -635,7 +643,9 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (entry) return entry.definition.kind;
 
-    return this.shelves.some((shelf) => shelf.id === objectId) ? 'shelf' : undefined;
+    const shelf = this.shelves.find((shelf) => shelf.id === objectId);
+
+    return shelf ? (shelf.isFridge ? 'fridge' : 'shelf') : undefined;
   }
 
   private recordDestruction(event: ChaosEvent) {
@@ -646,6 +656,7 @@ export class LivingRoomScene extends Phaser.Scene {
     );
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Lose Objektvarianten und feste Möbel teilen die vorhandene Fortschrittsgrenze.
   private damagedVariant(objectId: string) {
     const entry = this.built.entries.find((entry) => entry.object.id === objectId);
 
@@ -657,14 +668,22 @@ export class LivingRoomScene extends Phaser.Scene {
 
     const shelf = this.shelves.find((shelf) => shelf.id === objectId);
 
-    return shelf ? `shelf.${shelf.snapshot().stability}` : undefined;
+    return shelf
+      ? shelf.isFridge
+        ? 'fridge.cream'
+        : `shelf.${shelf.snapshot().stability}`
+      : undefined;
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Beide Quellen verwenden dieselbe einmalige Fund- und Bannerfolge.
   private discoverAlbum(event: ChaosEvent) {
     const entry = this.built.entries.find((e) => e.object.id === event.objectId);
 
-    if (!entry) return;
-    const discovery = discoverAlbum(event, entry.definition.variant);
+    const shelf = this.shelves.find((shelf) => shelf.id === event.objectId);
+    const variant = entry?.definition.variant ?? (shelf?.isFridge ? 'cream-fridge' : undefined);
+
+    if (!variant) return;
+    const discovery = discoverAlbum(event, variant);
 
     if (!discovery) return;
     this.roundAlbum.record(discovery.entryId);
@@ -1027,6 +1046,8 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private beginPixelReturn() {
+    for (const shelf of this.shelves) shelf.fridge?.abortVisit();
+    this.pixel.hideInFurniture(false);
     const pixelBody = this.pixel.collider.body;
 
     for (const body of this.physics.world.bodies.entries)

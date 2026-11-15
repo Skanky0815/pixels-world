@@ -1,3 +1,4 @@
+import { FRIDGE_ALBUM } from './fridge.ts';
 import { GOAL_ALBUM } from './goals.ts';
 import type { ResolvedGoal } from '../../game/domain/main-goal.ts';
 import type { ChaosEvent } from '../../game/domain/chaos-event.ts';
@@ -13,7 +14,11 @@ function collectEntries(objects: ObjectCatalog): AlbumCatalog {
   );
 }
 
-export const INTERACTABLE_ALBUM: AlbumCatalog = { ...collectEntries(OBJECTS), ...GOAL_ALBUM };
+export const INTERACTABLE_ALBUM: AlbumCatalog = {
+  ...collectEntries(OBJECTS),
+  ...GOAL_ALBUM,
+  ...FRIDGE_ALBUM,
+};
 
 // eslint-disable-next-line max-lines-per-function -- Das friedliche Zielereignis wird vollständig ohne Schadenswert an denselben Albumvertrag übergeben.
 export function discoverGoalAlbum(goal: ResolvedGoal) {

@@ -91,6 +91,7 @@ export interface GameTestState {
   readonly scene: string;
   readonly frame: number;
   readonly room: {
+    readonly physicsWidth: number;
     readonly id: string;
     readonly width: number;
     readonly height: number;
@@ -216,6 +217,7 @@ export interface GameTestState {
     readonly grounded: boolean;
     readonly climbing: boolean;
     readonly gravity: boolean;
+    readonly visible: boolean;
   };
 }
 

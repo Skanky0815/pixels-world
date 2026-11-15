@@ -96,6 +96,27 @@ export class Pixel {
     });
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Sichtbare Griffpose und unsichtbarer Besuch teilen eine gesicherte Körperposition und dieselbe Freigabe.
+  hideInFurniture(hidden: boolean, captured = hidden) {
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+
+    if (captured && body.enable) body.reset(body.center.x, body.bottom - 16 * SCALE);
+    this.visual.setVisible(!hidden);
+    body.enable = !captured;
+
+    if (captured) {
+      this.sprite.setVelocity(0, 0);
+
+      if (!hidden)
+        this.visual
+          .stop()
+          .setTexture('pixel', 15)
+          .setScale(2.5)
+          .setFlipX(true)
+          .setPosition(body.center.x + 22, body.bottom - 40);
+    }
+  }
+
   faceToward(x: number) {
     this.sprite.setFlipX(this.x > x);
   }
@@ -330,6 +351,7 @@ export class Pixel {
       grounded: body.blocked.down,
       climbing: this.climbing,
       gravity: body.allowGravity,
+      visible: this.visual.visible,
       animation: this.sprite.anims.currentAnim?.key ?? null,
       animationFrame: this.frame,
       flipX: this.flipX,

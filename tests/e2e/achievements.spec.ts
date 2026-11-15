@@ -99,7 +99,7 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   expect(await savedProgress(page)).toEqual(progress);
   await (await introAction(page, 'album')).click();
   await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
-  await expect(page.locator('.achievement-index')).toContainText('4 von 36 freigeschaltet');
+  await expect(page.locator('.achievement-index')).toContainText('4 von 39 freigeschaltet');
   await expect(page.locator('.album-overall')).toHaveText('10 erfolgreiche Versöhnungen');
 });
 
@@ -127,7 +127,7 @@ for (const mobile of [false, true])
       await expect(album.locator('.achievement-tile')).toHaveCount(4);
       await expect(album.locator('.album-progress')).toHaveAttribute(
         'aria-label',
-        '16 von 36 freigeschaltet',
+        '17 von 39 freigeschaltet',
       );
       await expect(page.getByRole('button', { name: /Unschuldsengel IV/ })).toBeDisabled();
       const second = page.getByRole('button', { name: /Unschuldsengel II Freigeschaltet/ });
@@ -158,7 +158,7 @@ for (const mobile of [false, true])
         await expect(album.locator('.achievement-targets li')).toHaveCount(4);
         await assertFits(album);
         await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
-        await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 9');
+        await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 10');
         await album.locator('[data-action="page-next"]').click();
         await assertFits(album);
         await page.getByRole('button', { name: /Meister der Zerstörung/ }).click();
@@ -169,7 +169,7 @@ for (const mobile of [false, true])
         await expect(album.locator('.achievement-targets li').last()).toBeInViewport();
         await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
         await album.locator('[data-action="page-next"]').click();
-        await expect(album.locator('.album-pagination')).toContainText('Seite 4 von 9');
+        await expect(album.locator('.album-pagination')).toContainText('Seite 4 von 10');
         await expect(album.locator('.achievement-tile')).toHaveCount(4);
         await expect(album.locator('.achievement-tile:not(:disabled)')).toHaveCount(0);
         await assertFits(album);
@@ -275,6 +275,7 @@ test('Meisterwerk erscheint direkt hinter dem letzten noch fehlenden Erfolg', as
       'pantry',
       'trash-bin',
       'tablecloth',
+      'fridge',
     ],
     DESTRUCTION_VARIANTS,
     ROOM_COMPLETIONS,
@@ -303,8 +304,10 @@ test('Meisterwerk erscheint direkt hinter dem letzten noch fehlenden Erfolg', as
   await page.clock.runFor(3100);
   await expect(banner).toHaveAttribute('data-entry', 'achievement.masterpiece-v6');
   await page.clock.runFor(3100);
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.masterpiece-v7');
+  await page.clock.runFor(3100);
   await expect(banner).toBeHidden();
-  expect((await savedProgress(page)).unlocked).toHaveLength(36);
+  expect((await savedProgress(page)).unlocked).toHaveLength(39);
   await page.locator('.album-toggle').click();
   await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
 

@@ -32,17 +32,16 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
         room.objects.filter((o) =>
           ['dish', 'plant', 'pantry'].includes(OBJECTS[o.variant as keyof typeof OBJECTS].kind),
         ).length,
-        difficulty === 'easy' ? 6 : difficulty === 'normal' ? 7 : 9,
+        difficulty === 'easy' ? 7 : difficulty === 'normal' ? 8 : 10,
       );
       assert.equal(room.objects.filter((o) => o.variant === 'dry-food-bag').length, 1);
       assert.equal(room.objects.filter((o) => o.variant === 'cream-trash-bin').length, 1);
-      assert.equal(room.platforms.length, 5);
+      assert.equal(room.platforms.length, 6);
       assert.ok(room.platforms.every((p) => p.durability?.stability === 'stable'));
       assert.equal(resolveRoom(room, OBJECTS).goal.surfaceY, 258);
     }
 });
 
-// eslint-disable-next-line max-lines-per-function -- Belegte Slots bleiben validiert und außerhalb von Saras und Pixels Zielbereich.
 test('Küchen-Objektslots erlauben Geschirr und lassen den Napfbereich frei', () => {
   for (const platform of KITCHEN_PREVIEW.platforms) {
     if (!('slots' in platform)) continue;
@@ -52,7 +51,6 @@ test('Küchen-Objektslots erlauben Geschirr und lassen den Napfbereich frei', ()
 
   const counter = KITCHEN_PREVIEW.platforms.find((p) => p.id === 'kitchen-counter')!;
 
-  assert.ok('slots' in counter);
-  assert.ok(counter.slots.entries.every((slot) => counter.bounds.x + slot.x + 48 < 800));
+  assert.ok(!('slots' in counter));
   assert.deepEqual(KITCHEN_PREVIEW.objectSlots[0].count, { easy: 2, normal: 2, hard: 2 });
 });

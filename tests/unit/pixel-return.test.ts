@@ -105,3 +105,20 @@ test('Bodenkontakt erlaubt Hindernissprung; neue Runde verwirft Route und Sitzst
   assert.equal(homecomingPositions(960).pixelSeatX, config.targetX);
   assert.equal(homecomingPositions(1100).saraEndX - homecomingPositions(1100).pixelSeatX, 64);
 });
+
+// eslint-disable-next-line max-lines-per-function -- Höhere und niedrigere Zwischenlandungen müssen jeweils ihre eigene begehbare Kante erhalten.
+test('Heimkehr wählt nach dem Übersteigen eines Kühlschranks die neue Möbelkante statt einer alten blockierten Wegmarke', () => {
+  const route = new PixelReturnController({ width: 960, floorY: 468, targetX: 178 }, [
+    { left: 620, right: 960, top: 258 },
+    { left: 608, right: 768, top: 148 },
+    { left: 340, right: 560, top: 328 },
+  ]);
+
+  route.start();
+  route.input(contact(850, 258));
+  assert.equal(route.snapshot().waypointX, 590);
+  assert.ok(route.input(contact(700, 148)).horizontal < 0);
+  assert.equal(route.snapshot().waypointX, 578);
+  assert.ok(route.input(contact(450, 328)).horizontal < 0);
+  assert.equal(route.snapshot().waypointX, 310);
+});

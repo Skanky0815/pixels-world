@@ -1,6 +1,13 @@
 /* eslint-disable max-lines-per-function -- Echte Eingaben prüfen erhöhte Auflagen, Pause, Reset und begrenzte Fremdkontakte als zusammenhängende Abläufe. */
 import { test, expect, waitForGame } from './support';
-import { observe, until, move, climbToCounterLanding, finishCharm } from './kitchen-support';
+import {
+  observe,
+  until,
+  move,
+  climbToTableLanding,
+  climbFromTableToFridge,
+  finishCharm,
+} from './kitchen-support';
 import { TouchDriver } from './touch-support';
 import type { Page } from '@playwright/test';
 
@@ -168,17 +175,18 @@ for (const outcome of ['success', 'failed'] as const)
     page,
   }) => {
     await start(page, 'kitchen');
-    await climbToCounterLanding(page);
+    await climbToTableLanding(page);
+    await climbFromTableToFridge(page);
     await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 660);
     await until(
       page,
-      (s) => s.plants.find((plant) => plant.id.includes('counter-herb'))?.state === 'tipped',
+      (s) => s.plants.find((plant) => plant.id.includes('fridge-herb'))?.state === 'tipped',
     );
-    const herb = (await observe(page)).plants.find((plant) => plant.id.includes('counter-herb'))!;
+    const herb = (await observe(page)).plants.find((plant) => plant.id.includes('fridge-herb'))!;
     const entry = `plant.${herb.appearance}`;
 
     expect((await observe(page)).album.pending).toContain(entry);
-    await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 800);
+    await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 830);
     await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
     await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 860);
     await until(page, (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated');

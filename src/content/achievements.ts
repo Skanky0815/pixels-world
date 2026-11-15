@@ -5,6 +5,7 @@ import {
   ACHIEVEMENT_CATEGORIES_V4,
   ACHIEVEMENT_CATEGORIES_V5,
   ACHIEVEMENT_CATEGORIES_V6,
+  ACHIEVEMENT_CATEGORIES_V7,
 } from './achievement-categories.ts';
 import { ROOM_ACHIEVEMENTS_V1, ROOM_ACHIEVEMENTS_V2 } from './achievement-rooms.ts';
 import type { ChaosEvent } from '../game/domain/chaos-event.ts';
@@ -112,7 +113,7 @@ export const DESTRUCTION_TARGETS_V4 = [
     name: { de: 'Mülleimer ausgeleert', en: 'Rubbish bin emptied' },
   },
 ] as const;
-export const DESTRUCTION_TARGETS = [
+export const DESTRUCTION_TARGETS_V5 = [
   ...DESTRUCTION_TARGETS_V4,
   {
     id: 'tablecloth',
@@ -120,6 +121,16 @@ export const DESTRUCTION_TARGETS = [
     event: 'spill',
     stage: 1,
     name: { de: 'Tischdecke abgezogen', en: 'Tablecloth pulled off' },
+  },
+] as const;
+export const DESTRUCTION_TARGETS = [
+  ...DESTRUCTION_TARGETS_V5,
+  {
+    id: 'fridge',
+    object: 'fridge',
+    event: 'spill',
+    stage: 1,
+    name: { de: 'Kühlschrank ausgeräumt', en: 'Fridge rummaged' },
   },
 ] as const;
 export type DestructionTarget = (typeof DESTRUCTION_TARGETS)[number]['id'];
@@ -483,13 +494,13 @@ const CLOTH_OBJECTIVES: readonly AchievementDefinition[] = [
       en: 'Even the tablecloth is gone now, Pixel.',
     },
     metric: 'destruction',
-    targets: DESTRUCTION_TARGETS.map((target) => target.id),
-    threshold: DESTRUCTION_TARGETS.length,
+    targets: DESTRUCTION_TARGETS_V5.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS_V5.length,
     art: 'chaos',
   },
 ];
 
-export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+const ACHIEVEMENTS_V6: readonly AchievementDefinition[] = [
   ...CLOTH_OBJECTIVES,
   {
     id: 'achievement.masterpiece-v6',
@@ -505,6 +516,63 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     metric: 'all',
     targets: CLOTH_OBJECTIVES.map((entry) => entry.id),
     threshold: CLOTH_OBJECTIVES.length,
+    art: 'love',
+  },
+];
+
+const FRIDGE_OBJECTIVES: readonly AchievementDefinition[] = [
+  ...ACHIEVEMENTS_V6,
+  // eslint-disable-next-line max-lines-per-function -- Ein eingefrorenes Kategorie-Ziel behält seinen vollständigen Anzeigenvertrag.
+  ...ACHIEVEMENT_CATEGORIES_V7.map((category): AchievementDefinition => ({
+    id: `achievement.category-${category.id}-v7`,
+    name: category.name,
+    description: {
+      de: 'Den Kühlschrank durcheinanderbringen und die Runde erfolgreich versöhnen.',
+      en: 'Rummage through the refrigerator and reconcile successfully.',
+    },
+    quote: {
+      de: 'Wenigstens einer von uns bleibt cool, Pixel.',
+      en: 'At least one of us is keeping cool, Pixel.',
+    },
+    metric: 'variants',
+    targets: category.targets,
+    threshold: category.targets.length,
+    art: 'chaos',
+  })),
+  {
+    id: 'achievement.destruction-v7',
+    name: { de: 'Meister der Zerstörung VI', en: 'Master of destruction VI' },
+    description: {
+      de: 'Alle dreizehn Objektarten dieser Sammlung über erfolgreich versöhnte Runden vollständig ruinieren.',
+      en: 'Fully ruin all thirteen object types across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Jetzt hast du wirklich die großen Geräte erreicht.',
+      en: 'Now you have really reached the major appliances.',
+    },
+    metric: 'destruction',
+    targets: DESTRUCTION_TARGETS.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS.length,
+    art: 'chaos',
+  },
+];
+
+export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+  ...FRIDGE_OBJECTIVES,
+  {
+    id: 'achievement.masterpiece-v7',
+    name: { de: 'Pixels Meisterwerk VII', en: 'Pixel’s masterpiece VII' },
+    description: {
+      de: 'Alle anderen Erfolge der Sammlung mit Kühlschrank freischalten.',
+      en: 'Unlock every other achievement in the refrigerator collection.',
+    },
+    quote: {
+      de: 'Deine Einrichtungsideen werden immer schwerer, Pixel.',
+      en: 'Your decorating ideas are getting heavier, Pixel.',
+    },
+    metric: 'all',
+    targets: FRIDGE_OBJECTIVES.map((entry) => entry.id),
+    threshold: FRIDGE_OBJECTIVES.length,
     art: 'love',
   },
 ];

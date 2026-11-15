@@ -36,7 +36,7 @@ Weitere Befehle und DEV-Werkzeuge: [Lokal entwickeln](docs/development.md).
 ## Steuerung
 
 **← / →** bewegen Pixel, **Leertaste** springt oder bestätigt Texte,
-**↑ / ↓** klettern an Vorhang und Tischdecke. **Esc** öffnet das Pause-Menü.
+**↑ / ↓** klettern an Vorhang, Tischdecke und Kühlschrank. **Esc** öffnet das Pause-Menü.
 Auf Touch-Geräten erscheinen Bildschirmtasten; die Tastatur bleibt zusätzlich nutzbar.
 
 ## Entwickeln und mitmachen

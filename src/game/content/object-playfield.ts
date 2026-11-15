@@ -36,7 +36,7 @@ export function createRoomPhysics(scene: Phaser.Scene, room: RoomDefinition) {
     (definition) => new Shelf(scene, definition, room.floor.y, room.decorations),
   );
 
-  for (const shelf of shelves) platforms.add(shelf.platform);
+  for (const shelf of shelves) platforms.add(shelf.platform.setData('impactActor', shelf));
 
   return { platforms, floor, shelves };
 }
@@ -70,12 +70,17 @@ export function connectObjectPhysics(
 ) {
   objects.impacts.setDamage((event) => damage(event));
 
-  for (const couch of objects.couches) platforms.add(couch.platform);
+  for (const couch of objects.couches) platforms.add(couch.platform.setData('impactActor', couch));
   scene.physics.add.collider(pixel.collider, platforms);
 
   for (const vase of objects.breakables) {
     scene.physics.add.collider(vase.collider, platforms, (_object, surface) => {
-      objects.impacts.collide(vase);
+      const partner =
+        'getData' in surface
+          ? (surface.getData('impactActor') as ImpactActor | undefined)
+          : undefined;
+
+      objects.impacts.collide(vase, partner);
 
       if (surface === floor) damage(vase.landOnFloor());
       else vase.landOnSurface();
@@ -143,13 +148,27 @@ export function advanceObjectInteractions(
 
   const grip = surface ? undefined : findClothGrip(objects, pixel.snapshot());
 
-  pixel.move(
-    input,
-    time,
-    delta,
-    surface?.climbArea ?? grip?.area,
-    grip ? { speed: grip.cloth.climbSpeed, requireUp: true } : undefined,
-  );
+  const fridges = shelves.flatMap((shelf) => (shelf.fridge ? [shelf.fridge] : []));
+  const insideFridge = fridges.some((fridge) => fridge.snapshot().captured);
+  const fridgeGrip =
+    !surface && !grip
+      ? shelves
+          .flatMap((shelf) => shelf.climbAreas())
+          .find((area) => overlaps(pixel.snapshot(), area))
+      : undefined;
+
+  if (!insideFridge)
+    pixel.move(
+      input,
+      time,
+      delta,
+      surface?.climbArea ?? grip?.area ?? fridgeGrip,
+      grip
+        ? { speed: grip.cloth.climbSpeed, requireUp: true }
+        : fridgeGrip
+          ? { speed: 100, requireUp: true }
+          : undefined,
+    );
   const context: InteractionContext = Object.freeze({
     time,
     delta,
@@ -164,7 +183,7 @@ export function advanceObjectInteractions(
   objects.topplingContainers.forEach((bag) => damage(bag.update(context, true).event));
 
   advanceCloths(objects, context, damage, grip);
-  const interaction = updateGroundInteractions(objects.ground, context);
+  const interaction = updateGroundInteractions([...fridges, ...objects.ground], context);
 
   damage(interaction.event);
   objects.impacts.advance([...objects.entries.map((entry) => entry.object), ...shelves], delta);
@@ -173,7 +192,13 @@ export function advanceObjectInteractions(
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
 
   if (grip && context.pixel.climbing) pixel.faceToward(grip.area.x + grip.area.width / 2);
+
+  if (fridgeGrip && context.pixel.climbing) pixel.faceToward(fridgeGrip.x + fridgeGrip.width / 2);
   pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
+  pixel.hideInFurniture(
+    fridges.some((fridge) => fridge.snapshot().hidden),
+    fridges.some((fridge) => fridge.snapshot().captured),
+  );
 }
 
 function updateShelves(shelves: readonly Shelf[], pixel: Pixel, time: number, damage: Damage) {

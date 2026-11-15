@@ -39,7 +39,11 @@ for (const room of ['dish-cups', 'dish-plates', 'dish-mixed'])
       expect(
         broken.dishes.filter((dish) => dish.state === 'broken').every((dish) => dish.shards === 7),
       ).toBe(true);
-      expect(broken.album.pending).toContain(room === 'dish-plates' ? 'dish.plate' : 'dish.cup');
+
+      for (const appearance of ['cup', 'plate'])
+        expect(broken.album.pending.includes(`dish.${appearance}`)).toBe(
+          broken.dishes.some((dish) => dish.appearance === appearance && dish.state === 'broken'),
+        );
       expect(broken.pixel.x).toBeLessThan(192);
       await info.attach(room, { body: await page.screenshot(), contentType: 'image/png' });
       await page.clock.runFor(1000);
@@ -67,7 +71,7 @@ test(
   { tag: '@smoke' },
   async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('pixels-world.difficulty', 'hard'));
-    await page.goto('/play.html');
+    await page.goto('/play.html?room-seed=pantry-hard-17');
     await waitForGame(page, false);
     await page.locator('[data-menu-play]').click();
     await page.locator('[data-room-choice="kitchen"]').click();
@@ -85,9 +89,7 @@ test(
     await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
     expect((await observe(page)).room.id).toBe('kitchen');
     expect((await observe(page)).room.artReady).toBe(true);
-    await page.clock.runFor(32);
     await climbToCounter(page);
-    await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
     await until(page, (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated');
     await move(page, ['Space'], (s) => s.result !== null);
     const result = await observe(page);

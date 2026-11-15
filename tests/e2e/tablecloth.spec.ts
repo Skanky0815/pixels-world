@@ -15,7 +15,7 @@ async function grab(page: Page, side: 'left' | 'right' = 'right', edge = 560) {
     await move(page, ['ArrowRight'], (s) => s.pixel.x >= 305);
     await move(page, ['ArrowUp'], (s) => s.pixel.climbing);
   } else {
-    await move(page, ['ArrowRight'], (s) => s.pixel.x >= edge + 20);
+    await move(page, ['ArrowRight'], (s) => s.pixel.x >= edge + 2);
     await move(page, ['Space', 'ArrowUp'], (s) => s.pixel.climbing);
   }
 }
@@ -34,7 +34,7 @@ test('Zwei kurze Enden bleiben Ã¼ber dem Boden; Vorbeilaufen und Springen ohne â
     tailHeight: 60,
   });
   expect(cloth.climbAreas.every((grip) => grip.area.y + grip.area.height <= 388)).toBe(true);
-  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 580);
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 562);
   await move(page, ['Space'], (s) => !s.pixel.grounded);
   await until(page, (s) => s.pixel.grounded);
   await page.clock.runFor(800);
@@ -245,7 +245,7 @@ test.describe('Tischdecke mit Touch', () => {
       await touch.lift();
       await until(page, (s) => s.pixel.grounded);
       await touch.press('right');
-      await until(page, (s) => s.pixel.x >= 580);
+      await until(page, (s) => s.pixel.x >= 562);
       await touch.lift();
       await touch.press('jump', 1);
       await touch.press('up', 2);

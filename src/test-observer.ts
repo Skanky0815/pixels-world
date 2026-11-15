@@ -66,9 +66,18 @@ export function installTestObserver(read: () => GameTestState) {
           ),
         ),
         shelves: Object.freeze(
+          // eslint-disable-next-line max-lines-per-function -- Verschachtelter Innenraum und Schadensereignisse bleiben vollständig unveränderlich.
           state.shelves.map((shelf) =>
             Object.freeze({
               ...shelf,
+              fridge: shelf.fridge
+                ? Object.freeze({
+                    ...shelf.fridge,
+                    lastDamage: shelf.fridge.lastDamage
+                      ? Object.freeze({ ...shelf.fridge.lastDamage })
+                      : null,
+                  })
+                : null,
               lastDamage: shelf.lastDamage ? Object.freeze(shelf.lastDamage) : null,
             }),
           ),
