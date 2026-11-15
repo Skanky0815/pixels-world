@@ -16,6 +16,13 @@ async function grabHandle(page: Page) {
   await move(page, ['Space', 'ArrowRight'], (s) => fridge(s).fridge?.state === 'hanging');
 }
 
+async function descendFromSourceShelf(page: Page) {
+  await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 870);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 468) < 2);
+}
+
 async function waitForRemaining(page: Page, remaining: number) {
   // Phaser smooths frame deltas: approach the observed active time in bounded steps.
   for (let step = 0; step < 500; step++) {
@@ -131,16 +138,94 @@ test('Seitliches Hochgreifen bleibt ein friedlicher Rückweg und öffnet die Tü
   expect((await observe(page)).chaos.score).toBe(0);
 });
 
-test('Ein tatsächlicher Fremdtreffer bringt den Innenraum einmalig durcheinander, ohne Pixel zu verstecken', async ({
+test('Ein fallendes Glas beschädigt den Inhalt bei geschlossener Tür; Pause und späterer Besuch bleiben sicher @smoke', async ({
   page,
 }) => {
   await start(page, 'fridge-incoming');
   await move(page, ['ArrowRight'], (s) => s.pantry[0].x > 1018);
+  await until(page, (s) => fridge(s).fridge?.events === 1);
+  const hit = await observe(page);
+
+  expect(hit.pixel.visible).toBe(true);
+  expect(fridge(hit).fridge).toMatchObject({
+    state: 'idle',
+    doorState: 'closed',
+    texture: 'fridge-upright',
+    displayWidth: 160,
+    displayHeight: 320,
+    hidden: false,
+    captured: false,
+    events: 1,
+    progress: 0,
+    lastDamage: { kind: 'spill', value: 24 },
+  });
+  expect(Math.abs(fridge(hit).fridge!.angle)).toBeLessThanOrEqual(2.5);
+  await page.keyboard.press('Escape');
+  const paused = await observe(page);
+
+  await page.clock.runFor(2000);
+  expect(fridge(await observe(page))).toEqual(fridge(paused));
+  await page.locator('[data-pause-resume]').click();
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  const blurred = await observe(page);
+
+  await page.clock.runFor(1000);
+  expect(fridge(await observe(page))).toEqual(fridge(blurred));
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await page.clock.runFor(1000);
+  await descendFromSourceShelf(page);
+  const settled = await observe(page);
+
+  expect(fridge(settled).fridge).toMatchObject({ state: 'idle', events: 1, angle: 0 });
+  expect(settled.album.pending).toContain('fridge.cream');
+  await enter(page);
   await until(page, (s) => fridge(s).fridge?.state === 'open');
-  expect((await observe(page)).pixel.visible).toBe(true);
+  const visited = await observe(page);
+
+  expect(visited.pixel.visible).toBe(true);
+  expect(fridge(visited).fridge).toMatchObject({
+    texture: 'fridge-open',
+    captured: false,
+    events: 1,
+  });
+  expect(visited.chaos.score).toBe(settled.chaos.score);
+  expect(visited.album.pending).toEqual(settled.album.pending);
+  await page.clock.runFor(1000);
   expect(fridge(await observe(page)).fridge?.events).toBe(1);
-  await page.clock.runFor(2500);
-  expect(fridge(await observe(page)).fridge?.events).toBe(1);
+  await move(page, ['r'], (s) => s.generation > visited.generation);
+  expect(fridge(await observe(page)).fridge).toMatchObject({
+    state: 'idle',
+    doorState: 'closed',
+    events: 0,
+    angle: 0,
+  });
+  expect((await observe(page)).chaos.score).toBe(0);
+});
+
+test('Heimkehr bricht den Besuch nach Fremdschaden ab, ohne Türöffnung oder zweite Wertung', async ({
+  page,
+}) => {
+  await start(page, 'fridge-incoming');
+  await move(page, ['ArrowRight'], (s) => s.pantry[0].x > 1018);
+  await until(page, (s) => fridge(s).fridge?.events === 1);
+  await descendFromSourceShelf(page);
+  const damaged = await observe(page);
+
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
+  await waitForRemaining(page, 350);
+  await grabHandle(page);
+  await until(page, (s) => s.round.phase !== 'chaos');
+  const homecoming = await observe(page);
+
+  expect(homecoming.pixel.visible).toBe(true);
+  expect(fridge(homecoming).fridge).toMatchObject({
+    state: 'idle',
+    doorState: 'closed',
+    events: 1,
+    captured: false,
+  });
+  expect(homecoming.chaos.score).toBe(damaged.chaos.score);
+  expect(homecoming.album.pending).toEqual(damaged.album.pending);
 });
 
 for (const success of [true, false])

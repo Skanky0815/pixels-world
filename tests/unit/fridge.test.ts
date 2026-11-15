@@ -76,21 +76,97 @@ test('Kontakt ohne Klinke, Klettern und Luftsprünge starten keinen Besuch', () 
   for (let i = 0; i < 20; i++) assert.equal(bump(f), undefined);
 });
 
-test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel hineinzuversetzen', () => {
+test('Fremdschaden lässt die Tür geschlossen; danach bleibt der ganze Besuch ohne doppelte Wertung möglich', () => {
   const f = fridge();
+  const closed = f.snapshot();
 
-  assert.equal(f.disturb()?.kind, 'spill');
-  assert.equal(f.snapshot().hidden, false);
+  assert.deepEqual(f.disturb(), chaosEvent('fridge', 'spill', 1, 24));
+  assert.deepEqual(f.snapshot(), closed);
   assert.equal(f.disturb(), undefined);
-  f.reset();
-  bump(f);
+  assert.equal(bump(f), true);
   assert.equal(f.disturb(), undefined);
   f.update(600);
   f.update(400);
   f.update(200);
   assert.equal(f.snapshot().hidden, true);
   assert.equal(f.update(1400), undefined);
-  assert.equal(f.update(400)?.value, 24);
+  assert.equal(f.update(400), undefined);
+  assert.equal(f.snapshot().state, 'open');
+  assert.equal(f.snapshot().doorState, 'open');
+  assert.equal(f.snapshot().hidden, false);
+  assert.equal(f.disturb(), undefined);
+  f.reset();
+  assert.deepEqual(f.snapshot(), closed);
+  assert.deepEqual(f.disturb(), chaosEvent('fridge', 'spill', 1, 24));
+});
+
+test('Fremdtreffer überspringen keine Besuchsphase und ändern weder Fortschritt noch Sichtbarkeit', () => {
+  for (const [steps, duration] of [
+    [[], 600],
+    [[600], 400],
+    [[600, 400], 200],
+    [[600, 400, 200], 1400],
+    [[600, 400, 200, 1400], 400],
+  ] as const) {
+    const f = fridge();
+
+    bump(f);
+
+    for (const step of steps) f.update(step);
+    f.update(100);
+    const before = f.snapshot();
+
+    for (let hit = 0; hit < 3; hit++) assert.equal(f.disturb(), undefined);
+    assert.deepEqual(f.snapshot(), before);
+    const events = [];
+
+    assert.equal(f.update(duration - 101), undefined);
+    assert.equal(f.snapshot().state, before.state);
+    const transition = f.update(1);
+
+    if (transition) events.push(transition);
+
+    while (f.snapshot().captured) {
+      const event = f.update(10000);
+
+      if (event) events.push(event);
+    }
+
+    assert.deepEqual(events, [chaosEvent('fridge', 'spill', 1, 24)]);
+    assert.equal(f.snapshot().state, 'open');
+    assert.equal(f.snapshot().hidden, false);
+  }
+});
+
+test('Besuchsabbruch erhält bestehenden Fremdschaden; nur Rundenreset erlaubt eine neue Wertung', () => {
+  for (const steps of [[], [600], [600, 400], [600, 400, 200], [600, 400, 200, 1400]]) {
+    const f = fridge();
+
+    assert.equal(f.disturb()?.value, 24);
+    bump(f);
+
+    for (const step of steps) f.update(step);
+    f.abort();
+    assert.equal(f.snapshot().state, 'idle');
+    assert.equal(f.snapshot().hidden, false);
+    assert.equal(f.snapshot().captured, false);
+    assert.equal(f.disturb(), undefined);
+    assert.equal(f.observeJump(false, false, true, false, true), undefined);
+    assert.equal(bump(f), true);
+
+    while (f.snapshot().captured) assert.equal(f.update(10000), undefined);
+    f.reset();
+    assert.equal(f.disturb()?.value, 24);
+  }
+});
+
+test('Fremdschaden während eines echten Absprungs verwirft die Freigabe für die Klinke nicht', () => {
+  const f = fridge();
+
+  f.observeJump(true, true, false);
+  assert.equal(f.disturb()?.value, 24);
+  assert.equal(f.observeJump(false, false, true, false, true), true);
+  assert.equal(f.snapshot().state, 'hanging');
 });
 
 test('Ungültige Zeiten, Punkte und IDs werden abgewiesen; inaktive Zeit macht keinen Fortschritt', () => {

@@ -24,6 +24,7 @@ export class CabinetVisit {
 
   private elapsed = 0;
   private jumpArmed = false;
+  private damaged = false;
   private readonly id: string;
   private readonly rules: CabinetVisitRules;
   // eslint-disable-next-line max-lines-per-function -- ID, Zeiten und Punkte werden vor dem ersten Zustandsschritt zusammen geprüft.
@@ -103,13 +104,20 @@ export class CabinetVisit {
   }
 
   disturb() {
-    // A foreign hit can ruin the contents, but never hide or capture Pixel.
-    if (!this.snapshot().captured && this.state !== 'open') return this.open();
+    // Foreign damage never completes a visit or changes the door/capture phases.
+    if (!this.snapshot().captured && this.state !== 'open') return this.damage();
   }
 
   private open() {
     this.state = 'open';
     this.elapsed = 0;
+
+    return this.damage();
+  }
+
+  private damage() {
+    if (this.damaged) return;
+    this.damaged = true;
 
     return chaosEvent(this.id, 'spill', 1, this.rules.points);
   }
@@ -136,9 +144,14 @@ export class CabinetVisit {
     };
   }
 
-  reset() {
+  abort() {
     this.state = 'idle';
     this.elapsed = 0;
     this.jumpArmed = false;
+  }
+
+  reset() {
+    this.abort();
+    this.damaged = false;
   }
 }
