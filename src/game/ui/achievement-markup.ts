@@ -73,12 +73,13 @@ function achievementStory(entry: AchievementDefinition, data: AchievementData) {
   const targets = entry.metric !== 'reconciliations' ? targetList(data, entry) : '';
 
   return `<section class="achievement-story" data-metric="${entry.metric}">
-    <button type="button" class="album-overview ui-button" data-action="overview" data-focus="achievement-overview">${t('albumOverview')}</button>
+    <div class="achievement-story-content">
     <div class="achievement-heading"><img src="${ACHIEVEMENT_ART[entry.art]}" alt=""><div><p class="achievement-state">${earned ? `✓ ${t('achievementUnlocked')}` : t('achievementLocked')}</p><h3>${escape(entry.name[lang])}</h3></div></div>
     <p class="achievement-description">${escape(entry.description[lang])}</p>
     <progress max="${entry.threshold}" value="${count}" aria-label="${escape(progress(entry, data))}"></progress>
     <p class="achievement-count">${progress(entry, data)}</p>${targets}
-    <blockquote>${escape(entry.quote[lang])}<cite>— Sara</cite></blockquote></section>`;
+    <blockquote>${escape(entry.quote[lang])}<cite>— Sara</cite></blockquote></div>
+    <button type="button" class="album-overview ui-button" data-action="overview" data-focus="achievement-overview">${t('albumOverview')}</button></section>`;
 }
 
 // eslint-disable-next-line complexity -- Zielnamen werden aus den bestehenden Katalogen ohne doppelte Namenslisten aufgelöst.

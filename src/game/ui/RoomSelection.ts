@@ -1,8 +1,14 @@
-import preview from '../../../assets/landing/living-room.png';
+import livingRoomPreview from '../../../assets/landing/living-room.png';
+import kitchenPreview from '../../../assets/landing/kitchen.png';
 import { ROOM_CHOICES, playableRoom } from '../../content/rooms/selection';
 import { t, translateExact, onLanguageChange } from '../../i18n/locale';
 import { roomIcon } from './album-room-icons';
 import './room-selection.css';
+
+const previews = {
+  'living-room': { src: livingRoomPreview, alt: 'roomsPreview', width: 1100, height: 619 },
+  kitchen: { src: kitchenPreview, alt: 'roomsKitchenPreview', width: 1100, height: 619 },
+} as const;
 
 /** Menu presentation only: the scene owns room selection, reset and start state. */
 export class RoomSelection {
@@ -107,12 +113,16 @@ export class RoomSelection {
   }
 }
 
+function roomPicture(id: (typeof ROOM_CHOICES)[number]['id']) {
+  if (id !== 'living-room' && id !== 'kitchen') return roomIcon(id);
+  const preview = previews[id];
+
+  return `<img src="${preview.src}" alt="${t(preview.alt)}" width="${preview.width}" height="${preview.height}">`;
+}
+
 function roomCard(choice: (typeof ROOM_CHOICES)[number], selected: string) {
   const playable = Boolean(choice.definition);
-  const picture =
-    choice.id === 'living-room'
-      ? `<img src="${preview}" alt="${t('roomsPreview')}" width="936" height="527">`
-      : roomIcon(choice.id);
+  const picture = roomPicture(choice.id);
 
   return `<button type="button" class="room-choice${choice.id === selected ? ' room-choice-selected' : ''}" ${playable ? `data-room-choice="${choice.id}" aria-pressed="${choice.id === selected}"` : 'disabled'}>
     <span class="room-choice-picture">${picture}</span><span class="room-choice-copy"><strong>${translateExact(choice.name)}</strong><span>${t(playable ? 'roomsAvailable' : 'roomsLater')}</span></span></button>`;

@@ -236,6 +236,9 @@ verborgen, nicht die Figuren. `any-pointer: coarse` aktiviert dieselbe Oberfläc
 auch auf breiten Tablets und Hybrid-Geräten; die Bildschirmbreite allein bestimmt
 den Eingabemodus nicht. Maus und Tastatur bleiben parallel nutzbar. Große
 Touch-Flächen erhalten über CSS-Variablen größere Tasten mit mehr Abstand.
+Die folgende Handykamera besitzt einen kleinen Ruhebereich von vier Spielpixeln
+pro Achse, damit kleinste Standkorrekturen nicht das ganze Zimmer mitziehen.
+Die Desktopkamera und die Raumübersicht behalten ihre bisherige Führung.
 Rotation erhält die Szene und löst Eingaben. Ein spielweiter `ResizeObserver`
 aktualisiert Phasers FIT-Skalierung nach Größenänderungen des CSS-Spielfensters,
 auch wenn das Grid erst nach dem Browser-Resize-Ereignis seine Größe erreicht.
@@ -247,6 +250,12 @@ aktiviert keine Touch-Steuerung auf Mausgeräten. Das Spiel verwendet Canvas 2D
 auch auf Desktop, damit ein Größenwechsel mit DOM-Dialog keinen Rendererwechsel
 oder Szenenneustart benötigt:
 [ADR 0002](../adr/0002-mobile-text-rendering.md).
+
+Dialog und Versöhnung nutzen die freie Seite gegenüber Saras Eintrittsseite: bei
+Eintritt von links rechts, bei Eintritt von rechts links. Canvas und DOM folgen
+demselben Raumvertrag. Während der Runde zeigen Rückmeldungen keine Zahlen;
+Schadensereignisse und Ledger werten unverändert weiter, die Punktzahl erscheint
+im Ergebnis.
 
 Sprite-Quellen, Palette, Raster und Exporte liegen bei
 [Pixel](../../assets/pixel/README.md) und [Sara](../../assets/sara/README.md).

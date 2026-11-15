@@ -15,7 +15,6 @@ import type { FoodBag } from './game/objects/FoodBag';
 import type { BookStack } from './game/objects/BookStack';
 import type { GoalView } from './game/ui/GoalView';
 import type { Difficulty } from './content/difficulty';
-import type { GameHud } from './game/ui/GameHud';
 import type { GameFeedback } from './game/ui/GameFeedback';
 import type { MainGoal } from './game/domain/main-goal';
 import type { FoodEating } from './game/domain/food-eating';
@@ -74,6 +73,7 @@ export interface GameTestState {
     readonly displayHeight: number;
     readonly originY: number;
     readonly dialogueText: string;
+    readonly dialogueBounds: Readonly<{ left: number; right: number }>;
     readonly canvasTextVisible: boolean;
     readonly portrait: Readonly<{ visible: boolean; texture: string; flipped: boolean }>;
   };
@@ -109,7 +109,6 @@ export interface GameTestState {
     readonly damagedObjects: number;
     readonly anger: string;
   };
-  readonly hud: ReturnType<GameHud['snapshot']>;
   readonly objects: ReadonlyArray<{
     readonly id: string;
     readonly kind: string;

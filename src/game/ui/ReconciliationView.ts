@@ -5,7 +5,11 @@ import { charmPortrait } from '../domain/dialogue-portrait';
 import type Phaser from 'phaser';
 import { ARROW_LABELS, CHARM_LINES } from '../../content/reconciliation';
 import type { ReconciliationSnapshot } from '../domain/reconciliation';
-import { homecomingPositions, type HomecomingSide } from '../content/homecoming-layout';
+import {
+  homecomingPositions,
+  homecomingPanel,
+  type HomecomingSide,
+} from '../content/homecoming-layout';
 /** Reading and timed input are visually separate; only the current arrow needs attention. */
 export class ReconciliationView {
   private readonly removeCompactListener: () => void;
@@ -26,11 +30,9 @@ export class ReconciliationView {
   // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau trennt Lesetext, große Tastenkachel, zugehörige Zeit und Herzfortschritt räumlich.
   constructor(scene: Phaser.Scene, width: number, floorY: number, side: HomecomingSide = 'right') {
     this.root = scene.add.container(0, 0).setDepth(14).setVisible(false);
-    const panelWidth = Math.min(width - 80, 610);
-    const left = side === 'left' ? width - 40 - panelWidth : 40;
+    const { left, width: panelWidth, right } = homecomingPanel(width, side);
 
     this.panelLeft = left;
-    const right = left + panelWidth;
     const keyX = left + panelWidth * 0.72;
     const panel = scene.add.rectangle(left + panelWidth / 2, 235, panelWidth, 218, 0x403a35, 1);
 

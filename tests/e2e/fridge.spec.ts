@@ -12,15 +12,31 @@ async function start(page: Page, room = 'fridge-visit') {
   await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
 }
 
-async function jumpAgainst(page: Page, count: number) {
-  await move(page, ['Space', 'ArrowRight'], (s) => (fridge(s).fridge?.bumps ?? 0) >= count);
+async function grabHandle(page: Page) {
+  await move(page, ['Space', 'ArrowRight'], (s) => fridge(s).fridge?.state === 'hanging');
+}
+
+async function waitForRemaining(page: Page, remaining: number) {
+  // Phaser smooths frame deltas: approach the observed active time in bounded steps.
+  for (let step = 0; step < 500; step++) {
+    const { round } = await observe(page);
+    const gap = round.returnAtMs - round.elapsedMs - remaining;
+
+    if (gap <= 0) {
+      expect(round.phase).toBe('chaos');
+
+      return;
+    }
+
+    await page.clock.runFor(Math.min(500, Math.max(16, Math.floor(gap / 2))));
+  }
+
+  throw new Error('Aktive Küchen-Restzeit wurde nicht erreicht');
 }
 
 async function enter(page: Page) {
   await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
-  await jumpAgainst(page, 1);
-  await until(page, (s) => s.pixel.grounded);
-  await jumpAgainst(page, 2);
+  await grabHandle(page);
   const hanging = await observe(page);
 
   expect(fridge(hanging).fridge?.state).toBe('hanging');
@@ -30,7 +46,10 @@ async function enter(page: Page) {
   expect((await observe(page)).pixel.x).toBeCloseTo(hanging.pixel.x, 1);
   await until(page, (s) => fridge(s).fridge?.state === 'opening');
   expect((await observe(page)).pixel.visible).toBe(true);
-  await until(page, (s) => fridge(s).fridge?.hidden === true);
+  expect(fridge(await observe(page)).fridge?.texture).toBe('fridge-ajar');
+  await until(page, (s) => fridge(s).fridge?.state === 'entering');
+  expect((await observe(page)).pixel.visible).toBe(false);
+  await until(page, (s) => fridge(s).fridge?.state === 'inside');
 }
 
 test('Pixel hängt an der Klinke, zieht die Tür auf und verschwindet erst danach; Innenchaos bleibt @smoke', async ({
@@ -41,12 +60,20 @@ test('Pixel hängt an der Klinke, zieht die Tür auf und verschwindet erst danac
   const hidden = await observe(page);
 
   expect(hidden.pixel.visible).toBe(false);
-  expect(fridge(hidden).fridge?.doorProgress).toBe(1);
+  expect(fridge(hidden).fridge).toMatchObject({
+    doorState: 'closed',
+    texture: 'fridge-upright',
+    displayWidth: 160,
+    displayHeight: 320,
+  });
   expect(hidden.chaos.score).toBe(0);
   await page.keyboard.down('ArrowRight');
   await page.clock.runFor(400);
   expect((await observe(page)).pixel.x).toBeCloseTo(hidden.pixel.x, 1);
   await page.keyboard.up('ArrowRight');
+  await until(page, (s) => fridge(s).fridge?.state === 'reopening');
+  expect(fridge(await observe(page)).fridge?.texture).toBe('fridge-ajar');
+  expect((await observe(page)).pixel.visible).toBe(false);
   await until(page, (s) => fridge(s).fridge?.state === 'open');
   const open = await observe(page);
 
@@ -70,22 +97,10 @@ test('Pixel hängt an der Klinke, zieht die Tür auf und verschwindet erst danac
   });
 });
 
-test('Erster Sprung wackelt; Halten und langes Danebenstehen öffnen nicht, zweiter Sprung, Pause und Reset bleiben sicher', async ({
-  page,
-}) => {
+test('Klinkengriff, Pause, Fokusverlust und Reset bleiben sicher', async ({ page }) => {
   await start(page);
   await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
-  await move(page, ['Space', 'ArrowRight'], (s) => fridge(s).fridge?.bumps === 1);
-  expect(fridge(await observe(page)).fridge?.state).toBe('warning');
-  await page.keyboard.down('Space');
-  await page.keyboard.down('ArrowRight');
-  await page.clock.runFor(2200);
-  await page.keyboard.up('Space');
-  await page.keyboard.up('ArrowRight');
-  expect(fridge(await observe(page)).fridge).toMatchObject({ bumps: 1, state: 'idle', events: 0 });
-  expect((await observe(page)).pixel.visible).toBe(true);
-  expect((await observe(page)).chaos.score).toBe(0);
-  await jumpAgainst(page, 2);
+  await grabHandle(page);
   await page.keyboard.press('Escape');
   const paused = await observe(page);
 
@@ -100,7 +115,7 @@ test('Erster Sprung wackelt; Halten und langes Danebenstehen öffnen nicht, zwei
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await move(page, ['r'], (s) => s.generation > paused.generation);
   expect((await observe(page)).pixel.visible).toBe(true);
-  expect(fridge(await observe(page)).fridge?.bumps).toBe(0);
+  expect(fridge(await observe(page)).fridge?.state).toBe('idle');
   expect((await observe(page)).chaos.score).toBe(0);
 });
 
@@ -164,15 +179,11 @@ test.describe('Kühlschrank mit Touch', () => {
     await until(page, (s) => s.pixel.x >= 1008);
     await touch.lift();
 
-    for (const count of [1, 2]) {
-      await touch.press('right', 1);
-      await touch.press('jump', 2);
-      await until(page, (s) => (fridge(s).fridge?.bumps ?? 0) >= count);
-      await touch.lift(2);
-      await touch.lift(1);
-
-      if (count === 1) await until(page, (s) => s.pixel.grounded);
-    }
+    await touch.press('right', 1);
+    await touch.press('jump', 2);
+    await until(page, (s) => fridge(s).fridge?.state === 'hanging');
+    await touch.lift(2);
+    await touch.lift(1);
 
     await until(page, (s) => fridge(s).fridge?.hidden === true);
     await page.clock.runFor(100);
@@ -186,21 +197,19 @@ test.describe('Kühlschrank mit Touch', () => {
 for (const [phase, remaining] of [
   ['hanging', 350],
   ['opening', 900],
+  ['entering', 1350],
   ['inside', 1600],
+  ['reopening', 3000],
 ] as const)
   test(`Timerende während ${phase} gibt Pixel für Saras Heimkehr frei, ohne Schaden zu erfinden`, async ({
     page,
   }) => {
     await start(page);
     await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
-    await jumpAgainst(page, 1);
-    await until(page, (s) => s.pixel.grounded);
-    const round = (await observe(page)).round;
-
-    await page.clock.runFor(Math.max(0, round.returnAtMs - round.elapsedMs - remaining));
-    await jumpAgainst(page, 2);
+    await waitForRemaining(page, remaining);
+    await grabHandle(page);
     await until(page, (s) => fridge(s).fridge?.state === phase);
-    expect((await observe(page)).pixel.visible).toBe(phase !== 'inside');
+    expect((await observe(page)).pixel.visible).toBe(['hanging', 'opening'].includes(phase));
     await until(page, (s) => s.round.phase !== 'chaos');
     expect((await observe(page)).pixel.visible).toBe(true);
     expect(fridge(await observe(page)).fridge?.state).toBe('idle');
@@ -235,14 +244,14 @@ test('Die rechte Seite hat keine Klinke und startet auch beim zweiten Sprung kei
   page,
 }) => {
   await start(page, 'fridge-right');
-  await move(page, ['Space', 'ArrowLeft'], (s) => fridge(s).fridge?.bumps === 1);
+  await move(page, ['Space', 'ArrowLeft'], (s) => !s.pixel.grounded);
   expect((await observe(page)).pixel.visible).toBe(true);
   expect((await observe(page)).chaos.score).toBe(0);
   await until(page, (s) => s.pixel.grounded);
   await move(page, ['Space', 'ArrowLeft'], (s) => !s.pixel.grounded);
   await until(page, (s) => s.pixel.grounded);
   expect(fridge(await observe(page)).fridge?.events).toBe(0);
-  expect(fridge(await observe(page)).fridge?.bumps).toBe(1);
+  expect(fridge(await observe(page)).fridge).toMatchObject({ state: 'idle', angle: 0 });
   expect((await observe(page)).pixel.visible).toBe(true);
 });
 

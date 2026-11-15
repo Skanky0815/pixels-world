@@ -7,7 +7,7 @@ for (const [difficulty, viewport] of [
   ['normal', { width: 390, height: 844 }],
   ['hard', { width: 568, height: 320 }],
 ] as const) {
-  test.describe(`Küchen-Grundraum ${difficulty}`, () => {
+  test.describe(`Öffentliche Küche ${difficulty}`, () => {
     test.use({ viewport });
     test(
       'Napf ist friedlich erreichbar; Fressanimation pausiert und lässt sich zurücksetzen',
@@ -21,12 +21,12 @@ for (const [difficulty, viewport] of [
           difficulty
         ];
 
-        await page.goto(`/play.html?room=kitchen-preview&room-seed=${seed}`);
+        await page.goto(`/play.html?room=kitchen&room-seed=${seed}`);
         await waitForGame(page);
         await page.keyboard.down('Space');
         await until(page, (s) => s.started && s.pixel.grounded);
         await page.keyboard.up('Space');
-        expect((await observe(page)).room.id).toBe('kitchen-preview');
+        expect((await observe(page)).room.id).toBe('kitchen');
         await climbToCounter(page);
         await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
         await until(page, (s) => s.foodEating.active);

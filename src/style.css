@@ -356,10 +356,15 @@ kbd {
   .mobile-hud:empty {
     display: none;
   }
+  .mobile-hud:has(.mobile-notice:empty) {
+    background: transparent;
+    border-color: transparent;
+  }
   .mobile-dialogue:not([hidden]) {
     display: block;
     position: absolute;
-    inset: 0;
+    inset: 0 auto 0 0;
+    width: 70%;
     z-index: 1;
     overflow: auto;
     overscroll-behavior: contain;
@@ -368,6 +373,10 @@ kbd {
     font-size: 14px;
     line-height: 1.4;
     white-space: pre-line;
+  }
+  .mobile-dialogue[data-entry-side='left']:not([hidden]) {
+    left: auto;
+    right: 0;
   }
   .mobile-dialogue p {
     margin: 0 0 8px;
@@ -712,6 +721,9 @@ kbd {
 }
 @media (any-pointer: coarse), (max-width: 1024px) {
   .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
+    left: 0;
+    right: 0;
+    width: auto;
     max-height: 100%;
     bottom: 0;
   }

@@ -8,26 +8,33 @@ test('Gemeinsamer Schrankablauf braucht Griffkontakt und verwendet die Zeiten un
     ...CABINET_VISIT_RULES,
     hangingMs: 200,
     openingMs: 300,
+    enteringMs: 100,
     insideMs: 700,
+    reopeningMs: 200,
     points: 12,
   });
 
   jump(cabinet, false);
-  assert.equal(cabinet.snapshot().bumps, 1);
+  assert.equal(cabinet.snapshot().state, 'idle');
   jump(cabinet, false);
   assert.equal(cabinet.snapshot().captured, false);
-  assert.equal(cabinet.snapshot().bumps, 1);
+  assert.equal(cabinet.snapshot().state, 'idle');
   jump(cabinet, true);
   assert.equal(cabinet.snapshot().state, 'hanging');
   assert.equal(cabinet.snapshot().hidden, false);
   cabinet.update(200);
   assert.equal(cabinet.snapshot().state, 'opening');
   cabinet.update(150);
-  assert.equal(cabinet.snapshot().doorProgress, 0.5);
+  assert.equal(cabinet.snapshot().doorState, 'ajar');
   assert.equal(cabinet.snapshot().hidden, false);
   cabinet.update(150);
   assert.equal(cabinet.snapshot().hidden, true);
-  assert.equal(cabinet.update(700)?.value, 12);
+  cabinet.update(100);
+  assert.equal(cabinet.snapshot().doorState, 'closed');
+  assert.equal(cabinet.update(700), undefined);
+  assert.equal(cabinet.snapshot().doorState, 'ajar');
+  assert.equal(cabinet.snapshot().hidden, true);
+  assert.equal(cabinet.update(200)?.value, 12);
   assert.equal(cabinet.snapshot().captured, false);
 });
 
@@ -36,8 +43,19 @@ function jump(cabinet: CabinetVisit, handle: boolean) {
   cabinet.observeJump(false, false, true, false, handle);
 }
 
+test('Verzögerter Bodenkontakt nach dem Absprung verwirft den Sprung vor Erreichen der Klinke nicht', () => {
+  const cabinet = new CabinetVisit('cabinet');
+
+  cabinet.observeJump(true, true, false, false, false, true);
+  cabinet.observeJump(false, true, false, false, false, true);
+  cabinet.observeJump(false, false, false, false, false, true);
+  assert.equal(cabinet.observeJump(false, false, true, false, true, true), true);
+
+  assert.equal(cabinet.snapshot().state, 'hanging');
+});
+
 test('Reset gibt jede Aufnahmephase frei; inaktive Zeit und Fremdtreffer überspringen das Festhalten nicht', () => {
-  for (const steps of [[], [600], [600, 400]]) {
+  for (const steps of [[], [600], [600, 400], [600, 400, 200], [600, 400, 200, 1400]]) {
     const cabinet = new CabinetVisit('cabinet');
 
     jump(cabinet, false);

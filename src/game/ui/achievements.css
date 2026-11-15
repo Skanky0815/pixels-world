@@ -34,6 +34,17 @@
   border-right: 1px solid #b18c64;
   background: linear-gradient(to right, transparent 90%, #5d422330);
 }
+.achievement-story .achievement-story-content {
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.achievement-story-content > * {
+  flex-shrink: 0;
+}
 .achievement-heading {
   display: flex;
   align-items: center;
@@ -203,9 +214,14 @@
   .achievement-mark {
     font-size: 18px;
   }
-  .achievement-story .album-overview,
   .achievement-story blockquote {
     display: none;
+  }
+  .achievement-story .album-overview {
+    display: block;
+    align-self: flex-end;
+    min-height: 44px;
+    font-size: 12px;
   }
   .achievement-heading img {
     width: 32px;

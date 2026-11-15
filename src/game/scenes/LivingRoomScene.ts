@@ -78,7 +78,6 @@ import { Curtain } from '../objects/Curtain';
 import { Plant } from '../objects/Plant';
 import { ROUND_CONFIG, RoundController } from '../domain/round-controller';
 import { PlayActivity } from '../input/play-activity';
-import { GameHud } from '../ui/GameHud';
 import { HomecomingSequence } from '../domain/homecoming';
 import { DialogueMemory } from '../domain/sara-dialogue';
 import { ReactionDamage } from '../domain/reaction-damage';
@@ -129,7 +128,6 @@ export class LivingRoomScene extends Phaser.Scene {
   private controls!: InputController;
   private generation = 0;
   private random: (() => number) | undefined;
-  private hud!: GameHud;
   private platforms!: Phaser.Physics.Arcade.StaticGroup;
   private readonly chaos = new ChaosScore();
   private couches: Couch[] = [];
@@ -364,7 +362,6 @@ export class LivingRoomScene extends Phaser.Scene {
             forward: () => {
               if (this.canPlay() && this.round.advance(10_000, this.chaos.score))
                 this.startHomecoming();
-              this.renderHud();
             },
             release: () => this.controls.release(),
 
@@ -466,7 +463,6 @@ export class LivingRoomScene extends Phaser.Scene {
               damagedObjects: this.chaos.count,
               anger: angerFor(this.chaos.score).id,
             },
-            hud: this.hud.snapshot(),
             vases: this.vases.map((vase) => vase.snapshot()),
             couch: this.couches[0]?.snapshot() ?? null,
             curtain: this.curtains[0]?.snapshot() ?? null,
@@ -553,7 +549,6 @@ export class LivingRoomScene extends Phaser.Scene {
     this.activity = new PlayActivity(() => this.syncActivity());
     this.audio = new GameAudio(this.sound);
     this.events.on('object-impact', this.audio.playObject, this.audio);
-    this.hud = new GameHud(this);
     this.sara = new SaraReturnView(this, {
       width: room.width,
       floorY: room.floor.y,
@@ -610,7 +605,6 @@ export class LivingRoomScene extends Phaser.Scene {
     this.activity.destroy();
     this.controls.destroy();
     this.pixel.destroy();
-    this.hud.destroy();
     this.sara.destroy();
     this.charmView.destroy();
     this.resultView.destroy();
@@ -623,10 +617,6 @@ export class LivingRoomScene extends Phaser.Scene {
     this.events.off('object-impact', this.audio.playObject, this.audio);
     this.audio.destroy();
     this.feedback.destroy();
-  }
-
-  private renderHud() {
-    this.hud.render({ score: this.chaos.score });
   }
 
   private processDamage(event: ChaosEvent | undefined) {
@@ -750,7 +740,7 @@ export class LivingRoomScene extends Phaser.Scene {
     );
     this.mobile.render({
       started: this.started,
-      hud: this.hud.snapshot(),
+      entrySide: this.room.definition.homecomingSide ?? 'right',
       feedback: this.feedback.readable(),
       homecoming:
         this.peacefulGoal.snapshot().line && this.goalActionActive()
@@ -768,7 +758,6 @@ export class LivingRoomScene extends Phaser.Scene {
 
   private refreshLanguage() {
     this.refreshCaption();
-    this.renderHud();
     this.renderSara();
     this.charmView.render(this.charm.snapshot());
     this.renderResult();
@@ -813,7 +802,6 @@ export class LivingRoomScene extends Phaser.Scene {
     this.pixel.setPaused(!this.activity.active || !this.started);
     this.sara.setPaused(!this.activity.active);
     this.audio.setActive(this.activity.active && this.started && !this.goalActionActive());
-    this.renderHud();
   }
 
   private setWorldActive(active: boolean) {
@@ -868,7 +856,6 @@ export class LivingRoomScene extends Phaser.Scene {
     this.goalView.render(this.goal.snapshot(), true);
 
     if (this.round.advance(elapsed, this.chaos.score, true, reached)) this.finishRound();
-    else this.renderHud();
   }
 
   private finishRound() {
@@ -1160,7 +1147,6 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.sara.render(snapshot, this.returning.snapshot().stage === 'seated');
     this.renderResult();
-    this.renderHud();
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der gemeinsame Frame-Schritt erhält seine expliziten Adapter, Eingaben und Schadensrückgabe.

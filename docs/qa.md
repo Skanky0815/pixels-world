@@ -215,6 +215,20 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
 
 ## Manueller Spieltest
 
+- Öffentliche Küche über die Levelauswahl starten: Das echte Raumfoto zeigt die
+  aktuelle Küche. Napf über Hocker, Tisch und Kühlschrank auf allen Graden ohne
+  Schaden erreichen; vor dem Napf auch zurück zum linken Eingang klettern.
+  Mehrere Küchenaktionen in einer Runde kombinieren, etwa Futterbeutel, Mülleimer
+  und Klinkengriff am Kühlschrank. Die Kühlschrankfolge ist:
+  Klinke greifen → Türspalt → Eintritt → geschlossen wackeln →
+  erneut öffnen und Pixel freigeben. Jede Aufnahmephase auch beim Rundenende
+  und mit Reset abbrechen; die Grafik bleibt unverzerrt. Pause/Fokuswechsel,
+  einmalige Schäden, Saras Heimkehr von links und Versöhnung gemeinsam prüfen.
+  Kontraste und Konturen von Tasse und Teller vor Wand, Tischdecke und Regalen
+  prüfen. Reset stellt Möbel und
+  lose Gegenstände wieder her, verwirft vorgemerkte Funde und erhält zuvor
+  bestätigten Fortschritt; freiwillige Speicherung bleibt ausgeschaltet.
+
 - Lieblingsball in beiden Räumen ohne Schaden finden: Nach dem kurzen Aufenthalt
   spielt Pixel den Ball auf dem Regal nach rechts und zurück und dreht sich mit.
   Ball und Pfoten bleiben auf dem Regal; Punkte, Objekte und Rundentimer ändern
@@ -224,7 +238,9 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   Touch im Hoch-/Querformat prüfen; bei verpasstem Ziel gibt es keinen Spielmoment.
 
 - Album aus Einführung und Pause öffnen: Runde bleibt stehen, Esc schließt nur das
-  oberste Album. Raum-Tabs und Gesamt-/Kapitelzähler prüfen. Vor einer echten
+  oberste Album. Im Handy-Querformat liegt „Zur Übersicht“ bei Objekten und
+  Erfolgen unten rechts und bleibt auch nach Scrollen der Erfolgsziele erreichbar.
+  Raum-Tabs und Gesamt-/Kapitelzähler prüfen. Vor einer echten
   Schadensaktion dürfen weder Bilder noch Namen unbekannter Objekte sichtbar sein.
   Nach Schaden neu öffnen, zwischen DE/EN wechseln und Rundenneustart/Reload prüfen.
   Album-Reset ausschließlich in den Optionen und erst nach Bestätigung; Abbrechen
@@ -329,12 +345,14 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
   sichtbar. Lange Texte innerhalb der Karte scrollen und Richtungsvorgaben prüfen. Raumränder, Vorhang, Sprünge, Pause
   und Rotation prüfen; mit `?camera=room` bleibt die Zimmerübersicht erreichbar.
 - Desktop-Standardkamera vergleichen: moderater Zoom,
-  Tastatursteuerung und unveränderte Objektpositionen; Status und linke Dialogkarte
+  Tastatursteuerung und unveränderte Objektpositionen; Status und seitliche Dialogkarte
   bleiben unabhängig von der Kamera lesbar. Die größere Desktopkarte mit größerer
-  Schrift muss auch während der Gesten links neben beiden Figuren bleiben. Fenster über die Kompaktgrenze verkleinern
+  Schrift muss auch während der Gesten gegenüber Saras Eintrittsseite bleiben.
+  Wohnzimmer: Sara rechts, Karte links; Küche: Sara links, Karte rechts. Fenster über die Kompaktgrenze verkleinern
   und wieder vergrößern; klassische Ansicht mit `?camera=room` vergleichen.
-- HUD: Punktestand und kurze Aktionsrückmeldungen bleiben sichtbar; Schwierigkeitsgrad
-  steht in den Optionen. Zielstatus und Versuchszähler erscheinen weder im Spiel
+- Rückmeldungen: Während der Runde erscheinen nur kurze qualitative Hinweise, keine
+  Chaos-Gesamtpunkte oder numerischen Schadenspunkte. Die Wertung bleibt im Ergebnis
+  sichtbar; der Schwierigkeitsgrad steht in den Optionen. Zielstatus und Versuchszähler erscheinen weder im Spiel
   noch im Ergebnis. Ball, Zielmarker und Herzfortschritt bleiben erhalten.
 - DE/EN in Einführung, Dialog, Versöhnung und Ergebnis wechseln: Runde bleibt
   erhalten. Auswahl wird beim Reload wiederhergestellt; gesperrter Speicher

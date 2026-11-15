@@ -11,7 +11,11 @@ import { SARA_ANIMATIONS } from '../../content/sara-reactions';
 import type { EndingPose } from '../domain/ending-presentation';
 import type { EndingAnimation } from '../actors/sara-endings';
 import { SARA_CLIPS, SARA_SPRITE } from '../actors/sara-animations';
-import { homecomingPositions, type HomecomingSide } from '../content/homecoming-layout';
+import {
+  homecomingPositions,
+  homecomingPanel,
+  type HomecomingSide,
+} from '../content/homecoming-layout';
 const REACTION_LABELS = { calm: t('aSuspiciousLook'), annoyed: t('anExasperatedSigh'), angry: '…' };
 
 /** Scene-owned sprite and dialogue view; selection and timing stay in the domain. */
@@ -25,6 +29,8 @@ export class SaraReturnView {
   private readonly message: Phaser.GameObjects.Text;
   private readonly portrait: DialoguePortrait;
   private readonly dialogue: Phaser.GameObjects.Container;
+  private readonly panelLeft: number;
+  private readonly panelRight: number;
   private selectedPortrait: PortraitId | null = null;
   private key: SaraAnimation | EndingAnimation = SARA_ANIMATIONS.idle;
   // eslint-disable-next-line max-lines-per-function -- Der deklarative Aufbau hält Tür, Figur und Dialogpanel mit ihrer gemeinsamen Raumgeometrie zusammen.
@@ -38,28 +44,31 @@ export class SaraReturnView {
     },
   ) {
     this.root = scene.add.container(0, 0).setDepth(12).setVisible(false);
-    const { width } = layout;
+    const { left, width, right } = homecomingPanel(layout.width, layout.entrySide);
+
+    this.panelLeft = left;
+    this.panelRight = right;
     const door = layout.backgroundDoor
       ? []
       : fallbackDoor(scene, layout.width, layout.floorY, layout.entrySide);
 
     this.actor = this.buildActor();
-    const panel = scene.add.rectangle(width / 2, 188, width - 80, 112, 0x403a35, 0.96);
+    const panel = scene.add.rectangle(left + width / 2, 235, width, 218, 0x403a35, 0.96);
 
     panel.setStrokeStyle(2, 0xd4b488);
-    this.message = scene.add.text(60, 148, '', {
+    this.message = scene.add.text(left + 20, 140, '', {
       ...this.textStyle(16),
-      wordWrap: { width: width - 120 },
+      wordWrap: { width: width - 40 },
       lineSpacing: 6,
     });
-    this.quote = scene.add.text(60, 172, '', {
+    this.quote = scene.add.text(left + 20, 172, '', {
       ...this.textStyle(16),
       fontStyle: 'italic',
       color: '#e4c182',
-      wordWrap: { width: width - 120 },
+      wordWrap: { width: width - 40 },
     });
-    this.hint = scene.add.text(width - 60, 232, '', this.textStyle(14)).setOrigin(1, 1);
-    this.portrait = new DialoguePortrait(scene, 100, 188);
+    this.hint = scene.add.text(right - 20, 330, '', this.textStyle(14)).setOrigin(1, 1);
+    this.portrait = new DialoguePortrait(scene, left + 60, 188);
     const dialogue = scene.add.container(0, 0, [
       panel,
       this.portrait.image,
@@ -126,10 +135,10 @@ export class SaraReturnView {
 
   private layoutPortrait(id: PortraitId | null) {
     this.selectedPortrait = id;
-    const textX = this.portrait.render(this.selectedPortrait) ? 160 : 60;
+    const textX = this.panelLeft + (this.portrait.render(this.selectedPortrait) ? 120 : 20);
 
-    placeDialogueText(this.message, textX, this.layout.width - textX - 60);
-    placeDialogueText(this.quote, textX, this.layout.width - textX - 60);
+    placeDialogueText(this.message, textX, this.panelRight - textX - 20);
+    placeDialogueText(this.quote, textX, this.panelRight - textX - 20);
   }
 
   private renderText(snapshot: HomecomingSnapshot, canContinue: boolean) {
@@ -189,6 +198,7 @@ export class SaraReturnView {
       originY: this.actor.originY,
       dialogueText: this.caption,
       canvasTextVisible: this.root.visible && this.dialogue.visible && this.dialogue.alpha > 0,
+      dialogueBounds: Object.freeze({ left: this.panelLeft, right: this.panelRight }),
       portrait: this.portrait.snapshot(),
     };
   }

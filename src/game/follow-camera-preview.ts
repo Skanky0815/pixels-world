@@ -54,8 +54,14 @@ function refreshCamera(scene: Phaser.Scene, target: Phaser.Physics.Arcade.Sprite
     room.height,
   );
 
-  if (followsPixel()) camera.startFollow(target, true, 1, 1);
-  else camera.stopFollow().setScroll(0, 0);
+  camera.setDeadzone();
+
+  if (followsPixel()) {
+    camera.startFollow(target, true, 1, 1);
+
+    // Small standing corrections must not drag the entire phone view along.
+    if (!desktopFollowsPixel()) camera.setDeadzone(4, 4);
+  } else camera.stopFollow().setScroll(0, 0);
 }
 
 function cameraMargins(scene: Phaser.Scene) {

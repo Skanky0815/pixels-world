@@ -21,28 +21,28 @@ function bump(f: FridgeRummaging) {
   return f.observeJump(false, false, true, false, true);
 }
 
-test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einmalig die Tür', () => {
+test('Ein Sprung an die Klinke startet den Besuch und öffnet einmalig die Tür', () => {
   const f = fridge();
 
   f.update(10000);
   assert.equal(f.snapshot().state, 'idle');
-  assert.equal(bump(f), 1);
-  assert.equal(f.snapshot().state, 'warning');
-  f.update(500);
-  assert.equal(f.snapshot().state, 'idle');
-  assert.equal(f.snapshot().bumps, 1);
-  f.update(10000);
-  assert.equal(f.snapshot().hidden, false);
-  assert.equal(bump(f), 2);
+  assert.equal(bump(f), true);
   assert.equal(f.snapshot().state, 'hanging');
   assert.equal(f.snapshot().hidden, false);
   f.update(600);
   assert.equal(f.snapshot().state, 'opening');
   f.update(400);
+  assert.equal(f.snapshot().state, 'entering');
+  assert.equal(f.snapshot().doorState, 'ajar');
+  f.update(200);
+  assert.equal(f.snapshot().doorState, 'closed');
   assert.equal(f.snapshot().hidden, true);
   f.update(1399);
   assert.equal(f.snapshot().hidden, true);
-  assert.deepEqual(f.update(1), chaosEvent('fridge', 'spill', 1, 24));
+  assert.equal(f.update(1), undefined);
+  assert.equal(f.snapshot().state, 'reopening');
+  assert.equal(f.snapshot().hidden, true);
+  assert.deepEqual(f.update(400), chaosEvent('fridge', 'spill', 1, 24));
   assert.equal(f.snapshot().state, 'open');
   assert.equal(f.snapshot().hidden, false);
   assert.equal(bump(f), undefined);
@@ -51,30 +51,29 @@ test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einma
   f.reset();
   assert.deepEqual(f.snapshot(), {
     state: 'idle',
-    bumps: 0,
     hidden: false,
     captured: false,
     doorProgress: 0,
+    doorState: 'closed',
     progress: 0,
   });
 });
 
-test('Kontakt halten, neue Berührung im selben Sprung und Luftsprünge zählen nicht doppelt', () => {
+test('Kontakt ohne Klinke, Klettern und Luftsprünge starten keinen Besuch', () => {
   const f = fridge();
 
+  assert.equal(f.observeJump(false, false, true, false, true), undefined);
+  f.observeJump(true, true, false);
   assert.equal(f.observeJump(false, false, true), undefined);
-  assert.equal(bump(f), 1);
-  f.observeJump(false, false, false);
-
-  for (let i = 0; i < 20; i++) assert.equal(f.observeJump(true, false, true), undefined);
-  assert.equal(f.snapshot().bumps, 1);
+  assert.equal(f.snapshot().state, 'idle');
   f.observeJump(false, true, false);
-  assert.equal(f.observeJump(false, false, true), undefined);
-  assert.equal(f.snapshot().bumps, 1);
+  assert.equal(f.observeJump(true, false, true, false, true), undefined);
   f.observeJump(true, true, false);
   f.observeJump(false, false, false, true);
-  assert.equal(f.observeJump(false, false, true), undefined);
-  assert.equal(bump(f), 2);
+  assert.equal(f.observeJump(false, false, true, false, true), undefined);
+  assert.equal(bump(f), true);
+
+  for (let i = 0; i < 20; i++) assert.equal(bump(f), undefined);
 });
 
 test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel hineinzuversetzen', () => {
@@ -85,21 +84,21 @@ test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel 
   assert.equal(f.disturb(), undefined);
   f.reset();
   bump(f);
-  bump(f);
   assert.equal(f.disturb(), undefined);
   f.update(600);
   f.update(400);
+  f.update(200);
   assert.equal(f.snapshot().hidden, true);
-  assert.equal(f.update(1400)?.value, 24);
+  assert.equal(f.update(1400), undefined);
+  assert.equal(f.update(400)?.value, 24);
 });
 
 test('Ungültige Zeiten, Punkte und IDs werden abgewiesen; inaktive Zeit macht keinen Fortschritt', () => {
-  for (const key of ['warningMs', 'hangingMs', 'openingMs', 'insideMs', 'points'])
+  for (const key of ['hangingMs', 'openingMs', 'enteringMs', 'insideMs', 'reopeningMs', 'points'])
     assert.throws(() => new FridgeRummaging('f', { ...FRIDGE_RULES, [key]: -1 }));
   assert.throws(() => new FridgeRummaging(''));
   const f = fridge();
 
-  bump(f);
   bump(f);
   const before = f.snapshot();
 
@@ -143,6 +142,7 @@ test('Fridge graphics retain bounded transparent PNG cells and binary 2×2 clust
 
   for (const [name, width] of [
     ['upright', 160],
+    ['ajar', 160],
     ['open', 208],
   ] as const) {
     const p = PNG.sync.read(

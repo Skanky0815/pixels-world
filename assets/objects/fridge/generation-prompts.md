@@ -1,5 +1,17 @@
 # Kühlschrank: Erzeugungsprompts
 
+## Türspalt für den Eintritt
+
+Integriertes Bildwerkzeug (`image_gen`), Bearbeitung von `upright.png`. Unverändertes Ergebnis: `sources/ajar.png`, regulärer Export: `ajar.png` (160×320).
+
+```text
+Use case: precise-object-edit
+Asset type: ONE transparent intermediate door-state sprite for the exact warm retro refrigerator in the reference, in Pixel's World.
+Input image: EDIT TARGET, the existing cream fridge, brass handle on left, burgundy thin plinth, dark walnut pixel contour. Keep its identity, scale, front-facing camera, body geometry and palette.
+Primary request: change ONLY the door to be open a tiny crack, about 5 degrees, hinged on the right. The left edge with the brass handle moves slightly toward the viewer. Show only a thin dark vertical slit along the left edge behind the door, and a narrow dark wedge at the top. At least 92 percent of the front is still covered by the same solid cream door. The fridge interior and food must NOT be visible. The full outer cabinet stays upright, the same height and width, on the same floor anchor. This is a nearly closed entry frame, not a fully open fridge. No cat.
+Style: crisp low-resolution warm pixel art, chunky square pixels, no perspective change to the cabinet, no new decorations, no new background, no floor, no external shadow. Preserve genuine transparent alpha background; entire fridge must be visible with transparent margins. Intended game export 160 by 320 pixels, upright tall silhouette exactly as reference. The door must not be horizontally squashed.
+```
+
 Modus: integriertes Bildwerkzeug (`image_gen`). Echte Transparenz; ausgewählte unveränderte Quellen in `sources/`. Die erste geschlossene Erzeugung hatte einen fehlerhaften Farbfleck auf der Tür; die gezielte Korrektur ist die gespeicherte Quelle. Ein zwischenzeitlich erzeugter liegender Kühlschrank wurde nach Ricos Ablaufänderung verworfen. Die Promptmaße dokumentieren die ursprünglichen Entwürfe; für den bestätigten Möbelmaßstab werden dieselben Quellen direkt auf 160×320 beziehungsweise 208×320 exportiert.
 
 ## Geschlossen

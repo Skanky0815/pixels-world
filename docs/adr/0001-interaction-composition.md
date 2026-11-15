@@ -13,7 +13,7 @@ Die Szene bündelt Controls, Pixel, UI und drei Objektadapter. Die reinen Handlu
 
 ## Entscheidung
 
-Konkrete Klassen kapseln `Pixel`, `InputController`, `GameHud`, Szene und Spielobjekte. Spielregeln bleiben in kleinen reinen Modellen. Interaktionsobjekte kombinieren **funktionale Interfaces/Komponenten** wie `Interactable`, `Destructible` und `Climbable`, soweit ein aktuelles Verhalten sie braucht. IDs sind instanzbezogen; unveränderliche Schadensereignisse führen über einen gemeinsamen Score-Pfad zum vorhandenen Ledger. Der sichtbare Pixel bleibt vom Physikkörper getrennt.
+Konkrete Klassen kapseln `Pixel`, `InputController`, `GameFeedback`, Szene und Spielobjekte. Spielregeln bleiben in kleinen reinen Modellen. Interaktionsobjekte kombinieren **funktionale Interfaces/Komponenten** wie `Interactable`, `Destructible` und `Climbable`, soweit ein aktuelles Verhalten sie braucht. IDs sind instanzbezogen; unveränderliche Schadensereignisse führen über einen gemeinsamen Score-Pfad zum vorhandenen Ledger. Der sichtbare Pixel bleibt vom Physikkörper getrennt.
 
 `GoalTarget` und `PanicTrigger` sind vereinbarte Begriffe für spätere Funktionen, keine jetzt zu erzeugenden leeren Marker. Eine Scene/HUD-View-Klasse genügt für den aktuellen Raum. Die Engine erhält weiterhin ihren eigenen Game-Loop. Spielmodule liegen unter `src/game/`, Entwicklungswerkzeuge unter `src/dev/`. Raum- und Objektinhalte werden nach der Klassenextraktion zunächst typisiert unter `src/content/` gepflegt; ein JSON-Import folgt erst auf dem erprobten Vertrag mit expliziter Validierung. Es bleibt ein gemeinsames npm-/Vite-Projekt.
 

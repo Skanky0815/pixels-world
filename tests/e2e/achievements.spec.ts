@@ -167,7 +167,18 @@ for (const mobile of [false, true])
         await assertFits(album);
         await album.locator('.achievement-targets li').last().scrollIntoViewIfNeeded();
         await expect(album.locator('.achievement-targets li').last()).toBeInViewport();
-        await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
+        await assertFits(album);
+
+        if (mobile && viewport.width === 568)
+          await test.info().attach('erfolge-quer-detail', {
+            body: await page.screenshot(),
+            contentType: 'image/png',
+          });
+
+        if (mobile) {
+          await album.locator('.achievement-story .album-overview').click();
+          await expect(album.locator('.achievement-index')).toBeVisible();
+        } else await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
         await album.locator('[data-action="page-next"]').click();
         await expect(album.locator('.album-pagination')).toContainText('Seite 4 von 10');
         await expect(album.locator('.achievement-tile')).toHaveCount(4);
@@ -188,6 +199,15 @@ for (const mobile of [false, true])
       await page.getByRole('button', { name: /Little angel II Unlocked/ }).click();
       await expect(album.locator('.achievement-count')).toHaveText('10 / 10 reconciliations');
       await expect(album.locator('.achievement-state')).toContainText('Unlocked');
+
+      if (mobile) {
+        await expect(album.locator('.achievement-story .album-overview')).toHaveText(
+          'Back to collection',
+        );
+        await album.locator('.achievement-story .album-overview').click();
+        await expect(album.locator('.achievement-index')).toBeVisible();
+      }
+
       await page.keyboard.press('Escape');
       await openPause(page);
       await page.locator('[data-album-reset="ask"]').click();
@@ -205,6 +225,8 @@ async function assertFits(album: ReturnType<Page['locator']>) {
     const panel = el.querySelector('#album-room')!;
     const active = el.querySelector('.achievement-index')!;
     const story = el.querySelector('.achievement-story')!;
+    const back = story.querySelector('.album-overview')?.getBoundingClientRect();
+    const bounds = story.getBoundingClientRect();
 
     return {
       dialogScroll: el.scrollHeight - el.clientHeight,
@@ -215,6 +237,16 @@ async function assertFits(album: ReturnType<Page['locator']>) {
       storyOverflow:
         getComputedStyle(story).display !== 'none' ? story.scrollHeight - story.clientHeight : 0,
       landscape: matchMedia('(orientation: landscape)').matches,
+      compactDetail:
+        matchMedia('(orientation: landscape) and (max-height: 550px)').matches &&
+        (el as HTMLElement).dataset.detail === 'true',
+      button: back
+        ? {
+            bottom: bounds.bottom - back.bottom,
+            right: bounds.right - back.right,
+            height: back.height,
+          }
+        : null,
     };
   });
 
@@ -223,6 +255,14 @@ async function assertFits(album: ReturnType<Page['locator']>) {
   expect(geometry.indexOverflow).toBeLessThanOrEqual(1);
 
   if (geometry.landscape) expect(geometry.storyOverflow).toBeLessThanOrEqual(1);
+
+  if (geometry.compactDetail) {
+    expect(geometry.button!.height).toBeGreaterThanOrEqual(44);
+    expect(geometry.button!.bottom).toBeGreaterThanOrEqual(0);
+    expect(geometry.button!.bottom).toBeLessThanOrEqual(12);
+    expect(geometry.button!.right).toBeGreaterThanOrEqual(0);
+    expect(geometry.button!.right).toBeLessThanOrEqual(12);
+  }
 }
 
 async function firstAchievementPage(album: ReturnType<Page['locator']>) {

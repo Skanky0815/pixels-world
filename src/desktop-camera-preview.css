@@ -17,6 +17,10 @@
       pointer-events: none;
     }
 
+    #play-area .mobile-hud:has(.mobile-notice:empty) {
+      background: transparent;
+    }
+
     #play-area {
       position: relative;
     }
@@ -52,6 +56,14 @@
       font-size: 16px;
       line-height: 1.5;
       white-space: pre-line;
+    }
+    .mobile-dialogue[data-entry-side='left']:not([hidden]) {
+      left: auto;
+      right: 24px;
+    }
+    #play-area:has(.mobile-dialogue[data-entry-side='left']:not([hidden])) .mobile-hud {
+      left: 24px;
+      right: auto;
     }
 
     .mobile-dialogue p {

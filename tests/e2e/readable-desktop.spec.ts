@@ -64,7 +64,7 @@ test(
     await start(page, '/?camera=room&round-profile=fast');
     await readable(page);
     await expect(page.locator('.mobile-goal')).toHaveCount(0);
-    await expect(page.locator('.mobile-hud')).toContainText('CHAOS:');
+    await expect(page.locator('.mobile-hud')).not.toContainText('CHAOS:');
     await useIdleFrames(page);
     await advanceRoundTo(page, (await state(page)).round.returnAtMs);
     await until(

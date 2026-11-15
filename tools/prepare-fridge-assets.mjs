@@ -5,6 +5,7 @@ import { PNG } from 'pngjs';
 const root = new URL('../assets/objects/fridge/', import.meta.url);
 const jobs = [
   { name: 'upright', width: 160, height: 320 },
+  { name: 'ajar', width: 160, height: 320 },
   { name: 'open', width: 208, height: 320 },
 ];
 

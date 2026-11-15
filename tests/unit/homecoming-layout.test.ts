@@ -3,8 +3,21 @@ import { test } from 'node:test';
 import {
   homecomingPositions,
   homecomingCharmPose,
+  homecomingPanel,
 } from '../../src/game/content/homecoming-layout.ts';
 import { CharmMotion } from '../../src/game/domain/charm-motion.ts';
+
+test('Dialog und Versöhnung nutzen die freie Seite gegenüber Saras Eintritt', () => {
+  for (const width of [960, 1320]) {
+    const left = homecomingPanel(width, 'right');
+    const right = homecomingPanel(width, 'left');
+
+    assert.equal(left.left, 40);
+    assert.equal(right.right, width - 40);
+    assert.ok(left.right < homecomingPositions(width).pixelSeatX - 40);
+    assert.ok(right.left > homecomingPositions(width, 'left').pixelSeatX + 40);
+  }
+});
 
 test('Linker Auftritt lässt Sara und Pixel mit gleichem Abstand auf freiem Boden zusammentreffen', () => {
   assert.deepEqual(homecomingPositions(960), { saraStartX: 992, saraEndX: 846, pixelSeatX: 782 });
