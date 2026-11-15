@@ -327,7 +327,9 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   ausführen: Die Tür öffnet vollständig, ohne weiteren Schaden zu vergeben.
   Wackeln auch mit Fokusverlust, reduzierter Bewegung und Reset prüfen.
   Für Menüpause, Heimkehr und Versöhnung über **Mit vollständiger Runde im Spiel
-  testen** in den regulären Rundenablauf wechseln. Pause/Fokuswechsel,
+  testen** in den regulären Rundenablauf wechseln. Der DEV-/E2E-Parameter
+  `scenario` akzeptiert ausschließlich die expliziten Runden-Fixtures; die alten
+  Labor-IDs unter `room` sind entfernt. Pause/Fokuswechsel,
   einmalige Schäden, Saras Heimkehr von links und Versöhnung gemeinsam prüfen.
   Kontraste und Konturen von Tasse und Teller vor Wand, Tischdecke und Regalen
   prüfen. Reset stellt Möbel und

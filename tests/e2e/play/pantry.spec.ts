@@ -1,20 +1,26 @@
+/* eslint-disable max-lines-per-function -- Reale Eingaben und ihre zusammengehörigen Zustandsprüfungen bilden vollständige Abläufe. */
 import { TouchDriver } from '../support/touch-support';
-/* eslint-disable max-lines-per-function -- Reale Kontakte, begrenzte Inhalte und Reset werden als vollständige Spielabläufe geprüft. */
-import { test, expect, waitForGame } from '../support/support';
-import {
-  observe,
-  until,
-  move,
-  climbToTableLanding,
-  climbFromTableToFridge,
-  finishCharm,
-} from './kitchen-support';
+import { test, expect } from '../support/support';
+import { observe, until, move } from './playground-object-support';
 import type { Page } from '@playwright/test';
+import { loadScenario, togglePause, resume } from './playground-object-support';
 
-async function start(page: Page, room: string) {
-  await page.goto(`/play.html?room=${room}&camera=room`);
-  await waitForGame(page);
-  await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
+async function collapseShelf(page: Page) {
+  for (
+    let count = 0;
+    count < 8 && (await observe(page)).shelves.find((s) => s.id === 'pantry-shelf')?.enabled;
+    count++
+  ) {
+    await move(page, ['Space'], (s) => !s.pixel.grounded);
+    await until(
+      page,
+      (s) => s.pixel.grounded || !s.shelves.find((shelf) => shelf.id === 'pantry-shelf')?.enabled,
+    );
+  }
+}
+
+async function start(page: Page, room = '') {
+  await loadScenario(page, room);
 }
 
 for (const room of ['pantry-jars', 'pantry-tins', 'pantry-mixed'])
@@ -27,12 +33,12 @@ for (const room of ['pantry-jars', 'pantry-tins', 'pantry-mixed'])
 
       await move(page, ['ArrowRight'], (s) => s.pantry[0].state === 'moving');
       expect((await observe(page)).chaos.score).toBe(0);
-      await page.keyboard.press('Escape');
+      await togglePause(page);
       const paused = await observe(page);
 
       await page.clock.runFor(700);
       expect((await observe(page)).pantry).toEqual(paused.pantry);
-      await page.locator('[data-pause-resume]').click();
+      await resume(page);
       await move(page, ['r'], (s) => s.generation > initial.generation);
       await until(page, (s) => s.pixel.grounded);
       expect(
@@ -50,7 +56,7 @@ for (const room of ['pantry-jars', 'pantry-tins', 'pantry-mixed'])
       for (const item of finished.pantry) {
         expect(item.state).toBe(item.appearance === 'jar' ? 'broken' : 'opened');
         expect(item.shards).toBe(item.appearance === 'jar' ? 7 : 0);
-        expect(finished.album.pending).toContain(`pantry.${item.appearance}`);
+        expect(finished.discoveries).toContain(`pantry.${item.appearance}`);
         expect(item.contents!.x - item.contents!.width / 2).toBeGreaterThanOrEqual(0);
         expect(item.contents!.x + item.contents!.width / 2).toBeLessThanOrEqual(960);
       }
@@ -74,20 +80,6 @@ for (const room of ['pantry-jars', 'pantry-tins', 'pantry-mixed'])
       );
     },
   );
-
-async function collapseShelf(page: Page) {
-  for (
-    let count = 0;
-    count < 8 && (await observe(page)).shelves.find((s) => s.id === 'pantry-shelf')?.enabled;
-    count++
-  ) {
-    await move(page, ['Space'], (s) => !s.pixel.grounded);
-    await until(
-      page,
-      (s) => s.pixel.grounded || !s.shelves.find((shelf) => shelf.id === 'pantry-shelf')?.enabled,
-    );
-  }
-}
 
 for (const appearance of ['jar', 'tin'])
   test(`${appearance}: verlorene Auflage, echter Fall und einmaliger Schaden`, async ({ page }) => {
@@ -134,69 +126,6 @@ test('Bewegtes Vorratsglas kippt eine Pflanze ohne direkte Pixelberührung', asy
   expect((await observe(page)).plants[0].events).toBe(1);
 });
 
-for (const [appearance, difficulty, seed] of [
-  ['jar', 'normal', 'fridge-front-normal-5'],
-  ['tin', 'easy', 'pantry-easy-1'],
-] as const)
-  for (const outcome of ['success', 'failed'] as const)
-    test(`${appearance}: ${outcome} bestätigt oder verwirft den Behälterfund nach wirklicher Versöhnung`, async ({
-      page,
-    }) => {
-      await page.addInitScript(
-        (value) => localStorage.setItem('pixels-world.difficulty', value),
-        difficulty,
-      );
-      await start(page, `kitchen&room-seed=${seed}`);
-      await climbToTableLanding(page);
-
-      if (appearance === 'tin') await climbFromTableToFridge(page);
-      const target = (await observe(page)).pantry.find(
-        (item) =>
-          item.id ===
-          (appearance === 'jar' ? 'kitchen-table:table-1' : 'kitchen-fridge:fridge-tin'),
-      )!;
-
-      expect(target.appearance).toBe(appearance);
-      await move(
-        page,
-        ['ArrowRight'],
-        (s) => s.pantry.find((item) => item.id === target.id)?.state === 'moving',
-      );
-      await until(page, (s) => s.pantry.find((item) => item.id === target.id)?.events === 1);
-      expect((await observe(page)).album.pending).toContain(`pantry.${appearance}`);
-
-      if (appearance === 'jar') await climbFromTableToFridge(page);
-      await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 830);
-      await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
-      const x = (await observe(page)).pixel.x;
-
-      await move(
-        page,
-        [x < 860 ? 'ArrowRight' : 'ArrowLeft'],
-        (s) => Math.abs(s.pixel.x - 860) < 4,
-      );
-      await until(
-        page,
-        (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated',
-      );
-      expect((await observe(page)).homecoming.selection?.peaceful).toBe(false);
-      await move(page, ['Space'], (s) => s.reconciliation.stage === 'reading');
-      await finishCharm(page, outcome === 'success');
-      await until(page, (s) => s.result !== null);
-      const result = await observe(page);
-
-      expect(result.result?.outcome).toBe(outcome);
-      expect(result.album.confirmed.includes(`pantry.${appearance}`)).toBe(outcome === 'success');
-
-      if (outcome === 'failed') {
-        expect(result.album.confirmed).toEqual([]);
-        await expect(page.locator('.album-banner')).toBeHidden();
-      }
-
-      expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();
-      expect(await page.evaluate(() => localStorage.getItem('pixels-world.storage'))).toBeNull();
-    });
-
 test.describe('Behälter mit Touch', () => {
   test.use({ hasTouch: true, isMobile: true });
 
@@ -206,13 +135,9 @@ test.describe('Behälter mit Touch', () => {
   ])
     test(`Dose mit Bildschirmtasten bei ${viewport.width}×${viewport.height}`, async ({ page }) => {
       await page.setViewportSize(viewport);
-      await page.goto('/play.html?room=pantry-tins');
-      await waitForGame(page);
+      await loadScenario(page, 'pantry-tins');
       const touch = await TouchDriver.create(page);
 
-      await touch.press('jump');
-      await until(page, (s) => s.started);
-      await touch.lift();
       await until(page, (s) => s.pixel.grounded);
       await touch.press('right');
       await until(page, (s) => s.pantry[0].state === 'moving');

@@ -9,11 +9,11 @@ import {
   playgroundChoices,
 } from '../../game/dev/playground-selection.ts';
 import { PLAYGROUND_OBJECTS } from '../../game/dev/playground-room.ts';
-import { LAB_ROOMS } from '../../game/play/content/rooms/index.ts';
+import { LAB_ROOMS } from '../../game/play/content/rooms/scenarios.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Jeder bestehende Laboraufbau wird unverändert über den echten Resolver angeboten.
 test('Alle Laborszenarien verwenden ihre ursprünglichen Raum-, Spawn- und Objektdaten', () => {
-  assert.equal(PLAYGROUND_SCENARIOS, LAB_ROOMS);
+  assert.equal(PLAYGROUND_SCENARIOS['fridge-incoming'], LAB_ROOMS['fridge-incoming']);
   const before = JSON.stringify(LAB_ROOMS);
 
   for (const [id, definition] of Object.entries(LAB_ROOMS)) {
@@ -27,7 +27,7 @@ test('Alle Laborszenarien verwenden ihre ursprünglichen Raum-, Spawn- und Objek
   assert.equal(JSON.stringify(LAB_ROOMS), before);
   assert.deepEqual(
     playgroundChoices('scenario').map((choice) => choice.id),
-    Object.keys(LAB_ROOMS),
+    Object.keys(PLAYGROUND_SCENARIOS),
   );
 });
 
@@ -51,7 +51,7 @@ test('Objekt- und Szenarioauswahl sind vollständig über teilbare URLs erreichb
   });
   assert.equal(
     playgroundGameLink({ mode: 'scenario', id: 'fridge-incoming' }),
-    '/play.html?room=fridge-incoming&camera=room',
+    '/play.html?scenario=fridge-incoming&camera=room',
   );
   assert.equal(playgroundGameLink({ mode: 'object', id: 'cozy-couch' }), undefined);
 });
@@ -84,4 +84,29 @@ test('Unbekannte oder geerbte Auswahlschlüssel werden vor der Szenenerzeugung a
   }
 
   assert.throws(() => selectedPlaygroundRoom({ mode: 'scenario', id: 'cozy-couch' }));
+});
+
+// eslint-disable-next-line max-lines-per-function -- Beide Kataloggrenzen müssen unabhängig von geerbten Schlüsseln und Produktionsparametern gelten.
+test('Alte Labor-Raumzugänge sind entfernt; nur explizite Rundenszenarien bleiben im Spiel', async () => {
+  const { selectRoom } = await import('../../game/play/content/rooms/index.ts');
+  const { roundScenario, ROUND_SCENARIOS } =
+    await import('../../game/play/content/rooms/scenarios.ts');
+
+  for (const id of [...Object.keys(LAB_ROOMS), 'kitchen-preview']) {
+    assert.throws(() => selectRoom(id, true), /Unknown room/);
+    assert.equal(selectRoom(id, false).id, 'living-room');
+  }
+
+  for (const id of Object.keys(ROUND_SCENARIOS)) assert.equal(roundScenario(id).id, id);
+
+  for (const id of ['impact-vases', 'dish-cups', 'toString', '__proto__'])
+    assert.throws(() => roundScenario(id), /Unknown round scenario/);
+  assert.equal(playgroundGameLink({ mode: 'scenario', id: 'impact-vases' }), undefined);
+});
+
+test('Rundenlink erhält den gewählten Raumseed', () => {
+  assert.equal(
+    playgroundGameLink({ mode: 'scenario', id: 'kitchen-preview' }, 'bags-7'),
+    '/play.html?scenario=kitchen-preview&camera=room&room-seed=bags-7',
+  );
 });

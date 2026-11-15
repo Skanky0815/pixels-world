@@ -1,3 +1,4 @@
+import { togglePause } from './playground-object-support';
 /* eslint-disable max-lines-per-function -- Zusammenhängende reale Spielrouten halten Kontakt, Wirkung und Reset sichtbar zusammen. */
 import type { Page } from '@playwright/test';
 import {
@@ -11,7 +12,7 @@ import {
   middleShelf,
   couch,
   reset,
-} from '../support/support';
+} from './playground-object-support';
 
 async function jump(page: Page) {
   await page.keyboard.down('Space');
@@ -24,7 +25,7 @@ test(
   'Objektkontakt: rollende Vase schiebt gleichartige Vase weiter, ohne sofortigen Bruch',
   { tag: '@smoke' },
   async ({ page }) => {
-    await start(page, '/?room=impact-vases');
+    await start(page, '/?scenario=impact-vases');
     await lowerShelf(page);
     await holdUntil(
       page,
@@ -39,12 +40,12 @@ test(
     expect(second.state).not.toBe('broken');
     expect(second.velocityX).toBeGreaterThan(0);
     expect(hit.chaos.score).toBe(0);
-    await page.keyboard.press('Escape');
+    await togglePause(page);
     const paused = (await state(page)).vases;
 
     await page.clock.runFor(1000);
     expect((await state(page)).vases).toEqual(paused);
-    await page.keyboard.press('Escape');
+    await togglePause(page);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.clock.runFor(64);
     const angle = (await state(page)).vases.find((v) => v.id === 'second-vase')!.angle;
@@ -59,7 +60,7 @@ test(
 test('Objektkontakt: fallende Vase zerbricht mit getroffener Vase, beide Schäden zählen einmal', async ({
   page,
 }) => {
-  await start(page, '/?room=impact-fall');
+  await start(page, '/?scenario=impact-fall');
   await middleShelf(page);
   await holdUntil(
     page,
@@ -88,7 +89,7 @@ test('Objektkontakt: fallende Vase zerbricht mit getroffener Vase, beide Schäde
 test('Objektkontakt: fallendes Bild trifft Vase auf seinem Weg; Pause friert den Fall ein', async ({
   page,
 }) => {
-  await start(page, '/?room=impact-picture');
+  await start(page, '/?scenario=impact-picture');
   await couch(page);
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 410);
   await jump(page);
@@ -96,12 +97,12 @@ test('Objektkontakt: fallendes Bild trifft Vase auf seinem Weg; Pause friert den
   await page.keyboard.down('Space');
   await until(page, (s) => s.pictures[0].state === 'falling');
   await page.keyboard.up('Space');
-  await page.keyboard.press('Escape');
+  await togglePause(page);
   const paused = (await state(page)).pictures;
 
   await page.clock.runFor(1000);
   expect((await state(page)).pictures).toEqual(paused);
-  await page.keyboard.press('Escape');
+  await togglePause(page);
   await page.keyboard.down('ArrowDown');
   await until(page, (s) => s.vases.find((v) => v.id === 'target-vase')?.state === 'broken');
   await until(page, (s) => s.pictures[0].state === 'fallen');
@@ -115,7 +116,7 @@ test('Objektkontakt: fallendes Bild trifft Vase auf seinem Weg; Pause friert den
 test('Objektkontakt: fallendes Regal kippt Pflanze ohne Knabbern; Reset mitten im Fall räumt auf', async ({
   page,
 }) => {
-  await start(page, '/?room=impact-shelf');
+  await start(page, '/?scenario=impact-shelf');
   await middleShelf(page);
   await jump(page);
   await page.keyboard.down('Space');
@@ -134,13 +135,13 @@ test('Objektkontakt: fallendes Regal kippt Pflanze ohne Knabbern; Reset mitten i
   expect((await state(page)).shelves.find((shelf) => shelf.id === 'lower-shelf')?.enabled).toBe(
     false,
   );
-  await until(page, (s) => s.plant.state === 'tipped');
+  await until(page, (s) => s.plant!.state === 'tipped');
   const tipped = await state(page);
 
-  expect(tipped.plant).toMatchObject({ events: 1, texture: 'catgrass-intact', soilVisible: true });
-  expect(tipped.plant.lastDamage?.kind).toBe('tip');
+  expect(tipped.plant!).toMatchObject({ events: 1, texture: 'catgrass-intact', soilVisible: true });
+  expect(tipped.plant!.lastDamage?.kind).toBe('tip');
   await page.clock.runFor(1000);
-  expect((await state(page)).plant.events).toBe(1);
+  expect((await state(page)).plant!.events).toBe(1);
   await test
     .info()
     .attach('regal-auf-pflanze', { body: await page.screenshot(), contentType: 'image/png' });
@@ -150,13 +151,17 @@ test('Objektkontakt: fallendes Regal kippt Pflanze ohne Knabbern; Reset mitten i
   await jump(page);
   await reset(page);
   await page.clock.runFor(1000);
-  expect((await state(page)).plant).toMatchObject({ state: 'idle', events: 0, soilVisible: false });
+  expect((await state(page)).plant!).toMatchObject({
+    state: 'idle',
+    events: 0,
+    soilVisible: false,
+  });
 });
 
 test('Objektkontakt: kippende Bücher stoßen eine Vase ohne direkten Pixelkontakt an', async ({
   page,
 }) => {
-  await start(page, '/?room=impact-books');
+  await start(page, '/?scenario=impact-books');
   await lowerShelf(page);
   await page.keyboard.down('ArrowDown');
   await until(page, (s) => s.books[0].state === 'falling');
@@ -203,7 +208,7 @@ for (const direction of [1, -1])
     `Pixel landet auf Vase: kippt und rollt nach ${direction > 0 ? 'rechts' : 'links'}`,
     { tag: '@smoke' },
     async ({ page }) => {
-      await start(page, '/?room=impact-landing');
+      await start(page, '/?scenario=impact-landing');
       await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 500);
 
       if (direction < 0) {
@@ -236,12 +241,12 @@ for (const direction of [1, -1])
       expect(Math.abs(vase.angle)).toBe(direction < 0 ? 0 : 65);
       expect(landed.chaos.score).toBe(0);
       expect(vase.shards).toBe(0);
-      await page.keyboard.press('Escape');
+      await togglePause(page);
       const paused = (await state(page)).vases;
 
       await page.clock.runFor(1000);
       expect((await state(page)).vases).toEqual(paused);
-      await page.keyboard.press('Escape');
+      await togglePause(page);
       await expectSmoothDrop(page);
       const rolled = (await state(page)).vases.find((v) => v.id === 'landing-vase')!;
 

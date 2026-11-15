@@ -1,8 +1,9 @@
-import { LAB_ROOMS } from '../play/content/rooms/index.ts';
+import { PLAYGROUND_SCENARIOS } from '../play/content/rooms/scenarios.ts';
+import { ROUND_SCENARIOS } from '../play/content/rooms/scenarios.ts';
+export { PLAYGROUND_SCENARIOS } from '../play/content/rooms/scenarios.ts';
 import { resolveRoom } from '../play/content/resolve-room.ts';
 import { playgroundRoom, PLAYGROUND_OBJECTS } from './playground-room.ts';
 
-export const PLAYGROUND_SCENARIOS = LAB_ROOMS;
 export type PlaygroundMode = 'object' | 'scenario';
 export interface PlaygroundSelection {
   readonly mode: PlaygroundMode;
@@ -10,6 +11,9 @@ export interface PlaygroundSelection {
 }
 const defaults = { object: 'cozy-couch', scenario: 'fridge-incoming' } as const;
 const families: [string, string][] = [
+  ['living-room', 'Wohnzimmer'],
+  ['cozy-remix', 'Wohnzimmer-Variante'],
+  ['kitchen-preview', 'Küchenvorschau'],
   ['fridge', 'Kühlschrank'],
   ['food-bag', 'Futterbeutel'],
   ['dish', 'Geschirr'],
@@ -70,9 +74,14 @@ export function selectedPlaygroundRoom(selection: PlaygroundSelection) {
       );
 }
 
-export function playgroundGameLink(selection: PlaygroundSelection) {
-  if (selection.mode !== 'scenario') return undefined;
+export function playgroundGameLink(selection: PlaygroundSelection, seed?: string) {
+  if (selection.mode !== 'scenario' || !Object.hasOwn(ROUND_SCENARIOS, selection.id))
+    return undefined;
   validatePlaygroundSelection(selection);
 
-  return `/play.html?${new URLSearchParams({ room: selection.id, camera: 'room' })}`;
+  const params = new URLSearchParams({ scenario: selection.id, camera: 'room' });
+
+  if (seed) params.set('room-seed', seed);
+
+  return `/play.html?${params}`;
 }

@@ -182,25 +182,26 @@ Zeitlimits des Spiels sind hier nicht aktiv. HTML und Module bleiben DEV-only.
 
 ## Objektkontakte prüfen
 
-Die zusätzlichen handgebauten Räume sind wie `cozy-remix` ausschließlich über die
-DEV-/E2E-Raumauswahl erreichbar. Produktionsaufrufe ignorieren die Raumparameter.
-Sie verwenden dieselben Objektklassen, Collider, Eingaben und Schadensmodelle:
+Handgebaute Kontaktszenarien werden zentral in der DEV-Spielwiese ausgewählt.
+Sie verwenden dieselben Objektklassen, Collider, Eingaben und Schadensmodelle.
+Die früheren Laborzugänge über `/play.html?room=…` sind entfernt:
 
-- `/play.html?room=impact-vases`: zwei Vasen auf dem unteren Regal seitlich anschieben.
-- `/play.html?room=impact-fall`: über den Vorhang rechts aufs mittlere Regal springen
+- `/interactable-playground.html?scenario=impact-vases`: zwei Vasen auf dem unteren Regal seitlich anschieben.
+- `/interactable-playground.html?scenario=impact-fall`: über den Vorhang rechts aufs mittlere Regal springen
   und die Vase nach links auf die Vase darunter schieben.
-- `/play.html?room=impact-picture`: am rechten Sofarand zweimal gegen das Bild springen;
+- `/interactable-playground.html?scenario=impact-picture`: am rechten Sofarand zweimal gegen das Bild springen;
   es fällt auf die Vase am Boden.
-- `/play.html?room=impact-shelf`: das mittlere Regal durch Landungen belasten; seine
+- `/interactable-playground.html?scenario=impact-shelf`: das mittlere Regal durch Landungen belasten; seine
   Bruchstücke treffen die Pflanze darunter.
-- `/play.html?room=impact-landing`: von links oder rechts auf die Bodenvase springen;
+- `/interactable-playground.html?scenario=impact-landing`: von links oder rechts auf die Bodenvase springen;
   sie kippt und rollt von Pixel weg, ohne sofort zu zerbrechen.
-- `/play.html?room=impact-books`: bei den Büchern links auf dem unteren Regal bleiben;
+- `/interactable-playground.html?scenario=impact-books`: bei den Büchern links auf dem unteren Regal bleiben;
   beim Kippen stoßen sie die benachbarte Vase an.
 
-Pause, reduzierte Bewegung und Neustart funktionieren wie im regulären Spiel.
-Die E2E-Beobachtung enthält nur lesbare Kontaktdaten unter `objectImpacts`;
-kein Raum stellt Spielzustandssetter oder Phaser-Objekte bereit.
+Fokusverlust pausiert die Szene; reduzierte Bewegung und Neustart verwenden
+dieselben Mechanismen wie im Spiel. Die sichtbare DOM-Diagnose enthält lesbare
+Kontaktdaten unter `objectImpacts`, ohne globale Spielbeobachter,
+Spielzustandssetter oder Phaser-Objekte.
 
 ## Objekte und Kontaktszenarien auf der Spielwiese prüfen
 
@@ -211,7 +212,7 @@ eine kompakte Toolbar. Auf breiten Bildschirmen
 steht die Live-Diagnose neben der höchstens 800 Pixel breiten Testszene; auf
 schmalen Geräten darunter. Die Spielwelt und Physik bleiben dabei unverändert.
 Einzelobjekte stammen direkt aus dem Objektkatalog, einschließlich aller Varianten.
-Szenarien verwenden dieselben Labordefinitionen wie die DEV-/E2E-Räume, samt
+Szenarien verwenden die gemeinsamen Raum- und Labordefinitionen, samt
 festen Möbeln, mehreren Objekten und ihrer tatsächlichen Weltgröße. Es gibt keine
 separaten Kopien der Testgeometrie. Direktlinks wie
 `/interactable-playground.html?scenario=fridge-incoming` oder `?object=cozy-couch`
@@ -223,14 +224,20 @@ vom Testregal. Touch-Geräte erhalten dieselbe Eingabe wie im Spiel.
 
 **Diagnoseziel** wählt ein Objekt oder Möbelstück, ohne die Szene neu zu starten.
 Die Live-Diagnose zeigt Typ, Zustand, Chaos-Punkte und die letzten Chaos-Ereignisse.
-Die Detailansicht enthält losgelöste Objekt-/Pixelwerte und Ressourcenanzahlen.
+Die Detailansicht enthält losgelöste Objekt-/Pixelwerte, Kontaktherkunft,
+Ressourcenanzahlen und aus den Schadensereignissen ermittelte Funde. Diese
+Funddiagnose ist kein Albumfortschritt.
 **Szene zurücksetzen**, Debug-R und Objektwechsel entsorgen den alten Durchlauf
 und setzen Pixel, Schaden und Punkte zurück; dasselbe gilt für Szenariowechsel.
 Fokusverlust pausiert die Szene.
 Es gibt keine Heimkehr, Rundenuhr oder gespeicherten Ergebnisse.
-**Mit vollständiger Runde im Spiel testen** öffnet das gewählte Szenario im
-regulären Spiel. Dort bleiben Heimkehr-, Dialog- und Persistenzprüfungen; die
-Spielwiese bündelt die manuelle Objekt- und Kontaktdiagnose.
+**Mit vollständiger Runde im Spiel testen** erscheint nur für die expliziten
+Runden-Fixtures `kitchen-preview`, `fridge-visit` und `fridge-incoming`. Der Link
+öffnet `/play.html?scenario=…` im DEV-/E2E-Betrieb. Andere Kontaktszenarien haben
+keinen Zugang zum Rundenablauf; Produktionsbuilds ignorieren diesen Parameter.
+Reine Objekt- und Kontakttests laufen über die Spielwiese, während die getrennten
+`*-round.spec.ts` Rundenuhr, Heimkehr, Dialoge und Albumabschluss im Spiel prüfen.
+Die normalen Spielräume bleiben über die öffentliche Raumauswahl erreichbar.
 
 `object-playfield.ts` verdrahtet Physik und Interaktionsschritte gemeinsam für
 Hauptspiel und Playground. Neue Katalogvarianten werden automatisch angeboten;

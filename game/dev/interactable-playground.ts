@@ -98,9 +98,22 @@ function restart() {
   disableControls(true);
   notice.hidden = true;
   document.documentElement.dataset.playgroundReady = 'false';
-  history.replaceState(null, '', playgroundSelectionSearch(expected));
+  history.replaceState(null, '', selectionLocation());
   scene.scene.restart({ selection: expected });
   host.focus({ preventScroll: true });
+}
+
+function scenarioSeed() {
+  return new URLSearchParams(location.search).get('room-seed') ?? undefined;
+}
+
+function selectionLocation() {
+  const params = new URLSearchParams(playgroundSelectionSearch(expected));
+  const seed = scenarioSeed();
+
+  if (seed) params.set('room-seed', seed);
+
+  return `?${params}`;
 }
 
 function render(snapshot: PlaygroundSnapshot) {
@@ -155,8 +168,10 @@ function renderView(snapshot: PlaygroundSnapshot) {
   if (key === viewKey) return;
   viewKey = key;
   fitStage(snapshot);
-  round.hidden = snapshot.mode !== 'scenario';
-  gameLink.href = playgroundGameLink(expected) ?? '/play.html';
+  const link = playgroundGameLink(expected, scenarioSeed());
+
+  round.hidden = !link;
+  gameLink.href = link ?? '/play.html';
 }
 
 function fitStage(snapshot: PlaygroundSnapshot) {

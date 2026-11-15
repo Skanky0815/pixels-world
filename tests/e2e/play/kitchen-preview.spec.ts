@@ -79,9 +79,15 @@ for (const [difficulty, viewport] of [
 test('Produktion isoliert die DEV-Vorschau und bietet die Küche in der Raumauswahl an', async ({
   page,
 }) => {
-  await page.goto('http://127.0.0.1:4175/pixels-world/play.html?room=kitchen-preview');
-  await waitForLoadingScreen(page);
-  await expect(page.locator('h1 span').first()).toContainText('WOHNZIMMER');
+  for (const scenario of ['living-room', 'fridge-incoming']) {
+    await page.goto(
+      `http://127.0.0.1:4175/pixels-world/play.html?room=kitchen-preview&scenario=${scenario}`,
+    );
+    await waitForLoadingScreen(page);
+    await expect(page.locator('h1 span').first()).toContainText('WOHNZIMMER');
+    await expect(page.locator('[data-menu-play]')).toBeVisible();
+  }
+
   await page.locator('[data-menu-play]').click();
   await expect(page.locator('.room-choice').filter({ hasText: 'Küche' })).toBeEnabled();
   await page.locator('[data-room-choice="kitchen"]').click();
@@ -96,7 +102,7 @@ test(
   'Sara kommt in der Küche von links; Pixel kehrt von der Arbeitsplatte sicher zu ihr zurück',
   { tag: '@smoke' },
   async ({ page }, info) => {
-    await page.goto('/play.html?room=kitchen-preview&camera=room');
+    await page.goto('/play.html?scenario=kitchen-preview&camera=room');
     await waitForGame(page);
     await page.keyboard.down('Space');
     await until(page, (s) => s.started && s.pixel.grounded);
@@ -148,7 +154,7 @@ test(
 );
 
 test('Beide festen Küchenregale sind über den Tisch erreichbar', async ({ page }, info) => {
-  await page.goto('/play.html?room=kitchen-preview&camera=room');
+  await page.goto('/play.html?scenario=kitchen-preview&camera=room');
   await waitForGame(page);
   await page.keyboard.down('Space');
   await until(page, (s) => s.started && s.pixel.grounded);
@@ -173,7 +179,7 @@ test('Reduzierte Bewegung hält Kopf und Napf beim Fressen ruhig; Fokusverlust h
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/play.html?room=kitchen-preview&camera=room');
+  await page.goto('/play.html?scenario=kitchen-preview&camera=room');
   await waitForGame(page);
   await page.keyboard.down('Space');
   await until(page, (s) => s.started && s.pixel.grounded);

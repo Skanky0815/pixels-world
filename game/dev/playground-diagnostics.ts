@@ -9,7 +9,7 @@ export interface PlaygroundTarget {
 
 // eslint-disable-next-line max-lines-per-function -- Objekte und feste Möbel erhalten zusammen eine rein lesende, eindeutig benannte Zielbeschreibung.
 export function playgroundTargets(snapshot: PlaygroundSnapshot): PlaygroundTarget[] {
-  const objects = snapshot.objects.map((object) => ({
+  const objects = snapshot.targets.map((object) => ({
     id: `object:${object.id}`,
     label: `${object.kind} · ${snapshot.mode === 'object' ? object.variant : object.id}`,
     state: object.state,

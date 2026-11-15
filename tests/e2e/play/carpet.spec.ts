@@ -1,6 +1,16 @@
+import { togglePause } from './playground-object-support';
 import { recordAudio, expectAudio, expectActiveAudio } from './audio-support';
-import { test, expect, start, state, until, holdUntil, reset, couch } from '../support/support';
-import { startTouch } from '../support/touch-support';
+import {
+  test,
+  expect,
+  start,
+  state,
+  until,
+  holdUntil,
+  reset,
+  couch,
+} from './playground-object-support';
+import { startTouch } from './playground-object-support';
 import { CARPET_RULES } from '../../../game/play/interactions/carpet-hairball';
 const rug = (s: Awaited<ReturnType<typeof state>>) => s.carpets[0];
 
@@ -13,7 +23,7 @@ for (const room of ['living-room', 'cozy-remix']) {
     // Keep each action's 15-second polling limit; only this complete scenario gets more time.
     test.setTimeout(90_000);
     await recordAudio(page);
-    await start(page, `/?room=${room}&room-seed=carpet-141`);
+    await start(page, `/?scenario=${room}&room-seed=carpet-141`);
     await expectAudio(page, 0.56, 0);
     const initial = rug(await state(page));
 
@@ -46,13 +56,13 @@ for (const room of ['living-room', 'cozy-remix']) {
     await until(page, (s) => s.pixel.animationFrame !== active.pixel.animationFrame);
 
     if (room === 'living-room') {
-      await page.keyboard.press('Escape');
+      await togglePause(page);
       await expectActiveAudio(page, 0.56, false);
       const paused = rug(await state(page));
 
       await page.clock.runFor(2000);
       expect(rug(await state(page))).toEqual(paused);
-      await page.keyboard.press('Escape');
+      await togglePause(page);
     }
 
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 230);
@@ -91,13 +101,7 @@ for (const room of ['living-room', 'cozy-remix']) {
     expect(rug(complete).hairballX).toBeGreaterThanOrEqual(initial.area.x + 16);
     expect(rug(complete).hairballX).toBeLessThanOrEqual(initial.area.x + initial.area.width - 16);
     expect(rug(complete).hairballY).toBeLessThan(initial.area.y + initial.area.height);
-    expect(
-      await page.evaluate(
-        () =>
-          Object.isFrozen(window.__pixelTest?.carpets) &&
-          Object.isFrozen(window.__pixelTest?.carpets[0].area),
-      ),
-    ).toBe(true);
+    expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
     await page.clock.runFor(5000);
     expect(rug(await state(page))).toEqual(rug(complete));
     expect((await state(page)).chaos.score).toBe(CARPET_RULES.points);
@@ -125,7 +129,7 @@ test('Teppich: Auf dem erhöhten Sofa bleibt das Kratzen erhalten und der Teppic
   await start(page, '/?room-seed=carpet-141');
   await couch(page);
   await page.clock.runFor(CARPET_RULES.delayMs + CARPET_RULES.retchMs + 300);
-  expect((await state(page)).couch.damage).toBeGreaterThan(0);
+  expect((await state(page)).couch!.damage).toBeGreaterThan(0);
   expect(rug(await state(page))).toMatchObject({
     state: 'idle',
     damage: 0,

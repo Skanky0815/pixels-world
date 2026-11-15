@@ -1,3 +1,10 @@
+import { observeObjects } from '../play/content/object-observation';
+import { discoverAlbum } from '../play/content/album';
+import { angerFor } from '../play/domain/chaos';
+import { difficultyRoom, isDifficulty } from '../play/content/difficulty';
+import { populateSpawnSlots } from '../play/content/spawn-slots';
+import { resolveRoom } from '../play/content/resolve-room';
+import { PLAYGROUND_OBJECTS } from './playground-room';
 import { preloadTableclothArt } from '../play/assets/tablecloth-art';
 import { preloadTrashBinArt } from '../play/assets/trash-bin-art';
 import { preloadPantryArt } from '../play/assets/pantry-art';
@@ -93,7 +100,7 @@ export class PlaygroundScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Ein gemeinsamer Aufbau besitzt reale Adapter, Steuerung und deren Lebensdauer; keine Runde oder persistente Ergebnisse.
   create() {
-    const room = selectedPlaygroundRoom(this.selection);
+    const room = this.resolveSelection();
 
     this.room = room;
     this.scale.setGameSize(room.definition.width, room.definition.height);
@@ -129,6 +136,7 @@ export class PlaygroundScene extends Phaser.Scene {
       this.physics.world.resume();
       this.tweens.resumeAll();
     } else this.pauseWorld();
+    this.diagnose(this.snapshot());
   }
 
   private pauseWorld() {
@@ -139,10 +147,12 @@ export class PlaygroundScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Manuelle Physik und gemeinsamer Interaktionsschritt laufen wie in der Hauptszene in fester Reihenfolge.
   update(_time: number, delta: number) {
+    const elapsed = this.activity.delta(delta);
+
+    if (elapsed <= 0) return void this.diagnose(this.snapshot());
     const input = this.controls.read(this.game.loop.frame);
 
     if (input.resetPressed) return void this.scene.restart({ selection: this.selection });
-    const elapsed = this.activity.delta(delta);
 
     if (elapsed > 0) {
       this.elapsed += elapsed;
@@ -171,6 +181,17 @@ export class PlaygroundScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Nur losgelöste Diagnosewerte für die sichtbare DEV-Oberfläche, keine Engine-Referenzen oder Testsetter.
   snapshot() {
     return {
+      ...observeObjects(this.built),
+      frame: this.game.loop.frame,
+      active: this.activity.active,
+      audio: this.audio.snapshot(),
+      chaos: {
+        score: this.chaos.score,
+        damagedObjects: this.chaos.count,
+        anger: angerFor(this.chaos.score).id,
+      },
+      discoveries: this.discoveries().map((discovery) => discovery.entryId),
+      albumDiscovery: this.discoveries().at(-1) ?? null,
       generation: this.generation,
       variant: this.selection.id,
       mode: this.selection.mode,
@@ -183,7 +204,7 @@ export class PlaygroundScene extends Phaser.Scene {
       score: this.chaos.score,
       events: [...this.eventsLog],
       object: this.built.entries[0]?.object.snapshot() ?? { state: 'empty' },
-      objects: this.built.entries.map(({ definition, object }) => ({
+      targets: this.built.entries.map(({ definition, object }) => ({
         id: definition.id,
         variant: definition.variant,
         kind: definition.kind,
@@ -199,6 +220,34 @@ export class PlaygroundScene extends Phaser.Scene {
         blurListeners: this.game.events.listenerCount(Phaser.Core.Events.BLUR),
       },
     };
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Seed, Schwierigkeit und reguläre Spawnauflösung müssen wie im Spiel in derselben Reihenfolge erfolgen.
+  private resolveSelection() {
+    const base = selectedPlaygroundRoom(this.selection);
+
+    if (this.selection.mode !== 'scenario') return base;
+    const stored = localStorage.getItem('pixels-world.difficulty');
+    const difficulty = isDifficulty(stored) ? stored : 'normal';
+    const seed = new URLSearchParams(location.search).get('room-seed') ?? 'playground';
+    const random = new Phaser.Math.RandomDataGenerator([seed]);
+    const room = difficultyRoom(base.definition, difficulty);
+
+    return resolveRoom(
+      populateSpawnSlots(room, PLAYGROUND_OBJECTS, difficulty, () => random.frac()),
+      PLAYGROUND_OBJECTS,
+    );
+  }
+
+  private discoveries() {
+    return this.eventsLog.flatMap((event) => {
+      const object = this.built.entries.find((entry) => entry.object.id === event.objectId);
+      const shelf = this.shelves.find((entry) => entry.id === event.objectId);
+      const variant = object?.definition.variant ?? (shelf?.isFridge ? 'cream-fridge' : '');
+      const discovery = discoverAlbum(event, variant);
+
+      return discovery ? [discovery] : [];
+    });
   }
 
   private shutdown() {

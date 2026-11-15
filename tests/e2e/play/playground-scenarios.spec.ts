@@ -7,7 +7,7 @@ import {
   movePlayground,
   type Snapshot,
 } from './playground-support';
-import { LAB_ROOMS } from '../../../game/play/content/rooms/index';
+import { PLAYGROUND_SCENARIOS } from '../../../game/play/content/rooms/scenarios';
 import { TouchDriver } from '../support/touch-support';
 import type { Page } from '@playwright/test';
 
@@ -21,7 +21,7 @@ async function loadScenario(page: Page, id = 'fridge-incoming') {
 }
 
 function jarX(state: Snapshot) {
-  const jar = state.objects.find((object) => object.id === 'source-jar')?.state;
+  const jar = state.targets.find((object) => object.id === 'source-jar')?.state;
 
   if (!jar || !('x' in jar)) throw new Error('Quellglas fehlt in der Szenariodiagnose');
 
@@ -89,7 +89,7 @@ test('Spielwiese: Szenariokatalog, echte Weltgrößen und wiederholte Wechsel r�
     await page
       .locator('#playground-object option')
       .evaluateAll((options) => options.map((option) => (option as HTMLOptionElement).value)),
-  ).toEqual(Object.keys(LAB_ROOMS));
+  ).toEqual(Object.keys(PLAYGROUND_SCENARIOS));
   const resources = new Map<string, Snapshot['resources']>();
 
   for (let cycle = 0; cycle < 2; cycle++) {
@@ -105,7 +105,9 @@ test('Spielwiese: Szenariokatalog, echte Weltgrößen und wiederholte Wechsel r�
 
       expect(next.score).toBe(0);
       expect(next.events).toEqual([]);
-      expect(next.room.width).toBe(LAB_ROOMS[id as keyof typeof LAB_ROOMS].width);
+      expect(next.room.width).toBe(
+        PLAYGROUND_SCENARIOS[id as keyof typeof PLAYGROUND_SCENARIOS].width,
+      );
       await expect(page.locator('canvas')).toHaveCount(1);
       await expect(page.locator('.touch-controls')).toHaveCount(1);
 
@@ -139,9 +141,9 @@ test('Spielwiese: gewähltes Szenario öffnet den echten Rundenablauf; unbekannt
   await expect(page.locator('#playground-notice')).toBeHidden();
   const link = page.getByRole('link', { name: 'Mit vollständiger Runde im Spiel testen' });
 
-  await expect(link).toHaveAttribute('href', '/play.html?room=fridge-incoming&camera=room');
+  await expect(link).toHaveAttribute('href', '/play.html?scenario=fridge-incoming&camera=room');
   await link.click();
-  await expect(page).toHaveURL(/\/play.html\?room=fridge-incoming&camera=room$/);
+  await expect(page).toHaveURL(/\/play.html\?scenario=fridge-incoming&camera=room$/);
   await waitForLoadingScreen(page);
   await expect(page.getByRole('heading', { name: 'Bereit, Pixel?' })).toBeVisible();
   await expect(page.locator('#game')).toHaveAttribute('data-room-width', '1320');

@@ -8,7 +8,7 @@ import {
   holdUntil,
   reset,
   besidePlant,
-} from '../support/support';
+} from './playground-object-support';
 
 test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert Kippen', async ({
   page,
@@ -16,15 +16,15 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
 }, testInfo) => {
   await recordAudio(page);
   await start(page, '/?room-seed=grass-5');
-  expect((await state(page)).plant.x).toBe(680);
+  expect((await state(page)).plant!.x).toBe(680);
   await besidePlant(page);
   await page.clock.runFor(1500);
-  expect((await state(page)).plant.damage).toBe(0);
-  await until(page, (s) => s.plant.state === 'nibbling');
+  expect((await state(page)).plant!.damage).toBe(0);
+  await until(page, (s) => s.plant!.state === 'nibbling');
   await expectActiveAudio(page, 0.9, true);
   const first = await state(page);
 
-  expect(first.plant).toMatchObject({ texture: 'catgrass-bitten', soilVisible: false });
+  expect(first.plant!).toMatchObject({ texture: 'catgrass-bitten', soilVisible: false });
   expect(first.pixel.animation).toBe('nibble');
   expect(first.pixel).toMatchObject({
     displayWidth: 80,
@@ -34,7 +34,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   });
   const plantId = first.objects.find((o) => o.kind === 'plant')!.id;
 
-  expect(first.plant.lastDamage).toEqual({
+  expect(first.plant!.lastDamage).toEqual({
     id: JSON.stringify([plantId, 'nibble', 1]),
     objectId: plantId,
     kind: 'nibble',
@@ -43,7 +43,7 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
   });
   expect(first.chaos).toEqual({ score: 2, damagedObjects: 1, anger: 'calm' });
   await until(page, (s) => s.pixel.animationFrame !== first.pixel.animationFrame);
-  await until(page, (s) => s.plant.state === 'wobbling' && Math.abs(s.plant.angle) > 4);
+  await until(page, (s) => s.plant!.state === 'wobbling' && Math.abs(s.plant!.angle) > 4);
   const screenshot = testInfo.outputPath('plant-warning.png');
 
   await page.screenshot({ path: screenshot, fullPage: true });
@@ -51,13 +51,13 @@ test('Katzengras: Wartezeit, Knabberanimation und Wackeln; Weglaufen verhindert 
     path: screenshot,
     contentType: 'image/png',
   });
-  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= first.plant.x - 160);
-  expect((await state(page)).plant.state).toBe('idle');
+  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= first.plant!.x - 160);
+  expect((await state(page)).plant!.state).toBe('idle');
   await expectActiveAudio(page, 0.9, false);
-  expect((await state(page)).plant.angle).toBe(0);
+  expect((await state(page)).plant!.angle).toBe(0);
   expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
   await page.clock.runFor(1500);
-  expect((await state(page)).plant.damage).toBe(1);
+  expect((await state(page)).plant!.damage).toBe(1);
   expect((await state(page)).chaos.score).toBe(2);
 });
 
@@ -67,16 +67,16 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
 }, testInfo) => {
   await start(page);
   await besidePlant(page);
-  await until(page, (s) => s.plant.state === 'wobbling');
+  await until(page, (s) => s.plant!.state === 'wobbling');
   await page.clock.runFor(600);
-  expect((await state(page)).plant.state).toBe('wobbling');
+  expect((await state(page)).plant!.state).toBe('wobbling');
   expect((await state(page)).chaos.score).toBe(2);
-  await until(page, (s) => s.plant.state === 'tipped');
+  await until(page, (s) => s.plant!.state === 'tipped');
   const tipped = await state(page);
 
   const plantId = tipped.objects.find((o) => o.kind === 'plant')!.id;
 
-  expect(tipped.plant).toMatchObject({
+  expect(tipped.plant!).toMatchObject({
     damage: 2,
     events: 2,
     angle: -80,
@@ -100,12 +100,12 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
     contentType: 'image/png',
   });
   await page.clock.runFor(1500);
-  expect((await state(page)).plant.events).toBe(2);
+  expect((await state(page)).plant!.events).toBe(2);
   expect((await state(page)).chaos.score).toBe(12);
   await reset(page);
-  expect((await state(page)).plant).toEqual({
-    x: tipped.plant.x - 10,
-    y: tipped.plant.y + 17,
+  expect((await state(page)).plant!).toEqual({
+    x: tipped.plant!.x - 10,
+    y: tipped.plant!.y + 17,
     state: 'idle',
     texture: 'catgrass-intact',
     soilVisible: false,
@@ -116,9 +116,9 @@ test('Katzengras: Topf kippt nach Warnung, zählt einmal und R stellt alles wied
     lastDamage: null,
   });
   expect((await state(page)).chaos.score).toBe(0);
-  expect(await page.evaluate(() => Object.isFrozen(window.__pixelTest?.plant))).toBe(true);
+  expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
   await besidePlant(page);
-  await until(page, (s) => s.plant.damage === 1);
+  await until(page, (s) => s.plant!.damage === 1);
   expect((await state(page)).chaos.score).toBe(2);
 });
 
@@ -128,18 +128,18 @@ test('Katzengras: Springen bricht ab; erneutes Knabbern dupliziert keinen Schade
 }) => {
   await start(page);
   await besidePlant(page);
-  await until(page, (s) => s.plant.state === 'nibbling');
+  await until(page, (s) => s.plant!.state === 'nibbling');
   await holdUntil(page, ['Space'], (s) => !s.pixel.grounded);
-  expect((await state(page)).plant.state).toBe('idle');
+  expect((await state(page)).plant!.state).toBe('idle');
   expect((await state(page)).pixel.animation).not.toMatch(/^(scratch|nibble)$/);
-  await until(page, (s) => s.pixel.grounded && s.plant.state === 'waiting');
+  await until(page, (s) => s.pixel.grounded && s.plant!.state === 'waiting');
   await page.clock.runFor(1500);
-  expect((await state(page)).plant.state).toBe('waiting');
-  await until(page, (s) => s.plant.state === 'nibbling');
-  expect((await state(page)).plant.events).toBe(1);
+  expect((await state(page)).plant!.state).toBe('waiting');
+  await until(page, (s) => s.plant!.state === 'nibbling');
+  expect((await state(page)).plant!.events).toBe(1);
   expect((await state(page)).chaos.score).toBe(2);
   await reset(page);
   await page.clock.runFor(2500);
-  expect((await state(page)).plant.state).toBe('idle');
-  expect((await state(page)).plant.events).toBe(0);
+  expect((await state(page)).plant!.state).toBe('idle');
+  expect((await state(page)).plant!.events).toBe(0);
 });

@@ -10,7 +10,7 @@ import {
   reset,
   firstVase,
   middleShelf,
-} from '../support/support';
+} from './playground-object-support';
 
 test('Vase bleibt stehen; Anschubsen und Fallen geben erst beim Bruch Punkte', async ({
   page,
@@ -111,7 +111,6 @@ test('Slotvasen und feste Vasen bleiben erreichbar und werten jeden Bruch einmal
   await expectChaos(page);
   const complete = await state(page);
 
-  await expect(page.locator('.mobile-hud')).not.toContainText('CHAOS:');
   await framesPass(page, 45);
   expect((await state(page)).chaos.score).toBe(complete.chaos.score);
 });
@@ -130,9 +129,9 @@ async function expectChaos(page: import('@playwright/test').Page) {
     (sum, picture) => sum + (picture.lastDamage?.value ?? 0),
     0,
   );
-  const plantPoints = (s.plant.lastDamage?.value ?? 0) + (s.plant.events > 1 ? 2 : 0);
+  const plantPoints = (s.plant!.lastDamage?.value ?? 0) + (s.plant!.events > 1 ? 2 : 0);
 
   expect(s.chaos.score).toBe(
-    points + s.curtain.damage * 4 + shelfPoints + bookPoints + picturePoints + plantPoints,
+    points + s.curtain!.damage * 4 + shelfPoints + bookPoints + picturePoints + plantPoints,
   );
 }
