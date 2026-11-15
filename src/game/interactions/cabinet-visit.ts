@@ -1,7 +1,6 @@
 import { assertObjectId, chaosEvent } from '../domain/chaos-event.ts';
 
 export const CABINET_VISIT_RULES = {
-  warningMs: 500,
   hangingMs: 600,
   openingMs: 400,
   enteringMs: 200,
@@ -10,7 +9,6 @@ export const CABINET_VISIT_RULES = {
   points: 0,
 } as const;
 export interface CabinetVisitRules {
-  readonly warningMs: number;
   readonly hangingMs: number;
   readonly openingMs: number;
   readonly enteringMs: number;
@@ -19,14 +17,12 @@ export interface CabinetVisitRules {
   readonly points: number;
 }
 
-/** The first deliberate jump warns; the second starts one bounded visit. */
+/** A deliberate jump onto the handle starts one bounded visit. */
 export class CabinetVisit {
-  private state:
-    'idle' | 'warning' | 'hanging' | 'opening' | 'entering' | 'inside' | 'reopening' | 'open' =
+  private state: 'idle' | 'hanging' | 'opening' | 'entering' | 'inside' | 'reopening' | 'open' =
     'idle';
 
   private elapsed = 0;
-  private bumps = 0;
   private jumpArmed = false;
   private readonly id: string;
   private readonly rules: CabinetVisitRules;
@@ -37,7 +33,6 @@ export class CabinetVisit {
 
     if (
       ![
-        rules.warningMs,
         rules.hangingMs,
         rules.openingMs,
         rules.enteringMs,
@@ -51,7 +46,7 @@ export class CabinetVisit {
     this.rules = { ...rules };
   }
 
-  // eslint-disable-next-line max-lines-per-function, complexity -- Ein Ansprung wird genau einmal gezählt; nur der freigegebene Griffkontakt startet die begrenzte Aufnahme.
+  // eslint-disable-next-line max-lines-per-function, complexity -- Nur ein freigegebener Sprung mit Griffkontakt startet die begrenzte Aufnahme.
   observeJump(
     started: boolean,
     grounded: boolean,
@@ -63,15 +58,13 @@ export class CabinetVisit {
     if (this.snapshot().captured || this.state === 'open') return;
     this.trackJump(started, grounded, climbing, rising);
 
-    if (grounded || !touching || !this.jumpArmed) return;
+    if (grounded || !touching || !handle || !this.jumpArmed) return;
 
-    if (this.bumps === 1 && !handle) return;
     this.jumpArmed = false;
-    this.bumps = Math.min(2, this.bumps + 1);
-    this.state = this.bumps === 1 ? 'warning' : 'hanging';
+    this.state = 'hanging';
     this.elapsed = 0;
 
-    return this.bumps;
+    return true;
   }
 
   private trackJump(started: boolean, grounded: boolean, climbing: boolean, rising: boolean) {
@@ -88,7 +81,6 @@ export class CabinetVisit {
     this.elapsed += step;
 
     const duration = {
-      warning: this.rules.warningMs,
       hanging: this.rules.hangingMs,
       opening: this.rules.openingMs,
       entering: this.rules.enteringMs,
@@ -100,7 +92,6 @@ export class CabinetVisit {
 
     if (this.state === 'reopening') return this.open();
     const next = {
-      warning: 'idle',
       hanging: 'opening',
       opening: 'entering',
       entering: 'inside',
@@ -127,7 +118,6 @@ export class CabinetVisit {
   snapshot() {
     return {
       state: this.state,
-      bumps: this.bumps,
       hidden: ['entering', 'inside', 'reopening'].includes(this.state),
       captured: ['hanging', 'opening', 'entering', 'inside', 'reopening'].includes(this.state),
       doorState:
@@ -149,7 +139,6 @@ export class CabinetVisit {
   reset() {
     this.state = 'idle';
     this.elapsed = 0;
-    this.bumps = 0;
     this.jumpArmed = false;
   }
 }

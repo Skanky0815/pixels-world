@@ -2,7 +2,6 @@ import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
   feedbackFridge: 'Fridge rummaged!',
   fridgeRummaging: 'Rumble … rustle …',
-  fridgeWarning: 'Wobbling … now grab the handle!',
   fridgeHandle: 'Hold on … pull it open!',
   saraDamageFridge0: 'There is some suspicious rustling in there.',
   saraDamageFridge1: 'The groceries were already sorted, Pixel.',

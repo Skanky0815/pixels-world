@@ -345,7 +345,7 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
   sichtbar. Lange Texte innerhalb der Karte scrollen und Richtungsvorgaben prüfen. Raumränder, Vorhang, Sprünge, Pause
   und Rotation prüfen; mit `?camera=room` bleibt die Zimmerübersicht erreichbar.
 - Desktop-Standardkamera vergleichen: moderater Zoom,
-  Tastatursteuerung und unveränderte Objektpositionen; Status und linke Dialogkarte
+  Tastatursteuerung und unveränderte Objektpositionen; Status und seitliche Dialogkarte
   bleiben unabhängig von der Kamera lesbar. Die größere Desktopkarte mit größerer
   Schrift muss auch während der Gesten gegenüber Saras Eintrittsseite bleiben.
   Wohnzimmer: Sara rechts, Karte links; Küche: Sara links, Karte rechts. Fenster über die Kompaktgrenze verkleinern

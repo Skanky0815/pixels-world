@@ -1,7 +1,6 @@
 export const de = {
   feedbackFridge: 'Kühlschrank durchwühlt!',
   fridgeRummaging: 'Rumpel … raschel …',
-  fridgeWarning: 'Wackelt … jetzt an die Klinke!',
   fridgeHandle: 'Festhalten … Tür auf!',
   saraDamageFridge0: 'Da drin raschelt es verdächtig.',
   saraDamageFridge1: 'Die Lebensmittel waren schon sortiert, Pixel.',

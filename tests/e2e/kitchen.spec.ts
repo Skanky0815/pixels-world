@@ -25,11 +25,7 @@ test('Küchenabschluss: Beutel, Mülleimer und Kühlschrank teilen Pause, Wertun
   await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 110);
   await climbToTableLanding(page);
 
-  for (const bumps of [1, 2]) {
-    await move(page, ['Space', 'ArrowRight'], (s) => fridgeState(s).bumps === bumps);
-
-    if (bumps === 1) await until(page, (s) => s.pixel.grounded);
-  }
+  await move(page, ['Space', 'ArrowRight'], (s) => fridgeState(s).state === 'hanging');
 
   await until(page, (s) => fridgeState(s).state === 'open');
   const damaged = await observe(page);

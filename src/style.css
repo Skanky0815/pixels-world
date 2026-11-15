@@ -721,6 +721,9 @@ kbd {
 }
 @media (any-pointer: coarse), (max-width: 1024px) {
   .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
+    left: 0;
+    right: 0;
+    width: auto;
     max-height: 100%;
     bottom: 0;
   }

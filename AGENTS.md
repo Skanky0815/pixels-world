@@ -47,3 +47,10 @@ benchmark snapshots or duplicate status reports in Markdown. Preserve generated
 CHANGELOG, ADR rationale, legal provenance and reproducible asset instructions.
 Documentation-only changes need language/fact/link/format checks, not gameplay
 tests. Follow the document ownership map in CONTRIBUTING.md.
+
+## Project art skill
+
+For game raster assets and their source/export workflow, use the project skill
+[Pixels World Art](.agents/skills/pixels-world-art/SKILL.md). It supplements the
+available image tool and the asset-family documentation; it does not authorize
+unrelated gameplay changes or publishing.

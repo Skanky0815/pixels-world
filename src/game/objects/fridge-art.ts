@@ -119,7 +119,7 @@ export class FridgeArt implements Interactable {
   private draw(time: number) {
     const state = this.model.snapshot();
     const open = state.state === 'open';
-    const wobble = state.state === 'inside' || state.state === 'warning' || time < this.nudgeUntil;
+    const wobble = state.state === 'inside' || time < this.nudgeUntil;
 
     this.graphic
       .setTexture(
@@ -132,10 +132,8 @@ export class FridgeArt implements Interactable {
       wobble && !motionPreferences.snapshot().reduced ? Math.sin(time / 48) * 2.5 : 0,
     );
     this.hint
-      .setText(
-        t(state.captured ? (state.hidden ? 'fridgeRummaging' : 'fridgeHandle') : 'fridgeWarning'),
-      )
-      .setVisible(state.state === 'warning' || state.captured);
+      .setText(t(state.hidden ? 'fridgeRummaging' : 'fridgeHandle'))
+      .setVisible(state.captured);
   }
 
   damageSnapshot() {
@@ -143,7 +141,7 @@ export class FridgeArt implements Interactable {
   }
 
   abortVisit() {
-    if (this.model.snapshot().state === 'warning' || this.model.snapshot().captured) {
+    if (this.model.snapshot().captured) {
       this.model.reset();
       this.draw(0);
     }

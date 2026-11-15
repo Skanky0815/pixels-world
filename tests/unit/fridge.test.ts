@@ -21,19 +21,12 @@ function bump(f: FridgeRummaging) {
   return f.observeJump(false, false, true, false, true);
 }
 
-test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einmalig die Tür', () => {
+test('Ein Sprung an die Klinke startet den Besuch und öffnet einmalig die Tür', () => {
   const f = fridge();
 
   f.update(10000);
   assert.equal(f.snapshot().state, 'idle');
-  assert.equal(bump(f), 1);
-  assert.equal(f.snapshot().state, 'warning');
-  f.update(500);
-  assert.equal(f.snapshot().state, 'idle');
-  assert.equal(f.snapshot().bumps, 1);
-  f.update(10000);
-  assert.equal(f.snapshot().hidden, false);
-  assert.equal(bump(f), 2);
+  assert.equal(bump(f), true);
   assert.equal(f.snapshot().state, 'hanging');
   assert.equal(f.snapshot().hidden, false);
   f.update(600);
@@ -58,7 +51,6 @@ test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einma
   f.reset();
   assert.deepEqual(f.snapshot(), {
     state: 'idle',
-    bumps: 0,
     hidden: false,
     captured: false,
     doorProgress: 0,
@@ -67,22 +59,21 @@ test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einma
   });
 });
 
-test('Kontakt halten, neue Berührung im selben Sprung und Luftsprünge zählen nicht doppelt', () => {
+test('Kontakt ohne Klinke, Klettern und Luftsprünge starten keinen Besuch', () => {
   const f = fridge();
 
+  assert.equal(f.observeJump(false, false, true, false, true), undefined);
+  f.observeJump(true, true, false);
   assert.equal(f.observeJump(false, false, true), undefined);
-  assert.equal(bump(f), 1);
-  f.observeJump(false, false, false);
-
-  for (let i = 0; i < 20; i++) assert.equal(f.observeJump(true, false, true), undefined);
-  assert.equal(f.snapshot().bumps, 1);
+  assert.equal(f.snapshot().state, 'idle');
   f.observeJump(false, true, false);
-  assert.equal(f.observeJump(false, false, true), undefined);
-  assert.equal(f.snapshot().bumps, 1);
+  assert.equal(f.observeJump(true, false, true, false, true), undefined);
   f.observeJump(true, true, false);
   f.observeJump(false, false, false, true);
-  assert.equal(f.observeJump(false, false, true), undefined);
-  assert.equal(bump(f), 2);
+  assert.equal(f.observeJump(false, false, true, false, true), undefined);
+  assert.equal(bump(f), true);
+
+  for (let i = 0; i < 20; i++) assert.equal(bump(f), undefined);
 });
 
 test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel hineinzuversetzen', () => {
@@ -92,7 +83,6 @@ test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel 
   assert.equal(f.snapshot().hidden, false);
   assert.equal(f.disturb(), undefined);
   f.reset();
-  bump(f);
   bump(f);
   assert.equal(f.disturb(), undefined);
   f.update(600);
@@ -104,20 +94,11 @@ test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel 
 });
 
 test('Ungültige Zeiten, Punkte und IDs werden abgewiesen; inaktive Zeit macht keinen Fortschritt', () => {
-  for (const key of [
-    'warningMs',
-    'hangingMs',
-    'openingMs',
-    'enteringMs',
-    'insideMs',
-    'reopeningMs',
-    'points',
-  ])
+  for (const key of ['hangingMs', 'openingMs', 'enteringMs', 'insideMs', 'reopeningMs', 'points'])
     assert.throws(() => new FridgeRummaging('f', { ...FRIDGE_RULES, [key]: -1 }));
   assert.throws(() => new FridgeRummaging(''));
   const f = fridge();
 
-  bump(f);
   bump(f);
   const before = f.snapshot();
 

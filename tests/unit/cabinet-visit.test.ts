@@ -15,10 +15,10 @@ test('Gemeinsamer Schrankablauf braucht Griffkontakt und verwendet die Zeiten un
   });
 
   jump(cabinet, false);
-  assert.equal(cabinet.snapshot().bumps, 1);
+  assert.equal(cabinet.snapshot().state, 'idle');
   jump(cabinet, false);
   assert.equal(cabinet.snapshot().captured, false);
-  assert.equal(cabinet.snapshot().bumps, 1);
+  assert.equal(cabinet.snapshot().state, 'idle');
   jump(cabinet, true);
   assert.equal(cabinet.snapshot().state, 'hanging');
   assert.equal(cabinet.snapshot().hidden, false);
@@ -46,14 +46,10 @@ function jump(cabinet: CabinetVisit, handle: boolean) {
 test('Verzögerter Bodenkontakt nach dem Absprung verwirft den Sprung vor Erreichen der Klinke nicht', () => {
   const cabinet = new CabinetVisit('cabinet');
 
-  for (const count of [1, 2]) {
-    cabinet.observeJump(true, true, false, false, false, true);
-    cabinet.observeJump(false, true, false, false, false, true);
-    cabinet.observeJump(false, false, false, false, false, true);
-    assert.equal(cabinet.observeJump(false, false, true, false, true, true), count);
-
-    if (count === 1) cabinet.observeJump(false, true, false);
-  }
+  cabinet.observeJump(true, true, false, false, false, true);
+  cabinet.observeJump(false, true, false, false, false, true);
+  cabinet.observeJump(false, false, false, false, false, true);
+  assert.equal(cabinet.observeJump(false, false, true, false, true, true), true);
 
   assert.equal(cabinet.snapshot().state, 'hanging');
 });

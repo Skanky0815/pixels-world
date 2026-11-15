@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Pixel’s World – Grafiken'
+  short_description: 'Warme Spielgrafiken mit passenden Zuständen erstellen'
+  default_prompt: 'Nutze $pixels-world-art, um eine passende Spielgrafik samt Quellen und reproduzierbarem Export für Pixel’s World zu erstellen.'
