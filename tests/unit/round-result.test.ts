@@ -1,11 +1,11 @@
-import { ROUND_ENDINGS } from '../../src/content/round-endings.ts';
+import { ROUND_ENDINGS } from '../../game/play/content/round-endings.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { roundResult } from '../../src/game/domain/round-result.ts';
-import { RoundController } from '../../src/game/domain/round-controller.ts';
-import { HomecomingSequence } from '../../src/game/domain/homecoming.ts';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
-import { CHARM_TIMING } from '../../src/content/reconciliation.ts';
+import { roundResult } from '../../game/play/domain/round-result.ts';
+import { RoundController } from '../../game/play/domain/round-controller.ts';
+import { HomecomingSequence } from '../../game/play/domain/homecoming.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
+import { CHARM_TIMING } from '../../game/play/content/reconciliation.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Die echte Modellvorbereitung erzeugt konsistente Snapshots aller beteiligten Rundenphasen.
 function setup(score = 60, reachedGoal = false) {

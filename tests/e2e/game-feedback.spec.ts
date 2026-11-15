@@ -1,8 +1,8 @@
 import { test, expect, start, state, until, besideCouch, reset } from './support';
 import { openPause } from './pause-support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from './round-clock';
-import { DIRECTIONS } from '../../src/content/reconciliation';
-import { OBJECTS } from '../../src/content/objects/catalog';
+import { DIRECTIONS } from '../../game/play/content/reconciliation';
+import { OBJECTS } from '../../game/play/content/objects/catalog';
 
 async function expectFeedback(
   page: import('@playwright/test').Page,

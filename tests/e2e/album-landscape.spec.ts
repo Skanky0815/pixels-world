@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function -- Zusammenhängende Bedienwege prüfen Geometrie, echte Touch-Aktionen und erhaltene Auswahl gemeinsam. */
 import type { Page } from '@playwright/test';
-import { ALBUM_ROOMS } from '../../src/game/ui/album-markup';
-import { albumEntries } from '../../src/content/album/index';
+import { ALBUM_ROOMS } from '../../game/play/ui/album-markup';
+import { albumEntries } from '../../game/play/content/album/index';
 import { changeLanguage, openPause } from './pause-support';
 import { introAction, test, expect, loadIntro } from './support';
 

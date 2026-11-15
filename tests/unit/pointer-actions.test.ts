@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { PointerActions } from '../../src/game/input/pointer-actions.ts';
+import { PointerActions } from '../../game/play/input/pointer-actions.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Zwei Finger und ihre getrennte Freigabe werden in einer zusammenhängenden Besitzfolge geprüft.
 test('Pointer: Ein Finger löst die gehaltene Aktion eines anderen nicht', () => {

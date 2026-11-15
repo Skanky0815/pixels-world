@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { PreviewPlayback } from '../../src/dev/preview-playback.ts';
+import { PreviewPlayback } from '../../game/dev/preview-playback.ts';
 
 const clip = { frames: [10, 11, 12], frameRate: 10 };
 

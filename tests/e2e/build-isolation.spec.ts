@@ -71,30 +71,30 @@ test(
       for (const path of [
         '/animation-compare.html',
         '/charm-preview.html',
-        '/src/dev/charm-preview.ts',
-        '/src/dev/charm-preview.css',
-        '/src/dev/CharmPreview.ts',
-        '/src/dev/pixel-compare-charm.ts',
+        '/game/dev/charm-preview.ts',
+        '/game/dev/charm-preview.css',
+        '/game/dev/CharmPreview.ts',
+        '/game/dev/pixel-compare-charm.ts',
         '/portrait-preview.html',
-        '/src/dev/portrait-preview.ts',
-        '/src/dev/portrait-preview.css',
+        '/game/dev/portrait-preview.ts',
+        '/game/dev/portrait-preview.css',
         '/ball-play-preview.html',
-        '/src/dev/ball-play-preview.ts',
-        '/src/dev/BallPlayPreview.ts',
+        '/game/dev/ball-play-preview.ts',
+        '/game/dev/BallPlayPreview.ts',
         '/interactable-playground.html',
-        '/src/dev/game-debug.ts',
-        '/src/dev/loading-preview.ts',
-        '/src/dev/game-debug.css',
-        '/src/dev/game-debug-model.ts',
-        '/src/dev/interactable-playground.ts',
-        '/src/dev/interactable-playground.css',
-        '/src/dev/PlaygroundScene.ts',
-        '/src/dev/playground-room.ts',
-        '/src/dev/animation-compare.ts',
-        '/src/dev/sara-compare.ts',
-        '/src/dev/pixel-compare.ts',
-        '/src/dev/preview-playback.ts',
-        '/src/dev/animation-compare.css',
+        '/game/dev/game-debug.ts',
+        '/game/dev/loading-preview.ts',
+        '/game/dev/game-debug.css',
+        '/game/dev/game-debug-model.ts',
+        '/game/dev/interactable-playground.ts',
+        '/game/dev/interactable-playground.css',
+        '/game/dev/PlaygroundScene.ts',
+        '/game/dev/playground-room.ts',
+        '/game/dev/animation-compare.ts',
+        '/game/dev/sara-compare.ts',
+        '/game/dev/pixel-compare.ts',
+        '/game/dev/preview-playback.ts',
+        '/game/dev/animation-compare.css',
         '/src/animation-compare.ts',
         '/src/animation-compare.css',
       ]) {
@@ -105,3 +105,42 @@ test(
     }
   },
 );
+
+test('Verschobene HTML-Quellen behalten direkte öffentliche URLs und gebündelte Ressourcen', async ({
+  request,
+}) => {
+  await checkPublicPages(request);
+});
+
+// eslint-disable-next-line max-lines-per-function -- Direkte Seitenaufrufe prüfen denselben Routingvertrag in drei Auslieferungsarten.
+async function checkPublicPages(request: import('@playwright/test').APIRequestContext) {
+  for (const base of [
+    'http://127.0.0.1:4174/',
+    'http://127.0.0.1:4175/pixels-world/',
+    'http://127.0.0.1:4176/',
+  ]) {
+    for (const path of [
+      '',
+      'play.html',
+      'help.html',
+      'impressum.html',
+      'datenschutz.html',
+      'update.html',
+    ]) {
+      const response = await request.get(`${base}${path}?route-check=1`);
+
+      expect(response.ok(), `${base}${path}`).toBe(true);
+      const html = await response.text();
+
+      expect(html).toContain('<!doctype html>');
+      expect(html).not.toContain('<!-- GAME_HEADER -->');
+      expect(html).not.toContain('<!-- LANDING_HEADER -->');
+      const resources = [...html.matchAll(/(?:src|href)="([^"]+\.(?:js|ts|css))"/g)];
+
+      for (const [, resource] of resources)
+        expect((await request.get(new URL(resource, response.url()).href)).ok(), resource).toBe(
+          true,
+        );
+    }
+  }
+}

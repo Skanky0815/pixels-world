@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CouchScratching, COUCH_SCRATCH } from '../../src/game/interactions/couch-scratching.ts';
-import { ChaosScore } from '../../src/game/domain/chaos.ts';
+import { CouchScratching, COUCH_SCRATCH } from '../../game/play/interactions/couch-scratching.ts';
+import { ChaosScore } from '../../game/play/domain/chaos.ts';
 
 test('Ungültige Punktwerte werden schon beim Erzeugen des Sofamodells abgelehnt', () => {
   for (const damageValue of [-1, 0.5, NaN, Infinity, -Infinity, Number.MAX_SAFE_INTEGER + 1]) {

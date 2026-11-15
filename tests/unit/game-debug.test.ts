@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { debugScenario, finishDebugReconciliation } from '../../src/dev/game-debug-model.ts';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
+import { debugScenario, finishDebugReconciliation } from '../../game/dev/game-debug-model.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
 
 const scenario = { target: 'chaos', score: 60, seconds: 90, seed: 42 } as const;
 

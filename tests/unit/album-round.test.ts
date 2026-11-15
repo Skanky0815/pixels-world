@@ -1,13 +1,13 @@
 /* eslint-disable max-lines-per-function -- Vollständige Abschluss-, Speicher- und Abbruchfälle prüfen den gemeinsamen Transaktionsvertrag. */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { AlbumCollection, ALBUM_STORAGE_KEY } from '../../src/game/album/collection.ts';
-import { RoundAlbum } from '../../src/game/album/round.ts';
-import { RoundController } from '../../src/game/domain/round-controller.ts';
-import { HomecomingSequence } from '../../src/game/domain/homecoming.ts';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
-import { roundResult } from '../../src/game/domain/round-result.ts';
-import { CHARM_TIMING } from '../../src/content/reconciliation.ts';
+import { AlbumCollection, ALBUM_STORAGE_KEY } from '../../game/play/album/collection.ts';
+import { RoundAlbum } from '../../game/play/album/round.ts';
+import { RoundController } from '../../game/play/domain/round-controller.ts';
+import { HomecomingSequence } from '../../game/play/domain/homecoming.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
+import { roundResult } from '../../game/play/domain/round-result.ts';
+import { CHARM_TIMING } from '../../game/play/content/reconciliation.ts';
 
 const ids = new Set(['vase.blue', 'couch.cozy', 'plant.grass']);
 

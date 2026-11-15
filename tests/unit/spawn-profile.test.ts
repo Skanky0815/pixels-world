@@ -1,12 +1,12 @@
-import { PANTRY_VARIANTS } from '../../src/content/objects/pantry.ts';
-import { HERB_VARIANTS } from '../../src/content/objects/herbs.ts';
+import { PANTRY_VARIANTS } from '../../game/play/content/objects/pantry.ts';
+import { HERB_VARIANTS } from '../../game/play/content/objects/herbs.ts';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { COZY_REMIX } from '../../src/content/rooms/cozy-remix.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import type { ObjectCatalog } from '../../src/game/content/definitions.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { COZY_REMIX } from '../../game/play/content/rooms/cozy-remix.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import type { ObjectCatalog } from '../../game/play/content/definitions.ts';
 import {
   SPAWN_SIZES,
   spawnSizeFor,
@@ -14,7 +14,7 @@ import {
   filterSpawnCandidates,
   type SpawnProfile,
   type SpawnSlotFilter,
-} from '../../src/game/content/spawn-profile.ts';
+} from '../../game/play/content/spawn-profile.ts';
 
 const shelf: SpawnSlotFilter = { capacity: 'small', categories: ['decoration'], support: 'raised' };
 const dishes = ['cream-cup', 'cream-plate'];

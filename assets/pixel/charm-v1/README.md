@@ -22,6 +22,6 @@ Spiel und lokale `/charm-preview.html` verwenden die neuen Kopf-/Bauch-Frames oh
 Drehen des Sitzbilds. Beim Fortfahren richtet sich Pixel einmal über die
 umgekehrten Bauchposen auf und läuft zum Sitzanker. Die Schleife selbst endet
 erst durch eine weitere Aktion. Die Spielzuordnung steht in
-`src/game/domain/charm-presentation.ts`; Vorschau und Spiel teilen die Choreografie.
+`game/play/domain/charm-presentation.ts`; Vorschau und Spiel teilen die Choreografie.
 Die 48×48-Zelle gibt nur Platz für die Zeichnung;
 das reguläre Bewegungs-Sheet und die Kollisionsmaße bleiben unverändert.

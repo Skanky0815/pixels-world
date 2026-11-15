@@ -1,8 +1,8 @@
 import { recordAudio, expectAudio } from './audio-support';
 import { test, expect, start, state, until, holdUntil, reset, couch } from './support';
 import { startTouch } from './touch-support';
-import { PICTURE_RULES } from '../../src/game/interactions/picture-falling';
-import { PICTURE_ALBUM } from '../../src/content/album/pictures';
+import { PICTURE_RULES } from '../../game/play/interactions/picture-falling';
+import { PICTURE_ALBUM } from '../../game/play/content/album/pictures';
 
 const fixtures = [
   ['living-room', 'pixel-portrait', 'pictures-4'],

@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { COZY_REMIX } from '../../src/content/rooms/cozy-remix.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import type { ObjectCatalog } from '../../src/game/content/definitions.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { COZY_REMIX } from '../../game/play/content/rooms/cozy-remix.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import type { ObjectCatalog } from '../../game/play/content/definitions.ts';
 
 test('Beide Wohnzimmer besitzen genau einen echten Teppich an der Bodenlinie', () => {
   for (const room of [LIVING_ROOM, COZY_REMIX]) {

@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
-import { CharmPresentation } from '../../src/game/domain/charm-presentation.ts';
-import { CHARM_TIMING } from '../../src/content/reconciliation.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
+import { CharmPresentation } from '../../game/play/domain/charm-presentation.ts';
+import { CHARM_TIMING } from '../../game/play/content/reconciliation.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Die gemeinsame Fixture koppelt nur Vorher-/Nachher-Snapshots an eine echte Modellaktion.
 function game() {

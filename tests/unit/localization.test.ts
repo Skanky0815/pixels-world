@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { de } from '../../src/i18n/de.ts';
-import { en } from '../../src/i18n/en.ts';
+import { de } from '../../game/shared/i18n/de.ts';
+import { en } from '../../game/shared/i18n/en.ts';
 import {
   copy,
   currentLanguage,
@@ -12,7 +12,7 @@ import {
   setLanguage,
   t,
   type TextKey,
-} from '../../src/i18n/locale.ts';
+} from '../../game/shared/i18n/locale.ts';
 
 test('Beide Kataloge enthalten dieselben Schlüssel und Platzhalter', () => {
   assert.deepEqual(Object.keys(en).sort(), Object.keys(de).sort());

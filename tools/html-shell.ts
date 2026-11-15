@@ -7,7 +7,12 @@ import type { Plugin } from 'vite';
 export function htmlShell(name: 'game' | 'landing', pages: readonly string[]): Plugin {
   const parts = ['header', 'footer'].map((part) => ({
     marker: `<!-- ${name.toUpperCase()}_${part.toUpperCase()} -->`,
-    path: fileURLToPath(new URL(`../src/ui/${name}-shell/${part}.html`, import.meta.url)),
+    path: fileURLToPath(
+      new URL(
+        `../game/${name === 'game' ? 'play/ui' : 'landingpage'}/shell/${part}.html`,
+        import.meta.url,
+      ),
+    ),
   }));
 
   return {

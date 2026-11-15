@@ -1,8 +1,8 @@
 import type { Page } from '@playwright/test';
 import { test, expect } from './support';
-import { PIXEL_ANIMATIONS } from '../../src/game/actors/pixel-animations';
-import { SARA_CLIPS } from '../../src/game/actors/sara-animations';
-import { CHARM_COMPARISON_CLIPS } from '../../src/dev/pixel-compare-charm';
+import { PIXEL_ANIMATIONS } from '../../game/play/actors/pixel-animations';
+import { SARA_CLIPS } from '../../game/play/actors/sara-animations';
+import { CHARM_COMPARISON_CLIPS } from '../../game/dev/pixel-compare-charm';
 
 async function openViewer(page: Page) {
   await page.goto('http://127.0.0.1:4176/animation-compare.html');

@@ -1,13 +1,17 @@
 /* eslint-disable max-lines-per-function -- Reale Raumdaten prüfen Kontakt, Schutz vor falscher Belegung und friedliche Entdeckung. */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { KITCHEN_PREVIEW } from '../../src/content/rooms/kitchen-preview.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import type { RoomDefinition } from '../../src/game/content/definitions.ts';
-import { MainGoal } from '../../src/game/domain/main-goal.ts';
-import { discoverGoalAlbum, discoverAlbum, albumEntries } from '../../src/content/album/index.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
+import { KITCHEN_PREVIEW } from '../../game/play/content/rooms/kitchen-preview.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import type { RoomDefinition } from '../../game/play/content/definitions.ts';
+import { MainGoal } from '../../game/play/domain/main-goal.ts';
+import {
+  discoverGoalAlbum,
+  discoverAlbum,
+  albumEntries,
+} from '../../game/play/content/album/index.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
 
 const definition = resolveRoom(KITCHEN_PREVIEW, OBJECTS).goal;
 

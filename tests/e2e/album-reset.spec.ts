@@ -1,4 +1,4 @@
-import { albumEntries } from '../../src/content/album/index.ts';
+import { albumEntries } from '../../game/play/content/album/index.ts';
 /* eslint-disable max-lines-per-function -- Eine echte laufende Runde verbindet Bestätigung, Sprachwechsel, Pause und getrennte Speicherzustände. */
 import {
   introAction,

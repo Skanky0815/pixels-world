@@ -1,6 +1,6 @@
 import { test, expect, state, until, reset, lowerShelf, waitForGame } from './support';
 import { startDifficulty } from './difficulty-support';
-import { BOOK_TOPPLE } from '../../src/game/interactions/book-toppling';
+import { BOOK_TOPPLE } from '../../game/play/interactions/book-toppling';
 
 // Die volle Raum-/Grad-/Seedmatrix liegt in spawn-slots.test.ts und wall-slots.test.ts.
 // Im Browser bleiben beide Räume sowie minimale/maximale tatsächliche Belegung.

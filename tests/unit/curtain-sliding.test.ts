@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CURTAIN_SLIDE, CurtainSliding } from '../../src/game/interactions/curtain-sliding.ts';
+import { CURTAIN_SLIDE, CurtainSliding } from '../../game/play/interactions/curtain-sliding.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Risse nur beim tatsächlichen Rutschen und erst nach dem Intervall', () => {

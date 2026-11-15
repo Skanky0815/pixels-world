@@ -1,0 +1,23 @@
+footer .age-rating {
+  flex-basis: 100%;
+  margin: 0;
+  color: #d2bfa7;
+  font:
+    12px/1.4 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+footer .age-rating span {
+  margin: 0;
+  color: inherit;
+}
+
+.age-number {
+  color: #edc37c;
+  font-size: 1.25em;
+  font-weight: 700;
+}

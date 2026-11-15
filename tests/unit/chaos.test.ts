@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ChaosScore, angerFor } from '../../src/game/domain/chaos.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
+import { ChaosScore, angerFor } from '../../game/play/domain/chaos.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
 const VASES = Object.entries(OBJECTS).flatMap(([id, object]) =>
   object.kind === 'vase' ? [{ id, points: object.points }] : [],
 );

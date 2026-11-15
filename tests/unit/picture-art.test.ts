@@ -3,11 +3,11 @@ import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { PNG } from 'pngjs';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import type { ObjectCatalog } from '../../src/game/content/definitions.ts';
-import { PICTURE_ALBUM } from '../../src/content/album/pictures.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import type { ObjectCatalog } from '../../game/play/content/definitions.ts';
+import { PICTURE_ALBUM } from '../../game/play/content/album/pictures.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Alle drei echten PNGs müssen dieselbe transparente Spielzelle und unterschiedliche Motive besitzen.
 test('Pixel, Fernsehturm und Fensternische sind getrennte transparente PNGs mit stabilen Katalog- und Album-IDs', () => {

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { InputFrames } from '../../src/game/input/input-state.ts';
+import { InputFrames } from '../../game/play/input/input-state.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Ein Frame liest Eingaben und verbrauchende Flanken nur einmal', () => {

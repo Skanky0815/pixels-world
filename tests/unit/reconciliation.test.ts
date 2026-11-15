@@ -1,7 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
-import { CHARM_PROFILES, CHARM_TIMING, DIRECTIONS } from '../../src/content/reconciliation.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
+import {
+  CHARM_PROFILES,
+  CHARM_TIMING,
+  DIRECTIONS,
+} from '../../game/play/content/reconciliation.ts';
 
 function ready(game: Reconciliation) {
   game.confirm();

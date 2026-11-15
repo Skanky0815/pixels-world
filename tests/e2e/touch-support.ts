@@ -1,6 +1,6 @@
 import type { CDPSession, Page } from '@playwright/test';
 import { expect, loadIntro, until } from './support';
-import type { ControlAction } from '../../src/game/input/pointer-actions';
+import type { ControlAction } from '../../game/play/input/pointer-actions';
 
 type Finger = { id: number; x: number; y: number };
 

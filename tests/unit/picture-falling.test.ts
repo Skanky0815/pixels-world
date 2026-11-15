@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { PictureFalling, PICTURE_RULES } from '../../src/game/interactions/picture-falling.ts';
-import { ChaosScore } from '../../src/game/domain/chaos.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import { PICTURE_ALBUM, pictureDiscovery } from '../../src/content/album/pictures.ts';
+import { PictureFalling, PICTURE_RULES } from '../../game/play/interactions/picture-falling.ts';
+import { ChaosScore } from '../../game/play/domain/chaos.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import { PICTURE_ALBUM, pictureDiscovery } from '../../game/play/content/album/pictures.ts';
 
 const ground = { grounded: true, climbing: false, velocityY: 0, touching: true };
 const jump = { grounded: false, climbing: false, velocityY: -200, touching: true };

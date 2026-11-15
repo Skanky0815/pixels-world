@@ -1,17 +1,17 @@
 /* eslint-disable max-lines-per-function -- Zustandsfolgen und eingefrorene Fortschrittsziele werden vollständig geprüft. */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { FridgeRummaging, FRIDGE_RULES } from '../../src/game/interactions/fridge-rummaging.ts';
-import { discoverAlbum } from '../../src/content/album/index.ts';
+import { FridgeRummaging, FRIDGE_RULES } from '../../game/play/interactions/fridge-rummaging.ts';
+import { discoverAlbum } from '../../game/play/content/album/index.ts';
 import {
   ACHIEVEMENTS,
   DESTRUCTION_TARGETS_V5,
   destructionTarget,
-} from '../../src/content/achievements.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import { RoundAlbum } from '../../src/game/album/round.ts';
-import { AlbumCollection } from '../../src/game/album/collection.ts';
-import { albumEntries } from '../../src/content/album/index.ts';
+} from '../../game/play/content/achievements.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import { RoundAlbum } from '../../game/play/album/round.ts';
+import { AlbumCollection } from '../../game/play/album/collection.ts';
+import { albumEntries } from '../../game/play/content/album/index.ts';
 
 const fridge = () => new FridgeRummaging('fridge');
 
@@ -164,9 +164,9 @@ test('Fridge graphics retain bounded transparent PNG cells and binary 2×2 clust
 });
 
 test('Fester Kühlschrank und offene Tür müssen vollständig in den Raum passen', async () => {
-  const { KITCHEN_PREVIEW } = await import('../../src/content/rooms/kitchen-preview.ts');
-  const { OBJECTS } = await import('../../src/content/objects/catalog.ts');
-  const { resolveRoom } = await import('../../src/game/content/resolve-room.ts');
+  const { KITCHEN_PREVIEW } = await import('../../game/play/content/rooms/kitchen-preview.ts');
+  const { OBJECTS } = await import('../../game/play/content/objects/catalog.ts');
+  const { resolveRoom } = await import('../../game/play/content/resolve-room.ts');
 
   for (const change of [{ height: 310 }, { x: 800 }]) {
     const room = {

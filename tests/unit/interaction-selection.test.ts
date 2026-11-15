@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CouchScratching } from '../../src/game/interactions/couch-scratching.ts';
+import { CouchScratching } from '../../game/play/interactions/couch-scratching.ts';
 import {
   overlaps,
   updateGroundInteractions,
   type Interactable,
   type InteractionContext,
-} from '../../src/game/interactions/contracts.ts';
+} from '../../game/play/interactions/contracts.ts';
 
 const context: InteractionContext = {
   time: 0,

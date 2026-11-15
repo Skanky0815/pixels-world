@@ -4,9 +4,9 @@ import {
   HomecomingSequence,
   selectReaction,
   HOMECOMING_TIMING,
-} from '../../src/game/domain/homecoming.ts';
-import { SARA_ANIMATIONS, SARA_DIALOGUE } from '../../src/content/sara-reactions.ts';
-import { RoundController, ROUND_CONFIG } from '../../src/game/domain/round-controller.ts';
+} from '../../game/play/domain/homecoming.ts';
+import { SARA_ANIMATIONS, SARA_DIALOGUE } from '../../game/play/content/sara-reactions.ts';
+import { RoundController, ROUND_CONFIG } from '../../game/play/domain/round-controller.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Alle angrenzenden Scorebereiche prüfen denselben Auswahlvertrag.
 test('Reaktionen übernehmen die bestehenden Ärgergrenzen einschließlich 24/25 und 59/60', () => {

@@ -98,7 +98,7 @@ reset_fixture
 edit_json "$fixture/pending.json" '. + .'
 fails_closed
 reset_fixture
-edit_json "$fixture/files.json" '. + [{filename:"src/main.ts"}]'
+edit_json "$fixture/files.json" '. + [{filename:"game/play/main.ts"}]'
 fails_closed
 reset_fixture
 echo '[{"filename":"CHANGELOG.md"}]' > "$fixture/files.json"

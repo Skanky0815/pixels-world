@@ -2,8 +2,8 @@ import { test, expect, state, start, until, reset, besideCouch } from './support
 import { advanceRoundTo, useIdleFrames } from './round-clock';
 import { expectCharacterView, prepareCharacterView } from './character-visuals';
 import { FAST_ROUND_CONFIG } from '../../tools/e2e-timing';
-import { ROUND_CONFIG } from '../../src/game/domain/round-controller';
-import { SARA_CLIPS } from '../../src/game/actors/sara-animations';
+import { ROUND_CONFIG } from '../../game/play/domain/round-controller';
+import { SARA_CLIPS } from '../../game/play/actors/sara-animations';
 
 const fullRound = process.env.E2E_FULL_ROUND === '1';
 const timing = fullRound ? ROUND_CONFIG : FAST_ROUND_CONFIG;

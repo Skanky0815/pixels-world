@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { test, expect, waitForLoadingScreen, enterSelectedRoom } from './support';
-import type { DebugPort, DebugScenario } from '../../src/dev/game-debug-model';
+import type { DebugPort, DebugScenario } from '../../game/dev/game-debug-model';
 
 type Snapshot = ReturnType<DebugPort['read']>;
 const dialog = (page: Page) => page.getByRole('dialog', { name: 'Entwickler-Debugmodus' });

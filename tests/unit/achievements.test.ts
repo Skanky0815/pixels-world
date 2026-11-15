@@ -5,14 +5,14 @@ import {
   ACHIEVEMENTS,
   DESTRUCTION_TARGETS,
   destructionTarget,
-} from '../../src/content/achievements.ts';
-import { AchievementProgress } from '../../src/game/album/achievements.ts';
-import { AlbumCollection } from '../../src/game/album/collection.ts';
-import { RoundAlbum } from '../../src/game/album/round.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import type { RoundResult } from '../../src/game/domain/round-result.ts';
-import { COUCH_SCRATCH } from '../../src/game/interactions/couch-scratching.ts';
-import { CURTAIN_SLIDE } from '../../src/game/interactions/curtain-sliding.ts';
+} from '../../game/play/content/achievements.ts';
+import { AchievementProgress } from '../../game/play/album/achievements.ts';
+import { AlbumCollection } from '../../game/play/album/collection.ts';
+import { RoundAlbum } from '../../game/play/album/round.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import type { RoundResult } from '../../game/play/domain/round-result.ts';
+import { COUCH_SCRATCH } from '../../game/play/interactions/couch-scratching.ts';
+import { CURTAIN_SLIDE } from '../../game/play/interactions/curtain-sliding.ts';
 
 const success: RoundResult = {
   score: 18,
@@ -355,8 +355,8 @@ test('Kategorie zählt vollständig ruinierte Varianten über Runden, niemals bl
 
 test('Jede feste Kategorie hat erreichbare veröffentlichte Varianten und schaltet nur ihren vollständigen Satz frei', async () => {
   const { ACHIEVEMENT_CATEGORIES, DESTRUCTION_VARIANTS, SHELF_TARGET_NAMES } =
-    await import('../../src/content/achievement-categories.ts');
-  const { albumEntries } = await import('../../src/content/album/index.ts');
+    await import('../../game/play/content/achievement-categories.ts');
+  const { albumEntries } = await import('../../game/play/content/album/index.ts');
   const published = new Set(albumEntries(false).map((entry) => entry.id));
 
   assert.equal(DESTRUCTION_VARIANTS.length, 25);
@@ -478,8 +478,8 @@ test('Sanfte Pfoten verlangt friedliches Schwer ohne Schaden und zählt gleichze
 });
 
 test('Raumerfolge enthalten alle veröffentlichten Räume, aber keine DEV- oder späteren Räume', async () => {
-  const { ACHIEVEMENT_ROOMS } = await import('../../src/content/achievement-rooms.ts');
-  const { ROOM_CHOICES } = await import('../../src/content/rooms/selection.ts');
+  const { ACHIEVEMENT_ROOMS } = await import('../../game/play/content/achievement-rooms.ts');
+  const { ROOM_CHOICES } = await import('../../game/play/content/rooms/selection.ts');
 
   assert.deepEqual(
     ACHIEVEMENT_ROOMS.map((room) => room.id),
@@ -488,8 +488,9 @@ test('Raumerfolge enthalten alle veröffentlichten Räume, aber keine DEV- oder 
 });
 
 test('Meisterwerk zählt alle anderen Erfolge, schaltet im letzten Batch frei und wiederholt sich nicht', async () => {
-  const { DESTRUCTION_VARIANTS } = await import('../../src/content/achievement-categories.ts');
-  const { ROOM_COMPLETIONS } = await import('../../src/content/achievement-rooms.ts');
+  const { DESTRUCTION_VARIANTS } =
+    await import('../../game/play/content/achievement-categories.ts');
+  const { ROOM_COMPLETIONS } = await import('../../game/play/content/achievement-rooms.ts');
   const progress = new AchievementProgress();
 
   progress.restore({

@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { HomecomingSequence, HOMECOMING_TIMING } from '../../src/game/domain/homecoming.ts';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
-import { CHARM_TIMING } from '../../src/content/reconciliation.ts';
-import { homecomingPortrait, charmPortrait } from '../../src/game/domain/dialogue-portrait.ts';
+import { HomecomingSequence, HOMECOMING_TIMING } from '../../game/play/domain/homecoming.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
+import { CHARM_TIMING } from '../../game/play/content/reconciliation.ts';
+import { homecomingPortrait, charmPortrait } from '../../game/play/domain/dialogue-portrait.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Alle Ärgerstufen durchlaufen dieselben echten Heimkehrphasen.
 test('Heimkehrporträts folgen Phase und Ärger statt zufälligem Dialogtext', () => {

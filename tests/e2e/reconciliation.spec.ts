@@ -1,4 +1,4 @@
-import { albumEntries } from '../../src/content/album/index.ts';
+import { albumEntries } from '../../game/play/content/album/index.ts';
 import {
   introAction,
   test,

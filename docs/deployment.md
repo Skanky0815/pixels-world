@@ -3,7 +3,7 @@
 Spieladresse: [Pixel’s World](https://skanky0815.github.io/pixels-world/).
 Die Quellen des Ablaufs sind [release.yml](../.github/workflows/release.yml),
 [pages.yml](../.github/workflows/pages.yml) und die Skripte unter
-[.github/scripts](../.github/scripts/). Kein unabhängiger Pages-Start und kein npm-Publish.
+[.github/scripts](../.github/scripts). Kein unabhängiger Pages-Start und kein npm-Publish.
 
 ## Spielupdates und Offlineversion
 
@@ -40,7 +40,7 @@ einmal auf diese Version gewechselt haben; die Änderung kann sich nicht rückwi
 in ihren bereits geladenen Code einbauen.
 
 Anleitungen für Spieler zu Updates, Installation und lokalem Album stehen in der
-[zweisprachigen Hilfe](../help.html); die Aktualisierung startet direkt im FAQ-Punkt.
+[zweisprachigen Hilfe](../game/landingpage/help.html); die Aktualisierung startet direkt im FAQ-Punkt.
 
 ### Alte Version ohne Update-Button
 

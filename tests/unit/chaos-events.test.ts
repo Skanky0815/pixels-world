@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ChaosScore } from '../../src/game/domain/chaos.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import { CouchScratching, COUCH_SCRATCH } from '../../src/game/interactions/couch-scratching.ts';
-import { CurtainSliding, CURTAIN_SLIDE } from '../../src/game/interactions/curtain-sliding.ts';
-import { PlantNibbling, PLANT_NIBBLE } from '../../src/game/interactions/plant-nibbling.ts';
+import { ChaosScore } from '../../game/play/domain/chaos.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import { CouchScratching, COUCH_SCRATCH } from '../../game/play/interactions/couch-scratching.ts';
+import { CurtainSliding, CURTAIN_SLIDE } from '../../game/play/interactions/curtain-sliding.ts';
+import { PlantNibbling, PLANT_NIBBLE } from '../../game/play/interactions/plant-nibbling.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Zwei Sofainstanzen zählen erste Kratzer getrennt; Wiederholung desselben Ereignisses nicht', () => {

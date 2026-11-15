@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { PNG } from 'pngjs';
-import { DISH_PROFILES } from '../../src/game/assets/dish-appearance.ts';
-import { ACHIEVEMENTS, DESTRUCTION_TARGETS } from '../../src/content/achievements.ts';
-import { DESTRUCTION_VARIANTS } from '../../src/content/achievement-categories.ts';
-import { AchievementProgress } from '../../src/game/album/achievements.ts';
-import { AlbumCollection } from '../../src/game/album/collection.ts';
-import { RoundAlbum } from '../../src/game/album/round.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import type { RoundResult } from '../../src/game/domain/round-result.ts';
+import { DISH_PROFILES } from '../../game/play/assets/dish-appearance.ts';
+import { ACHIEVEMENTS, DESTRUCTION_TARGETS } from '../../game/play/content/achievements.ts';
+import { DESTRUCTION_VARIANTS } from '../../game/play/content/achievement-categories.ts';
+import { AchievementProgress } from '../../game/play/album/achievements.ts';
+import { AlbumCollection } from '../../game/play/album/collection.ts';
+import { RoundAlbum } from '../../game/play/album/round.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import type { RoundResult } from '../../game/play/domain/round-result.ts';
 
 const result: RoundResult = {
   score: 20,

@@ -1,8 +1,8 @@
 import { test, expect, start, state, until, besideCouch } from './support';
 import { climbToBall } from './goal-support';
 import { changeLanguage } from './pause-support';
-import { PEACEFUL_GOAL_LINES } from '../../src/content/peaceful-goal';
-import { copy, resolveText } from '../../src/i18n/locale';
+import { PEACEFUL_GOAL_LINES } from '../../game/play/content/peaceful-goal';
+import { copy, resolveText } from '../../game/shared/i18n/locale';
 
 test(
   'Friedlicher Fund: sofortiger Satz, Sprachwechsel und Abschluss ohne Minispiel',

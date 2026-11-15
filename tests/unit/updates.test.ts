@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function -- Asynchrone Update-Rennen werden mit kontrollierten Browser-Ports als vollständige Szenarien geprüft. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { GameUpdates } from '../../src/pwa/updates.ts';
+import { GameUpdates } from '../../game/shared/pwa/updates.ts';
 
 const port = () => ({
   check: async () => false,

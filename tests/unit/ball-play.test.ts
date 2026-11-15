@@ -5,7 +5,7 @@ import {
   BALL_PLAY_DURATION,
   ballPlayPose,
   ballPlayPlacement,
-} from '../../src/game/domain/ball-play.ts';
+} from '../../game/play/domain/ball-play.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Lebensdauer, ungültige Zeit und genau ein Abschlusssignal bilden denselben Vertrag.
 test('Ballspiel startet einmal und endet nur durch gültige aktive Zeit', () => {

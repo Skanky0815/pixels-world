@@ -1,7 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { AudioPreferences, AUDIO_STORAGE_KEY, audioPreferences } from '../../src/settings/audio.ts';
-import { GameAudio } from '../../src/game/ui/GameAudio.ts';
+import {
+  AudioPreferences,
+  AUDIO_STORAGE_KEY,
+  audioPreferences,
+} from '../../game/play/settings/audio.ts';
+import { GameAudio } from '../../game/play/ui/GameAudio.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Speichervertrag, Wiederherstellung und isolierte Snapshots gehören zum selben Präferenz-Ablauf.
 test('Audioeinstellungen werden gespeichert, validiert und unveränderlich gelesen', () => {

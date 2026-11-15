@@ -15,7 +15,7 @@ ihre Animation verändert weder Pixels Kollisionen noch Punkte oder Phasen.
 | 8–9 | `sara-react-annoyed` | Hände in die Hüften / trockene Geste · 3 FPS · einmalig |
 | 10–11 | `sara-react-angry` | fassungslos / Hände am Kopf · 3 FPS · einmalig |
 
-Die Brille bleibt in allen Posen erhalten. `src/game/actors/sara-animations.ts`
+Die Brille bleibt in allen Posen erhalten. `game/play/actors/sara-animations.ts`
 enthält die gemeinsam von Spiel und Dev-Vorschau verwendeten Werte. Reaktionen
 halten nach ihrem einmaligen Abspielen den letzten Frame; die laufende Ansicht
 startet sie nicht pro Frame neu. Nach Abschluss der Sequenz folgt wieder Idle.
@@ -75,7 +75,7 @@ vom Spiel oder der Dev-Seite geladen. Pause, Einzelschritt und ruhige Endposen
 stehen auf `/animation-compare.html#ending-heading` zur Abstimmung bereit.
 
 
-`src/game/actors/sara-endings.ts` hält die gemeinsamen Clips. Die rein darstellende
+`game/play/actors/sara-endings.ts` hält die gemeinsamen Clips. Die rein darstellende
 `EndingPresentation` startet einmal mit dem endgültigen Ergebnis, wählt bei Erfolg
 nach Pixels tatsächlicher Haltung Kopf oder Bauch und hält danach den letzten
 Frame. Saras Handabstand folgt demselben Größenvergleich wie die Vorschau. Pixel

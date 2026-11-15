@@ -8,7 +8,7 @@ import {
   climbToCounter,
   finishCharm,
 } from './kitchen-support';
-import type { GameTestState } from '../../src/test-state';
+import type { GameTestState } from '../../game/play/test-state';
 
 const fridgeState = (s: GameTestState) => s.shelves.find((shelf) => shelf.isFridge)!.fridge!;
 

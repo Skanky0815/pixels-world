@@ -1,11 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { FeedbackModel, type FeedbackState } from '../../src/game/ui/feedback-model.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import { RoundController } from '../../src/game/domain/round-controller.ts';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
-import { CHARM_TIMING } from '../../src/content/reconciliation.ts';
-import { FEEDBACK } from '../../src/content/feedback.ts';
+import { FeedbackModel, type FeedbackState } from '../../game/play/ui/feedback-model.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import { RoundController } from '../../game/play/domain/round-controller.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
+import { CHARM_TIMING } from '../../game/play/content/reconciliation.ts';
+import { FEEDBACK } from '../../game/play/content/feedback.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Kleine Fixture hält echte Domain-Modelle und ihren lesenden Darstellungs-Snapshot zusammen.
 function fixture() {

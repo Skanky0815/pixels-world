@@ -6,12 +6,12 @@ import {
   CarpetHairball,
   CARPET_RULES,
   carpetEligible,
-} from '../../src/game/interactions/carpet-hairball.ts';
-import type { InteractionContext } from '../../src/game/interactions/contracts.ts';
-import { discoverAlbum } from '../../src/content/album/index.ts';
-import { CARPET_ALBUM } from '../../src/content/album/carpet.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import { pixelAnimation } from '../../src/game/actors/pixel-animations.ts';
+} from '../../game/play/interactions/carpet-hairball.ts';
+import type { InteractionContext } from '../../game/play/interactions/contracts.ts';
+import { discoverAlbum } from '../../game/play/content/album/index.ts';
+import { CARPET_ALBUM } from '../../game/play/content/album/carpet.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import { pixelAnimation } from '../../game/play/actors/pixel-animations.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Wartezeit, Würgephase, einmaliger Schaden und Reset bilden den gesamten Ablauf.
 test('Teppich wartet, würgt und hinterlässt genau einen Haarballen bis zum Reset', () => {

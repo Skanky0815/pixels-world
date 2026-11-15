@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function -- Die zusammenhängenden Türphasen werden für eine zweite Möbelkonfiguration und jeden Abbruchzustand geprüft. */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CabinetVisit, CABINET_VISIT_RULES } from '../../src/game/interactions/cabinet-visit.ts';
+import { CabinetVisit, CABINET_VISIT_RULES } from '../../game/play/interactions/cabinet-visit.ts';
 
 test('Gemeinsamer Schrankablauf braucht Griffkontakt und verwendet die Zeiten und Punkte des Möbels', () => {
   const cabinet = new CabinetVisit('wardrobe', {

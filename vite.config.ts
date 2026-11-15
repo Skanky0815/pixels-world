@@ -4,16 +4,17 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { pwaOptions } from './tools/pwa-config';
-import { OBJECTS } from './src/content/objects/catalog';
-import { ROOMS } from './src/content/rooms';
-import { populateSpawnSlots } from './src/game/content/spawn-slots';
-import { DIFFICULTIES, difficultyRoom } from './src/content/difficulty';
+import { OBJECTS } from './game/play/content/objects/catalog';
+import { ROOMS } from './game/play/content/rooms';
+import { populateSpawnSlots } from './game/play/content/spawn-slots';
+import { DIFFICULTIES, difficultyRoom } from './game/play/content/difficulty';
 import { releaseUrl } from './tools/release-metadata';
 import { roundConfigForBuild } from './tools/e2e-timing';
 import { legalFooter } from './tools/legal-footer';
 import { versionMetadata } from './tools/version-metadata';
 import { htmlShell } from './tools/html-shell';
-import { de } from './src/i18n/de';
+import { applicationPages, publishedPages } from './tools/application-pages';
+import { de } from './game/shared/i18n/de';
 
 // Fail before bundling/serving when any registered content is invalid.
 for (const room of Object.values(ROOMS))
@@ -27,6 +28,7 @@ const { version } = JSON.parse(
 // eslint-disable-next-line max-lines-per-function -- Der deklarative Buildvertrag hält Modi, feste Defines und gemeinsame Ein-/Ausgänge zusammen.
 export default defineConfig(({ mode, command }) => ({
   plugins: [
+    applicationPages(),
     htmlShell('game', ['play']),
     htmlShell('landing', ['index', 'help']),
     versionMetadata(),
@@ -52,15 +54,12 @@ export default defineConfig(({ mode, command }) => ({
   appType: 'mpa',
   build: {
     rollupOptions: {
-      // The comparison HTML is a dev-server page, never a release entry point.
-      input: {
-        landing: fileURLToPath(new URL('./index.html', import.meta.url)),
-        game: fileURLToPath(new URL('./play.html', import.meta.url)),
-        impressum: fileURLToPath(new URL('./impressum.html', import.meta.url)),
-        datenschutz: fileURLToPath(new URL('./datenschutz.html', import.meta.url)),
-        recovery: fileURLToPath(new URL('./update.html', import.meta.url)),
-        help: fileURLToPath(new URL('./help.html', import.meta.url)),
-      },
+      input: Object.fromEntries(
+        Object.keys(publishedPages).map((page) => [
+          page.replace('.html', ''),
+          fileURLToPath(new URL(`./${page}`, import.meta.url)),
+        ]),
+      ),
     },
   },
 }));

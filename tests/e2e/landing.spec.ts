@@ -5,6 +5,11 @@ for (const width of [320, 390, 768, 1440]) {
   // eslint-disable-next-line max-lines-per-function -- Derselbe sichtbare Landingpage-Vertrag wird pro Bildschirmbreite vollständig geprüft.
   test(`Landingpage: lesbarer Einstieg ohne Spielengine bei ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
+    const gameModules: string[] = [];
+
+    page.on('request', (request) => {
+      if (/\/(?:world-[^/]+\.js|game\/play\/)/.test(request.url())) gameModules.push(request.url());
+    });
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
       'Ein Zimmer. Eine Katze. Dein Chaos.',
@@ -20,6 +25,7 @@ for (const width of [320, 390, 768, 1440]) {
       'Was noch unentdeckt ist, bleibt ein Geheimnis.',
     );
     await expect(page.locator('.landing-album .play-link')).toHaveAttribute('href', './play.html');
+    expect(gameModules).toEqual([]);
     await expectArtwork(page);
     await expectTeam(page, width);
     await page.getByRole('link', { name: 'Über uns', exact: true }).click();

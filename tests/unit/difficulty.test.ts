@@ -7,18 +7,21 @@ import {
   difficultyTimer,
   difficultyCharm,
   difficultyRoom,
-} from '../../src/content/difficulty.ts';
-import { CHARM_PROFILES, CHARM_TIMING } from '../../src/content/reconciliation.ts';
-import { LIVING_ROOM } from '../../src/content/rooms/living-room.ts';
-import { COZY_REMIX } from '../../src/content/rooms/cozy-remix.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import { ROUND_CONFIG, RoundController } from '../../src/game/domain/round-controller.ts';
-import { Reconciliation } from '../../src/game/domain/reconciliation.ts';
-import { HomecomingSequence } from '../../src/game/domain/homecoming.ts';
-import { roundResult } from '../../src/game/domain/round-result.ts';
-import { ROUND_ENDINGS } from '../../src/content/round-endings.ts';
-import { DifficultyPreferences, DIFFICULTY_STORAGE_KEY } from '../../src/settings/difficulty.ts';
+} from '../../game/play/content/difficulty.ts';
+import { CHARM_PROFILES, CHARM_TIMING } from '../../game/play/content/reconciliation.ts';
+import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
+import { COZY_REMIX } from '../../game/play/content/rooms/cozy-remix.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import { ROUND_CONFIG, RoundController } from '../../game/play/domain/round-controller.ts';
+import { Reconciliation } from '../../game/play/domain/reconciliation.ts';
+import { HomecomingSequence } from '../../game/play/domain/homecoming.ts';
+import { roundResult } from '../../game/play/domain/round-result.ts';
+import { ROUND_ENDINGS } from '../../game/play/content/round-endings.ts';
+import {
+  DifficultyPreferences,
+  DIFFICULTY_STORAGE_KEY,
+} from '../../game/play/settings/difficulty.ts';
 
 const levels = [
   [0, 'calm'],

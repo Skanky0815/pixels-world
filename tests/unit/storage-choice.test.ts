@@ -1,8 +1,8 @@
 /* eslint-disable max-lines-per-function -- Speichergrenzen werden mit beobachtbaren Lese-/Schreibzugriffen geprüft. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { StorageChoices } from '../../src/settings/storage.ts';
-import { AlbumCollection } from '../../src/game/album/collection.ts';
+import { StorageChoices } from '../../game/shared/settings/storage.ts';
+import { AlbumCollection } from '../../game/play/album/collection.ts';
 
 for (const raw of [null, '{', 'null', '{"album":"true","offline":1}'])
   test(`Optionale Speicherung bleibt ohne gültige Auswahl aus: ${raw}`, () => {

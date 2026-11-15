@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { BookToppling } from '../../src/game/interactions/book-toppling.ts';
-import { ChaosScore } from '../../src/game/domain/chaos.ts';
+import { BookToppling } from '../../game/play/interactions/book-toppling.ts';
+import { ChaosScore } from '../../game/play/domain/chaos.ts';
 
 test('Bücher warnen sichtbar, Weggehen setzt Kontaktzeit zurück', () => {
   const books = new BookToppling('books');

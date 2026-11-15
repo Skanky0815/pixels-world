@@ -3,6 +3,11 @@
 Node.js 22.12+ oder eine unterstützte neuere LTS-Version und npm verwenden.
 Die verfügbaren Befehle stehen in [package.json](../package.json).
 
+Die Anwendungsquellen liegen unter `game/landingpage`, `game/play`, `game/shared`
+und `game/dev`. Die [Architektur](architecture/gameplay.md#anwendungsbereiche-und-auslieferung)
+erklärt Importgrenzen und die Zuordnung zu öffentlichen URLs. HTML-Quellen direkt
+im zugehörigen Bereich bearbeiten; keine zusätzlichen HTML-Kopien im Root anlegen.
+
 ## Spiel und Vorschau
 
 ```sh
@@ -52,7 +57,7 @@ Hostnamen bei Bedarf gezielt mit `__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS`
 freigeben, nicht pauschal alle Hosts erlauben.
 
 `/?room=cozy-remix` wählt nur im Dev-/E2E-Betrieb eine Inhaltsvariante.
-[Raum- und Objektinhalte](../src/content/README.md) erklären den Datenvertrag.
+[Raum- und Objektinhalte](../game/play/content/README.md) erklären den Datenvertrag.
 
 ## Linkvorschau und Suchmaschinen
 
@@ -116,7 +121,7 @@ ausgeschlossen; fehlende Dev-Seiten dürfen dort keinen SPA-Fallback erhalten.
 Asset-Verträge und reproduzierbare Exporte bleiben bei
 [Pixel](../assets/pixel/README.md) und [Sara](../assets/sara/README.md).
 
-Beide DEV-Seiten nutzen `src/dev/dev-shell.css` für Seitenbreite, Navigation,
+Beide DEV-Seiten nutzen `game/dev/dev-shell.css` für Seitenbreite, Navigation,
 Typografie und Bedienelemente. Die aktive Seite ist in der Navigation markiert;
 „Zum Spiel“ führt zurück. Seitenspezifische Layouts bleiben in eigenen Stylesheets.
 
@@ -133,7 +138,7 @@ Die Vorschau verwendet unveränderte [Pixel-Assets](../assets/pixel/README.md), 
 vorhandenen Lieblingsball und die reguläre Raumzeichnung. Es entstehen keine
 neuen Bildquellen oder Exporte. Bestehende Pfotenposen sind Platzhalter für die
 Abstimmung. Die isolierte Szene erzeugt weder Hauptziel noch Punkte oder Heimkehr;
-Vorschau und Spiel verwenden das gemeinsame Zeitprofil in `game/domain/ball-play.ts`.
+Vorschau und Spiel verwenden das gemeinsame Zeitprofil in `game/play/domain/ball-play.ts`.
 Der freigegebene Ablauf dauert 4,2 Sekunden. HTML und
 DEV-Module sind keine Build-Einstiegspunkte und fehlen im Produktionsbuild.
 
@@ -290,7 +295,7 @@ eingebunden. E2E-Snapshots enthalten nur losgelöste Pegel/Statuswerte.
 
 ## Visuelles Feedback abstimmen
 
-`src/content/feedback.ts` enthält die kurzen Anzeigezeiten, Ausblenddauer und
+`game/play/content/feedback.ts` enthält die kurzen Anzeigezeiten, Ausblenddauer und
 Bewegungsdistanz. `FeedbackModel` beobachtet bereits vergebene Chaosereignisse und
 vorhandene Phasen-/Versöhnungssnapshots. Es vergibt weder Punkte noch verändert es
 Eingaben, Physik oder Domain-Zeit. Pro Kanal bleibt nur die jüngste Meldung; identische

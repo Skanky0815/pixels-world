@@ -1,9 +1,9 @@
 import { test, expect, start, until, state, reset } from './support';
 import { advanceRoundTo, useIdleFrames } from './round-clock';
 import { changeLanguage } from './pause-support';
-import { SARA_ROOM_DIALOGUE } from '../../src/content/sara-reactions';
-import { de } from '../../src/i18n/de';
-import { en } from '../../src/i18n/en';
+import { SARA_ROOM_DIALOGUE } from '../../game/play/content/sara-reactions';
+import { de } from '../../game/shared/i18n/de';
+import { en } from '../../game/shared/i18n/en';
 import type { Page } from '@playwright/test';
 
 async function waitForDialogue(page: Page) {

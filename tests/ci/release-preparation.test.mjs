@@ -83,7 +83,7 @@ test('Teilpublikation, falscher Bot, Dateien und nicht passende Abstammung stopp
     ['git/matching-refs/tags/v0.5.0', [{ ref: 'refs/tags/v0.5.0' }]],
     ['releases?per_page=100', [{ tag_name: 'v0.5.0', draft: true }]],
     ['pulls?state=closed&base=main&per_page=100', []],
-    ['pulls/287/files?per_page=100', [{ filename: 'src/main.ts' }]],
+    ['pulls/287/files?per_page=100', [{ filename: 'game/play/main.ts' }]],
     [`compare/${merged}...${current}`, { status: 'diverged' }],
     [`compare/${published}...${current}`, { status: 'behind' }],
     [`contents/.release-please-manifest.json?ref=${published}`, json({ '.': '0.3.0' })],
@@ -167,10 +167,10 @@ function githubFixture() {
       yield {
         sha: 'e'.repeat(40),
         message: 'feat(ui): add responsive camera',
-        files: ['src/main.ts'],
+        files: ['game/play/main.ts'],
       };
-      yield { sha: published, message: 'fix: published fix', files: ['src/main.ts'] };
-      yield { sha: 'f'.repeat(40), message: 'feat: ancient feature', files: ['src/main.ts'] };
+      yield { sha: published, message: 'fix: published fix', files: ['game/play/main.ts'] };
+      yield { sha: 'f'.repeat(40), message: 'feat: ancient feature', files: ['game/play/main.ts'] };
     },
   };
   return { github, reads };

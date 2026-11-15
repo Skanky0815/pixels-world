@@ -6,21 +6,21 @@ import { PNG } from 'pngjs';
 import {
   TABLECLOTH_RULES,
   TableclothPull,
-} from '../../src/game/interactions/tablecloth-pulling.ts';
-import { OBJECTS } from '../../src/content/objects/catalog.ts';
-import { KITCHEN } from '../../src/content/rooms/kitchen.ts';
-import { resolveRoom } from '../../src/game/content/resolve-room.ts';
-import { discoverAlbum } from '../../src/content/album/index.ts';
+} from '../../game/play/interactions/tablecloth-pulling.ts';
+import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
+import { KITCHEN } from '../../game/play/content/rooms/kitchen.ts';
+import { resolveRoom } from '../../game/play/content/resolve-room.ts';
+import { discoverAlbum } from '../../game/play/content/album/index.ts';
 import {
   ACHIEVEMENTS,
   DESTRUCTION_TARGETS_V4,
   destructionTarget,
-} from '../../src/content/achievements.ts';
-import { AchievementProgress } from '../../src/game/album/achievements.ts';
-import { AlbumCollection } from '../../src/game/album/collection.ts';
-import { RoundAlbum } from '../../src/game/album/round.ts';
-import { chaosEvent } from '../../src/game/domain/chaos-event.ts';
-import type { RoundResult } from '../../src/game/domain/round-result.ts';
+} from '../../game/play/content/achievements.ts';
+import { AchievementProgress } from '../../game/play/album/achievements.ts';
+import { AlbumCollection } from '../../game/play/album/collection.ts';
+import { RoundAlbum } from '../../game/play/album/round.ts';
+import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
+import type { RoundResult } from '../../game/play/domain/round-result.ts';
 
 test('Kurzer Kontakt lässt die Decke unversehrt; erst nach vollständiger Warnung beginnt der Zug', () => {
   const model = new TableclothPull('cloth', TABLECLOTH_RULES);

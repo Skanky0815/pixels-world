@@ -6,7 +6,7 @@ import {
   FOOD_EATING_DURATION,
   foodEatingPose,
   foodEatingPlacement,
-} from '../../src/game/domain/food-eating.ts';
+} from '../../game/play/domain/food-eating.ts';
 
 test('Fressen startet einmal, verwendet nur aktive Zeit und endet genau einmal', () => {
   const model = new FoodEating();

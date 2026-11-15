@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function -- Zeitgrenzen und einmalige Speicherentscheidung bilden zusammenhängende Verhaltensfälle. */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { AlbumBannerQueue } from '../../src/game/album/banner-queue.ts';
+import { AlbumBannerQueue } from '../../game/play/album/banner-queue.ts';
 
 test('Einzelfund erscheint genau drei Sekunden; erneutes Rendern startet ihn nicht neu', () => {
   const queue = new AlbumBannerQueue();
