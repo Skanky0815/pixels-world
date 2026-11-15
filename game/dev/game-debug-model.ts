@@ -1,6 +1,8 @@
 import { HOMECOMING_TIMING, type HomecomingSequence } from '../play/domain/homecoming.ts';
 import type { RoundController } from '../play/domain/round-controller.ts';
 import type { Reconciliation } from '../play/domain/reconciliation.ts';
+import type { DebugScenario } from '../play/domain/debug-scenario';
+export type { DebugScenario } from '../play/domain/debug-scenario';
 
 export const DEBUG_TARGETS = {
   chaos: 'Chaos',
@@ -9,13 +11,7 @@ export const DEBUG_TARGETS = {
   reconciliation: 'Versöhnung',
   'result-success': 'Ergebnis · versöhnt',
   'result-failed': 'Ergebnis · gescheitert',
-} as const;
-export interface DebugScenario {
-  readonly target: keyof typeof DEBUG_TARGETS;
-  readonly score: number;
-  readonly seconds: number;
-  readonly seed: number;
-}
+} as const satisfies Record<DebugScenario['target'], string>;
 export interface DebugPort {
   readonly round: RoundController;
   readonly homecoming: HomecomingSequence;

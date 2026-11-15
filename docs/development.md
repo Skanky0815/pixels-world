@@ -8,6 +8,10 @@ und `game/dev`. Die [Architektur](architecture/gameplay.md#anwendungsbereiche-un
 erklärt Importgrenzen und die Zuordnung zu öffentlichen URLs. HTML-Quellen direkt
 im zugehörigen Bereich bearbeiten; keine zusätzlichen HTML-Kopien im Root anlegen.
 
+`npm run check:imports` prüft die vereinbarten Abhängigkeiten unabhängig vom Build;
+die reguläre QA führt den Check ebenfalls aus. Erlaubte Ziele und begrenzte
+DEV-Ausnahmen stehen in der [Bausteinsicht](architecture/gameplay.md#bausteinsicht-importgrenzen).
+
 ## Spiel und Vorschau
 
 ```sh

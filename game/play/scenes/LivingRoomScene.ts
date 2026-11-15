@@ -42,7 +42,7 @@ import { OBJECTS } from '../content/objects/catalog';
 import { GameFeedback } from '../ui/GameFeedback';
 import { PauseMenu } from '../ui/PauseMenu';
 import { GameAudio } from '../ui/GameAudio';
-import type { DebugScenario } from '../../dev/game-debug-model';
+import type { DebugScenario } from '../domain/debug-scenario';
 import { onLanguageChange, copy, translateExact } from '../../shared/i18n/locale';
 import { PeacefulGoal } from '../domain/peaceful-goal';
 import type { PeacefulGoalLine } from '../content/peaceful-goal';
