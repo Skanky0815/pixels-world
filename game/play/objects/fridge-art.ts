@@ -98,6 +98,8 @@ export class FridgeArt implements Interactable {
   receiveImpact(hit: ImpactHit) {
     if (hit.counter) return [];
 
+    if (hit.power >= 30) this.nudgeUntil = hit.time + 250;
+
     if (hit.power >= 500) {
       const event = this.model.disturb();
 
@@ -106,8 +108,6 @@ export class FridgeArt implements Interactable {
 
       return event ? [event] : [];
     }
-
-    if (hit.power >= 30) this.nudgeUntil = hit.time + 250;
 
     return [];
   }
@@ -142,7 +142,7 @@ export class FridgeArt implements Interactable {
 
   abortVisit() {
     if (this.model.snapshot().captured) {
-      this.model.reset();
+      this.model.abort();
       this.draw(0);
     }
   }
