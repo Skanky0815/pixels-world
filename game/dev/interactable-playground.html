@@ -17,19 +17,65 @@
         <a href="/interactable-playground.html" aria-current="page">Playground</a>
         <a href="/play.html">Zum Spiel</a>
       </nav>
-      <p>Ein Objekt, echte Spielmechanik – ohne Runde, Heimkehr oder gespeicherte Ergebnisse.</p>
+      <p>
+        Objekte und Kontaktszenarien mit echter Spielmechanik – ohne Runde oder gespeicherte
+        Ergebnisse.
+      </p>
       <div class="dev-toolbar playground-toolbar">
+        <label for="playground-mode"
+          >Testart
+          <select id="playground-mode" disabled>
+            <option value="object">Einzelobjekt</option>
+            <option value="scenario">Eigener Aufbau</option>
+          </select>
+        </label>
         <label for="playground-object"
-          >Objekt / Variante aus dem Spielkatalog
+          ><span id="playground-selection-label">Objekt / Variante aus dem Spielkatalog</span>
           <select id="playground-object" disabled></select>
         </label>
         <button id="playground-reset" disabled>Szene zurücksetzen</button>
       </div>
+      <details id="playground-editor" class="playground-builder">
+        <summary>Objekte platzieren / bearbeiten</summary>
+        <fieldset>
+          <legend>Aufbau bearbeiten</legend>
+          <p>
+            Änderungen starten den Versuch neu. Verschieben ändert die Startposition des
+            ausgewählten Objekts.
+          </p>
+          <div class="editor-fields">
+            <label
+              >Objekt zum Spawnen
+              <select id="spawn-variant"></select
+            ></label>
+            <label
+              >Auflage
+              <select id="spawn-surface"></select
+            ></label>
+            <label>X <input id="spawn-x" type="number" value="400" step="1" /></label>
+            <label>Y (Wandobjekte) <input id="spawn-y" type="number" value="180" step="1" /></label>
+            <button id="object-spawn" type="button">Spawnen</button>
+            <button id="object-move" type="button" disabled>Auswahl verschieben</button>
+            <button id="object-remove" type="button" disabled>Auswahl entfernen</button>
+          </div>
+          <p id="editor-message" role="status"></p>
+          <details>
+            <summary>Aufbau laden / kopieren</summary>
+            <label
+              >Aufbaudaten
+              <textarea id="layout-json" rows="5" maxlength="100000" spellcheck="false"></textarea>
+            </label>
+            <button id="layout-copy" type="button">Aufbau in Textfeld kopieren</button>
+            <button id="layout-load" type="button">Aufbau laden</button>
+          </details>
+        </fieldset>
+      </details>
+      <p id="playground-notice" role="status" class="note" hidden></p>
       <p id="playground-help">
-        Ins Zimmer klicken, dann ← / → zum Laufen, Leertaste zum Springen und ↑ / ↓ am Vorhang. Bei
-        Sofa und Pflanze kurz stehen bleiben; Vasen vom Regal schieben. Bilder mit zwei getrennten
-        Sprüngen treffen; auf dem Teppich kurz stehen bleiben. Reset setzt auch Pixel und alle
-        Chaos-Punkte zurück.
+        Ins Zimmer klicken, dann ← / → zum Laufen, Leertaste zum Springen und ↑ / ↓ zum Klettern.
+        Bei Sofa und Pflanze kurz stehen bleiben; Vasen vom Regal schieben. Bilder mit zwei
+        getrennten Sprüngen treffen; auf dem Teppich kurz stehen bleiben. Reset setzt auch Pixel und
+        alle Chaos-Punkte zurück.
       </p>
       <div class="playground-workspace">
         <section class="playground-stage" aria-label="Isolierte Testszene">
@@ -40,9 +86,16 @@
             aria-label="Playground steuern"
             aria-describedby="playground-help"
           ></div>
+          <p id="playground-round" hidden>
+            <a id="playground-game-link">Mit vollständiger Runde im Spiel testen →</a>
+          </p>
         </section>
         <section class="playground-readout" aria-label="Objektdiagnose">
           <h2>Live-Diagnose</h2>
+          <label for="playground-target"
+            >Diagnoseziel
+            <select id="playground-target" disabled></select>
+          </label>
           <dl>
             <dt>Typ / Variante</dt>
             <dd><output id="playground-kind">Lädt …</output></dd>

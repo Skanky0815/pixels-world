@@ -1,11 +1,12 @@
-import { test, expect, state, holdUntil, until, reset, couch } from '../support/support';
-import { startDifficulty } from './difficulty-support';
+import { test, expect, state, holdUntil, until, reset, couch } from './playground-object-support';
+import { start } from './playground-object-support';
 
 test('Schwer: zusätzliches fragiles Regal stürzt nach drei Landungen ein und Reset stellt es wieder her', async ({
   page,
   // eslint-disable-next-line max-lines-per-function -- Reale Landungen, Einsturz und Neustart prüfen gemeinsam die Stabilität aus dem gewählten Grad.
 }) => {
-  await startDifficulty(page, 'hard', '/?room-seed=hard-shelves');
+  await page.addInitScript(() => localStorage.setItem('pixels-world.difficulty', 'hard'));
+  await start(page, '/?room-seed=hard-shelves');
   await couch(page);
   await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 195);
   await holdUntil(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x <= 30);

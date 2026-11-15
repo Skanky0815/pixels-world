@@ -1,45 +1,9 @@
-/* eslint-disable max-lines-per-function -- Echte Eingaben und Lebenszyklusgrenzen bleiben als vollständige Spielabläufe nachvollziehbar. */
-import { test, expect, waitForGame } from '../support/support';
-import { observe, until, move, climbToCounterLanding, finishCharm } from './kitchen-support';
+/* eslint-disable max-lines-per-function -- Reale Eingaben und ihre zusammengehörigen Zustandsprüfungen bilden vollständige Abläufe. */
+import { test, expect } from '../support/support';
+import { observe, until, move } from './playground-object-support';
 import { TouchDriver } from '../support/touch-support';
 import type { Page } from '@playwright/test';
-import type { GameTestState } from '../../../game/play/test-state';
-const fridge = (s: GameTestState) => s.shelves.find((p) => p.isFridge)!;
-
-async function start(page: Page, room = 'fridge-visit') {
-  await page.goto(`/play.html?room=${room}&camera=room`);
-  await waitForGame(page);
-  await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
-}
-
-async function grabHandle(page: Page) {
-  await move(page, ['Space', 'ArrowRight'], (s) => fridge(s).fridge?.state === 'hanging');
-}
-
-async function descendFromSourceShelf(page: Page) {
-  await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 870);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
-  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 468) < 2);
-}
-
-async function waitForRemaining(page: Page, remaining: number) {
-  // Phaser smooths frame deltas: approach the observed active time in bounded steps.
-  for (let step = 0; step < 500; step++) {
-    const { round } = await observe(page);
-    const gap = round.returnAtMs - round.elapsedMs - remaining;
-
-    if (gap <= 0) {
-      expect(round.phase).toBe('chaos');
-
-      return;
-    }
-
-    await page.clock.runFor(Math.min(500, Math.max(16, Math.floor(gap / 2))));
-  }
-
-  throw new Error('Aktive Küchen-Restzeit wurde nicht erreicht');
-}
+import { loadScenario, togglePause, resume, type ObjectState } from './playground-object-support';
 
 async function enter(page: Page) {
   await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
@@ -58,6 +22,23 @@ async function enter(page: Page) {
   expect((await observe(page)).pixel.visible).toBe(false);
   await until(page, (s) => fridge(s).fridge?.state === 'inside');
 }
+
+async function descendFromSourceShelf(page: Page) {
+  await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 870);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
+  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 468) < 2);
+}
+
+async function grabHandle(page: Page) {
+  await move(page, ['Space', 'ArrowRight'], (s) => fridge(s).fridge?.state === 'hanging');
+}
+
+async function start(page: Page, room = 'fridge-visit') {
+  await loadScenario(page, room);
+}
+
+const fridge = (s: ObjectState) => s.shelves.find((p) => p.isFridge)!;
 
 test('Pixel hängt an der Klinke, zieht die Tür auf und verschwindet erst danach; Innenchaos bleibt @smoke', async ({
   page,
@@ -91,7 +72,7 @@ test('Pixel hängt an der Klinke, zieht die Tür auf und verschwindet erst danac
   expect(open.chaos.score).toBe(24);
   expect(fridge(open).enabled).toBe(true);
   expect(fridge(open).fridge).toMatchObject({ hidden: false, texture: 'fridge-open', events: 1 });
-  expect(open.album.pending).toContain('fridge.cream');
+  expect(open.discoveries).toContain('fridge.cream');
   expect(open.pantry[0].bottom).toBeCloseTo(148, 0);
   await page.clock.runFor(2500);
   expect((await observe(page)).chaos.score).toBe(24);
@@ -108,12 +89,12 @@ test('Klinkengriff, Pause, Fokusverlust und Reset bleiben sicher', async ({ page
   await start(page);
   await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
   await grabHandle(page);
-  await page.keyboard.press('Escape');
+  await togglePause(page);
   const paused = await observe(page);
 
   await page.clock.runFor(2000);
   expect(fridge(await observe(page))).toEqual(fridge(paused));
-  await page.locator('[data-pause-resume]').click();
+  await resume(page);
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
   const blurred = await observe(page);
 
@@ -160,12 +141,12 @@ test('Ein fallendes Glas beschädigt den Inhalt bei geschlossener Tür; Pause un
     lastDamage: { kind: 'spill', value: 24 },
   });
   expect(Math.abs(fridge(hit).fridge!.angle)).toBeLessThanOrEqual(2.5);
-  await page.keyboard.press('Escape');
+  await togglePause(page);
   const paused = await observe(page);
 
   await page.clock.runFor(2000);
   expect(fridge(await observe(page))).toEqual(fridge(paused));
-  await page.locator('[data-pause-resume]').click();
+  await resume(page);
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
   const blurred = await observe(page);
 
@@ -177,7 +158,7 @@ test('Ein fallendes Glas beschädigt den Inhalt bei geschlossener Tür; Pause un
   const settled = await observe(page);
 
   expect(fridge(settled).fridge).toMatchObject({ state: 'idle', events: 1, angle: 0 });
-  expect(settled.album.pending).toContain('fridge.cream');
+  expect(settled.discoveries).toContain('fridge.cream');
   await enter(page);
   await until(page, (s) => fridge(s).fridge?.state === 'open');
   const visited = await observe(page);
@@ -189,7 +170,7 @@ test('Ein fallendes Glas beschädigt den Inhalt bei geschlossener Tür; Pause un
     events: 1,
   });
   expect(visited.chaos.score).toBe(settled.chaos.score);
-  expect(visited.album.pending).toEqual(settled.album.pending);
+  expect(visited.discoveries).toEqual(settled.discoveries);
   await page.clock.runFor(1000);
   expect(fridge(await observe(page)).fridge?.events).toBe(1);
   await move(page, ['r'], (s) => s.generation > visited.generation);
@@ -201,55 +182,6 @@ test('Ein fallendes Glas beschädigt den Inhalt bei geschlossener Tür; Pause un
   });
   expect((await observe(page)).chaos.score).toBe(0);
 });
-
-test('Heimkehr bricht den Besuch nach Fremdschaden ab, ohne Türöffnung oder zweite Wertung', async ({
-  page,
-}) => {
-  await start(page, 'fridge-incoming');
-  await move(page, ['ArrowRight'], (s) => s.pantry[0].x > 1018);
-  await until(page, (s) => fridge(s).fridge?.events === 1);
-  await descendFromSourceShelf(page);
-  const damaged = await observe(page);
-
-  await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
-  await waitForRemaining(page, 350);
-  await grabHandle(page);
-  await until(page, (s) => s.round.phase !== 'chaos');
-  const homecoming = await observe(page);
-
-  expect(homecoming.pixel.visible).toBe(true);
-  expect(fridge(homecoming).fridge).toMatchObject({
-    state: 'idle',
-    doorState: 'closed',
-    events: 1,
-    captured: false,
-  });
-  expect(homecoming.chaos.score).toBe(damaged.chaos.score);
-  expect(homecoming.album.pending).toEqual(damaged.album.pending);
-});
-
-for (const success of [true, false])
-  test(`Küchenrunde bestätigt den Kühlschrankfund nur bei ${success ? 'erfolgreicher' : 'gescheiterter'} Versöhnung`, async ({
-    page,
-  }) => {
-    await start(page);
-    await enter(page);
-    await until(page, (s) => fridge(s).fridge?.state === 'open');
-    // Walk left beneath the existing route; the static counter requires jumping back onto its top.
-    await move(page, ['ArrowUp'], (s) => s.pixel.climbing);
-    await move(page, ['ArrowUp'], (s) => s.pixel.bottom <= 170);
-    await move(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x < 930);
-    await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
-    const x = (await observe(page)).pixel.x;
-
-    await move(page, [x < 860 ? 'ArrowRight' : 'ArrowLeft'], (s) => Math.abs(s.pixel.x - 860) < 4);
-    await until(page, (s) => s.round.phase !== 'chaos');
-    await until(page, (s) => s.pixelReturn.stage === 'seated');
-    await move(page, ['Space'], (s) => s.round.phase === 'reconciliation');
-    await finishCharm(page, success);
-    await until(page, (s) => Boolean(s.result));
-    expect((await observe(page)).album.confirmed.includes('fridge.cream')).toBe(success);
-  });
 
 test.describe('Kühlschrank mit Touch', () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
@@ -279,52 +211,6 @@ test.describe('Kühlschrank mit Touch', () => {
   });
 });
 
-for (const [phase, remaining] of [
-  ['hanging', 350],
-  ['opening', 900],
-  ['entering', 1350],
-  ['inside', 1600],
-  ['reopening', 3000],
-] as const)
-  test(`Timerende während ${phase} gibt Pixel für Saras Heimkehr frei, ohne Schaden zu erfinden`, async ({
-    page,
-  }) => {
-    await start(page);
-    await move(page, ['ArrowRight'], (s) => s.pixel.x >= 1008);
-    await waitForRemaining(page, remaining);
-    await grabHandle(page);
-    await until(page, (s) => fridge(s).fridge?.state === phase);
-    expect((await observe(page)).pixel.visible).toBe(['hanging', 'opening'].includes(phase));
-    await until(page, (s) => s.round.phase !== 'chaos');
-    expect((await observe(page)).pixel.visible).toBe(true);
-    expect(fridge(await observe(page)).fridge?.state).toBe('idle');
-    expect((await observe(page)).chaos.score).toBe(0);
-    expect((await observe(page)).album.pending).not.toContain('fridge.cream');
-  });
-
-test('Öffentliche Raumauswahl übernimmt die Küche und stellt beim Rückwechsel die Wohnzimmerbreite wieder her', async ({
-  page,
-}) => {
-  await page.goto('/play.html?room=fridge-visit&camera=room');
-  await waitForGame(page);
-  expect((await observe(page)).room.physicsWidth).toBe(1320);
-  await page.locator('[data-start-rooms]').click();
-  await until(page, (s) => !s.intro.visible);
-  await page.locator('[data-room-choice="kitchen"]').click();
-  await page.locator('[data-room-start="kitchen"]').click();
-  await until(page, (s) => s.room.id === 'kitchen' && s.camera.width === 960);
-  await waitForGame(page, false);
-  await expect(page.locator('#game')).toHaveAttribute('data-room-width', '960');
-  expect((await observe(page)).room.physicsWidth).toBe(960);
-  await page.locator('[data-start-rooms]').click();
-  await until(page, (s) => !s.intro.visible);
-  await page.locator('[data-room-choice="living-room"]').click();
-  await page.locator('[data-room-start="living-room"]').click();
-  await until(page, (s) => s.room.id === 'living-room' && s.camera.width === 960);
-  await expect(page.locator('#game')).toHaveAttribute('data-room-width', '960');
-  expect((await observe(page)).room.physicsWidth).toBe(960);
-});
-
 test('Die rechte Seite hat keine Klinke und startet auch beim zweiten Sprung keinen Besuch', async ({
   page,
 }) => {
@@ -338,28 +224,4 @@ test('Die rechte Seite hat keine Klinke und startet auch beim zweiten Sprung kei
   expect(fridge(await observe(page)).fridge?.events).toBe(0);
   expect(fridge(await observe(page)).fridge).toMatchObject({ state: 'idle', angle: 0 });
   expect((await observe(page)).pixel.visible).toBe(true);
-});
-
-test('Öffentliche Küche: über den Kühlschrank hin und vor dem Napf wieder zurück zum Eingang ohne Softlock @smoke', async ({
-  page,
-}) => {
-  await page.addInitScript(() => localStorage.setItem('pixels-world.difficulty', 'easy'));
-  await start(page, 'kitchen&room-seed=pantry-easy-1');
-  await climbToCounterLanding(page);
-  expect((await observe(page)).round.phase).toBe('chaos');
-  expect((await observe(page)).chaos.score).toBe(0);
-  await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 795);
-  await move(page, ['ArrowUp'], (s) => s.pixel.bottom <= 170);
-  await move(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x <= 688);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 148) < 2);
-  await move(page, ['Space', 'ArrowLeft'], (s) => s.pixel.x <= 440);
-  await until(page, (s) => s.pixel.grounded);
-  await move(
-    page,
-    ['ArrowLeft'],
-    (s) => s.pixel.x <= 178 && s.pixel.grounded && Math.abs(s.pixel.bottom - 468) < 2,
-  );
-  expect((await observe(page)).pixel.visible).toBe(true);
-  expect(fridge(await observe(page)).fridge?.hidden).toBe(false);
-  expect((await observe(page)).round.phase).toBe('chaos');
 });

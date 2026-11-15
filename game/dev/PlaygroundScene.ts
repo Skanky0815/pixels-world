@@ -1,3 +1,10 @@
+import { observeObjects } from '../play/content/object-observation';
+import { discoverAlbum } from '../play/content/album';
+import { angerFor } from '../play/domain/chaos';
+import { difficultyRoom, isDifficulty } from '../play/content/difficulty';
+import { populateSpawnSlots } from '../play/content/spawn-slots';
+import { resolveRoom } from '../play/content/resolve-room';
+import { PLAYGROUND_OBJECTS } from './playground-room';
 import { preloadTableclothArt } from '../play/assets/tablecloth-art';
 import { preloadTrashBinArt } from '../play/assets/trash-bin-art';
 import { preloadPantryArt } from '../play/assets/pantry-art';
@@ -31,12 +38,15 @@ import { ChaosScore } from '../play/domain/chaos';
 import type { ChaosEvent } from '../play/domain/chaos-event';
 import { InputController } from '../play/input/InputController';
 import { PlayActivity } from '../play/input/play-activity';
-import { playgroundRoom } from './playground-room';
+import { selectedPlaygroundRoom, type PlaygroundSelection } from './playground-selection';
+import { preloadKitchenArt } from '../play/assets/kitchen-art';
+import type { ResolvedRoom, RoomDefinition } from '../play/content/definitions';
 
 export class PlaygroundScene extends Phaser.Scene {
   private audio!: GameAudio;
   private shelves: Shelf[] = [];
-  private variant = 'cozy-couch';
+  private room!: ResolvedRoom;
+  private layout?: RoomDefinition;
   private built!: ReturnType<typeof buildObjects>;
   private pixel!: Pixel;
   private controls!: InputController;
@@ -48,12 +58,17 @@ export class PlaygroundScene extends Phaser.Scene {
 
   constructor(
     private readonly diagnose: (snapshot: ReturnType<PlaygroundScene['snapshot']>) => void,
+    private selection: PlaygroundSelection = { mode: 'object', id: 'cozy-couch' },
   ) {
     super('InteractablePlayground');
   }
 
-  init(data: { variant?: string }) {
-    if (data.variant) this.variant = data.variant;
+  init(data: { selection?: PlaygroundSelection; layout?: RoomDefinition; fresh?: boolean }) {
+    if (data.fresh) this.layout = undefined;
+
+    if (data.layout) this.layout = data.layout;
+
+    if (data.selection) this.selection = data.selection;
     this.elapsed = 0;
     this.eventsLog = [];
     this.chaos.reset();
@@ -75,6 +90,7 @@ export class PlaygroundScene extends Phaser.Scene {
     preloadShelfArt(this);
     preloadFridgeArt(this);
     preloadRoomArt(this);
+    preloadKitchenArt(this);
     preloadCouchArt(this);
     preloadCurtainArt(this);
     preloadCatgrassArt(this);
@@ -89,7 +105,12 @@ export class PlaygroundScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Ein gemeinsamer Aufbau besitzt reale Adapter, Steuerung und deren Lebensdauer; keine Runde oder persistente Ergebnisse.
   create() {
-    const room = playgroundRoom(this.variant);
+    const room = this.resolveSelection();
+
+    this.room = room;
+    this.scale.setGameSize(room.definition.width, room.definition.height);
+    this.cameras.main.setSize(room.definition.width, room.definition.height);
+    this.physics.world.setBounds(0, 0, room.definition.width, room.definition.height);
     const { platforms, floor, shelves } = createRoomPhysics(this, room.definition);
 
     this.shelves = shelves;
@@ -120,6 +141,7 @@ export class PlaygroundScene extends Phaser.Scene {
       this.physics.world.resume();
       this.tweens.resumeAll();
     } else this.pauseWorld();
+    this.diagnose(this.snapshot());
   }
 
   private pauseWorld() {
@@ -130,10 +152,12 @@ export class PlaygroundScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Manuelle Physik und gemeinsamer Interaktionsschritt laufen wie in der Hauptszene in fester Reihenfolge.
   update(_time: number, delta: number) {
+    const elapsed = this.activity.delta(delta);
+
+    if (elapsed <= 0) return void this.diagnose(this.snapshot());
     const input = this.controls.read(this.game.loop.frame);
 
-    if (input.resetPressed) return void this.scene.restart({ variant: this.variant });
-    const elapsed = this.activity.delta(delta);
+    if (input.resetPressed) return void this.scene.restart({ selection: this.selection });
 
     if (elapsed > 0) {
       this.elapsed += elapsed;
@@ -162,12 +186,36 @@ export class PlaygroundScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Nur losgelöste Diagnosewerte für die sichtbare DEV-Oberfläche, keine Engine-Referenzen oder Testsetter.
   snapshot() {
     return {
+      ...observeObjects(this.built),
+      frame: this.game.loop.frame,
+      active: this.activity.active,
+      audio: this.audio.snapshot(),
+      chaos: {
+        score: this.chaos.score,
+        damagedObjects: this.chaos.count,
+        anger: angerFor(this.chaos.score).id,
+      },
+      discoveries: this.discoveries().map((discovery) => discovery.entryId),
+      albumDiscovery: this.discoveries().at(-1) ?? null,
+      layout: this.room.definition,
       generation: this.generation,
-      variant: this.variant,
-      kind: this.built.entries[0].definition.kind,
+      variant: this.selection.id,
+      mode: this.selection.mode,
+      room: {
+        id: this.room.definition.id,
+        width: this.room.definition.width,
+        height: this.room.definition.height,
+      },
+      kind: this.built.entries[0]?.definition.kind ?? 'room',
       score: this.chaos.score,
       events: [...this.eventsLog],
-      object: this.built.entries[0].object.snapshot(),
+      object: this.built.entries[0]?.object.snapshot() ?? { state: 'empty' },
+      targets: this.built.entries.map(({ definition, object }) => ({
+        id: definition.id,
+        variant: definition.variant,
+        kind: definition.kind,
+        state: object.snapshot(),
+      })),
       pixel: this.pixel.snapshot(),
       shelves: this.shelves.map((shelf) => shelf.snapshot()),
       resources: {
@@ -180,6 +228,40 @@ export class PlaygroundScene extends Phaser.Scene {
     };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Seed, Schwierigkeit und reguläre Spawnauflösung müssen wie im Spiel in derselben Reihenfolge erfolgen.
+  private resolveSelection() {
+    if (this.layout) return resolveRoom(this.layout, PLAYGROUND_OBJECTS);
+    const base = selectedPlaygroundRoom(this.selection);
+
+    if (this.selection.mode !== 'scenario') return base;
+    const stored = localStorage.getItem('pixels-world.difficulty');
+    const difficulty = isDifficulty(stored) ? stored : 'normal';
+    const seed = new URLSearchParams(location.search).get('room-seed') ?? 'playground';
+    const random = new Phaser.Math.RandomDataGenerator([seed]);
+    const room = difficultyRoom(base.definition, difficulty);
+
+    return resolveRoom(
+      populateSpawnSlots(room, PLAYGROUND_OBJECTS, difficulty, () => random.frac()),
+      PLAYGROUND_OBJECTS,
+    );
+  }
+
+  replaceLayout(layout: RoomDefinition) {
+    resolveRoom(layout, PLAYGROUND_OBJECTS);
+    this.scene.restart({ layout });
+  }
+
+  private discoveries() {
+    return this.eventsLog.flatMap((event) => {
+      const object = this.built.entries.find((entry) => entry.object.id === event.objectId);
+      const shelf = this.shelves.find((entry) => entry.id === event.objectId);
+      const variant = object?.definition.variant ?? (shelf?.isFridge ? 'cream-fridge' : '');
+      const discovery = discoverAlbum(event, variant);
+
+      return discovery ? [discovery] : [];
+    });
+  }
+
   private shutdown() {
     this.events.off('object-impact', this.audio.playObject, this.audio);
     this.audio.destroy();
@@ -188,5 +270,7 @@ export class PlaygroundScene extends Phaser.Scene {
     this.pixel.destroy();
 
     for (const { object } of this.built.entries) object.destroy();
+
+    for (const shelf of this.shelves) shelf.destroy();
   }
 }

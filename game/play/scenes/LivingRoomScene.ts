@@ -1,3 +1,4 @@
+import { observeObjects } from '../content/object-observation';
 import { preloadTableclothArt, tableclothArtReady } from '../assets/tablecloth-art';
 import { preloadTrashBinArt, trashBinArtReady } from '../assets/trash-bin-art';
 import { preloadPantryArt, pantryArtReady } from '../assets/pantry-art';
@@ -148,7 +149,11 @@ export class LivingRoomScene extends Phaser.Scene {
   constructor(private baseRoom: ResolvedRoom) {
     super('LivingRoom');
     this.room = baseRoom;
-    this.choosingRoom = new URLSearchParams(location.search).get('room') !== baseRoom.definition.id;
+    const params = new URLSearchParams(location.search);
+    const scenario =
+      import.meta.env.DEV || import.meta.env.MODE === 'e2e' ? params.get('scenario') : null;
+
+    this.choosingRoom = (scenario ?? params.get('room')) !== baseRoom.definition.id;
     this.menuHome = this.choosingRoom;
   }
 
@@ -417,21 +422,7 @@ export class LivingRoomScene extends Phaser.Scene {
             shelves: this.shelves.map((shelf) => shelf.snapshot()),
             albumDiscovery: this.lastAlbumDiscovery,
             album: this.roundAlbum.snapshot(),
-            carpets: this.built.carpets.map((carpet) => carpet.snapshot()),
-            pictures: this.built.pictures.map((picture) => picture.snapshot()),
-            books: this.built.books.map((books) => books.snapshot()),
-            tablecloths: this.built.tablecloths.map((cloth) => cloth.snapshot()),
-            trashBins: this.built.trashBins.map((bin) => bin.snapshot()),
-            foodBags: this.built.foodBags.map((bag) => bag.snapshot()),
-            pantry: this.built.pantry.map((item) => item.snapshot()),
-            plants: this.built.plants.map((plant) => plant.supportedSnapshot()),
-            dishes: this.built.dishes.map((dish) => dish.snapshot()),
-            objects: this.built.entries.map((entry) => ({
-              id: entry.object.id,
-              kind: entry.definition.kind,
-              variant: entry.definition.variant,
-              ...entry.object.damageSnapshot(),
-            })),
+            ...observeObjects(this.built),
             camera: {
               x: camera.scrollX,
               y: camera.scrollY,
@@ -451,7 +442,6 @@ export class LivingRoomScene extends Phaser.Scene {
             charmDisplay: this.charmView.snapshot(),
             charmMotion: this.charmPresentation.snapshot(),
             ending: this.ending.snapshot(),
-            objectImpacts: this.built.impacts.snapshot(),
             result: this.resultView.snapshot(),
             pixelReturn: this.returning.snapshot(),
             sara: this.sara.snapshot(),
@@ -463,10 +453,6 @@ export class LivingRoomScene extends Phaser.Scene {
               damagedObjects: this.chaos.count,
               anger: angerFor(this.chaos.score).id,
             },
-            vases: this.vases.map((vase) => vase.snapshot()),
-            couch: this.couches[0]?.snapshot() ?? null,
-            curtain: this.curtains[0]?.snapshot() ?? null,
-            plant: this.plants[0]?.snapshot() ?? null,
             pixel: this.pixel.snapshot(),
           };
         });

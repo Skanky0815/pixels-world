@@ -1,3 +1,4 @@
+import type { RoomDefinition } from './content/definitions';
 import '../shared/i18n/settings';
 import { translateExact, onLanguageChange } from '../shared/i18n/locale';
 import Phaser from 'phaser';
@@ -18,50 +19,62 @@ document.documentElement.classList.toggle(
   new URLSearchParams(location.search).get('camera') !== 'room',
 );
 
-const room = resolveRoom(
-  selectRoom(
-    new URLSearchParams(location.search).get('room'),
-    import.meta.env.DEV || import.meta.env.MODE === 'e2e',
-  ),
-  OBJECTS,
-);
-const caption = document.querySelector('h1 span');
+async function initialDefinition(): Promise<RoomDefinition> {
+  const params = new URLSearchParams(location.search);
 
-if (caption) {
-  const refresh = () => {
-    caption.textContent = translateExact(room.definition.caption);
-  };
+  if ((import.meta.env.DEV || import.meta.env.MODE === 'e2e') && params.has('scenario')) {
+    const { roundScenario } = await import('./content/rooms/scenarios');
 
-  refresh();
-  onLanguageChange(refresh);
+    return roundScenario(params.get('scenario') ?? '');
+  }
+
+  return selectRoom(params.get('room'), import.meta.env.DEV || import.meta.env.MODE === 'e2e');
 }
 
-const gameHost = document.querySelector<HTMLElement>('#game');
+// eslint-disable-next-line max-lines-per-function -- Asynchrone DEV/E2E-Fixtureauflösung und der einmalige Weltstart bleiben zusammen.
+async function createWorld() {
+  const room = resolveRoom(await initialDefinition(), OBJECTS);
 
-if (gameHost) {
-  gameHost.style.aspectRatio = `${room.definition.width} / ${room.definition.height}`;
-  gameHost.style.setProperty(
-    '--room-ratio',
-    String(room.definition.width / room.definition.height),
-  );
-  gameHost
-    .closest('main')
-    ?.style.setProperty('--room-ratio', String(room.definition.width / room.definition.height));
+  const caption = document.querySelector('h1 span');
+
+  if (caption) {
+    const refresh = () => {
+      caption.textContent = translateExact(room.definition.caption);
+    };
+
+    refresh();
+    onLanguageChange(refresh);
+  }
+
+  const gameHost = document.querySelector<HTMLElement>('#game');
+
+  if (gameHost) {
+    gameHost.style.aspectRatio = `${room.definition.width} / ${room.definition.height}`;
+    gameHost.style.setProperty(
+      '--room-ratio',
+      String(room.definition.width / room.definition.height),
+    );
+    gameHost
+      .closest('main')
+      ?.style.setProperty('--room-ratio', String(room.definition.width / room.definition.height));
+  }
+
+  new Phaser.Game({
+    // A desktop window can enable DOM dialogue by resizing during the round.
+    type: Phaser.CANVAS,
+    parent: 'game',
+    callbacks: { postBoot: observeGameHost },
+    width: room.definition.width,
+    height: room.definition.height,
+    pixelArt: true,
+    backgroundColor: room.definition.wallColor,
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+    physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 1000 }, debug: false } },
+    scene: new LivingRoomScene(room),
+  });
+
+  if (import.meta.env.PROD && import.meta.env.MODE !== 'e2e')
+    void import('../shared/pwa/register').then(({ registerOfflineGame }) => registerOfflineGame());
 }
 
-new Phaser.Game({
-  // A desktop window can enable DOM dialogue by resizing during the round.
-  type: Phaser.CANVAS,
-  parent: 'game',
-  callbacks: { postBoot: observeGameHost },
-  width: room.definition.width,
-  height: room.definition.height,
-  pixelArt: true,
-  backgroundColor: room.definition.wallColor,
-  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-  physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 1000 }, debug: false } },
-  scene: new LivingRoomScene(room),
-});
-
-if (import.meta.env.PROD && import.meta.env.MODE !== 'e2e')
-  void import('../shared/pwa/register').then(({ registerOfflineGame }) => registerOfflineGame());
+void createWorld();

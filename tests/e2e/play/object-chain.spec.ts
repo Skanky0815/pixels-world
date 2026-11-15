@@ -1,5 +1,6 @@
+import { togglePause } from './playground-object-support';
 import type { Page } from '@playwright/test';
-import { test, expect, start, state, until, holdUntil, reset } from '../support/support';
+import { test, expect, start, state, until, holdUntil, reset } from './playground-object-support';
 
 const source = 'middle-shelf:middle-slot';
 const target = 'book-shelf:lower-left';
@@ -40,13 +41,13 @@ test(
     const hit = (await state(page)).books.find((book) => book.id === target)!;
 
     expect(hit).toMatchObject({ state: 'falling', events: 0, toppledBy: source });
-    await page.keyboard.press('Escape');
+    await togglePause(page);
     const paused = await state(page);
 
     await page.clock.runFor(2000);
     expect((await state(page)).books).toEqual(paused.books);
     expect((await state(page)).vases).toEqual(paused.vases);
-    await page.keyboard.press('Escape');
+    await togglePause(page);
     await page.keyboard.down('ArrowDown');
     await until(page, (s) => s.books.find((book) => book.id === target)?.state === 'fallen');
     await until(page, (s) => s.vases.find((vase) => vase.id === source)?.state === 'broken');

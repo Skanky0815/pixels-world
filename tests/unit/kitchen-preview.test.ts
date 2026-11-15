@@ -8,7 +8,7 @@ import { resolveRoom } from '../../game/play/content/resolve-room.ts';
 import type { RoomDefinition } from '../../game/play/content/definitions.ts';
 
 test('Küche ist öffentlich auswählbar; die separate DEV-Vorschau bleibt in Produktion isoliert', () => {
-  assert.equal(selectRoom('kitchen-preview', true), KITCHEN_PREVIEW);
+  assert.throws(() => selectRoom('kitchen-preview', true), /Unknown room/);
   assert.equal(selectRoom('kitchen-preview', false).id, 'living-room');
   assert.equal(playableRoom('kitchen')?.id, 'kitchen');
   assert.equal(playableRoom('kitchen-preview'), undefined);

@@ -1,3 +1,4 @@
+import { spawnPlaygroundObject } from '../play/content/playground-layout.ts';
 import { OBJECTS } from '../play/content/objects/catalog.ts';
 import { LIVING_ROOM } from '../play/content/rooms/living-room.ts';
 import type {
@@ -38,10 +39,17 @@ export function playgroundRoom(variant: string, catalog: ObjectCatalog = PLAYGRO
           },
         ]
       : [],
-    objects: [{ id: 'test-object', variant, placement: placement(definition, surfaceId) }],
+    objects: [],
   };
 
-  return resolveRoom(room, catalog);
+  return resolveRoom(
+    spawnPlaygroundObject(
+      room,
+      { id: 'test-object', variant, placement: placement(definition, surfaceId) },
+      catalog,
+    ),
+    catalog,
+  );
 }
 
 function placement(definition: ObjectDefinition, surfaceId: string): ObjectInstance['placement'] {

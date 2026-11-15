@@ -4,7 +4,8 @@ Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms
 
 ## Öffentliche Zimmerauswahl
 
-Die öffentliche Küche und die separate DEV-Vorschau `play.html?room=kitchen-preview` teilen den Küchen-Grundraum aus
+Die öffentliche Küche und das Spielwiesen-Szenario
+`/interactable-playground.html?scenario=kitchen-preview` teilen den Küchen-Grundraum aus
 [#57](https://github.com/Skanky0815/pixels-world/issues/57): Spawn links, Hocker,
 Tisch und Arbeitsplatte rechts sowie zwei feste Wandregale. Alle Auflagen sind standfest und verwenden
 dieselbe Plattform-/Kontaktlogik wie die Regale. Die [Küchengrafiken](../../../assets/environment/kitchen/README.md) werden an

@@ -60,6 +60,8 @@ test(
       expect(source).not.toContain('__E2E_ROUND_CONFIG__');
       expect(source).not.toContain('Vergleichsansicht unvollständig');
       expect(source).not.toContain('InteractablePlayground');
+      expect(source).not.toContain('impact-vases');
+      expect(source).not.toContain('fridge-incoming');
       expect(source).not.toContain('BallPlayPreview');
       expect(source).not.toContain('Charme-Vorschau fehlt');
       expect(source).not.toContain('GameDebug');
@@ -90,6 +92,8 @@ test(
         '/game/dev/interactable-playground.css',
         '/game/dev/PlaygroundScene.ts',
         '/game/dev/playground-room.ts',
+        '/game/dev/playground-selection.ts',
+        '/game/dev/playground-diagnostics.ts',
         '/game/dev/animation-compare.ts',
         '/game/dev/sara-compare.ts',
         '/game/dev/pixel-compare.ts',

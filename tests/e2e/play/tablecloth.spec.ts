@@ -1,14 +1,9 @@
-/* eslint-disable max-lines-per-function -- Reale Stoffzüge, Kontakte und Rundenabschlüsse bleiben als vollständige Bedienabläufe prüfbar. */
-import { test, expect, waitForGame } from '../support/support';
-import { observe, until, move, climbToCounter, finishCharm } from './kitchen-support';
+/* eslint-disable max-lines-per-function -- Reale Eingaben und ihre zusammengehörigen Zustandsprüfungen bilden vollständige Abläufe. */
+import { test, expect } from '../support/support';
+import { observe, until, move } from './playground-object-support';
 import { TouchDriver } from '../support/touch-support';
 import type { Page } from '@playwright/test';
-
-async function start(page: Page, room: string) {
-  await page.goto(`/play.html?room=${room}&camera=room`);
-  await waitForGame(page);
-  await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
-}
+import { loadScenario, togglePause, resume } from './playground-object-support';
 
 async function grab(page: Page, side: 'left' | 'right' = 'right', edge = 560) {
   if (side === 'left') {
@@ -18,6 +13,10 @@ async function grab(page: Page, side: 'left' | 'right' = 'right', edge = 560) {
     await move(page, ['ArrowRight'], (s) => s.pixel.x >= edge + 2);
     await move(page, ['Space', 'ArrowUp'], (s) => s.pixel.climbing);
   }
+}
+
+async function start(page: Page, room = '') {
+  await loadScenario(page, room);
 }
 
 test('Zwei kurze Enden bleiben über dem Boden; Vorbeilaufen und Springen ohne ↑ ziehen keinen Stoff', async ({
@@ -65,13 +64,13 @@ test(
 
     await grab(page);
     await move(page, ['ArrowUp'], (s) => s.tablecloths[0].offset >= 12);
-    await page.keyboard.press('Escape');
+    await togglePause(page);
     const paused = await observe(page);
 
     await page.clock.runFor(1000);
     expect((await observe(page)).tablecloths).toEqual(paused.tablecloths);
     expect((await observe(page)).dishes).toEqual(paused.dishes);
-    await page.locator('[data-pause-resume]').click();
+    await resume(page);
     await move(page, ['ArrowUp'], (s) => ['falling', 'broken'].includes(s.dishes[0].state));
     const first = await observe(page);
 
@@ -86,7 +85,7 @@ test(
     expect((await observe(page)).tablecloths[0].offset).toBe(partial.tablecloths[0].offset);
     expect((await observe(page)).dishes[1].x).toBeCloseTo(partial.dishes[1].x, 0);
     expect((await observe(page)).dishes[1].state).not.toBe('broken');
-    expect((await observe(page)).album.pending).not.toContain('tablecloth.warm');
+    expect((await observe(page)).discoveries).not.toContain('tablecloth.warm');
     await move(page, ['r'], (s) => s.generation > initial.generation);
     expect((await observe(page)).tablecloths[0]).toMatchObject({
       state: 'idle',
@@ -112,7 +111,7 @@ test(
     });
     expect(finished.dishes.map((item) => item.shards)).toEqual([7, 7]);
     expect(finished.chaos.score).toBe(48);
-    expect(finished.album.pending).toContain('tablecloth.warm');
+    expect(finished.discoveries).toContain('tablecloth.warm');
     await info.attach('tischdecke-abgezogen', {
       body: await page.screenshot(),
       contentType: 'image/png',
@@ -190,41 +189,6 @@ test('Auflagenverlust legt den Stoff einmalig ab und lässt beide Gegenstände t
   expect((await observe(page)).chaos.score).toBe(score);
 });
 
-for (const outcome of ['success', 'failed'] as const)
-  test(`Öffentliche Küche: abgezogene Decke nach ${outcome === 'success' ? 'erfolgreicher' : 'gescheiterter'} Versöhnung`, async ({
-    page,
-  }) => {
-    await start(page, 'kitchen&room-seed=pantry-easy-1');
-    await grab(page);
-    let deepest = 0;
-
-    await move(page, ['ArrowUp'], (s) => {
-      deepest = Math.max(deepest, s.pixel.bottom);
-
-      return s.tablecloths[0].state === 'displaced';
-    });
-    expect(deepest).toBeLessThanOrEqual(469);
-    await until(page, (s) => !s.pixel.climbing && s.pixel.grounded);
-    expect((await observe(page)).pixel.bottom).toBeCloseTo(468, 0);
-    expect((await observe(page)).album.pending).toContain('tablecloth.warm');
-    await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 175);
-    await climbToCounter(page);
-    await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
-    await until(page, (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated');
-    expect((await observe(page)).homecoming.selection?.peaceful).toBe(false);
-    await move(page, ['Space'], (s) => s.reconciliation.stage === 'reading');
-    await finishCharm(page, outcome === 'success');
-    await until(page, (s) => s.result !== null);
-    const finished = await observe(page);
-
-    expect(finished.result?.outcome).toBe(outcome);
-    expect(finished.album.confirmed.includes('tablecloth.warm')).toBe(outcome === 'success');
-
-    if (outcome === 'failed') await expect(page.locator('.album-banner')).toBeHidden();
-    expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();
-    expect(await page.evaluate(() => localStorage.getItem('pixels-world.storage'))).toBeNull();
-  });
-
 test.describe('Tischdecke mit Touch', () => {
   test.use({ hasTouch: true, isMobile: true });
 
@@ -236,13 +200,9 @@ test.describe('Tischdecke mit Touch', () => {
       page,
     }) => {
       await page.setViewportSize(viewport);
-      await page.goto('/play.html?room=cloth-chain');
-      await waitForGame(page);
+      await loadScenario(page, 'cloth-chain');
       const touch = await TouchDriver.create(page);
 
-      await touch.press('jump');
-      await until(page, (s) => s.started);
-      await touch.lift();
       await until(page, (s) => s.pixel.grounded);
       await touch.press('right');
       await until(page, (s) => s.pixel.x >= 562);

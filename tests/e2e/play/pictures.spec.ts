@@ -1,6 +1,16 @@
+import { togglePause } from './playground-object-support';
 import { recordAudio, expectAudio } from './audio-support';
-import { test, expect, start, state, until, holdUntil, reset, couch } from '../support/support';
-import { startTouch } from '../support/touch-support';
+import {
+  test,
+  expect,
+  start,
+  state,
+  until,
+  holdUntil,
+  reset,
+  couch,
+} from './playground-object-support';
+import { startTouch } from './playground-object-support';
 import { PICTURE_RULES } from '../../../game/play/interactions/picture-falling';
 import { PICTURE_ALBUM } from '../../../game/play/content/album/pictures';
 
@@ -21,7 +31,7 @@ for (const [room, variant, seed] of fixtures) {
     // eslint-disable-next-line max-lines-per-function -- Zwei echte Sprünge, Animation, Pause, einmaliger Schaden, Albumereignis und Reset bilden einen gemeinsamen Bildablauf.
   }) => {
     await recordAudio(page);
-    await start(page, `/?room=${room}&room-seed=${seed}`);
+    await start(page, `/?scenario=${room}&room-seed=${seed}`);
     await expectAudio(page, 0.38, 0);
     const initial = picture(await state(page));
 
@@ -44,12 +54,12 @@ for (const [room, variant, seed] of fixtures) {
     expect((await state(page)).albumDiscovery).toBeNull();
 
     if (room === 'living-room' && variant === 'pixel-portrait') {
-      await page.keyboard.press('Escape');
+      await togglePause(page);
       const paused = picture(await state(page));
 
       await page.clock.runFor(2000);
       expect(picture(await state(page))).toEqual(paused);
-      await page.keyboard.press('Escape');
+      await togglePause(page);
     }
 
     await until(page, (s) => s.pixel.grounded);
@@ -83,14 +93,7 @@ for (const [room, variant, seed] of fixtures) {
       entryId: PICTURE_ALBUM[variant].id,
       objectId: 'wall:sofa',
     });
-    expect(
-      await page.evaluate(
-        () =>
-          Object.isFrozen(window.__pixelTest?.pictures) &&
-          Object.isFrozen(window.__pixelTest?.pictures[0]) &&
-          Object.isFrozen(window.__pixelTest?.albumDiscovery),
-      ),
-    ).toBe(true);
+    expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 265);
     await page.clock.runFor(1500);
     expect((await state(page)).chaos.score).toBe(PICTURE_RULES.points);

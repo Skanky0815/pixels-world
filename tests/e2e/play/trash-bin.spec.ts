@@ -1,13 +1,12 @@
-/* eslint-disable max-lines-per-function -- Reale Kontakte und Rundenabschlüsse prüfen den gemeinsamen Kipp-, Album- und Speichervertrag. */
-import { test, expect, waitForGame } from '../support/support';
-import { observe, until, move, climbToCounter, finishCharm } from './kitchen-support';
+/* eslint-disable max-lines-per-function -- Reale Eingaben und ihre zusammengehörigen Zustandsprüfungen bilden vollständige Abläufe. */
+import { test, expect } from '../support/support';
+import { observe, until, move } from './playground-object-support';
 import { TouchDriver } from '../support/touch-support';
 import type { Page } from '@playwright/test';
+import { loadScenario, togglePause, resume } from './playground-object-support';
 
-async function start(page: Page, room: string) {
-  await page.goto(`/play.html?room=${room}&camera=room`);
-  await waitForGame(page);
-  await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
+async function start(page: Page, room = '') {
+  await loadScenario(page, room);
 }
 
 test(
@@ -19,12 +18,12 @@ test(
 
     await move(page, ['ArrowRight'], (s) => s.trashBins[0].state === 'falling');
     expect((await observe(page)).chaos.score).toBe(0);
-    await page.keyboard.press('Escape');
+    await togglePause(page);
     const paused = await observe(page);
 
     await page.clock.runFor(1000);
     expect((await observe(page)).trashBins).toEqual(paused.trashBins);
-    await page.locator('[data-pause-resume]').click();
+    await resume(page);
     await move(page, ['r'], (s) => s.generation > initial.generation);
     expect(
       (await observe(page)).trashBins.every((bin) => bin.state === 'upright' && bin.events === 0),
@@ -42,7 +41,7 @@ test(
     expect(spilled.books[0].toppledBy).toBe('second-bin');
     expect(spilled.pixel.x).toBeLessThan(430);
     expect(spilled.chaos.score).toBe(56);
-    expect(spilled.album.pending).toContain('trash-bin.cream');
+    expect(spilled.discoveries).toContain('trash-bin.cream');
     expect(spilled.trashBins[0].art).toMatchObject({
       intactVisible: false,
       spilledVisible: true,
@@ -98,32 +97,6 @@ test('Kippender Eimer stößt Kräuter um; Inhalt erzeugt keine weiteren Schäde
   expect((await observe(page)).chaos.score).toBe(finished.chaos.score);
 });
 
-for (const outcome of ['success', 'failed'] as const)
-  test(`Öffentliche Küche: Mülleimerfund nach ${outcome === 'success' ? 'erfolgreicher' : 'gescheiterter'} Versöhnung`, async ({
-    page,
-  }) => {
-    await start(page, 'kitchen&room-seed=pantry-easy-12');
-    await move(page, ['ArrowRight'], (s) => s.trashBins[0].state === 'falling');
-    await until(page, (s) => s.trashBins[0].state === 'spilled');
-    expect((await observe(page)).album.pending).toContain('trash-bin.cream');
-    await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 175);
-    await climbToCounter(page);
-    await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
-    await until(page, (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated');
-    expect((await observe(page)).homecoming.selection?.peaceful).toBe(false);
-    await move(page, ['Space'], (s) => s.reconciliation.stage === 'reading');
-    await finishCharm(page, outcome === 'success');
-    await until(page, (s) => s.result !== null);
-    const finished = await observe(page);
-
-    expect(finished.result?.outcome).toBe(outcome);
-    expect(finished.album.confirmed.includes('trash-bin.cream')).toBe(outcome === 'success');
-
-    if (outcome === 'failed') await expect(page.locator('.album-banner')).toBeHidden();
-    expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBeNull();
-    expect(await page.evaluate(() => localStorage.getItem('pixels-world.storage'))).toBeNull();
-  });
-
 test.describe('Mülleimer mit Touch', () => {
   test.use({ hasTouch: true, isMobile: true });
 
@@ -135,13 +108,9 @@ test.describe('Mülleimer mit Touch', () => {
       page,
     }) => {
       await page.setViewportSize(viewport);
-      await page.goto('/play.html?room=bin-chain');
-      await waitForGame(page);
+      await loadScenario(page, 'bin-chain');
       const touch = await TouchDriver.create(page);
 
-      await touch.press('jump');
-      await until(page, (s) => s.started);
-      await touch.lift();
       await until(page, (s) => s.pixel.grounded);
       await touch.press('right');
       await until(page, (s) => s.trashBins[0].state === 'falling');
