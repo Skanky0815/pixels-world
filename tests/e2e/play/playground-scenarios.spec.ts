@@ -1,23 +1,16 @@
 /* eslint-disable max-lines-per-function -- Reale Szenariowechsel, Eingaben und die zugehörigen Diagnosewerte bleiben als vollständige Abläufe zusammen. */
 import { test, expect, waitForLoadingScreen } from '../support/support';
-import {
-  snapshot,
-  untilPlayground,
-  waitForDevReady,
-  movePlayground,
-  type Snapshot,
-} from './playground-support';
-import { PLAYGROUND_SCENARIOS } from '../../../game/play/content/rooms/scenarios';
+import { snapshot, untilPlayground, movePlayground, type Snapshot } from './playground-support';
+import { PLAYGROUND_BASES as PLAYGROUND_SCENARIOS } from '../../../game/play/content/playground-layout';
+import { playgroundRecipe, importPlaygroundRecipe } from './playground-recipe-support';
+import { loadScenario as loadObjectScenario } from './playground-object-support';
 import { TouchDriver } from '../support/touch-support';
 import type { Page } from '@playwright/test';
 
 const fridge = (state: Snapshot) => state.shelves.find((shelf) => shelf.isFridge)!.fridge!;
 
 async function loadScenario(page: Page, id = 'fridge-incoming') {
-  await page.goto(`http://127.0.0.1:4176/interactable-playground.html?scenario=${id}`);
-  await waitForDevReady(page, 'data-playground-ready');
-  await page.locator('#game').focus();
-  await untilPlayground(page, (s) => s.pixel.grounded);
+  await loadObjectScenario(page, id);
 }
 
 function jarX(state: Snapshot) {
@@ -37,7 +30,7 @@ test('Spielwiese: echtes Glas trifft den Kühlschrank; Diagnose, Besuch und Rese
   expect(initial.room).toEqual({ id: 'fridge-incoming', width: 1320, height: 540 });
   await expect(page.locator('#game canvas')).toHaveAttribute('width', '1320');
   await expect(page.getByLabel('Testart')).toHaveValue('scenario');
-  await expect(page.getByLabel('Szenario aus dem Testkatalog')).toHaveValue('fridge-incoming');
+  await expect(page.getByLabel('Grundaufbau')).toHaveValue('empty');
   await expect(page.getByLabel('Diagnoseziel')).toHaveValue('shelf:kitchen-fridge');
   await expect(page.locator('#playground-state')).toHaveText('idle');
   await movePlayground(page, ['ArrowRight'], (s) => jarX(s) > 1018);
@@ -96,18 +89,16 @@ test('Spielwiese: Szenariokatalog, echte Weltgrößen und wiederholte Wechsel r�
     for (const id of ['fridge-visit', 'impact-vases', 'fridge-incoming']) {
       const before = (await snapshot(page)).generation;
 
-      await page.getByLabel('Szenario aus dem Testkatalog').selectOption(id);
+      await importPlaygroundRecipe(page, id);
       await untilPlayground(
         page,
-        (s) => s.variant === id && s.generation > before && s.pixel.grounded,
+        (s) => s.room.id === id && s.generation > before && s.pixel.grounded,
       );
       const next = await snapshot(page);
 
       expect(next.score).toBe(0);
       expect(next.events).toEqual([]);
-      expect(next.room.width).toBe(
-        PLAYGROUND_SCENARIOS[id as keyof typeof PLAYGROUND_SCENARIOS].width,
-      );
+      expect(next.room.width).toBe(playgroundRecipe(id)!.width);
       await expect(page.locator('canvas')).toHaveCount(1);
       await expect(page.locator('.touch-controls')).toHaveCount(1);
 
@@ -126,8 +117,8 @@ test('Spielwiese: Szenariokatalog, echte Weltgrößen und wiederholte Wechsel r�
   await expect(page.getByLabel('Objekt / Variante aus dem Spielkatalog')).toHaveValue('cozy-couch');
   await expect(page.locator('#playground-round')).toBeHidden();
   await page.getByLabel('Testart').selectOption('scenario');
-  await untilPlayground(page, (s) => s.mode === 'scenario' && s.variant === 'fridge-incoming');
-  await expect(page).toHaveURL(/\?scenario=fridge-incoming$/);
+  await untilPlayground(page, (s) => s.mode === 'scenario' && s.variant === 'empty');
+  await expect(page).toHaveURL(/\?scenario=empty$/);
 });
 
 test('Spielwiese: gewähltes Szenario öffnet den echten Rundenablauf; unbekannte URLs bleiben bedienbar', async ({
@@ -139,6 +130,7 @@ test('Spielwiese: gewähltes Szenario öffnet den echten Rundenablauf; unbekannt
   await page.getByLabel('Testart').selectOption('scenario');
   await untilPlayground(page, (s) => s.mode === 'scenario');
   await expect(page.locator('#playground-notice')).toBeHidden();
+  await importPlaygroundRecipe(page, 'fridge-incoming');
   const link = page.getByRole('link', { name: 'Mit vollständiger Runde im Spiel testen' });
 
   await expect(link).toHaveAttribute('href', '/play.html?scenario=fridge-incoming&camera=room');
@@ -183,7 +175,7 @@ test('Spielwiese: große Szenarien passen in das kompakte Desktop- und Handylayo
   expect(mobileCanvas!.height).toBeCloseTo(mobileStage!.height, 0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.getByLabel('Testart')).toBeVisible();
-  await expect(page.getByLabel('Szenario aus dem Testkatalog')).toBeVisible();
+  await expect(page.getByLabel('Grundaufbau')).toBeVisible();
   await expect(page.getByLabel('Diagnoseziel')).toBeVisible();
 });
 

@@ -321,7 +321,9 @@ Abwesenheit des Debugdialogs samt Aktionen auch nach F2.
   Klinke greifen → Türspalt → Eintritt → geschlossen wackeln →
   erneut öffnen und Pixel freigeben. Jede Aufnahmephase auch beim Rundenende
   und mit Reset abbrechen; die Grafik bleibt unverzerrt. In der DEV-Spielwiese
-  `/interactable-playground.html?scenario=fridge-incoming` das Glas vom oberen Regal gegen den Kühlschrank schieben:
+  **Objekte platzieren / bearbeiten → Aufbau laden / kopieren** öffnen und den
+  Eintrag `fridge-incoming` aus den [Runden-Aufbaudaten](../game/play/content/round-recipes.json)
+  laden. Danach das Glas vom oberen Regal gegen den Kühlschrank schieben:
   Die Tür bleibt geschlossen, Pixel bleibt sichtbar und der Inhaltsschaden zählt
   einmal. Über die Arbeitsplatte zur linken Klinke zurückkehren und den Besuch
   ausführen: Die Tür öffnet vollständig, ohne weiteren Schaden zu vergeben.

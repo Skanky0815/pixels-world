@@ -24,7 +24,7 @@ export function playgroundTargets(snapshot: PlaygroundSnapshot): PlaygroundTarge
 }
 
 export function defaultPlaygroundTarget(snapshot: PlaygroundSnapshot, targets: PlaygroundTarget[]) {
-  const fridge = snapshot.variant.startsWith('fridge-')
+  const fridge = snapshot.room.id.startsWith('fridge-')
     ? snapshot.shelves.find((shelf) => shelf.isFridge)
     : undefined;
 

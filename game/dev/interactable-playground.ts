@@ -1,3 +1,4 @@
+import { installPlaygroundEditor } from './playground-editor';
 import Phaser from 'phaser';
 import './dev-shell.css';
 import './interactable-playground.css';
@@ -43,7 +44,7 @@ let latest: PlaygroundSnapshot | undefined;
 let expected = readInitialSelection();
 const selectionLabels = {
   object: 'Objekt / Variante aus dem Spielkatalog',
-  scenario: 'Szenario aus dem Testkatalog',
+  scenario: 'Grundaufbau',
 };
 const remembered = {
   object: defaultPlaygroundSelection('object').id,
@@ -66,6 +67,8 @@ const game = new Phaser.Game({
   scene,
 });
 
+const editor = installPlaygroundEditor(scene);
+
 select.addEventListener('change', restart, { signal: abort.signal });
 mode.addEventListener('change', changeMode, { signal: abort.signal });
 target.addEventListener(
@@ -75,12 +78,13 @@ target.addEventListener(
   },
   { signal: abort.signal },
 );
-reset.addEventListener('click', restart, { signal: abort.signal });
+reset.addEventListener('click', resetScene, { signal: abort.signal });
 host.addEventListener('pointerdown', () => host.focus({ preventScroll: true }), {
   signal: abort.signal,
 });
 import.meta.hot?.dispose(() => {
   abort.abort();
+  editor.destroy();
   game.destroy(true);
 });
 
@@ -92,6 +96,11 @@ function required<T extends HTMLElement>(selector: string) {
   return element;
 }
 
+function resetScene() {
+  scene.scene.restart({});
+  host.focus({ preventScroll: true });
+}
+
 function restart() {
   expected = validatePlaygroundSelection({ mode: selectedMode(), id: select.value });
   remembered[expected.mode] = expected.id;
@@ -99,7 +108,7 @@ function restart() {
   notice.hidden = true;
   document.documentElement.dataset.playgroundReady = 'false';
   history.replaceState(null, '', selectionLocation());
-  scene.scene.restart({ selection: expected });
+  scene.scene.restart({ selection: expected, fresh: true });
   host.focus({ preventScroll: true });
 }
 
@@ -116,12 +125,14 @@ function selectionLocation() {
   return `?${params}`;
 }
 
+// eslint-disable-next-line max-lines-per-function -- Ein vollständiger Diagnoseframe synchronisiert Szene, Editor und sichtbare Ereignisse.
 function render(snapshot: PlaygroundSnapshot) {
   if (snapshot.mode !== expected.mode || snapshot.variant !== expected.id) return;
   latest = snapshot;
   disableControls(false);
   renderView(snapshot);
   renderTargets(snapshot);
+  editor.render(snapshot);
   score.value = String(snapshot.score);
   renderEvents(snapshot.events);
   document.documentElement.dataset.playgroundReady = 'true';
@@ -162,13 +173,18 @@ function readInitialSelection(): PlaygroundSelection {
   }
 }
 
+// eslint-disable-next-line max-lines-per-function -- Szene und ausschließlich zum unveränderten Aufbau passender Rundenlink werden gemeinsam aktualisiert.
 function renderView(snapshot: PlaygroundSnapshot) {
-  const key = `${snapshot.mode}/${snapshot.variant}`;
+  const key = `${snapshot.mode}/${snapshot.variant}/${snapshot.generation}`;
 
   if (key === viewKey) return;
   viewKey = key;
   fitStage(snapshot);
-  const link = playgroundGameLink(expected, scenarioSeed());
+  const link = playgroundGameLink(
+    { mode: 'scenario', id: snapshot.room.id },
+    scenarioSeed(),
+    snapshot.layout,
+  );
 
   round.hidden = !link;
   gameLink.href = link ?? '/play.html';
@@ -187,14 +203,13 @@ function renderTargets(snapshot: PlaygroundSnapshot) {
   updateTargetOptions(snapshot, targets);
   const selected = targets.find((entry) => entry.id === target.value);
 
-  if (!selected) return;
-  kind.value = selected.label;
-  state.value = selected.state.state;
+  kind.value = selected?.label ?? 'Keine Objekte';
+  state.value = selected?.state.state ?? 'empty';
   diagnostics.textContent = JSON.stringify({ ...snapshot, diagnostic: selected }, null, 2);
 }
 
 function updateTargetOptions(snapshot: PlaygroundSnapshot, targets: PlaygroundTarget[]) {
-  const key = `${snapshot.mode}/${snapshot.variant}/${targets.map((entry) => entry.id).join('/')}`;
+  const key = `${snapshot.mode}/${snapshot.variant}/${snapshot.generation}/${targets.map((entry) => entry.id).join('/')}`;
 
   if (key === targetKey) return;
   targetKey = key;

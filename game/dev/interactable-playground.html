@@ -26,7 +26,7 @@
           >Testart
           <select id="playground-mode" disabled>
             <option value="object">Einzelobjekt</option>
-            <option value="scenario">Szenario</option>
+            <option value="scenario">Eigener Aufbau</option>
           </select>
         </label>
         <label for="playground-object"
@@ -35,6 +35,41 @@
         </label>
         <button id="playground-reset" disabled>Szene zurücksetzen</button>
       </div>
+      <details id="playground-editor" class="playground-builder">
+        <summary>Objekte platzieren / bearbeiten</summary>
+        <fieldset>
+          <legend>Aufbau bearbeiten</legend>
+          <p>
+            Änderungen starten den Versuch neu. Verschieben ändert die Startposition des
+            ausgewählten Objekts.
+          </p>
+          <div class="editor-fields">
+            <label
+              >Objekt zum Spawnen
+              <select id="spawn-variant"></select
+            ></label>
+            <label
+              >Auflage
+              <select id="spawn-surface"></select
+            ></label>
+            <label>X <input id="spawn-x" type="number" value="400" step="1" /></label>
+            <label>Y (Wandobjekte) <input id="spawn-y" type="number" value="180" step="1" /></label>
+            <button id="object-spawn" type="button">Spawnen</button>
+            <button id="object-move" type="button" disabled>Auswahl verschieben</button>
+            <button id="object-remove" type="button" disabled>Auswahl entfernen</button>
+          </div>
+          <p id="editor-message" role="status"></p>
+          <details>
+            <summary>Aufbau laden / kopieren</summary>
+            <label
+              >Aufbaudaten
+              <textarea id="layout-json" rows="5" maxlength="100000" spellcheck="false"></textarea>
+            </label>
+            <button id="layout-copy" type="button">Aufbau in Textfeld kopieren</button>
+            <button id="layout-load" type="button">Aufbau laden</button>
+          </details>
+        </fieldset>
+      </details>
       <p id="playground-notice" role="status" class="note" hidden></p>
       <p id="playground-help">
         Ins Zimmer klicken, dann ← / → zum Laufen, Leertaste zum Springen und ↑ / ↓ zum Klettern.

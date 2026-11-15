@@ -1,0 +1,2280 @@
+{
+  "layouts": {
+    "supports-1": [
+      {
+        "id": "lower-shelf",
+        "durability": {
+          "stability": "fragile"
+        },
+        "bounds": {
+          "x": 502,
+          "y": 304,
+          "width": 146,
+          "height": 16
+        },
+        "asset": "wood-shelf"
+      },
+      {
+        "id": "middle-shelf",
+        "durability": {
+          "stability": "fragile"
+        },
+        "bounds": {
+          "x": 584,
+          "y": 224,
+          "width": 96,
+          "height": 16
+        },
+        "asset": "wood-shelf"
+      },
+      {
+        "id": "upper-shelf",
+        "durability": {
+          "stability": "stable"
+        },
+        "bounds": {
+          "x": 840,
+          "y": 154,
+          "width": 80,
+          "height": 16
+        },
+        "asset": "wood-shelf"
+      }
+    ],
+    "supports-2": [
+      {
+        "id": "kitchen-stool",
+        "asset": "wood-shelf",
+        "appearance": "stool",
+        "bounds": {
+          "x": 220,
+          "y": 398,
+          "width": 80,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-table",
+        "asset": "wood-shelf",
+        "appearance": "table",
+        "bounds": {
+          "x": 340,
+          "y": 328,
+          "width": 220,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-door-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 16,
+          "y": 202,
+          "width": 104,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-wall-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 276,
+          "y": 218,
+          "width": 136,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-fridge",
+        "asset": "wood-shelf",
+        "appearance": "fridge",
+        "bounds": {
+          "x": 608,
+          "y": 148,
+          "width": 160,
+          "height": 320
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-3": [
+      {
+        "id": "kitchen-stool",
+        "asset": "wood-shelf",
+        "appearance": "stool",
+        "bounds": {
+          "x": 220,
+          "y": 398,
+          "width": 80,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-table",
+        "asset": "wood-shelf",
+        "appearance": "table",
+        "bounds": {
+          "x": 340,
+          "y": 328,
+          "width": 220,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-door-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 16,
+          "y": 202,
+          "width": 104,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-wall-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 276,
+          "y": 218,
+          "width": 136,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-fridge",
+        "asset": "wood-shelf",
+        "appearance": "fridge",
+        "bounds": {
+          "x": 608,
+          "y": 148,
+          "width": 160,
+          "height": 320
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "bag-shelf",
+        "asset": "wood-shelf",
+        "durability": {
+          "stability": "fragile"
+        },
+        "bounds": {
+          "x": 0,
+          "y": 340,
+          "width": 180,
+          "height": 16
+        }
+      }
+    ],
+    "supports-4": [
+      {
+        "id": "dish-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 0,
+          "y": 300,
+          "width": 220,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-5": [
+      {
+        "id": "herb-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 0,
+          "y": 300,
+          "width": 220,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-6": [
+      {
+        "id": "herb-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 0,
+          "y": 300,
+          "width": 220,
+          "height": 16
+        },
+        "durability": {
+          "stability": "fragile"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-7": [
+      {
+        "id": "herb-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 0,
+          "y": 300,
+          "width": 160,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-8": [
+      {
+        "id": "pantry-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 0,
+          "y": 300,
+          "width": 220,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-9": [
+      {
+        "id": "pantry-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 0,
+          "y": 300,
+          "width": 220,
+          "height": 16
+        },
+        "durability": {
+          "stability": "fragile"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-10": [
+      {
+        "id": "pantry-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 0,
+          "y": 300,
+          "width": 160,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-11": [
+      {
+        "id": "bin-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 0,
+          "y": 300,
+          "width": 220,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-12": [
+      {
+        "id": "kitchen-stool",
+        "asset": "wood-shelf",
+        "appearance": "stool",
+        "bounds": {
+          "x": 220,
+          "y": 398,
+          "width": 80,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-table",
+        "asset": "wood-shelf",
+        "appearance": "table",
+        "bounds": {
+          "x": 340,
+          "y": 328,
+          "width": 220,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-door-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 16,
+          "y": 202,
+          "width": 104,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-wall-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 276,
+          "y": 218,
+          "width": 136,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-fridge",
+        "asset": "wood-shelf",
+        "appearance": "fridge",
+        "bounds": {
+          "x": 608,
+          "y": 148,
+          "width": 160,
+          "height": 320
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "upper-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 300,
+          "y": 180,
+          "width": 160,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-13": [
+      {
+        "id": "kitchen-stool",
+        "asset": "wood-shelf",
+        "appearance": "stool",
+        "bounds": {
+          "x": 220,
+          "y": 398,
+          "width": 80,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-table",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 340,
+          "y": 328,
+          "width": 220,
+          "height": 14
+        },
+        "durability": {
+          "stability": "fragile"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-door-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 16,
+          "y": 202,
+          "width": 104,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-wall-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 276,
+          "y": 218,
+          "width": 136,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-fridge",
+        "asset": "wood-shelf",
+        "appearance": "fridge",
+        "bounds": {
+          "x": 608,
+          "y": 148,
+          "width": 160,
+          "height": 320
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-14": [
+      {
+        "id": "kitchen-stool",
+        "asset": "wood-shelf",
+        "appearance": "stool",
+        "bounds": {
+          "x": 220,
+          "y": 398,
+          "width": 80,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-table",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 120,
+          "y": 328,
+          "width": 440,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-door-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 16,
+          "y": 202,
+          "width": 104,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-wall-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 276,
+          "y": 218,
+          "width": 136,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-fridge",
+        "asset": "wood-shelf",
+        "appearance": "fridge",
+        "bounds": {
+          "x": 608,
+          "y": 148,
+          "width": 160,
+          "height": 320
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ],
+    "supports-15": [
+      {
+        "id": "kitchen-stool",
+        "asset": "wood-shelf",
+        "appearance": "stool",
+        "bounds": {
+          "x": 220,
+          "y": 398,
+          "width": 80,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-table",
+        "asset": "wood-shelf",
+        "appearance": "table",
+        "bounds": {
+          "x": 340,
+          "y": 328,
+          "width": 220,
+          "height": 14
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-counter",
+        "asset": "wood-shelf",
+        "appearance": "counter",
+        "bounds": {
+          "x": 620,
+          "y": 258,
+          "width": 340,
+          "height": 210
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-door-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 16,
+          "y": 202,
+          "width": 104,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-wall-shelf",
+        "asset": "wood-shelf",
+        "bounds": {
+          "x": 276,
+          "y": 218,
+          "width": 136,
+          "height": 16
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      },
+      {
+        "id": "kitchen-fridge",
+        "asset": "wood-shelf",
+        "appearance": "fridge",
+        "bounds": {
+          "x": 1040,
+          "y": 148,
+          "width": 160,
+          "height": 320
+        },
+        "durability": {
+          "stability": "stable"
+        }
+      }
+    ]
+  },
+  "recipes": {
+    "impact-landing": {
+      "base": "living-room",
+      "id": "impact-landing",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-1",
+      "objects": [
+        {
+          "id": "couch",
+          "variant": "cozy-couch",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "curtain",
+          "variant": "warm-curtain",
+          "placement": {
+            "mode": "area",
+            "x": 728,
+            "y": 112
+          }
+        },
+        {
+          "id": "heirloom-vase",
+          "variant": "heirloom-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 890,
+            "surfaceId": "upper-shelf"
+          }
+        },
+        {
+          "id": "living-room-rug",
+          "variant": "living-room-rug",
+          "placement": {
+            "mode": "surface",
+            "x": 245,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "plant",
+          "variant": "catgrass",
+          "placement": {
+            "mode": "surface",
+            "x": 54,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "landing-vase",
+          "variant": "blue-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 600,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "impact-books": {
+      "base": "living-room",
+      "id": "impact-books",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-1",
+      "objects": [
+        {
+          "id": "couch",
+          "variant": "cozy-couch",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "curtain",
+          "variant": "warm-curtain",
+          "placement": {
+            "mode": "area",
+            "x": 728,
+            "y": 112
+          }
+        },
+        {
+          "id": "heirloom-vase",
+          "variant": "heirloom-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 890,
+            "surfaceId": "upper-shelf"
+          }
+        },
+        {
+          "id": "living-room-rug",
+          "variant": "living-room-rug",
+          "placement": {
+            "mode": "surface",
+            "x": 245,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "plant",
+          "variant": "catgrass",
+          "placement": {
+            "mode": "surface",
+            "x": 54,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "source-books",
+          "variant": "reading-books",
+          "placement": {
+            "mode": "surface",
+            "x": 530,
+            "surfaceId": "lower-shelf"
+          }
+        },
+        {
+          "id": "target-vase",
+          "variant": "blue-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 578,
+            "surfaceId": "lower-shelf"
+          }
+        }
+      ]
+    },
+    "impact-vases": {
+      "base": "living-room",
+      "id": "impact-vases",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-1",
+      "objects": [
+        {
+          "id": "couch",
+          "variant": "cozy-couch",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "curtain",
+          "variant": "warm-curtain",
+          "placement": {
+            "mode": "area",
+            "x": 728,
+            "y": 112
+          }
+        },
+        {
+          "id": "heirloom-vase",
+          "variant": "heirloom-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 890,
+            "surfaceId": "upper-shelf"
+          }
+        },
+        {
+          "id": "living-room-rug",
+          "variant": "living-room-rug",
+          "placement": {
+            "mode": "surface",
+            "x": 245,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "plant",
+          "variant": "catgrass",
+          "placement": {
+            "mode": "surface",
+            "x": 54,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "first-vase",
+          "variant": "blue-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 578,
+            "surfaceId": "lower-shelf"
+          }
+        },
+        {
+          "id": "second-vase",
+          "variant": "blue-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 606,
+            "surfaceId": "lower-shelf"
+          }
+        }
+      ]
+    },
+    "impact-fall": {
+      "base": "living-room",
+      "id": "impact-fall",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-1",
+      "objects": [
+        {
+          "id": "couch",
+          "variant": "cozy-couch",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "curtain",
+          "variant": "warm-curtain",
+          "placement": {
+            "mode": "area",
+            "x": 728,
+            "y": 112
+          }
+        },
+        {
+          "id": "heirloom-vase",
+          "variant": "heirloom-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 890,
+            "surfaceId": "upper-shelf"
+          }
+        },
+        {
+          "id": "living-room-rug",
+          "variant": "living-room-rug",
+          "placement": {
+            "mode": "surface",
+            "x": 245,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "plant",
+          "variant": "catgrass",
+          "placement": {
+            "mode": "surface",
+            "x": 54,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "falling-vase",
+          "variant": "blue-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 646,
+            "surfaceId": "middle-shelf"
+          }
+        },
+        {
+          "id": "target-vase",
+          "variant": "blue-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 530,
+            "surfaceId": "lower-shelf"
+          }
+        }
+      ]
+    },
+    "impact-picture": {
+      "base": "living-room",
+      "id": "impact-picture",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-1",
+      "objects": [
+        {
+          "id": "couch",
+          "variant": "cozy-couch",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "curtain",
+          "variant": "warm-curtain",
+          "placement": {
+            "mode": "area",
+            "x": 728,
+            "y": 112
+          }
+        },
+        {
+          "id": "heirloom-vase",
+          "variant": "heirloom-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 890,
+            "surfaceId": "upper-shelf"
+          }
+        },
+        {
+          "id": "living-room-rug",
+          "variant": "living-room-rug",
+          "placement": {
+            "mode": "surface",
+            "x": 245,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "plant",
+          "variant": "catgrass",
+          "placement": {
+            "mode": "surface",
+            "x": 54,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "target-vase",
+          "variant": "blue-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 457,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "falling-picture",
+          "variant": "pixel-portrait",
+          "placement": {
+            "mode": "area",
+            "x": 430,
+            "y": 280
+          }
+        }
+      ]
+    },
+    "impact-shelf": {
+      "base": "living-room",
+      "id": "impact-shelf",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-1",
+      "objects": [
+        {
+          "id": "couch",
+          "variant": "cozy-couch",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "curtain",
+          "variant": "warm-curtain",
+          "placement": {
+            "mode": "area",
+            "x": 728,
+            "y": 112
+          }
+        },
+        {
+          "id": "heirloom-vase",
+          "variant": "heirloom-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 890,
+            "surfaceId": "upper-shelf"
+          }
+        },
+        {
+          "id": "living-room-rug",
+          "variant": "living-room-rug",
+          "placement": {
+            "mode": "surface",
+            "x": 245,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "plant",
+          "variant": "catgrass",
+          "placement": {
+            "mode": "surface",
+            "x": 655,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "food-bag-warning": {
+      "base": "kitchen-preview",
+      "id": "food-bag-warning",
+      "width": 960,
+      "spawn": {
+        "x": 180,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "warning-bag",
+          "variant": "dry-food-bag",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "food-bag-chain": {
+      "base": "kitchen-preview",
+      "id": "food-bag-chain",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "first-bag",
+          "variant": "dry-food-bag",
+          "placement": {
+            "mode": "surface",
+            "x": 430,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "second-bag",
+          "variant": "dry-food-bag",
+          "placement": {
+            "mode": "surface",
+            "x": 472,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "target-books",
+          "variant": "reading-books",
+          "placement": {
+            "mode": "surface",
+            "x": 526,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "food-bag-impact": {
+      "base": "kitchen-preview",
+      "id": "food-bag-impact",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "source-books",
+          "variant": "reading-books",
+          "placement": {
+            "mode": "surface",
+            "x": 440,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "target-bag",
+          "variant": "dry-food-bag",
+          "placement": {
+            "mode": "surface",
+            "x": 492,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "food-bag-support": {
+      "base": "kitchen-preview",
+      "id": "food-bag-support",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "bag-shelf"
+      },
+      "supports": "supports-3",
+      "objects": [
+        {
+          "id": "shelf-bag",
+          "variant": "dry-food-bag",
+          "placement": {
+            "mode": "surface",
+            "x": 120,
+            "surfaceId": "bag-shelf"
+          }
+        }
+      ]
+    },
+    "dish-cups": {
+      "base": "kitchen-preview",
+      "id": "dish-cups",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "dish-shelf"
+      },
+      "supports": "supports-4",
+      "objects": [
+        {
+          "id": "first-cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "dish-shelf"
+          }
+        },
+        {
+          "id": "second-cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 192,
+            "surfaceId": "dish-shelf"
+          }
+        }
+      ]
+    },
+    "dish-plates": {
+      "base": "kitchen-preview",
+      "id": "dish-plates",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "dish-shelf"
+      },
+      "supports": "supports-4",
+      "objects": [
+        {
+          "id": "first-plate",
+          "variant": "cream-plate",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "dish-shelf"
+          }
+        },
+        {
+          "id": "second-plate",
+          "variant": "cream-plate",
+          "placement": {
+            "mode": "surface",
+            "x": 192,
+            "surfaceId": "dish-shelf"
+          }
+        }
+      ]
+    },
+    "dish-mixed": {
+      "base": "kitchen-preview",
+      "id": "dish-mixed",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "dish-shelf"
+      },
+      "supports": "supports-4",
+      "objects": [
+        {
+          "id": "source-cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "dish-shelf"
+          }
+        },
+        {
+          "id": "target-plate",
+          "variant": "cream-plate",
+          "placement": {
+            "mode": "surface",
+            "x": 192,
+            "surfaceId": "dish-shelf"
+          }
+        },
+        {
+          "id": "floor-bag",
+          "variant": "dry-food-bag",
+          "placement": {
+            "mode": "surface",
+            "x": 300,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "dish-incoming": {
+      "base": "kitchen-preview",
+      "id": "dish-incoming",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "dish-shelf"
+      },
+      "supports": "supports-4",
+      "objects": [
+        {
+          "id": "source-books",
+          "variant": "reading-books",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "dish-shelf"
+          }
+        },
+        {
+          "id": "target-cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "dish-shelf"
+          }
+        }
+      ]
+    },
+    "herb-neighbors": {
+      "base": "kitchen-preview",
+      "id": "herb-neighbors",
+      "width": 960,
+      "spawn": {
+        "x": 150,
+        "surfaceId": "herb-shelf"
+      },
+      "supports": "supports-5",
+      "objects": [
+        {
+          "id": "left-herb",
+          "variant": "kitchen-basil",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "herb-shelf"
+          }
+        },
+        {
+          "id": "right-herb",
+          "variant": "kitchen-parsley",
+          "placement": {
+            "mode": "surface",
+            "x": 170,
+            "surfaceId": "herb-shelf"
+          }
+        }
+      ]
+    },
+    "herb-basil": {
+      "base": "kitchen-preview",
+      "id": "herb-basil",
+      "width": 960,
+      "spawn": {
+        "x": 150,
+        "surfaceId": "herb-shelf"
+      },
+      "supports": "supports-5",
+      "objects": [
+        {
+          "id": "herb",
+          "variant": "kitchen-basil",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "herb-shelf"
+          }
+        }
+      ]
+    },
+    "herb-parsley": {
+      "base": "kitchen-preview",
+      "id": "herb-parsley",
+      "width": 960,
+      "spawn": {
+        "x": 150,
+        "surfaceId": "herb-shelf"
+      },
+      "supports": "supports-5",
+      "objects": [
+        {
+          "id": "herb",
+          "variant": "kitchen-parsley",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "herb-shelf"
+          }
+        }
+      ]
+    },
+    "herb-mint": {
+      "base": "kitchen-preview",
+      "id": "herb-mint",
+      "width": 960,
+      "spawn": {
+        "x": 150,
+        "surfaceId": "herb-shelf"
+      },
+      "supports": "supports-5",
+      "objects": [
+        {
+          "id": "herb",
+          "variant": "kitchen-mint",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "herb-shelf"
+          }
+        }
+      ]
+    },
+    "herb-support": {
+      "base": "kitchen-preview",
+      "id": "herb-support",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "herb-shelf"
+      },
+      "supports": "supports-6",
+      "objects": [
+        {
+          "id": "falling-herb",
+          "variant": "kitchen-basil",
+          "placement": {
+            "mode": "surface",
+            "x": 120,
+            "surfaceId": "herb-shelf"
+          }
+        },
+        {
+          "id": "floor-herb",
+          "variant": "kitchen-mint",
+          "placement": {
+            "mode": "surface",
+            "x": 80,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "herb-incoming": {
+      "base": "kitchen-preview",
+      "id": "herb-incoming",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "herb-shelf"
+      },
+      "supports": "supports-7",
+      "objects": [
+        {
+          "id": "vase",
+          "variant": "small-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "herb-shelf"
+          }
+        },
+        {
+          "id": "herb",
+          "variant": "kitchen-parsley",
+          "placement": {
+            "mode": "surface",
+            "x": 220,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "herb-outgoing": {
+      "base": "kitchen-preview",
+      "id": "herb-outgoing",
+      "width": 960,
+      "spawn": {
+        "x": 150,
+        "surfaceId": "herb-shelf"
+      },
+      "supports": "supports-5",
+      "objects": [
+        {
+          "id": "herb",
+          "variant": "kitchen-mint",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "herb-shelf"
+          }
+        },
+        {
+          "id": "cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 80,
+            "surfaceId": "herb-shelf"
+          }
+        }
+      ]
+    },
+    "pantry-outgoing": {
+      "base": "kitchen-preview",
+      "id": "pantry-outgoing",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-8",
+      "objects": [
+        {
+          "id": "source",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        },
+        {
+          "id": "plant",
+          "variant": "kitchen-basil",
+          "placement": {
+            "mode": "surface",
+            "x": 300,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "pantry-jars": {
+      "base": "kitchen-preview",
+      "id": "pantry-jars",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-8",
+      "objects": [
+        {
+          "id": "first",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        },
+        {
+          "id": "second",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 190,
+            "surfaceId": "pantry-shelf"
+          }
+        }
+      ]
+    },
+    "pantry-tins": {
+      "base": "kitchen-preview",
+      "id": "pantry-tins",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-8",
+      "objects": [
+        {
+          "id": "first",
+          "variant": "biscuit-tin",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        },
+        {
+          "id": "second",
+          "variant": "biscuit-tin",
+          "placement": {
+            "mode": "surface",
+            "x": 190,
+            "surfaceId": "pantry-shelf"
+          }
+        }
+      ]
+    },
+    "pantry-mixed": {
+      "base": "kitchen-preview",
+      "id": "pantry-mixed",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-8",
+      "objects": [
+        {
+          "id": "first",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        },
+        {
+          "id": "second",
+          "variant": "biscuit-tin",
+          "placement": {
+            "mode": "surface",
+            "x": 190,
+            "surfaceId": "pantry-shelf"
+          }
+        },
+        {
+          "id": "plant",
+          "variant": "kitchen-basil",
+          "placement": {
+            "mode": "surface",
+            "x": 300,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "pantry-jar-support": {
+      "base": "kitchen-preview",
+      "id": "pantry-jar-support",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-9",
+      "objects": [
+        {
+          "id": "supported",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        }
+      ]
+    },
+    "pantry-tin-support": {
+      "base": "kitchen-preview",
+      "id": "pantry-tin-support",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-9",
+      "objects": [
+        {
+          "id": "supported",
+          "variant": "biscuit-tin",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        }
+      ]
+    },
+    "pantry-open-support": {
+      "base": "kitchen-preview",
+      "id": "pantry-open-support",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-9",
+      "objects": [
+        {
+          "id": "source",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        },
+        {
+          "id": "opened",
+          "variant": "biscuit-tin",
+          "placement": {
+            "mode": "surface",
+            "x": 190,
+            "surfaceId": "pantry-shelf"
+          }
+        }
+      ]
+    },
+    "pantry-jar-incoming": {
+      "base": "kitchen-preview",
+      "id": "pantry-jar-incoming",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-10",
+      "objects": [
+        {
+          "id": "source",
+          "variant": "small-vase",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        },
+        {
+          "id": "target",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 230,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "pantry-tin-incoming": {
+      "base": "kitchen-preview",
+      "id": "pantry-tin-incoming",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "pantry-shelf"
+      },
+      "supports": "supports-8",
+      "objects": [
+        {
+          "id": "source",
+          "variant": "reading-books",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "pantry-shelf"
+          }
+        },
+        {
+          "id": "target",
+          "variant": "biscuit-tin",
+          "placement": {
+            "mode": "surface",
+            "x": 178,
+            "surfaceId": "pantry-shelf"
+          }
+        }
+      ]
+    },
+    "bin-warning": {
+      "base": "kitchen-preview",
+      "id": "bin-warning",
+      "width": 960,
+      "spawn": {
+        "x": 180,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "bin",
+          "variant": "cream-trash-bin",
+          "placement": {
+            "mode": "surface",
+            "x": 180,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "bin-chain": {
+      "base": "kitchen-preview",
+      "id": "bin-chain",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "first-bin",
+          "variant": "cream-trash-bin",
+          "placement": {
+            "mode": "surface",
+            "x": 430,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "second-bin",
+          "variant": "cream-trash-bin",
+          "placement": {
+            "mode": "surface",
+            "x": 488,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "target-books",
+          "variant": "reading-books",
+          "placement": {
+            "mode": "surface",
+            "x": 548,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "bin-incoming": {
+      "base": "kitchen-preview",
+      "id": "bin-incoming",
+      "width": 960,
+      "spawn": {
+        "x": 36,
+        "surfaceId": "bin-shelf"
+      },
+      "supports": "supports-11",
+      "objects": [
+        {
+          "id": "source-jar",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 130,
+            "surfaceId": "bin-shelf"
+          }
+        },
+        {
+          "id": "target-bin",
+          "variant": "cream-trash-bin",
+          "placement": {
+            "mode": "surface",
+            "x": 300,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "bin-outgoing": {
+      "base": "kitchen-preview",
+      "id": "bin-outgoing",
+      "width": 960,
+      "spawn": {
+        "x": 110,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "source-bin",
+          "variant": "cream-trash-bin",
+          "placement": {
+            "mode": "surface",
+            "x": 430,
+            "surfaceId": "floor"
+          }
+        },
+        {
+          "id": "target-plant",
+          "variant": "kitchen-basil",
+          "placement": {
+            "mode": "surface",
+            "x": 488,
+            "surfaceId": "floor"
+          }
+        }
+      ]
+    },
+    "cloth-chain": {
+      "base": "kitchen-preview",
+      "id": "cloth-chain",
+      "width": 960,
+      "spawn": {
+        "x": 470,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "cloth",
+          "variant": "warm-tablecloth",
+          "placement": {
+            "mode": "surface",
+            "x": 450,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "first-cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 544,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "second-plate",
+          "variant": "cream-plate",
+          "placement": {
+            "mode": "surface",
+            "x": 356,
+            "surfaceId": "kitchen-table"
+          }
+        }
+      ]
+    },
+    "cloth-left": {
+      "base": "kitchen-preview",
+      "id": "cloth-left",
+      "width": 960,
+      "spawn": {
+        "x": 260,
+        "surfaceId": "kitchen-stool"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "cloth",
+          "variant": "warm-tablecloth",
+          "placement": {
+            "mode": "surface",
+            "x": 450,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "first-cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 544,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "second-plate",
+          "variant": "cream-plate",
+          "placement": {
+            "mode": "surface",
+            "x": 356,
+            "surfaceId": "kitchen-table"
+          }
+        }
+      ]
+    },
+    "cloth-warning": {
+      "base": "kitchen-preview",
+      "id": "cloth-warning",
+      "width": 960,
+      "spawn": {
+        "x": 530,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-2",
+      "objects": [
+        {
+          "id": "cloth",
+          "variant": "warm-tablecloth",
+          "placement": {
+            "mode": "surface",
+            "x": 450,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "first-cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 544,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "second-plate",
+          "variant": "cream-plate",
+          "placement": {
+            "mode": "surface",
+            "x": 356,
+            "surfaceId": "kitchen-table"
+          }
+        }
+      ]
+    },
+    "cloth-incoming": {
+      "base": "kitchen-preview",
+      "id": "cloth-incoming",
+      "width": 960,
+      "spawn": {
+        "x": 330,
+        "surfaceId": "upper-shelf"
+      },
+      "supports": "supports-12",
+      "objects": [
+        {
+          "id": "cloth",
+          "variant": "warm-tablecloth",
+          "placement": {
+            "mode": "surface",
+            "x": 450,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "second-plate",
+          "variant": "cream-plate",
+          "placement": {
+            "mode": "surface",
+            "x": 356,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "source-jar",
+          "variant": "pasta-jar",
+          "placement": {
+            "mode": "surface",
+            "x": 430,
+            "surfaceId": "upper-shelf"
+          }
+        }
+      ]
+    },
+    "cloth-support": {
+      "base": "kitchen-preview",
+      "id": "cloth-support",
+      "width": 960,
+      "spawn": {
+        "x": 450,
+        "surfaceId": "kitchen-table"
+      },
+      "supports": "supports-13",
+      "objects": [
+        {
+          "id": "cloth",
+          "variant": "warm-tablecloth",
+          "placement": {
+            "mode": "surface",
+            "x": 450,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "first-cup",
+          "variant": "cream-cup",
+          "placement": {
+            "mode": "surface",
+            "x": 544,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "second-plate",
+          "variant": "cream-plate",
+          "placement": {
+            "mode": "surface",
+            "x": 356,
+            "surfaceId": "kitchen-table"
+          }
+        }
+      ]
+    },
+    "cloth-pair": {
+      "base": "kitchen-preview",
+      "id": "cloth-pair",
+      "width": 960,
+      "spawn": {
+        "x": 310,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-14",
+      "objects": [
+        {
+          "id": "first-cloth",
+          "variant": "warm-tablecloth",
+          "placement": {
+            "mode": "surface",
+            "x": 230,
+            "surfaceId": "kitchen-table"
+          }
+        },
+        {
+          "id": "second-cloth",
+          "variant": "warm-tablecloth",
+          "placement": {
+            "mode": "surface",
+            "x": 450,
+            "surfaceId": "kitchen-table"
+          }
+        }
+      ]
+    },
+    "fridge-right": {
+      "base": "kitchen-preview",
+      "id": "fridge-right",
+      "width": 1320,
+      "spawn": {
+        "x": 1240,
+        "surfaceId": "floor"
+      },
+      "supports": "supports-15",
+      "objects": [
+        {
+          "id": "top-tin",
+          "variant": "biscuit-tin",
+          "placement": {
+            "mode": "surface",
+            "x": 1120,
+            "surfaceId": "kitchen-fridge"
+          }
+        }
+      ]
+    }
+  }
+}

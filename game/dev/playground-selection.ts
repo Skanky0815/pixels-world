@@ -1,6 +1,7 @@
-import { PLAYGROUND_SCENARIOS } from '../play/content/rooms/scenarios.ts';
+import { PLAYGROUND_BASES as PLAYGROUND_SCENARIOS } from '../play/content/playground-layout.ts';
+import type { RoomDefinition } from '../play/content/definitions.ts';
 import { ROUND_SCENARIOS } from '../play/content/rooms/scenarios.ts';
-export { PLAYGROUND_SCENARIOS } from '../play/content/rooms/scenarios.ts';
+export { PLAYGROUND_BASES as PLAYGROUND_SCENARIOS } from '../play/content/playground-layout.ts';
 import { resolveRoom } from '../play/content/resolve-room.ts';
 import { playgroundRoom, PLAYGROUND_OBJECTS } from './playground-room.ts';
 
@@ -9,8 +10,9 @@ export interface PlaygroundSelection {
   readonly mode: PlaygroundMode;
   readonly id: string;
 }
-const defaults = { object: 'cozy-couch', scenario: 'fridge-incoming' } as const;
+const defaults = { object: 'cozy-couch', scenario: 'empty' } as const;
 const families: [string, string][] = [
+  ['empty', 'Leerer Aufbau'],
   ['living-room', 'Wohnzimmer'],
   ['cozy-remix', 'Wohnzimmer-Variante'],
   ['kitchen-preview', 'Küchenvorschau'],
@@ -74,14 +76,25 @@ export function selectedPlaygroundRoom(selection: PlaygroundSelection) {
       );
 }
 
-export function playgroundGameLink(selection: PlaygroundSelection, seed?: string) {
+// eslint-disable-next-line max-lines-per-function -- Kataloggrenze, unveränderter Aufbau und reproduzierbarer Seed bilden einen gemeinsamen Rundenlink.
+export function playgroundGameLink(
+  selection: PlaygroundSelection,
+  seed?: string,
+  layout?: RoomDefinition,
+) {
   if (selection.mode !== 'scenario' || !Object.hasOwn(ROUND_SCENARIOS, selection.id))
     return undefined;
-  validatePlaygroundSelection(selection);
 
+  const original = ROUND_SCENARIOS[selection.id as keyof typeof ROUND_SCENARIOS];
+
+  if (layout && layoutKey(layout) !== layoutKey(original)) return undefined;
   const params = new URLSearchParams({ scenario: selection.id, camera: 'room' });
 
   if (seed) params.set('room-seed', seed);
 
   return `/play.html?${params}`;
+}
+
+function layoutKey(layout: RoomDefinition) {
+  return JSON.stringify([layout.width, layout.spawn, layout.platforms, layout.objects]);
 }

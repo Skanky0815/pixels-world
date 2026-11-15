@@ -1,3 +1,4 @@
+import { playgroundRecipe, importPlaygroundRecipe } from './playground-recipe-support';
 /* eslint-disable max-lines-per-function -- Öffentliche Eingaben und losgelöste DOM-Befunde bilden die gemeinsame Objekt-Testgrenze. */
 import { test, expect } from '../support/support';
 import type { Page } from '@playwright/test';
@@ -8,10 +9,16 @@ export type ObjectState = Snapshot;
 const paused = new WeakSet<Page>();
 
 async function loadScenario(page: Page, id: string, search = '') {
-  await page.goto(`http://127.0.0.1:4176/interactable-playground.html?scenario=${id}${search}`);
+  const recipe = playgroundRecipe(id);
+
+  await page.goto(
+    `http://127.0.0.1:4176/interactable-playground.html?scenario=${recipe ? 'empty' : id}${search}`,
+  );
   await waitForDevReady(page, 'data-playground-ready');
   await page.locator('#game').focus();
   await untilPlayground(page, (s) => s.pixel.grounded);
+
+  if (recipe) await importPlaygroundRecipe(page, id);
 }
 
 async function start(page: Page, path = '/') {

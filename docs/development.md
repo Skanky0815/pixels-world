@@ -182,21 +182,11 @@ Zeitlimits des Spiels sind hier nicht aktiv. HTML und Module bleiben DEV-only.
 
 ## Objektkontakte prüfen
 
-Handgebaute Kontaktszenarien werden zentral in der DEV-Spielwiese ausgewählt.
-Sie verwenden dieselben Objektklassen, Collider, Eingaben und Schadensmodelle.
-Die früheren Laborzugänge über `/play.html?room=…` sind entfernt:
-
-- `/interactable-playground.html?scenario=impact-vases`: zwei Vasen auf dem unteren Regal seitlich anschieben.
-- `/interactable-playground.html?scenario=impact-fall`: über den Vorhang rechts aufs mittlere Regal springen
-  und die Vase nach links auf die Vase darunter schieben.
-- `/interactable-playground.html?scenario=impact-picture`: am rechten Sofarand zweimal gegen das Bild springen;
-  es fällt auf die Vase am Boden.
-- `/interactable-playground.html?scenario=impact-shelf`: das mittlere Regal durch Landungen belasten; seine
-  Bruchstücke treffen die Pflanze darunter.
-- `/interactable-playground.html?scenario=impact-landing`: von links oder rechts auf die Bodenvase springen;
-  sie kippt und rollt von Pixel weg, ohne sofort zu zerbrechen.
-- `/interactable-playground.html?scenario=impact-books`: bei den Büchern links auf dem unteren Regal bleiben;
-  beim Kippen stoßen sie die benachbarte Vase an.
+Kontakte werden in der DEV-Spielwiese aus echten Katalogobjekten zusammengestellt:
+Grundaufbau wählen, **Objekte platzieren / bearbeiten** öffnen und mehrere Objekte
+spawnen. Vasen, Geschirr, Bücher und andere lose Gegenstände erhalten eine reale
+Auflage; Bilder und Vorhänge verwenden eine Wandposition. Die Testdaten beschreiben
+reproduzierbare Aufbauten statt eigener Laborräume oder Raum-URLs.
 
 Fokusverlust pausiert die Szene; reduzierte Bewegung und Neustart verwenden
 dieselben Mechanismen wie im Spiel. Die sichtbare DOM-Diagnose enthält lesbare
@@ -207,17 +197,29 @@ Spielzustandssetter oder Phaser-Objekte.
 
 Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.
 Auf der DEV-Seite führt ebenfalls **Playground** zu `/interactable-playground.html`.
-**Testart** wechselt zwischen Einzelobjekt und Szenario; Auswahl und Reset bilden
-eine kompakte Toolbar. Auf breiten Bildschirmen
-steht die Live-Diagnose neben der höchstens 800 Pixel breiten Testszene; auf
-schmalen Geräten darunter. Die Spielwelt und Physik bleiben dabei unverändert.
-Einzelobjekte stammen direkt aus dem Objektkatalog, einschließlich aller Varianten.
-Szenarien verwenden die gemeinsamen Raum- und Labordefinitionen, samt
-festen Möbeln, mehreren Objekten und ihrer tatsächlichen Weltgröße. Es gibt keine
-separaten Kopien der Testgeometrie. Direktlinks wie
-`/interactable-playground.html?scenario=fridge-incoming` oder `?object=cozy-couch`
-öffnen die gewünschte Auswahl; unbekannte IDs zeigen einen Hinweis und die
-Standard-Testszene.
+**Testart** wechselt zwischen Einzelobjekt und eigenem Aufbau. Als Grundaufbauten
+stehen ein leeres Zimmer, Wohnzimmer, Wohnzimmervariante und Küchenvorschau bereit.
+Auf breiten Bildschirmen steht die Diagnose neben der höchstens 800 Pixel breiten
+Szene; auf schmalen Geräten darunter. Weltmaße und Physik bleiben unverändert.
+`?object=cozy-couch` oder `?scenario=empty` wählen den Einstieg. Die ehemaligen
+Labor-IDs sind auch aus diesem Auswahlkatalog entfernt.
+
+Unter **Objekte platzieren / bearbeiten** Variante und Auflage beziehungsweise
+Wandposition wählen und **Spawnen** betätigen. Mehrere Instanzen derselben Variante
+sind erlaubt. Über **Diagnoseziel** ein Objekt auswählen, seine Startposition
+ändern und **Auswahl verschieben** verwenden oder es mit **Auswahl entfernen**
+entfernen. Feste Raummöbel werden nicht als lose Objekte bearbeitet. Ungültige
+Positionen oder noch benötigte Auflagen werden abgewiesen; der gültige Aufbau bleibt
+bestehen. Jede erfolgreiche Änderung beginnt einen neuen Versuch mit unverändertem
+Aufbau, frischem Pixel und zurückgesetzten Schäden/Punkten.
+
+**Aufbau laden / kopieren** exportiert die Startkonfiguration in ein Textfeld und
+lädt sie wieder. Import und manuelle Aktionen verwenden denselben validierten
+Spawnpfad in `playground-layout.ts`; es gibt keine Testsetter. Die automatisierten
+Kontaktaufbauten liegen ausschließlich in den Testdaten und werden über diese
+öffentliche Bedienung geladen. Eigenen Aufbau vor einem Grundaufbauwechsel bei
+Bedarf kopieren; es gibt keine automatische Speicherung.
+
 Pixel lässt sich ohne Rundenstart normal steuern; Sofa/Pflanze reagieren nach
 kurzem Stillstand, der Vorhang beim Klettern/Rutschen und die Vase beim Schieben
 vom Testregal. Touch-Geräte erhalten dieselbe Eingabe wie im Spiel.
@@ -232,7 +234,7 @@ und setzen Pixel, Schaden und Punkte zurück; dasselbe gilt für Szenariowechsel
 Fokusverlust pausiert die Szene.
 Es gibt keine Heimkehr, Rundenuhr oder gespeicherten Ergebnisse.
 **Mit vollständiger Runde im Spiel testen** erscheint nur für die expliziten
-Runden-Fixtures `kitchen-preview`, `fridge-visit` und `fridge-incoming`. Der Link
+Runden-Fixtures `kitchen-preview`, `fridge-visit` und `fridge-incoming`. Der Link erscheint nur für deren unveränderten Aufbau und
 öffnet `/play.html?scenario=…` im DEV-/E2E-Betrieb. Andere Kontaktszenarien haben
 keinen Zugang zum Rundenablauf; Produktionsbuilds ignorieren diesen Parameter.
 Reine Objekt- und Kontakttests laufen über die Spielwiese, während die getrennten

@@ -40,12 +40,13 @@ import { InputController } from '../play/input/InputController';
 import { PlayActivity } from '../play/input/play-activity';
 import { selectedPlaygroundRoom, type PlaygroundSelection } from './playground-selection';
 import { preloadKitchenArt } from '../play/assets/kitchen-art';
-import type { ResolvedRoom } from '../play/content/definitions';
+import type { ResolvedRoom, RoomDefinition } from '../play/content/definitions';
 
 export class PlaygroundScene extends Phaser.Scene {
   private audio!: GameAudio;
   private shelves: Shelf[] = [];
   private room!: ResolvedRoom;
+  private layout?: RoomDefinition;
   private built!: ReturnType<typeof buildObjects>;
   private pixel!: Pixel;
   private controls!: InputController;
@@ -62,7 +63,11 @@ export class PlaygroundScene extends Phaser.Scene {
     super('InteractablePlayground');
   }
 
-  init(data: { selection?: PlaygroundSelection }) {
+  init(data: { selection?: PlaygroundSelection; layout?: RoomDefinition; fresh?: boolean }) {
+    if (data.fresh) this.layout = undefined;
+
+    if (data.layout) this.layout = data.layout;
+
     if (data.selection) this.selection = data.selection;
     this.elapsed = 0;
     this.eventsLog = [];
@@ -192,6 +197,7 @@ export class PlaygroundScene extends Phaser.Scene {
       },
       discoveries: this.discoveries().map((discovery) => discovery.entryId),
       albumDiscovery: this.discoveries().at(-1) ?? null,
+      layout: this.room.definition,
       generation: this.generation,
       variant: this.selection.id,
       mode: this.selection.mode,
@@ -224,6 +230,7 @@ export class PlaygroundScene extends Phaser.Scene {
 
   // eslint-disable-next-line max-lines-per-function -- Seed, Schwierigkeit und reguläre Spawnauflösung müssen wie im Spiel in derselben Reihenfolge erfolgen.
   private resolveSelection() {
+    if (this.layout) return resolveRoom(this.layout, PLAYGROUND_OBJECTS);
     const base = selectedPlaygroundRoom(this.selection);
 
     if (this.selection.mode !== 'scenario') return base;
@@ -237,6 +244,11 @@ export class PlaygroundScene extends Phaser.Scene {
       populateSpawnSlots(room, PLAYGROUND_OBJECTS, difficulty, () => random.frac()),
       PLAYGROUND_OBJECTS,
     );
+  }
+
+  replaceLayout(layout: RoomDefinition) {
+    resolveRoom(layout, PLAYGROUND_OBJECTS);
+    this.scene.restart({ layout });
   }
 
   private discoveries() {
