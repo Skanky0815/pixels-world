@@ -16,6 +16,43 @@ DEV-Ansichten dürfen Spielmodule verwenden; das Spiel lädt DEV-Helfer nur hint
 Spiel-Layout, Dialoge und Touch-Steuerung bleiben unter `play/`. Die Landingpage
 importiert weder Phaser noch das Spielstylesheet.
 
+### Bausteinsicht: Importgrenzen
+
+| Quellbaustein      | Erlaubte interne Ziele                                 |
+| ------------------ | ------------------------------------------------------ |
+| `game/landingpage` | Landingpage und Shared                                 |
+| `game/play`        | Spiel und Shared; DEV nur als unten begrenzte Ausnahme |
+| `game/shared`      | ausschließlich Shared                                  |
+| `game/dev`         | DEV, Spiel und Shared                                  |
+
+Die Regeln aus [import-boundaries.mjs](../../tools/import-boundaries.mjs) werden mit
+dependency-cruiser über aufgelöste TypeScript-/JavaScript-Abhängigkeiten geprüft.
+Typimporte zählen ebenso wie Laufzeitimporte; Re-Exports werden an ihrer eigenen
+Kante geprüft. Damit darf etwa ein Shared-Barrel keine Spielmodule weiterreichen.
+Anwendungsquellen dürfen keine Quellbrücken über `tools/`, Tests oder andere
+Verzeichnisse auf Projektebene verwenden. npm-Abhängigkeiten und gemeinsame
+Assetquellen bleiben nutzbar. Aliase müssen über `tsconfig.json` auflösbar sein;
+unbekannte lokale oder virtuelle Module blockieren. Die vorhandene virtuelle
+PWA-Registrierung `virtual:pwa-register` ist ausdrücklich freigegeben.
+
+Spiel → DEV ist ausschließlich als dynamischer Import im positiven Zweig von
+`import.meta.env.DEV` erlaubt. Die ergänzende Syntaxprüfung erkennt `if`, ternäre
+Ausdrücke und `&&` mit dieser unmittelbaren Bedingung; Negation, Else-Zweige,
+`||` oder ein umbenanntes Flag reichen nicht. Der Build kann diese Zweige in
+Produktion entfernen. Das betrifft die Ladevorschau und den Szenen-Debugdialog;
+die Produktionsisolation bleibt zusätzlich durch Browserprüfungen abgesichert.
+Der Datenvertrag `DebugScenario` gehört zur Spielszene unter
+`game/play/domain/debug-scenario.ts`; DEV-Werkzeuge verwenden diesen Vertrag.
+
+Berechnete Modulpfade und neue Glob-Imports sind nicht freigegeben: Strings und
+Templates ohne Ausdrücke halten die Grenzen statisch prüfbar. Einzige vorhandene
+Glob-Ausnahme ist `game/play/assets/object-audio.ts` mit dem exakten Muster
+`../../../assets/audio/*.wav`; es bündelt Audiodateien der bestehenden Assetfamilie,
+keine Anwendungsquellen. Änderungen an diesen Ausnahmen benötigen angepasste Regeln
+und Gegenbeispiele in den Architekturtests. Aufruf und QA-Einbindung: [QA](../qa.md#gezielt-prüfen).
+
+### Auslieferung und Ressourcen
+
 [application-pages.ts](../../tools/application-pages.ts) ordnet die echten HTML-Quellen
 öffentlichen HTML-Einstiegen zu. Vite verarbeitet beim Build virtuelle Einstiege
 am Ausgabe-Root und liefert im Dev-Server dieselben URLs aus den echten Quellen.

@@ -17,7 +17,7 @@ Vor Erstellen oder Aktualisieren eines Code-/Tooling-PRs auf dem finalen Stand:
 npm run check:pr
 ```
 
-`check:pr` enthält Formatierung, Lint, CI-Gate-/Hook-Tests, Unit-Tests,
+`check:pr` enthält Formatierung, Lint, Importgrenzen, CI-Gate-/Hook-Tests, Unit-Tests,
 Typprüfung, Produktionsbuild und die vollständige Browsersuite. Ein zusätzlicher
 vollständiger QA- oder E2E-Vorlauf ist nicht nötig. Neue Änderungen, Fehler oder
 offene Befunde erfordern passende erneute Prüfungen; keine alten Ergebnisse als
@@ -41,6 +41,12 @@ Einstiegspunkte, kein vollständiges Testinventar und kein Ersatz für `check:pr
 Dateien und Assertions unter [tests](../tests) sowie [package.json](../package.json)
 bleiben maßgeblich. Selektive Unit-Dateien direkt an Node übergeben: Das vorhandene
 `test:unit`-Skript enthält bereits den Glob für die gesamte Suite.
+
+`npm run check:imports` prüft gezielt die
+[Importgrenzen der Bausteinsicht](architecture/gameplay.md#bausteinsicht-importgrenzen).
+Die Prüfung ist Teil der lokalen QA und des Quality-Jobs in PR-/Main-/Release-QA.
+`node --test tests/ci/import-boundaries.test.mjs` prüft erlaubte und verbotene
+Beispiele einschließlich Aliase, Re-Exports, Typimporte und DEV-Bedingungen.
 
 | Bereich                     | Beispiele für kurze Rückkopplung                                                                                                                                                                                                                                              |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
