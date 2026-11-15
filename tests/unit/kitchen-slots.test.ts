@@ -42,7 +42,6 @@ test('Küchenbilder variieren reproduzierbar; feste Regale und Napfplatz bleiben
     }
 });
 
-// eslint-disable-next-line max-lines-per-function -- Belegte Slots bleiben validiert und außerhalb von Saras und Pixels Zielbereich.
 test('Küchen-Objektslots erlauben Geschirr und lassen den Napfbereich frei', () => {
   for (const platform of KITCHEN_PREVIEW.platforms) {
     if (!('slots' in platform)) continue;
@@ -52,7 +51,6 @@ test('Küchen-Objektslots erlauben Geschirr und lassen den Napfbereich frei', ()
 
   const counter = KITCHEN_PREVIEW.platforms.find((p) => p.id === 'kitchen-counter')!;
 
-  assert.ok('slots' in counter);
-  assert.ok(counter.slots.entries.every((slot) => counter.bounds.x + slot.x + 48 < 800));
+  assert.ok(!('slots' in counter));
   assert.deepEqual(KITCHEN_PREVIEW.objectSlots[0].count, { easy: 2, normal: 2, hard: 2 });
 });

@@ -7,10 +7,12 @@ export interface FridgeRules {
   readonly points: number;
 }
 
-/** A cancellable invitation followed by a bounded visit; no score until the door opens. */
+/** The first deliberate jump warns; the second starts one bounded visit. */
 export class FridgeRummaging {
   private state: 'idle' | 'warning' | 'inside' | 'open' = 'idle';
   private elapsed = 0;
+  private bumps = 0;
+  private jumpArmed = false;
   private readonly id: string;
   private readonly rules: FridgeRules;
   // eslint-disable-next-line max-lines-per-function -- ID, Zeiten und Punkte werden vor dem ersten Zustandsschritt zusammen geprüft.
@@ -27,30 +29,33 @@ export class FridgeRummaging {
     this.rules = { ...rules };
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Abbrechbare Warnung, begrenzter Besuch und einmaliger Abschluss teilen denselben aktiven Zeitschritt.
-  update(delta: number, active: boolean) {
-    if (this.state === 'open') return;
+  observeJump(started: boolean, grounded: boolean, touching: boolean, climbing = false) {
+    if (this.state === 'inside' || this.state === 'open') return;
+    this.trackJump(started, grounded, climbing);
+
+    if (grounded || !touching || !this.jumpArmed) return;
+    this.jumpArmed = false;
+    this.bumps = Math.min(2, this.bumps + 1);
+    this.state = this.bumps === 1 ? 'warning' : 'inside';
+    this.elapsed = 0;
+
+    return this.bumps;
+  }
+
+  private trackJump(started: boolean, grounded: boolean, climbing: boolean) {
+    if (grounded || climbing) this.jumpArmed = started && grounded && !climbing;
+  }
+
+  update(delta: number) {
+    if (this.state !== 'warning' && this.state !== 'inside') return;
     const step = Number.isFinite(delta) ? Math.max(0, delta) : 0;
 
-    if (this.state === 'inside') {
-      this.elapsed += step;
-
-      if (this.elapsed >= this.rules.insideMs) return this.open();
-
-      return;
-    }
-
-    if (!active) {
-      this.reset();
-
-      return;
-    }
-
-    this.state = 'warning';
     this.elapsed += step;
 
-    if (this.elapsed >= this.rules.warningMs) {
-      this.state = 'inside';
+    if (this.state === 'inside' && this.elapsed >= this.rules.insideMs) return this.open();
+
+    if (this.state === 'warning' && this.elapsed >= this.rules.warningMs) {
+      this.state = 'idle';
       this.elapsed = 0;
     }
   }
@@ -70,6 +75,7 @@ export class FridgeRummaging {
   snapshot() {
     return {
       state: this.state,
+      bumps: this.bumps,
       hidden: this.state === 'inside',
       progress: this.state === 'inside' ? Math.min(1, this.elapsed / this.rules.insideMs) : 0,
     };
@@ -78,5 +84,7 @@ export class FridgeRummaging {
   reset() {
     this.state = 'idle';
     this.elapsed = 0;
+    this.bumps = 0;
+    this.jumpArmed = false;
   }
 }

@@ -19,15 +19,6 @@ export const KITCHEN_TABLE_SLOTS = {
   ],
 } satisfies SurfaceSlots;
 
-/** The left landing and the counter from world x=800 onwards stay clear. */
-export const KITCHEN_COUNTER_SLOTS = {
-  count: { easy: 2, normal: 2, hard: 2 },
-  entries: [
-    { ...decoration, id: 'counter-herb', x: 40, categories: ['plant'], pool: HERB_VARIANTS },
-    { ...decoration, id: 'counter-1', x: 124, pool: clutter },
-  ],
-} satisfies SurfaceSlots;
-
 export const KITCHEN_WALL_SHELF_SLOTS = {
   count: { easy: 1, normal: 2, hard: 3 },
   entries: [24, 68, 112].map((x, index) => ({
@@ -40,13 +31,13 @@ export const KITCHEN_WALL_SHELF_SLOTS = {
 } satisfies SurfaceSlots;
 
 export const KITCHEN_DOOR_SHELF_SLOTS = {
-  count: { easy: 1, normal: 1, hard: 2 },
+  count: { easy: 2, normal: 2, hard: 3 },
   entries: [20, 52, 84].map((x, index) => ({
     ...decoration,
     id: `door-${index + 1}`,
-    capacity: 'small' as const,
+    capacity: index === 1 ? ('medium' as const) : ('small' as const),
     x,
-    pool: dishes,
+    pool: index === 1 ? clutter : dishes,
   })),
 } satisfies SurfaceSlots;
 

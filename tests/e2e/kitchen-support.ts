@@ -31,21 +31,44 @@ export async function move(page: Page, keys: string[], check: (state: GameTestSt
   }
 }
 
-export async function climbToCounterLanding(page: Page) {
+export async function climbToTableLanding(page: Page) {
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 255);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 398) < 2);
   await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 410);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 328) < 2);
+}
+
+export async function climbFromTableToFridge(page: Page) {
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 581);
+  await move(page, ['ArrowUp'], (s) => s.pixel.bottom <= 170);
+  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 688);
+  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 148) < 2);
+}
+
+export async function climbToCounterLanding(page: Page) {
+  await climbToTableLanding(page);
   await move(page, ['ArrowRight'], (s) => s.pixel.x >= 450);
-  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 675);
+  const snapshot = await observe(page);
+  const hasFridge = snapshot.room.width === 960 && snapshot.shelves.some((shelf) => shelf.isFridge);
+
+  if (hasFridge) {
+    await climbFromTableToFridge(page);
+    await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 830);
+  } else await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 675);
   await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
 }
 
 export async function climbToCounter(page: Page) {
   await climbToCounterLanding(page);
-  await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 800);
-  await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
-  await move(page, ['ArrowLeft'], (s) => s.pixel.x <= 860);
+
+  if ((await observe(page)).pixel.x < 800) {
+    await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 800);
+    await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
+  }
+
+  const x = (await observe(page)).pixel.x;
+
+  await move(page, [x < 860 ? 'ArrowRight' : 'ArrowLeft'], (s) => Math.abs(s.pixel.x - 860) < 4);
 }
 
 async function pressCharmArrow(page: Page, input: GameTestState['reconciliation']) {

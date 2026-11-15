@@ -5,7 +5,6 @@ import type {
   InteractionContext,
   InteractionResult,
 } from '../interactions/contracts';
-import { standingStill } from '../interactions/contracts';
 import type { ImpactHit } from '../domain/impact-world';
 import { FridgeRummaging } from '../interactions/fridge-rummaging';
 import { DamageHistory } from '../domain/chaos-event';
@@ -38,7 +37,7 @@ export class FridgeArt implements Interactable {
     this.debrisBoardHeight = b.width;
     this.graphic = scene.add.image(0, 0, 'fridge-upright').setOrigin(0.5, 1);
     this.hint = scene.add
-      .text(0, -this.boardHeight - 8, '', {
+      .text(0, -this.boardHeight - 68, '', {
         fontFamily: 'monospace',
         fontSize: '10px',
         color: '#653624',
@@ -58,26 +57,34 @@ export class FridgeArt implements Interactable {
     this.draw(0);
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Bodenanker, Seitenreichweite und bestehende Eingaberuhe bilden eine gemeinsame Kontaktprüfung.
   eligible(context: InteractionContext) {
-    if (this.model.snapshot().hidden) return true;
-    const p = context.pixel;
-    const nearby = p.left + p.bodyWidth >= this.b.x - 12 && p.left <= this.b.x + this.b.width + 12;
-
-    return (
-      this.model.snapshot().state !== 'open' &&
-      standingStill(context) &&
-      Math.abs(p.bottom - this.floorY) < 2 &&
-      nearby
-    );
+    return this.model.snapshot().hidden || (!context.pixel.grounded && this.sideContact(context));
   }
 
-  update(context: InteractionContext, active: boolean): InteractionResult {
-    const before = this.model.snapshot().state;
-    const event = this.model.update(context.delta, active && this.eligible(context));
-    const after = this.model.snapshot().state;
+  private sideContact(context: InteractionContext) {
+    const p = context.pixel;
 
-    if (before !== after && after === 'inside') this.scene.events.emit('object-impact', 'creak');
+    if (p.climbing || p.bottom <= this.b.y + 2 || p.top >= this.floorY) return false;
+    const right = p.left + p.bodyWidth;
+    const leftSide = Math.abs(right - this.b.x) <= 2 && context.input.horizontal >= 0;
+    const rightSide =
+      Math.abs(p.left - this.b.x - this.b.width) <= 2 && context.input.horizontal <= 0;
+
+    return leftSide || rightSide;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Sprungbeobachtung, begrenzte Besuchszeit, Ereignis und Bild gehören zu einem gemeinsamen Frame.
+  update(context: InteractionContext, active: boolean): InteractionResult {
+    const p = context.pixel;
+    const bump = this.model.observeJump(
+      context.input.jumpPressed && p.grounded,
+      p.grounded,
+      this.sideContact(context),
+      p.climbing,
+    );
+    const event = this.model.update(context.delta);
+
+    if (bump) this.scene.events.emit('object-impact', 'creak');
 
     if (event) this.history.record(event);
     this.draw(context.time);
@@ -110,7 +117,7 @@ export class FridgeArt implements Interactable {
   private draw(time: number) {
     const state = this.model.snapshot();
     const open = state.state === 'open';
-    const wobble = state.hidden || time < this.nudgeUntil;
+    const wobble = state.hidden || state.state === 'warning' || time < this.nudgeUntil;
 
     this.graphic
       .setTexture(open ? 'fridge-open' : 'fridge-upright')

@@ -4,10 +4,15 @@ import type { RoomDefinition } from '../../game/content/definitions.ts';
 const visit: RoomDefinition = {
   ...KITCHEN_PREVIEW,
   id: 'fridge-visit',
+  width: 1320,
   wallSlots: undefined,
   objectSlots: [],
   spawn: { x: 1000, surfaceId: 'floor' },
-  platforms: KITCHEN_PREVIEW.platforms.map((p) => ({ ...p, slots: undefined })),
+  platforms: KITCHEN_PREVIEW.platforms.map((p) => ({
+    ...p,
+    slots: undefined,
+    ...(p.id === 'kitchen-fridge' ? { bounds: { x: 1040, y: 148, width: 160, height: 320 } } : {}),
+  })),
   objects: [
     {
       id: 'top-tin',

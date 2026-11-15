@@ -146,8 +146,8 @@ export class Shelf {
     const b = this.bounds;
 
     return [
-      { x: b.x - 12, y: b.y, width: 24, height: this.floorY - b.y },
-      { x: b.x + b.width - 12, y: b.y, width: 24, height: this.floorY - b.y },
+      { x: b.x - 1, y: b.y, width: 2, height: this.floorY - b.y },
+      { x: b.x + b.width - 1, y: b.y, width: 2, height: this.floorY - b.y },
     ];
   }
 

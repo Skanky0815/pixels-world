@@ -1,7 +1,14 @@
 import { TouchDriver } from './touch-support';
 /* eslint-disable max-lines-per-function -- Reale Kontakte, begrenzte Inhalte und Reset werden als vollständige Spielabläufe geprüft. */
 import { test, expect, waitForGame } from './support';
-import { observe, until, move, climbToCounter, finishCharm } from './kitchen-support';
+import {
+  observe,
+  until,
+  move,
+  climbToTableLanding,
+  climbFromTableToFridge,
+  finishCharm,
+} from './kitchen-support';
 import type { Page } from '@playwright/test';
 
 async function start(page: Page, room: string) {
@@ -128,7 +135,7 @@ test('Bewegtes Vorratsglas kippt eine Pflanze ohne direkte Pixelberührung', asy
 });
 
 for (const [appearance, difficulty, seed] of [
-  ['jar', 'normal', 'pantry-normal-15'],
+  ['jar', 'normal', 'fridge-front-normal-5'],
   ['tin', 'easy', 'pantry-easy-1'],
 ] as const)
   for (const outcome of ['success', 'failed'] as const)
@@ -140,20 +147,34 @@ for (const [appearance, difficulty, seed] of [
         difficulty,
       );
       await start(page, `kitchen&room-seed=${seed}`);
-      await climbToCounter(page);
+      await climbToTableLanding(page);
+
+      if (appearance === 'tin') await climbFromTableToFridge(page);
       const target = (await observe(page)).pantry.find(
-        (item) => item.id === 'kitchen-counter:counter-1',
+        (item) =>
+          item.id ===
+          (appearance === 'jar' ? 'kitchen-table:table-1' : 'kitchen-fridge:fridge-tin'),
       )!;
 
       expect(target.appearance).toBe(appearance);
       await move(
         page,
-        ['ArrowLeft'],
+        ['ArrowRight'],
         (s) => s.pantry.find((item) => item.id === target.id)?.state === 'moving',
       );
       await until(page, (s) => s.pantry.find((item) => item.id === target.id)?.events === 1);
       expect((await observe(page)).album.pending).toContain(`pantry.${appearance}`);
-      await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
+
+      if (appearance === 'jar') await climbFromTableToFridge(page);
+      await move(page, ['Space', 'ArrowRight'], (s) => s.pixel.x >= 830);
+      await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 258) < 2);
+      const x = (await observe(page)).pixel.x;
+
+      await move(
+        page,
+        [x < 860 ? 'ArrowRight' : 'ArrowLeft'],
+        (s) => Math.abs(s.pixel.x - 860) < 4,
+      );
       await until(
         page,
         (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated',

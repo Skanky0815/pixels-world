@@ -15,25 +15,56 @@ import { albumEntries } from '../../src/content/album/index.ts';
 
 const fridge = () => new FridgeRummaging('fridge');
 
-test('Frühes Weggehen bricht ab; Pixel verschwindet erst nach Warnzeit und kommt mit einmaligem Schaden zurück', () => {
+function bump(f: FridgeRummaging) {
+  f.observeJump(true, true, false);
+
+  return f.observeJump(false, false, true);
+}
+
+test('Erster Ansprung warnt ohne Schaden; erst der zweite Ansprung öffnet einmalig die Tür', () => {
   const f = fridge();
 
-  f.update(300, true);
-  assert.equal(f.snapshot().state, 'warning');
-  f.update(0, false);
+  f.update(10000);
   assert.equal(f.snapshot().state, 'idle');
-  f.update(500, true);
+  assert.equal(bump(f), 1);
+  assert.equal(f.snapshot().state, 'warning');
+  f.update(500);
+  assert.equal(f.snapshot().state, 'idle');
+  assert.equal(f.snapshot().bumps, 1);
+  f.update(10000);
+  assert.equal(f.snapshot().hidden, false);
+  assert.equal(bump(f), 2);
   assert.equal(f.snapshot().hidden, true);
-  f.update(1399, false);
+  f.update(1399);
   assert.equal(f.snapshot().hidden, true);
-  assert.deepEqual(f.update(1, false), chaosEvent('fridge', 'spill', 1, 24));
+  assert.deepEqual(f.update(1), chaosEvent('fridge', 'spill', 1, 24));
   assert.equal(f.snapshot().state, 'open');
   assert.equal(f.snapshot().hidden, false);
-  assert.equal(f.update(10000, true), undefined);
+  assert.equal(bump(f), undefined);
+  assert.equal(f.update(10000), undefined);
   assert.equal(f.disturb(), undefined);
   f.reset();
-  assert.deepEqual(f.snapshot(), { state: 'idle', hidden: false, progress: 0 });
+  assert.deepEqual(f.snapshot(), { state: 'idle', bumps: 0, hidden: false, progress: 0 });
 });
+
+test('Kontakt halten, neue Berührung im selben Sprung und Luftsprünge zählen nicht doppelt', () => {
+  const f = fridge();
+
+  assert.equal(f.observeJump(false, false, true), undefined);
+  assert.equal(bump(f), 1);
+  f.observeJump(false, false, false);
+
+  for (let i = 0; i < 20; i++) assert.equal(f.observeJump(true, false, true), undefined);
+  assert.equal(f.snapshot().bumps, 1);
+  f.observeJump(false, true, false);
+  assert.equal(f.observeJump(false, false, true), undefined);
+  assert.equal(f.snapshot().bumps, 1);
+  f.observeJump(true, true, false);
+  f.observeJump(false, false, false, true);
+  assert.equal(f.observeJump(false, false, true), undefined);
+  assert.equal(bump(f), 2);
+});
+
 test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel hineinzuversetzen', () => {
   const f = fridge();
 
@@ -41,23 +72,26 @@ test('Fremdtreffer öffnet den durcheinandergebrachten Kühlschrank, ohne Pixel 
   assert.equal(f.snapshot().hidden, false);
   assert.equal(f.disturb(), undefined);
   f.reset();
-  f.update(500, true);
+  bump(f);
+  bump(f);
   assert.equal(f.disturb(), undefined);
   assert.equal(f.snapshot().hidden, true);
-  assert.equal(f.update(1400, false)?.value, 24);
+  assert.equal(f.update(1400)?.value, 24);
 });
+
 test('Ungültige Zeiten, Punkte und IDs werden abgewiesen; inaktive Zeit macht keinen Fortschritt', () => {
   for (const key of ['warningMs', 'insideMs', 'points'])
     assert.throws(() => new FridgeRummaging('f', { ...FRIDGE_RULES, [key]: -1 }));
   assert.throws(() => new FridgeRummaging(''));
   const f = fridge();
 
-  f.update(500, true);
+  bump(f);
+  bump(f);
   const before = f.snapshot();
 
-  f.update(NaN, true);
-  f.update(-1, true);
-  f.update(0, true);
+  f.update(NaN);
+  f.update(-1);
+  f.update(0);
   assert.deepEqual(f.snapshot(), before);
 });
 test('Erst echter Innenraumschaden entdeckt die stabile Variante; bisherige Ziele bleiben eingefroren', () => {
@@ -120,7 +154,7 @@ test('Fester Kühlschrank und offene Tür müssen vollständig in den Raum passe
   const { OBJECTS } = await import('../../src/content/objects/catalog.ts');
   const { resolveRoom } = await import('../../src/game/content/resolve-room.ts');
 
-  for (const change of [{ height: 310 }, { x: 1140 }]) {
+  for (const change of [{ height: 310 }, { x: 800 }]) {
     const room = {
       ...KITCHEN_PREVIEW,
       platforms: KITCHEN_PREVIEW.platforms.map((p) =>
