@@ -8,13 +8,9 @@ Deutsch ist die Standardsprache für Projektdokumentation, neue Issue-Titel und 
 
 Git-Identitäten müssen wahrheitsgemäß bleiben; standardmäßig keine Attribution-Trailer wie `AI-assisted-by` ergänzen. Keine Secrets oder echten Gesprächsprotokolle committen.
 
-Jeder normale PR enthält zusätzlich genau einen englischen Conventional-Commit-Eintrag im
-`BEGIN_COMMIT_OVERRIDE`-/`END_COMMIT_OVERRIDE`-Block der Vorlage. PR-Titel und
-Beschreibung bleiben Deutsch; die Release Note wird Englisch geprüft. Issue-Verweise
-auch innerhalb des Blocks erhalten. Beim Squash-Merge denselben englischen Betreff
-verwenden, im Body nur Verweise statt wiederholter Commit-Titel. Der CI-Check prüft
-Struktur und Eindeutigkeit; den englischen Wortlaut prüft die Review. Vollständiger
-Vertrag und Beispiele: [Release Notes](docs/deployment.md#englische-release-notes-ohne-doppeleinträge).
+Normale PRs verwenden die [PR-Vorlage](.github/pull_request_template.md), einschließlich
+des einzelnen englischen Commit-Overrides. Der verbindliche Vertrag für Release Note
+und Squash-Merge steht unter [Release Notes](docs/deployment.md#englische-release-notes-ohne-doppeleinträge).
 
 ## Änderungen vorbereiten
 
@@ -22,9 +18,28 @@ Vertrag und Beispiele: [Release Notes](docs/deployment.md#englische-release-note
 
 Jeder Implementierungs-PR verweist auf sein Issue: `Refs #N` für Teilschritte, `Closes #N` nur bei vollständiger Umsetzung mit Merge nach `main`. Zusätzlich den direkten Issue-Link angeben. PR-Beschreibungen erklären das konkrete Problem, das resultierende Verhalten und die tatsächlich ausgeführte Validierung.
 
+## Aufgaben abgrenzen
+
+| Auftrag                | Vorgehen und Abschluss                                                                                                                                                                                                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Analyse / Issueplanung | Relevante Quellen und vorhandene Issues lesen, Befunde von Vermutungen trennen, konkrete Aufgaben erstellen oder ergänzen. Zusammengehörige Leseabfragen bündeln und die gespeicherten Änderungen einmal abschließend prüfen; ohne Codeänderung kein vollständiger Testlauf. |
+| Dokumentation          | Die zuständige Anleitung aktualisieren; Sprache, Aussagen, Links und Format prüfen. Bereits bestätigte Fakten weiterverwenden, solange sich ihre Grundlage nicht geändert hat.                                                                                               |
+| Code / Tooling         | Einen nachvollziehbaren Verhaltensschritt umsetzen, gezielt prüfen und auf dem finalen Stand die vollständige Abschlussprüfung ausführen. Betroffene Dokumentation im selben PR aktualisieren.                                                                               |
+
+Implementierungs-Issues beschreiben das gewünschte Verhalten, die betroffenen Bereiche
+und wenige überprüfbare Abnahmekriterien. Die vorhandenen [Bug-](.github/ISSUE_TEMPLATE/bug_report.yml)
+und [Featurevorlagen](.github/ISSUE_TEMPLATE/feature_request.yml) unterstützen diesen Einstieg;
+technische Umsetzungsschritte und Abhängigkeiten bei der Triage ergänzen. Große Umbauten
+in einzeln funktionierende, reviewbare Schritte teilen. `Refs` kennzeichnet Teilschritte;
+das übergeordnete Issue erst bei vollständiger Abnahme schließen. Neue Objekte benötigen
+zusätzlich den [Wechselwirkungsvertrag](src/content/README.md#neue-objekte-gegenseitige-einwirkungen-planen).
+
 ## Prüfen und Review
 
-Für Code- oder Tooling-Änderungen `npm ci` und vor Erstellen/Aktualisieren des PRs `npm run check:pr` ausführen: vollständige Projekt-QA und alle E2E-Szenarien lokal. Tatsächliche Ergebnisse im PR dokumentieren. Bei Bewegungs- oder Physikänderungen zusätzlich den [manuellen Spieltest](docs/qa.md#manueller-spieltest) durchführen. Bei Gameplay-, Rendering- oder Teständerungen zusätzlich `npm run test:e2e` ausführen; Installation und Debugging stehen in der [QA-Dokumentation](docs/qa.md#lokal-prüfen). Bei reinen Dokumentationsänderungen Sprache, Aussagen und Links prüfen.
+Prüfumfang, gezielte Aufrufe und zusätzliche manuelle Prüfungen stehen verbindlich in
+[QA: Lokal prüfen](docs/qa.md#lokal-prüfen). Während der Umsetzung passende Einzelprüfungen
+verwenden; der finale vollständige Lauf enthält bereits QA und Browserprüfungen.
+Tatsächliche Ergebnisse und verbleibende Lücken kurz im PR nennen.
 
 Sara übernimmt ihre Issues und PRs als `Sara-Pixel42`; fertige PRs gehen zur Review an `Skanky0815`, sofern Rico niemand anderen bestimmt. Issue, Branch und PR nachvollziehbar verknüpfen. Bestehende Branches nicht für eine Verknüpfung löschen oder neu erstellen; bei fehlender API-Unterstützung die Grenze und den direkten Branch-Link im Issue dokumentieren. Review- und Branch-Schutzregeln bleiben verbindlich.
 
@@ -32,11 +47,21 @@ Die Konventionen sind aus [The Sara Protocol](https://github.com/Skanky0815/the-
 
 ## Lokale Prüfung vor Push
 
-Einmalig Node 22/Abhängigkeiten und Chromium vorbereiten (`npm ci`, `npx playwright install chromium`), dann `npm run hooks:install` ausführen. Der versionierte native `pre-push`-Hook startet `npm run check:pr` und blockiert bei Fehlern. Kleine Commits bleiben ohne vollständigen Testlauf möglich. Der Installer überschreibt weder einen anderen `core.hooksPath` noch einen bestehenden nativen `pre-push`-Hook. Kein automatisches Verändern der Git-Konfiguration bei `npm ci`.
+Die [QA-Voraussetzungen](docs/qa.md#lokal-prüfen) einmalig vorbereiten, dann
+`npm run hooks:install` ausführen. Der versionierte native `pre-push`-Hook startet
+`npm run check:pr` und blockiert bei Fehlern. Kleine Commits bleiben ohne vollständigen
+Testlauf möglich. Der Installer überschreibt weder einen anderen `core.hooksPath`
+noch einen bestehenden nativen Hook. Kein automatisches Verändern der Git-Konfiguration
+bei `npm ci`.
 
-Der Hook prüft den aktuellen HEAD mit sauberem getracktem Arbeitsstand; Pushes anderer Commits werden abgewiesen, reine Löschungen benötigen keine Tests. Ungetrackte Dateien dürfen keine fehlenden Build-Eingaben des Commits ersetzen. Hooks sind eine lokale Hilfe und können umgangen werden. Bei GitHub-API-Änderungen läuft kein lokaler Git-Hook: denselben Prüfbefehl ausdrücklich vor Veröffentlichung ausführen. Keine alten Testergebnisse als frischen Nachweis verwenden.
+Der Hook prüft den aktuellen HEAD mit sauberem getracktem Arbeitsstand; Pushes anderer Commits werden abgewiesen, reine Löschungen benötigen keine Tests. Ungetrackte Dateien dürfen keine fehlenden Build-Eingaben des Commits ersetzen. Hooks sind eine lokale Hilfe und können umgangen werden. Bei Code-/Toolingänderungen über die GitHub-API läuft kein lokaler Git-Hook: die vollständige Abschlussprüfung ausdrücklich vor Veröffentlichung ausführen. Keine alten Testergebnisse als frischen Nachweis verwenden.
 
-PR-CI prüft Quality und die `@smoke`-Auswahl auf einem Browser-Runner; Main-CI wiederholt nur Quality. Manuelle QA und Release vor Veröffentlichung prüfen alle Szenarien auf den konfigurierten Shards, beim Release mit Produktionszeiten. Details: [QA](docs/qa.md#ci-und-runnerverbrauch).
+Der Hook läuft weiterhin bei jedem passenden Push; er besitzt keinen Ergebnis-Cache.
+Ein separater vollständiger Vorlauf ist dafür nicht erforderlich. Auch Dokumentations-
+Pushes lösen einen installierten Hook aus; diese Dokumentationsänderung ändert dessen
+Verhalten nicht. Die leichtgewichtige Dokumentationsprüfung gilt für den fachlich
+nötigen Prüfumfang, nicht als Anweisung zum Umgehen eines installierten Hooks.
+CI-Profile und Runnerumfang: [QA](docs/qa.md#ci-und-runnerverbrauch).
 
 ## Code-Stil und Releases
 

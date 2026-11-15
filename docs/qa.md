@@ -3,30 +3,69 @@
 ## Lokal prüfen
 
 Die verfügbaren Skripte sind in [package.json](../package.json) definiert.
-Vor einem Code-/Tooling-PR:
+Einmalig nach Checkout bzw. bei geänderten Abhängigkeiten `npm ci` ausführen;
+Chromium für Browserprüfungen installieren:
 
 ```sh
 npm ci
 npx playwright install chromium
+```
+
+Vor Erstellen oder Aktualisieren eines Code-/Tooling-PRs auf dem finalen Stand:
+
+```sh
 npm run check:pr
 ```
 
-`check:pr` führt Formatierung, Lint, CI-Gate-/Hook-Tests, Unit-Tests,
-Typprüfung, Produktionsbuild und die vollständige Browsersuite aus. Bei reinen
+`check:pr` enthält Formatierung, Lint, CI-Gate-/Hook-Tests, Unit-Tests,
+Typprüfung, Produktionsbuild und die vollständige Browsersuite. Ein zusätzlicher
+vollständiger QA- oder E2E-Vorlauf ist nicht nötig. Neue Änderungen, Fehler oder
+offene Befunde erfordern passende erneute Prüfungen; keine alten Ergebnisse als
+Nachweis für einen geänderten Stand verwenden. Bei Bewegung/Physik zusätzlich den
+[manuellen Spieltest](#manueller-spieltest) durchführen.
+
+Bei reiner Analyse/Issuepflege ohne Dateiänderung entfällt der Testlauf. Bei reinen
 Dokumentationsänderungen Sprache, Fakten, Formatierung und interne Links prüfen;
-kein Browserlauf allein wegen Markdown. Der aktivierte native Pre-Push-Hook
-unterstützt lokale Git-Pushes, nicht GitHub-API-Pushes; siehe
+kein Browserlauf allein wegen Markdown. Nur betroffene Dateien mit Prettier prüfen,
+etwa `npx prettier --check AGENTS.md CONTRIBUTING.md docs/qa.md`.
+Der aktivierte native Pre-Push-Hook führt die Vollprüfung beim lokalen Push aus;
+bei GitHub-API-Veröffentlichung muss sie für Code-/Toolingänderungen ausdrücklich
+vorher laufen. Hook-Verhalten und Grenzen:
 [CONTRIBUTING](../CONTRIBUTING.md#lokale-prüfung-vor-push).
 
-Für gezielte Diagnose:
+## Gezielt prüfen
+
+Während der Umsetzung die nächstliegende Prüfung auswählen und bei gemeinsam
+benutzten Modulen die betroffenen Verbraucher einbeziehen. Die Beispiele sind
+Einstiegspunkte, kein vollständiges Testinventar und kein Ersatz für `check:pr`.
+Dateien und Assertions unter [tests](../tests/) sowie [package.json](../package.json)
+bleiben maßgeblich. Selektive Unit-Dateien direkt an Node übergeben: Das vorhandene
+`test:unit`-Skript enthält bereits den Glob für die gesamte Suite.
+
+| Bereich                     | Beispiele für kurze Rückkopplung                                                                                                                                                                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Landingpage / gemeinsame UI | `npm run test:e2e -- tests/e2e/landing.spec.ts tests/e2e/footer.spec.ts`; bei gemeinsamem Footer auch die betroffenen Spiel-/Rechtsseiten berücksichtigen.                                                                                                   |
+| Gameplay / Input / Physik   | `node --experimental-strip-types --test tests/unit/input-state.test.ts tests/unit/fridge.test.ts` und `npm run test:e2e -- tests/e2e/movement.spec.ts tests/e2e/fridge.spec.ts`; je nach Änderung Kontakt-, Pause- und Resetfälle ergänzen.                  |
+| Fortschritt / Speicher      | `node --experimental-strip-types --test tests/unit/achievements.test.ts tests/unit/storage-choice.test.ts` und `npm run test:e2e -- tests/e2e/achievements.spec.ts tests/e2e/storage-choices.spec.ts`; Freischaltung, Anzeige und Reload gemeinsam beachten. |
+| Build / Release / Tools     | `npm run test:ci` für die vorhandenen CI-/Releaseverträge; `npm run build` und bei geänderten Buildgrenzen `npm run test:e2e -- tests/e2e/build-isolation.spec.ts`. Asset-Tools mit den jeweiligen Familienprüfungen und reproduzierten Exporten prüfen.     |
+
+Zwei kleine Beispiele für Umfang und Abschluss:
+
+- **Footer-Link korrigieren:** gemeinsame Quelle und betroffene Seiten prüfen,
+  Landingpage-/Footerfälle aus der Tabelle wählen und Ziel/Sprachvarianten
+  kontrollieren. Abnahme: der Link führt auf allen betroffenen Seiten zum richtigen
+  Ziel. Codeänderung mit vollständigem `check:pr` abschließen.
+- **Einmalige Erfolgsfreischaltung ändern:** passende Unitfälle sowie den
+  Achievement-/Speicherablauf wählen. Abnahme: Freischaltung und Banner passieren
+  einmalig; Reload erhält den bestätigten Stand nur bei gewählter Speicherung.
+  Codeänderung ebenfalls mit vollständigem `check:pr` abschließen.
+
+Weitere Diagnoseoptionen:
 
 ```sh
 npm run lint
 npm run typecheck
-npm run test:unit
-npm run test:ci
-npm run test:e2e -- tests/e2e/movement.spec.ts
-npm run test:e2e -- --grep 'Sofa:'
+npm run test:e2e -- tests/e2e/couch.spec.ts --grep 'Sofa:'
 npm run test:e2e -- --workers=1
 npm run test:e2e -- --repeat-each=3
 npm run test:e2e:debug
