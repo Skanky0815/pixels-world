@@ -71,7 +71,7 @@ test(
   { tag: '@smoke' },
   async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('pixels-world.difficulty', 'hard'));
-    await page.goto('/play.html');
+    await page.goto('/play.html?room-seed=pantry-hard-17');
     await waitForGame(page, false);
     await page.locator('[data-menu-play]').click();
     await page.locator('[data-room-choice="kitchen"]').click();
@@ -89,9 +89,7 @@ test(
     await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
     expect((await observe(page)).room.id).toBe('kitchen');
     expect((await observe(page)).room.artReady).toBe(true);
-    await page.clock.runFor(32);
     await climbToCounter(page);
-    await move(page, ['ArrowRight'], (s) => s.pixel.x >= 850);
     await until(page, (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated');
     await move(page, ['Space'], (s) => s.result !== null);
     const result = await observe(page);
