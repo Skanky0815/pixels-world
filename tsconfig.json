@@ -10,5 +10,5 @@
     "lib": ["ES2022", "DOM"],
     "allowImportingTsExtensions": true
   },
-  "include": ["game", "tests", "playwright.config.ts", "vite.config.ts"]
+  "include": ["game", "tools", "tests", "playwright.config.ts", "vite.config.ts"]
 }

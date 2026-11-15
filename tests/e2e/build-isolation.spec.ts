@@ -106,11 +106,13 @@ test(
   },
 );
 
-test('Verschobene HTML-Quellen behalten direkte öffentliche URLs und gebündelte Ressourcen', async ({
-  request,
-}) => {
-  await checkPublicPages(request);
-});
+test(
+  'Verschobene HTML-Quellen behalten direkte öffentliche URLs und gebündelte Ressourcen',
+  { tag: '@integration' },
+  async ({ request }) => {
+    await checkPublicPages(request);
+  },
+);
 
 // eslint-disable-next-line max-lines-per-function -- Direkte Seitenaufrufe prüfen denselben Routingvertrag in drei Auslieferungsarten.
 async function checkPublicPages(request: import('@playwright/test').APIRequestContext) {

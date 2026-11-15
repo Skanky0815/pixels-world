@@ -1,7 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
+import { browserProfile } from './tools/qa-profiles';
+
+const scope = process.env.E2E_SCOPE || 'all';
 
 export default defineConfig({
   testDir: './tests/e2e',
+  ...browserProfile(scope),
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
@@ -31,18 +35,12 @@ export default defineConfig({
       ]
     : [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: [
-    ...(process.env.E2E_SCOPE === 'smoke'
+    ...(scope !== 'all'
       ? []
       : [
           {
             command: 'node tests/e2e/fixtures/pwa-update-server.mjs',
             url: 'http://127.0.0.1:4178/',
-            reuseExistingServer: false,
-            timeout: 60_000,
-          },
-          {
-            command: 'npm run dev -- --port 4176 --strictPort',
-            url: 'http://127.0.0.1:4176/animation-compare.html',
             reuseExistingServer: false,
             timeout: 60_000,
           },
@@ -54,6 +52,12 @@ export default defineConfig({
             timeout: 60_000,
           },
         ]),
+    {
+      command: 'npm run dev -- --port 4176 --strictPort',
+      url: 'http://127.0.0.1:4176/animation-compare.html',
+      reuseExistingServer: false,
+      timeout: 60_000,
+    },
     {
       command:
         'npm run build:e2e && npm exec vite preview -- --host 127.0.0.1 --port 4174 --strictPort --outDir dist-e2e',

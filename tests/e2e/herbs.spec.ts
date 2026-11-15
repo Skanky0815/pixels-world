@@ -20,7 +20,7 @@ async function start(page: Page, room: string) {
 for (const herb of ['basil', 'parsley', 'mint'])
   test(
     `${herb}: auf erhöhter Auflage knabbern, wackeln, kippen, Pause und Reset`,
-    { tag: '@smoke' },
+    { tag: herb === 'basil' ? '@smoke' : [] },
     async ({ page }, info) => {
       await start(page, `herb-${herb}`);
       await until(page, (s) => s.plants[0].state === 'nibbling');

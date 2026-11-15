@@ -6,7 +6,7 @@ for (const [room, x] of [
   ['living-room', 650],
   ['cozy-remix', 910],
 ] as const) {
-  test(`Bücher: abbrechbares Wackeln und einmaliger Umsturz in ${room} @smoke`, async ({
+  test(`Bücher: abbrechbares Wackeln und einmaliger Umsturz in ${room}${room === 'living-room' ? ' @smoke' : ''}`, async ({
     page,
     // eslint-disable-next-line max-lines-per-function -- Echte Bewegung, Kontaktabbruch, Pause, Umsturz und Reset prüfen denselben persistenten Stapel.
   }) => {

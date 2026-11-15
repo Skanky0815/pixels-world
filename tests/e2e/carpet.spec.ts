@@ -5,8 +5,10 @@ import { CARPET_RULES } from '../../game/play/interactions/carpet-hairball';
 const rug = (s: Awaited<ReturnType<typeof state>>) => s.carpets[0];
 
 for (const room of ['living-room', 'cozy-remix']) {
-  // eslint-disable-next-line max-lines-per-function -- Anlauf, Abbruch, Pose, einmaliger Fleck, Albumereignis und Reset werden gemeinsam mit echten Wegen geprüft.
-  test(`Teppich: Abbruch, Würgen und einmaliger Haarballen im ${room} @smoke`, async ({ page }) => {
+  test(`Teppich: Abbruch, Würgen und einmaliger Haarballen im ${room}${room === 'living-room' ? ' @smoke' : ''}`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Anlauf, Abbruch, einmaliger Fleck und Reset bilden denselben realen Spielablauf.
+  }) => {
     // Several real room crossings plus pause/reset nearly exhaust the default budget on CI.
     // Keep each action's 15-second polling limit; only this complete scenario gets more time.
     test.setTimeout(90_000);

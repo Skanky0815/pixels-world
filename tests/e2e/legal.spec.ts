@@ -4,35 +4,39 @@ const { version } = JSON.parse(
   readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
 ) as { version: string };
 
-test('Rechtsseiten öffnen aus Einführung und Spiel im selben Tab', async ({
-  page,
-  // eslint-disable-next-line max-lines-per-function -- Navigation aus beiden Spielzuständen, derselbe Tab und funktionsfähige Rücklinks werden gemeinsam geprüft.
-}) => {
-  for (const playing of [false, true]) {
-    for (const [title, path] of [
-      ['Impressum', 'impressum.html'],
-      ['Datenschutz', 'datenschutz.html'],
-    ]) {
-      if (playing) await start(page);
-      else await loadIntro(page);
-      const pages = page.context().pages().length;
+test(
+  'Rechtsseiten öffnen aus Einführung und Spiel im selben Tab',
+  { tag: '@integration' },
+  async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Navigation aus beiden Spielzuständen, derselbe Tab und funktionsfähige Rücklinks werden gemeinsam geprüft.
+  }) => {
+    for (const playing of [false, true]) {
+      for (const [title, path] of [
+        ['Impressum', 'impressum.html'],
+        ['Datenschutz', 'datenschutz.html'],
+      ]) {
+        if (playing) await start(page);
+        else await loadIntro(page);
+        const pages = page.context().pages().length;
 
-      await page.getByRole('link', { name: title, exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`/${path}$`));
-      expect(page.context().pages()).toHaveLength(pages);
-      await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
-      await expect(
-        page.getByRole('link', { name: 'rico-schulz@web.de', exact: true }),
-      ).toHaveAttribute('href', 'mailto:rico-schulz@web.de');
-      await expect(page.locator('canvas, script')).toHaveCount(0);
-      await expect(page.locator('a[href$="play.html"]')).toHaveCount(0);
-      await page.getByRole('link', { name: 'Pixel’s World', exact: true }).click();
-      await expect(page).toHaveURL('http://127.0.0.1:4174/');
-      await expect(page.locator('h1')).toHaveText('Ein Zimmer. Eine Katze. Dein Chaos.');
-      await expect(page.locator('canvas')).toHaveCount(0);
+        await page.getByRole('link', { name: title, exact: true }).click();
+        await expect(page).toHaveURL(new RegExp(`/${path}$`));
+        expect(page.context().pages()).toHaveLength(pages);
+        await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+        await expect(
+          page.getByRole('link', { name: 'rico-schulz@web.de', exact: true }),
+        ).toHaveAttribute('href', 'mailto:rico-schulz@web.de');
+        await expect(page.locator('canvas, script')).toHaveCount(0);
+        await expect(page.locator('a[href$="play.html"]')).toHaveCount(0);
+        await page.getByRole('link', { name: 'Pixel’s World', exact: true }).click();
+        await expect(page).toHaveURL('http://127.0.0.1:4174/');
+        await expect(page.locator('h1')).toHaveText('Ein Zimmer. Eine Katze. Dein Chaos.');
+        await expect(page.locator('canvas')).toHaveCount(0);
+      }
     }
-  }
-});
+  },
+);
 
 test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode direkt erreichbar', async ({
   page,
@@ -80,34 +84,39 @@ test('Rechtsseiten sind im Root- und Pages-Unterpfad lesbar und ohne Spielcode d
   }
 });
 
-test('Produktionsspiel lädt nur eigene Ressourcen ohne automatische Speicherung laufender Runden', async ({
-  page,
-  // eslint-disable-next-line max-lines-per-function -- Dokumentnavigation, Datenschutzbeobachtung und vollständige Browser-Assertions bleiben gemeinsam nachvollziehbar.
-}) => {
-  const external: string[] = [];
+test(
+  'Produktionsspiel lädt nur eigene Ressourcen ohne automatische Speicherung laufender Runden',
+  { tag: '@integration' },
+  async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Dokumentnavigation, Datenschutzbeobachtung und vollständige Browser-Assertions bleiben gemeinsam nachvollziehbar.
+  }) => {
+    const external: string[] = [];
 
-  page.on('request', (request) => {
-    const url = new URL(request.url());
+    page.on('request', (request) => {
+      const url = new URL(request.url());
 
-    if (url.protocol.startsWith('http') && url.hostname !== '127.0.0.1') external.push(url.origin);
-  });
-  await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
-  await waitForLoadingScreen(page);
-  await page.clock.runFor(1000);
-  await expect(page.locator('.game-menu')).toBeVisible();
-  await page.locator('#game').focus();
-  await page.keyboard.down('Space');
-  await page.clock.runFor(200);
-  await page.keyboard.up('Space');
-  await page.clock.runFor(3000);
-  const storage = await page.evaluate(async () => ({
-    local: localStorage.length,
-    session: sessionStorage.length,
-    databases: (await indexedDB.databases()).length,
-    cookies: document.cookie,
-  }));
+      if (url.protocol.startsWith('http') && url.hostname !== '127.0.0.1')
+        external.push(url.origin);
+    });
+    await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
+    await waitForLoadingScreen(page);
+    await page.clock.runFor(1000);
+    await expect(page.locator('.game-menu')).toBeVisible();
+    await page.locator('#game').focus();
+    await page.keyboard.down('Space');
+    await page.clock.runFor(200);
+    await page.keyboard.up('Space');
+    await page.clock.runFor(3000);
+    const storage = await page.evaluate(async () => ({
+      local: localStorage.length,
+      session: sessionStorage.length,
+      databases: (await indexedDB.databases()).length,
+      cookies: document.cookie,
+    }));
 
-  expect(storage).toEqual({ local: 0, session: 0, databases: 0, cookies: '' });
-  expect(await page.context().cookies()).toEqual([]);
-  expect(external).toEqual([]);
-});
+    expect(storage).toEqual({ local: 0, session: 0, databases: 0, cookies: '' });
+    expect(await page.context().cookies()).toEqual([]);
+    expect(external).toEqual([]);
+  },
+);
