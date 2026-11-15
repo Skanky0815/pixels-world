@@ -236,6 +236,9 @@ verborgen, nicht die Figuren. `any-pointer: coarse` aktiviert dieselbe Oberfläc
 auch auf breiten Tablets und Hybrid-Geräten; die Bildschirmbreite allein bestimmt
 den Eingabemodus nicht. Maus und Tastatur bleiben parallel nutzbar. Große
 Touch-Flächen erhalten über CSS-Variablen größere Tasten mit mehr Abstand.
+Die folgende Handykamera besitzt einen kleinen Ruhebereich von vier Spielpixeln
+pro Achse, damit kleinste Standkorrekturen nicht das ganze Zimmer mitziehen.
+Die Desktopkamera und die Raumübersicht behalten ihre bisherige Führung.
 Rotation erhält die Szene und löst Eingaben. Ein spielweiter `ResizeObserver`
 aktualisiert Phasers FIT-Skalierung nach Größenänderungen des CSS-Spielfensters,
 auch wenn das Grid erst nach dem Browser-Resize-Ereignis seine Größe erreicht.
