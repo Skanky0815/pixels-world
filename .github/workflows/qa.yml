@@ -3,73 +3,13 @@ name: QA
 on:
   push:
     branches: [main]
-    paths:
-      - 'game/**'
-      - 'assets/**'
-      - 'public/**'
-      # Reference/source artwork and documentation are not runtime or test inputs.
-      - '!assets/**/reference-*/**'
-      - '!assets/**/*-source*.png'
-      - '!assets/**/*-preview*.png'
-      - '!assets/**/*.md'
-      - '!assets/banner.*'
-      - 'tests/**'
-      - 'tools/**'
-      - '*.html'
-      - '*.css'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'release-please-config.json'
-      - '.release-please-manifest.json'
-      - 'tsconfig*.json'
-      - 'vite.config.*'
-      - 'eslint.config.*'
-      - '.prettier*'
-      - 'playwright.config.*'
-      - '.npmrc'
-      - '.nvmrc'
-      - '.node-version'
-      - '.github/workflows/**'
-      - '.github/scripts/**'
-      - '.github/actions/**'
-      - '.githooks/**'
   pull_request:
-    paths:
-      - 'game/**'
-      - 'assets/**'
-      - 'public/**'
-      # Reference/source artwork and documentation are not runtime or test inputs.
-      - '!assets/**/reference-*/**'
-      - '!assets/**/*-source*.png'
-      - '!assets/**/*-preview*.png'
-      - '!assets/**/*.md'
-      - '!assets/banner.*'
-      - 'tests/**'
-      - 'tools/**'
-      - '*.html'
-      - '*.css'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'release-please-config.json'
-      - '.release-please-manifest.json'
-      - 'tsconfig*.json'
-      - 'vite.config.*'
-      - 'eslint.config.*'
-      - '.prettier*'
-      - 'playwright.config.*'
-      - '.npmrc'
-      - '.nvmrc'
-      - '.node-version'
-      - '.github/workflows/**'
-      - '.github/scripts/**'
-      - '.github/actions/**'
-      - '.githooks/**'
   workflow_dispatch:
     inputs:
       scope:
-        description: Vollprüfung oder kurze Prüfung eines vorbereiteten Versions-PRs
+        description: Vollprüfung, gemeinsame Smoke-Auswahl oder gezielter Anwendungsbereich
         type: choice
-        options: [all, smoke]
+        options: [all, smoke, landing, play, both]
         default: all
         required: true
       repetitions:
@@ -101,8 +41,6 @@ on:
 
 env:
   PIXELS_RELEASE_TAG: ${{ inputs.release_tag || '' }}
-  # Full reusable QA overrides event defaults; main pushes intentionally omit browsers.
-  E2E_SCOPE: ${{ inputs.full_round && 'all' || github.event_name == 'pull_request' && 'smoke' || github.event_name == 'push' && 'none' || inputs.scope == 'smoke' && 'smoke' || 'all' }}
   E2E_REPEATS: ${{ inputs.repetitions || '1' }}
   E2E_FULL_ROUND: ${{ (inputs.full_round || inputs.round_mode == 'full') && '1' || '0' }}
 
@@ -115,7 +53,35 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 
 jobs:
+  select:
+    name: QA-Umfang bestimmen
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      scope: ${{ steps.selection.outputs.scope }}
+      quality: ${{ steps.selection.outputs.quality }}
+      shards: ${{ steps.selection.outputs.shards }}
+      total: ${{ steps.selection.outputs.total }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Vollständigen Diff und Testprofile auswerten
+        id: selection
+        env:
+          QA_EVENT: ${{ github.event_name }}
+          QA_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          QA_HEAD_SHA: ${{ github.sha }}
+          QA_FULL_ROUND: ${{ inputs.full_round || false }}
+          QA_REQUESTED_SCOPE: ${{ inputs.scope || '' }}
+        run: node --experimental-strip-types tools/select-qa.mjs
+
   quality:
+    needs: select
+    if: needs.select.outputs.quality == 'true'
     name: Lint, types and build
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -166,7 +132,10 @@ jobs:
         uses: ./.github/actions/npm-audit
 
   e2e-shard:
-    if: github.event_name != 'push' || inputs.full_round
+    needs: select
+    if: needs.select.result == 'success' && needs.select.outputs.scope != 'none'
+    env:
+      E2E_SCOPE: ${{ needs.select.outputs.scope }}
     name: Playwright (Chromium, Teil ${{ matrix.shard }}/${{ matrix.total }})
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -176,8 +145,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: ${{ fromJSON((github.event_name == 'pull_request' || inputs.scope == 'smoke') && !inputs.full_round && '[1]' || '[1,2,3,4]') }}
-        total: ${{ fromJSON((github.event_name == 'pull_request' || inputs.scope == 'smoke') && !inputs.full_round && '[1]' || '[4]') }}
+        shard: ${{ fromJSON(needs.select.outputs.shards) }}
+        total: ['${{ needs.select.outputs.total }}']
         # Keep this version and the image digest aligned with package-lock.json.
         playwright: ['1.64.1']
     steps:
@@ -206,7 +175,6 @@ jobs:
         run: |
           case "$E2E_REPEATS" in 1|2|3) ;; *) echo 'Ungültige Durchlaufzahl'; exit 1 ;; esac
           set -- --repeat-each="$E2E_REPEATS" --shard="$SHARD/$SHARD_TOTAL"
-          if [ "$E2E_SCOPE" = smoke ]; then set -- "$@" --grep @smoke; fi
           npm run test:e2e -- "$@"
       - name: Geprüften Pages-Build bereitstellen
         if: matrix.shard == 1 && env.E2E_FULL_ROUND == '1'
@@ -258,11 +226,15 @@ jobs:
   e2e:
     name: Playwright (Chromium)
     if: ${{ always() }}
-    needs: [quality, e2e-shard]
+    needs: [select, quality, e2e-shard]
+    env:
+      E2E_SCOPE: ${{ needs.select.outputs.scope }}
+      QUALITY_REQUIRED: ${{ needs.select.outputs.quality }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Testreports einsammeln
+        if: ${{ always() && needs.select.outputs.quality == 'true' }}
         id: reports
         continue-on-error: true
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -293,15 +265,16 @@ jobs:
           echo '### Gesamtübersicht · tatsächliche Testausführungen' >> "$GITHUB_STEP_SUMMARY"
           if [ "$SUMMARY_OUTCOME" = success ]; then
             echo "Passed: $PASSED · Failed: $FAILED · Skipped: $SKIPPED" >> "$GITHUB_STEP_SUMMARY"
-          else
+          elif [ "$QUALITY_REQUIRED" = true ]; then
             echo '::warning::Gesamtübersicht konnte nicht erzeugt werden.'
             echo 'Keine auswertbare Gesamtübersicht vorhanden.' >> "$GITHUB_STEP_SUMMARY"
           fi
-          reports=(qa-test-reports-unit/unit.tap)
+          reports=()
+          if [ "$QUALITY_REQUIRED" = true ]; then reports+=(qa-test-reports-unit/unit.tap); fi
           case "$E2E_SCOPE" in
-            smoke) reports+=(qa-test-reports-browser-1/playwright.xml) ;;
+            smoke|landing|play|both) reports+=(qa-test-reports-browser-1/playwright.xml) ;;
             all) reports+=(qa-test-reports-browser-{1..4}/playwright.xml) ;;
-            none) echo 'Main: keine Browsertests geplant; nur Qualitätsprüfungen und Unit-Tests ausgeführt.' >> "$GITHUB_STEP_SUMMARY" ;;
+            none) echo 'Keine Browserprüfung geplant (Main-Quality oder reine Dokumentation).' >> "$GITHUB_STEP_SUMMARY" ;;
             *) echo 'Unbekannter E2E-Prüfumfang'; exit 1 ;;
           esac
           for report in "${reports[@]}"; do
@@ -310,7 +283,7 @@ jobs:
               echo "**Unvollständig:** Report fehlt: $report" >> "$GITHUB_STEP_SUMMARY"
             fi
           done
-          if [ "$DOWNLOAD_OUTCOME" != success ]; then
+          if [ "$QUALITY_REQUIRED" = true ] && [ "$DOWNLOAD_OUTCOME" != success ]; then
             echo '**Unvollständig:** Artefaktdownload nicht erfolgreich.' >> "$GITHUB_STEP_SUMMARY"
           fi
           echo "Qualität: $QUALITY_RESULT · Browser-Shards: $SHARD_RESULT" >> "$GITHUB_STEP_SUMMARY"
@@ -320,8 +293,15 @@ jobs:
         env:
           QUALITY_RESULT: ${{ needs.quality.result }}
           SHARD_RESULT: ${{ needs.e2e-shard.result }}
+          SELECTION_RESULT: ${{ needs.select.result }}
         run: |
-          test "$QUALITY_RESULT" = success
+          test "$SELECTION_RESULT" = success
+          case "$E2E_SCOPE" in none|landing|play|both|smoke|all) ;; *) exit 1 ;; esac
+          case "$QUALITY_REQUIRED" in
+            true) test "$QUALITY_RESULT" = success ;;
+            false) test "$QUALITY_RESULT" = skipped; test "$E2E_SCOPE" = none ;;
+            *) exit 1 ;;
+          esac
           if [ "$E2E_SCOPE" = none ]; then
             test "$SHARD_RESULT" = skipped
           else

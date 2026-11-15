@@ -192,35 +192,70 @@ vollständigen Release-QA. Grundlage: [Playwright-Bildvergleiche](https://playwr
 
 ## CI und Runnerverbrauch
 
-Maßgeblich ist [.github/workflows/qa.yml](../.github/workflows/qa.yml):
+Maßgeblich sind [.github/workflows/qa.yml](../.github/workflows/qa.yml),
+[Pfadklassifikation](../tools/qa-selection.ts) und die gemeinsame
+[Testregistrierung](../tools/qa-profiles.ts). Der Workflow startet für jeden PR und
+Main-Push; der Auswahljob benötigt keine npm-Installation.
 
-| Anlass                       | Umfang                                                           |
-| ---------------------------- | ---------------------------------------------------------------- |
-| Pull Request                 | Quality und getaggte `@smoke`-Auswahl                            |
-| Main-Push                    | Quality; Browser bewusst nicht erneut geplant                    |
-| Manuelle QA                  | Standardmäßig Vollprüfung; Smoke-Profil für Versions-PRs wählbar |
-| Release vor Veröffentlichung | Vollständige Suite mit Produktionszeiten                         |
+| Änderung / Anlass                                                                    | Geplanter Umfang                                                                             |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| Nur Landingpage, Hilfe, Rechtsseiten oder deren Ressourcen                           | Quality und `landing`: statische Seiten plus echte gemeinsame Einstiegs-/Navigationsverträge |
+| Nur Spiel, Content oder Spielressourcen                                              | Quality und `play`: Spiel-Smoke plus ausdrücklich markierte `@integration`-Übergänge         |
+| Gemeinsame Styles, Sprache oder UI-Grundlagen; beide Bereiche geändert               | Quality und `both`: Landingpage-Prüfungen, Spiel-Smoke und Integration                       |
+| Build, Routing, PWA/Speicherwahl, Abhängigkeiten, QA-Werkzeuge oder unbekannte Pfade | Quality und `all`: vollständige Browsersuite                                                 |
+| Nur Dokumentation / ausgeschlossene Quellgrafiken                                    | Auswahljob und abgeschlossener Sammelcheck, ohne Quality-/Browserjob                         |
+| Main-Push                                                                            | Quality bei relevanten Änderungen, Browser bewusst nicht erneut geplant                      |
+| Manuelle QA                                                                          | Standardmäßig `all`; `landing`, `play`, `both` und `smoke` ausdrücklich wählbar              |
+| Release vor Veröffentlichung                                                         | Unbedingt `all` mit Produktionszeiten, unabhängig vom Diff und anderen Profileingaben        |
 
-Die lokale Vollprüfung trägt die breite PR-Abdeckung. Mehr Shards verkürzen
-Wartezeit, sparen aber nicht automatisch Runner-Minuten. Matrix, Worker,
-Playwright-Image und Digest ausschließlich im Workflow bzw. Lockfile pflegen;
-bei Updates gemeinsam abgleichen. Das offizielle Browser-Image vermeidet eine
-eigene Image-Pipeline. Diagnose nur aufgrund von Messungen verschlanken, niemals
-durch Zustandssetter, ausgelassene Interaktionen oder schwächere Assertions.
+Quality umfasst weiterhin die projektweiten Lint-, Format-, Unit-, CI-, Build-
+und Abhängigkeitsprüfungen. Die lokale Pflichtprüfung `npm run check:pr` erzwingt
+weiterhin alle Browserfälle. Für kurze Rückkopplung stehen zusätzlich bereit:
 
-Der Sammelcheck `Playwright (Chromium)` verlangt Quality und alle für das Profil
-geplanten Browserjobs. Nur das ausdrücklich geplante Auslassen auf Main ist
-zulässig; Fehler, Abbruch und unerwartetes Überspringen sind kein Erfolg.
-Pfadfilter in Push und PR müssen übereinstimmen. Referenz-/Quell-/Vorschaubilder,
-Asset-Markdown und Banner sind keine direkten Runtime-/Testimporte. Ein neues
-Runtime-Asset braucht einen nicht ausgeschlossenen Pfad; bei neuen Eingabepfaden
-beide Filter anpassen. Workflow-Änderungen prüft zusätzlich Actionlint.
+```sh
+npm run test:e2e:landing
+npm run test:e2e:play
+npm run test:e2e:smoke
+```
 
-Bei ausschließlich pfadgefilterter Dokumentation kann QA fehlen. Vor einem Release
-QA ausdrücklich für den genauen Main-Commit starten. Gefilterte Jobs nicht ohne
-immer gestarteten Gesamtcheck als verpflichtend konfigurieren: Sonst bleiben
-Docs-PRs auf Pending. Manuelle QA unter Actions → QA ist ungefiltert; GitHub-
-Pfadfilter besitzen Grenzen bei großen Vergleichen und sind keine Importanalyse.
+`smoke` entspricht der gemeinsamen Auswahl `both`. Gemischte Specs werden nicht
+pauschal anhand ihres Dateinamens weggelassen: `@integration` markiert beispielsweise
+Landingpage → Spielstart, Rechtslinks aus dem Spiel und öffentliche Buildpfade.
+Die Registrierung ordnet alle vorhandenen Specs zu; neue, noch nicht zugeordnete
+Testdateien erzwingen eine Vollprüfung. Änderungen an Spiel-Specs und gemeinsamen
+Testfixtures führen ebenfalls zur Vollprüfung, damit auch Fälle ohne Smoke-Tag
+aus der geänderten Datei tatsächlich laufen. Eine CI-Prüfung verhindert unbemerkte Lücken.
+
+Der Auswahljob vergleicht vollständige Git-Bäume: beim PR den Base-Commit mit dem
+getesteten Merge-Commit, beim Main-Push den vorherigen mit dem neuen Commit.
+Umbenennungen zählen als alter und neuer Pfad; Löschungen bleiben sichtbar.
+Ein fehlender Base-Commit wird gezielt nachgeladen. Ist der Diff nicht vollständig
+ermittelbar oder ein Pfad unbekannt, wird konservativ geprüft; Main behält seine
+Quality-only-Regel. Es gibt keine Dateizahlgrenze eines GitHub-Pfadfilters oder einer
+abgeschnittenen API-Ergebnisseite. Ungefilterte Workflow-Einstiege halten auch
+Docs-only-PRs aus dem Pending-Zustand heraus.
+
+Der bestehende Sammelcheck `Playwright (Chromium)` bleibt der stabile Gate-Name
+für [Main-Schutz](https://github.com/Skanky0815/pixels-world/issues/342). Er verlangt
+einen erfolgreichen Auswahljob sowie genau die geplanten Quality-/Browserjobs.
+Nur ausdrücklich geplante Auslassungen für Dokumentation und Main sind zulässig;
+Fehler, Abbruch und unerwartetes Überspringen blockieren. Profil und tatsächliche
+Ausführungen stehen im Actions-Bericht. Reportdarstellung bleibt ergänzend zu den
+verbindlichen Job-Ergebnissen.
+
+Die Vollsuite behält alle Varianten und Assertions. Im Spiel-Smoke genügt beim
+Bücher-/Teppichablauf ein repräsentatives Zimmer und beim gleichen Kräuteradapter
+eine Texturvariante; zweite Räume und weitere Kräuter bleiben in Browser-Vollsuite
+und Unit-/Contentprüfungen. Individuelle Kontakt-/Capture-/Kamera-/Resetverträge,
+beide Charakter-Bildvergleiche sowie Erfolg und Misserfolg werden weiter geprüft.
+Keine Zustandssetter, ausgelassenen Pflichtinteraktionen oder schwächeren Assertions.
+
+Selektive Profile starten nur E2E-, Pages- und DEV-Vorschau; die zusätzlichen
+Offline-/Release-Wechselserver werden ausschließlich für `all` aufgebaut. Matrix,
+Worker, Browser-Image und Digest bleiben im Workflow bzw. Lockfile; eine Aufteilung
+auf mehr Runner ist keine automatische Ersparnis an Runner-Minuten. Laufzeiten und
+Abdeckungsabgleich gehören ins Issue/PR, keine dauerhafte Benchmarktabelle hier.
+Workflowänderungen zusätzlich mit Actionlint prüfen.
 
 ## Ergebnisse und Abhängigkeiten
 

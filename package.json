@@ -13,7 +13,7 @@
     "build:e2e": "npm run typecheck && vite build --mode e2e --outDir dist-e2e",
     "test:e2e": "playwright test",
     "test:e2e:tablet:webkit": "E2E_TABLET_WEBKIT=1 playwright test",
-    "test:e2e:full": "E2E_FULL_ROUND=1 playwright test",
+    "test:e2e:full": "E2E_SCOPE=all E2E_FULL_ROUND=1 playwright test",
     "test:e2e:slow": "E2E_FULL_ROUND=1 playwright test --grep @slow",
     "test:e2e:debug": "playwright test --project=chromium --debug",
     "test:e2e:report": "playwright show-report",
@@ -21,10 +21,12 @@
     "test:unit": "node --experimental-strip-types --test tests/unit/*.test.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:pr": "npm run qa && npm run test:e2e",
+    "check:pr": "npm run qa && E2E_SCOPE=all npm run test:e2e",
     "hooks:install": "sh tools/install-hooks.sh",
-    "test:e2e:smoke": "playwright test --grep @smoke",
-    "test:ci": "bash tests/ci/ensure-main-qa.sh && bash tests/ci/release-gates.sh && bash tests/ci/prepare-release.sh && bash tests/ci/pre-push.sh && node tests/ci/qa-scope.test.mjs && bash tests/ci/auto-publish.sh && node tests/ci/release-flow.test.mjs && bash tests/ci/release-qa-dispatch.sh && node --test tests/ci/release-notes.test.mjs tests/ci/release-preparation.test.mjs"
+    "test:e2e:smoke": "E2E_SCOPE=smoke playwright test",
+    "test:e2e:landing": "E2E_SCOPE=landing playwright test",
+    "test:e2e:play": "E2E_SCOPE=play playwright test",
+    "test:ci": "bash tests/ci/ensure-main-qa.sh && bash tests/ci/release-gates.sh && bash tests/ci/prepare-release.sh && bash tests/ci/pre-push.sh && node --experimental-strip-types tests/ci/qa-scope.test.mjs && bash tests/ci/auto-publish.sh && node tests/ci/release-flow.test.mjs && bash tests/ci/release-qa-dispatch.sh && node --test tests/ci/release-notes.test.mjs tests/ci/release-preparation.test.mjs"
   },
   "dependencies": {
     "phaser": "^3.90.0"
