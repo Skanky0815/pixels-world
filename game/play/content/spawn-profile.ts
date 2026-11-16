@@ -1,5 +1,4 @@
-import { PANTRY_PROFILES } from '../assets/pantry-appearance.ts';
-import { DISH_PROFILES } from '../assets/dish-appearance.ts';
+import { objectDimensions } from './object-dimensions.ts';
 import { ASSETS } from '../assets/definitions.ts';
 import type { Capability, ObjectCatalog, ObjectDefinition } from './definitions.ts';
 
@@ -66,42 +65,6 @@ export function spawnSizeFor(width: number, height: number): SpawnSize {
   return 'large';
 }
 
-// eslint-disable-next-line complexity, max-lines-per-function -- Die vollständige Auswahl aller registrierten Objekttypen bleibt explizit.
-function objectSize(object: ObjectDefinition) {
-  if (object.kind === 'tablecloth')
-    return spawnSizeFor(object.geometry.width, object.geometry.hang);
-
-  if (object.kind === 'carpet') return spawnSizeFor(object.geometry.width, object.geometry.height);
-
-  if (object.kind === 'pantry') {
-    const shape = PANTRY_PROFILES[object.appearance];
-
-    return spawnSizeFor(shape.width, shape.height);
-  }
-
-  if (object.kind === 'dish') {
-    const shape = DISH_PROFILES[object.appearance];
-
-    return spawnSizeFor(shape.width, shape.height);
-  }
-
-  if (object.kind === 'trash-bin') return spawnSizeFor(48, 60);
-
-  if (object.kind === 'food-bag') return spawnSizeFor(32, 44);
-
-  if (object.kind === 'books') return spawnSizeFor(48, 36);
-
-  if (object.kind === 'picture') return spawnSizeFor(108, 112);
-
-  if (object.kind === 'couch')
-    return spawnSizeFor(object.geometry.width + 18, object.geometry.seatRise + 60);
-
-  if (object.kind === 'curtain') return spawnSizeFor(object.geometry.width, object.geometry.height);
-  const asset = object.kind === 'plant' ? ASSETS['catgrass-default'] : ASSETS['vase-default'];
-
-  return spawnSizeFor(asset.width, asset.height);
-}
-
 function validateProfile(value: unknown, path: string): asserts value is SpawnProfile {
   record(value, path);
 
@@ -129,13 +92,16 @@ function validateFixed(value: Record<string, unknown>, path: string) {
   if ('support' in value) fail(path, 'excluded profile cannot have random support');
 }
 
+// eslint-disable-next-line max-lines-per-function -- Kategorie, Variantenmaße und Freigabe werden gemeinsam gegen dasselbe Profil geprüft.
 export function validateObjectSpawn(object: ObjectDefinition, path: string) {
   validateProfile(object.spawn, `${path}.spawn`);
 
   if (object.spawn.category !== CATEGORIES[object.kind])
     fail(`${path}.spawn.category`, 'category does not match object');
 
-  if (object.spawn.size !== objectSize(object))
+  const size = objectDimensions(object);
+
+  if (object.spawn.size !== spawnSizeFor(size.width, size.height))
     fail(`${path}.spawn.size`, 'size does not match dimensions');
 
   if (object.spawn.random) validateRandomObject(object, `${path}.spawn`);

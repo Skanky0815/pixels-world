@@ -1,8 +1,6 @@
-import { PANTRY_PROFILES } from '../assets/pantry-appearance.ts';
+import { objectDimensions } from './object-dimensions.ts';
 import { overlaps, shuffled } from './slot-geometry.ts';
 import { populateWallSlots } from './wall-slots.ts';
-import { DISH_PROFILES } from '../assets/dish-appearance.ts';
-import { ASSETS } from '../assets/definitions.ts';
 import { filterSpawnCandidates, type SpawnSlotFilter } from './spawn-profile.ts';
 import { resolveRoom } from './resolve-room.ts';
 import type {
@@ -40,7 +38,7 @@ export function populateSpawnSlots(
   const resolved = resolveRoom(room, catalog);
 
   validateIds(room);
-  const occupied = reservedAreas(resolved.objects, room, resolved.goal.area);
+  const occupied = reservedAreas(resolved.objects, room, resolved.goal.area, catalog);
 
   occupied.push({ x: resolved.spawn.x - 26, y: resolved.spawn.bottom - 52, width: 52, height: 52 });
   const generated: ObjectInstance[] = [];
@@ -68,18 +66,22 @@ function reservedAreas(
   objects: readonly ResolvedObject[],
   room: RoomDefinition,
   goal: Bounds,
+  catalog: ObjectCatalog,
 ): Bounds[] {
   return [
     goal,
     ...room.platforms.map((p) => p.bounds),
-    ...objects.filter((o) => o.kind !== 'carpet' && o.kind !== 'tablecloth').map(objectArea),
+    ...objects
+      .filter((o) => o.kind !== 'carpet' && o.kind !== 'tablecloth')
+      .map((o) => objectArea(o, catalog)),
     ...room.decorations.flatMap((d) => (d.kind === 'rect' && d.supportedBy ? [d.bounds] : [])),
   ];
 }
 
-// eslint-disable-next-line max-lines-per-function -- Der Geometrievergleich hält die vier bestehenden Objektformen gemeinsam sichtbar.
-function objectArea(object: ResolvedObject): Bounds {
+// eslint-disable-next-line max-lines-per-function -- Flächen, Sitzanker und zentrierte Auflagen verwenden dieselben Variantenmaße.
+function objectArea(object: ResolvedObject, catalog: ObjectCatalog): Bounds {
   const c = object.config;
+  const size = objectDimensions(catalog[object.variant]);
 
   if ('surface' in c) return { ...c.surface, y: c.surface.y - 2, height: 4 };
 
@@ -89,17 +91,15 @@ function objectArea(object: ResolvedObject): Bounds {
     return {
       x: c.seat.x - 8,
       y: c.seat.y - 60,
-      width: c.seat.width + 18,
-      height: c.floorY - c.seat.y + 60,
+      ...size,
     };
-  const asset = looseAsset(object.kind);
-  const bottom = 'supportY' in c ? c.supportY : 'shelfY' in c ? c.shelfY : c.floorY;
+  const bottom =
+    'supportY' in c ? c.supportY : 'shelfY' in c ? c.shelfY : (c.support?.y ?? c.floorY);
 
   return {
-    x: c.x - asset.width / 2,
-    y: bottom - asset.height,
-    width: asset.width,
-    height: asset.height,
+    x: c.x - size.width / 2,
+    y: bottom - size.height,
+    ...size,
   };
 }
 
@@ -187,7 +187,7 @@ function choose(
     random,
   )) {
     const instance = slotInstance(slot, platform, variant, catalog[variant]);
-    const asset = candidateSize(catalog[variant]);
+    const asset = objectDimensions(catalog[variant]);
     const footprint = slotArea(slot, platform, asset);
     // Die Armlehnen ragen links 8 und rechts 10 Pixel über den Sitz.
     const area =
@@ -355,29 +355,6 @@ function slotArea(
     width: asset.width,
     height: asset.height,
   };
-}
-
-function looseAsset(kind: ResolvedObject['kind']) {
-  return kind === 'food-bag'
-    ? ASSETS['food-bag']
-    : kind === 'books'
-      ? ASSETS['book-stack']
-      : kind === 'plant'
-        ? ASSETS['catgrass-default']
-        : ASSETS['vase-default'];
-}
-
-function candidateSize(definition: ObjectDefinition) {
-  if (definition.kind === 'trash-bin') return ASSETS['trash-bin'];
-
-  if (definition.kind === 'pantry') return PANTRY_PROFILES[definition.appearance];
-
-  if (definition.kind === 'dish') return DISH_PROFILES[definition.appearance];
-
-  if (definition.kind === 'couch')
-    return { width: definition.geometry.width + 18, height: definition.geometry.seatRise + 60 };
-
-  return looseAsset(definition.kind);
 }
 
 function blocked(area: Bounds, definition: ObjectDefinition, room: RoomDefinition) {
