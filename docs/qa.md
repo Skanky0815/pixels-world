@@ -397,6 +397,13 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
 - Einführung lesen und scrollen; vor Start keine Bewegung/Timer. Startsignal wird
   verbraucht. Lauf, Luftsteuerung, Sofa/Regale und Raumgrenzen prüfen.
 - Vorhang greifen, hoch-/hinabklettern, rutschen, abspringen und wieder lösen.
+  Dasselbe an beiden Tischdeckenenden und Kühlschrankseiten prüfen: ohne ↑ nur
+  der Vorhang automatisch greifbar, ↑ Kletterpose, ↓/Loslassen Rutschpose und
+  entsprechender Aktionsklang. Anschläge bleiben still, Absprung löst zuverlässig.
+  Die Decke steigt langsam und zieht weiter Stoff; seitliches Kühlschrankklettern
+  öffnet keine Tür und vergibt keine Punkte. Überlagerte Flächen bevorzugen
+  Vorhang, dann Tischdecke, dann Kühlschrank. Mit Pause/Fokusverlust und Reset
+  auch während Aufstieg und Rutschen prüfen.
   Kratzen/Knabbern starten im Stillstand und brechen bei Bewegung/Sprung ab.
   Vasen zählen erst beim Bodenbruch; gleicher Schaden zählt nicht doppelt.
 - Die [Kontakt-Testzimmer](development.md#objektkontakte-prüfen) für Vase gegen Vase,

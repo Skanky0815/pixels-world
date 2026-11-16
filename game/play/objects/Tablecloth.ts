@@ -2,7 +2,13 @@ import type Phaser from 'phaser';
 import { DamageHistory } from '../domain/chaos-event';
 import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import { TableclothPull, type TableclothRules } from '../interactions/tablecloth-pulling';
-import { overlaps, type Bounds, type InteractionContext } from '../interactions/contracts';
+import {
+  overlaps,
+  type Bounds,
+  type InteractionContext,
+  type Climbable,
+  type ClimbGrip,
+} from '../interactions/contracts';
 import { TableclothArt } from './tablecloth-art';
 export interface TableclothConfig {
   readonly id: string;
@@ -11,7 +17,7 @@ export interface TableclothConfig {
   readonly hang: number;
   readonly rules: TableclothRules;
 }
-export class Tablecloth {
+export class Tablecloth implements Climbable {
   readonly id: string;
   readonly maximumScore: number;
   private readonly model: TableclothPull;
@@ -37,6 +43,20 @@ export class Tablecloth {
 
   get climbSpeed() {
     return this.config.rules.climbSpeed;
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige skalare Griffvertrag bleibt als ein zusammengehöriger Adapter sichtbar.
+  climbGrips(): readonly ClimbGrip[] {
+    return this.climbAreas().map(({ side, area }) => ({
+      id: `${this.id}:${side}`,
+      ownerId: this.id,
+      kind: 'tablecloth',
+      area,
+      speed: this.climbSpeed,
+      requireUp: true,
+      side,
+      faceX: area.x + area.width / 2,
+    }));
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die zwei getrennten Greifbereiche folgen den tatsächlichen sichtbaren Überhängen und bleiben über dem Boden.

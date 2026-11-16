@@ -214,6 +214,22 @@ Zielwechsel unterbrechen Wartephasen. Objekte erhalten losgelöste Körper-/Inpu
 Daten und melden Aktion/Blickziel, statt Pixel oder Tastatur zu besitzen.
 Vorhangschaden folgt tatsächlicher Bewegung, nicht bloßer Renderzeit.
 
+Vorhang, Tischdecke und Kühlschrank liefern über `Climbable.climbGrips()` denselben
+skalaren Vertrag: Griff-/Besitzer-ID, Fläche, Greifregel, Aufstiegsgeschwindigkeit
+und gegebenenfalls Blickziel/Stoffseite. Die explizite Priorität lautet Vorhang →
+Tischdecke → Kühlschrank; innerhalb einer Familie bleibt die Aufbaureihenfolge
+stabil. Der Vorhang erlaubt automatisches Einhängen beim passenden Anspringen,
+Tischdecke und Kühlschrank verlangen ↑. Stoffzug und Vorhangrisse bleiben bei
+ihren eigenen Schadensmodellen; Klinkengriff und Innenbesuch sind weiterhin eine
+separate Kühlschrankaktion.
+
+↑ verwendet die Kletterpose, ↓ und passives Sinken die Rutschpose, auf allen drei
+Flächen. Die Tischdecke behält ihren belasteten langsamen Aufstieg; Abstieg und
+passives Rutschen behalten die gemeinsamen Geschwindigkeiten. Am Anschlag bleibt
+die angeforderte Pose sichtbar, während der fehlende Physikfortschritt den
+Aktionsloop beendet. Absprung, Boden, Pause, Reset und Heimkehr behalten ihre
+bestehenden Freigabegrenzen.
+
 Jeder `ChaosEvent` enthält eine instanzbezogene ID aus Objekt, Schadensart und
 Stufe sowie einen sicheren ganzzahligen Wert. Alle Schäden einschließlich
 Vasenbruch laufen über denselben `ChaosScore.awardEvent`-Pfad. Erst eine neue
@@ -543,7 +559,7 @@ Pixel-Aktionen verwenden denselben Effektkanal: Sprunggeräusche entstehen nur
 beim tatsächlich gestarteten Boden- oder Vorhangsprung, der Haarballen-Plopp
 beim akzeptierten Abschlussereignis. Für Kratzen, Knabbern/Wackelwarnung, Würgen,
 Klettern und Rutschen existiert höchstens ein aktueller Aktionsloop. Die Auswahl
-folgt Pixels bestehendem Präsentationszustand; Vorhangreibung benötigt zusätzlich
+folgt Pixels bestehendem Präsentationszustand; Kletter-/Rutschreibung benötigt zusätzlich
 eine tatsächliche vertikale Positionsänderung. Der Anschlag bleibt dadurch still.
 Aktionswechsel, Abbruch, Stummschaltung und Heimkehr entfernen den Loop. Pause,
 Tabwechsel und Szenenabbau entfernen auch von Phaser vorausgeplante Loopquellen.
