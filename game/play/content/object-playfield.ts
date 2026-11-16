@@ -4,10 +4,11 @@ import type Phaser from 'phaser';
 import type { Pixel } from '../actors/Pixel';
 import type { ChaosEvent } from '../domain/chaos-event';
 import type { InputState } from '../input/input-state';
+import { selectClimbGrip } from '../interactions/climb-selection';
 import {
-  overlaps,
   updateGroundInteractions,
   type InteractionContext,
+  type ClimbGrip,
   type Bounds,
 } from '../interactions/contracts';
 import type { Breakable } from '../objects/Breakable';
@@ -144,31 +145,14 @@ export function advanceObjectInteractions(
     vase.updateFall(pixel.snapshot());
   }
 
-  const surface = objects.curtains.find((object) => overlaps(pixel.snapshot(), object.climbArea));
-
-  const grip = surface ? undefined : findClothGrip(objects, pixel.snapshot());
-
+  const grip = selectClimbGrip(
+    [...objects.curtains, ...objects.tablecloths, ...shelves].flatMap((o) => o.climbGrips()),
+    pixel.snapshot(),
+  );
   const fridges = shelves.flatMap((shelf) => (shelf.fridge ? [shelf.fridge] : []));
   const insideFridge = fridges.some((fridge) => fridge.snapshot().captured);
-  const fridgeGrip =
-    !surface && !grip
-      ? shelves
-          .flatMap((shelf) => shelf.climbAreas())
-          .find((area) => overlaps(pixel.snapshot(), area))
-      : undefined;
 
-  if (!insideFridge)
-    pixel.move(
-      input,
-      time,
-      delta,
-      surface?.climbArea ?? grip?.area ?? fridgeGrip,
-      grip
-        ? { speed: grip.cloth.climbSpeed, requireUp: true }
-        : fridgeGrip
-          ? { speed: 100, requireUp: true }
-          : undefined,
-    );
+  if (!insideFridge) pixel.move(input, time, delta, grip?.area, grip);
   const context: InteractionContext = Object.freeze({
     time,
     delta,
@@ -177,7 +161,7 @@ export function advanceObjectInteractions(
   });
 
   for (const object of objects.curtains)
-    damage(object.updateClimb(context, object === surface && context.pixel.climbing));
+    damage(object.updateClimb(context, object.id === grip?.ownerId && context.pixel.climbing));
   objects.pictures.forEach((picture) => damage(picture.update(context, true).event));
   objects.books.forEach((books) => damage(books.update(context, true).event));
   objects.topplingContainers.forEach((bag) => damage(bag.update(context, true).event));
@@ -191,10 +175,8 @@ export function advanceObjectInteractions(
 
   if (interaction.faceX !== undefined) pixel.faceToward(interaction.faceX);
 
-  if (grip && context.pixel.climbing) pixel.faceToward(grip.area.x + grip.area.width / 2);
-
-  if (fridgeGrip && context.pixel.climbing) pixel.faceToward(fridgeGrip.x + fridgeGrip.width / 2);
-  pixel.present(time, interaction.action, surface?.snapshot().state === 'sliding');
+  if (grip?.faceX !== undefined && context.pixel.climbing) pixel.faceToward(grip.faceX);
+  pixel.present(time, interaction.action, context.pixel.climbing && input.vertical >= 0);
   pixel.hideInFurniture(
     fridges.some((fridge) => fridge.snapshot().hidden),
     fridges.some((fridge) => fridge.snapshot().captured),
@@ -229,12 +211,12 @@ function advanceCloths(
   objects: Objects,
   context: InteractionContext,
   damage: Damage,
-  grip?: ClothGrip,
+  grip?: ClimbGrip,
 ) {
   for (const cloth of objects.tablecloths) {
     const { event, drag } = cloth.update(
       context,
-      cloth === grip?.cloth && context.pixel.climbing,
+      cloth.id === grip?.ownerId && context.pixel.climbing,
       grip?.side,
     );
 
@@ -246,19 +228,4 @@ function advanceCloths(
       if ('dragOnSurface' in object && object.dragOnSurface(drag.surface, drag.area, drag.dx))
         objects.impacts.inheritSupport(cloth, object);
   }
-}
-
-type ClothGrip = {
-  readonly cloth: Objects['tablecloths'][number];
-  readonly side: -1 | 1;
-  readonly area: Bounds;
-};
-
-function findClothGrip(
-  objects: Objects,
-  pixel: InteractionContext['pixel'],
-): ClothGrip | undefined {
-  for (const cloth of objects.tablecloths)
-    for (const grip of cloth.climbAreas())
-      if (overlaps(pixel, grip.area)) return { cloth, ...grip };
 }

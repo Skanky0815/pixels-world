@@ -48,8 +48,17 @@ export interface Interactable extends ObjectLifecycle {
 }
 export interface Climbable extends ObjectLifecycle {
   readonly id: string;
-  readonly climbArea: Bounds;
-  updateClimb(context: InteractionContext, attached: boolean): ChaosEvent | undefined;
+  climbGrips(): readonly ClimbGrip[];
+}
+export interface ClimbGrip {
+  readonly id: string;
+  readonly ownerId: string;
+  readonly kind: 'curtain' | 'tablecloth' | 'fridge';
+  readonly area: Bounds;
+  readonly speed: number;
+  readonly requireUp: boolean;
+  readonly faceX?: number;
+  readonly side?: -1 | 1;
 }
 
 /** Stable priority: overlapping targets never advance two automatic ground actions. */

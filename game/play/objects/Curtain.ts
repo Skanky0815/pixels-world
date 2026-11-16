@@ -3,10 +3,11 @@ import type Phaser from 'phaser';
 import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import { motionPreferences } from '../settings/motion';
 import { DamageHistory } from '../domain/chaos-event';
-import { CurtainSliding, type TearConfig } from '../interactions/curtain-sliding';
+import { CURTAIN_SLIDE, CurtainSliding, type TearConfig } from '../interactions/curtain-sliding';
 import type {
   Bounds,
   Climbable,
+  ClimbGrip,
   Destructible,
   InteractionContext,
 } from '../interactions/contracts';
@@ -42,6 +43,20 @@ export class Curtain implements Climbable, Destructible {
       .setOrigin(0, 0)
       .setDisplaySize(a.width, a.height);
     this.marks = scene.add.container().setDepth(0.5);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige skalare Griffvertrag bleibt als ein zusammengehöriger Adapter sichtbar.
+  climbGrips(): readonly ClimbGrip[] {
+    return [
+      {
+        id: `${this.id}:fabric`,
+        ownerId: this.id,
+        kind: 'curtain',
+        area: this.climbArea,
+        speed: CURTAIN_SLIDE.climbSpeed,
+        requireUp: false,
+      },
+    ];
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die kurze Folge aus Bewegungsmessung, Modellschritt, Historie und Rissdarstellung bleibt atomar.

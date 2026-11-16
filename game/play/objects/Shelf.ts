@@ -2,7 +2,7 @@ import { FridgeArt } from './fridge-art';
 import type Phaser from 'phaser';
 import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import type { RoomDefinition, Decoration } from '../content/definitions';
-import type { Bounds, InteractionContext } from '../interactions/contracts';
+import type { Bounds, InteractionContext, Climbable, ClimbGrip } from '../interactions/contracts';
 import { DamageHistory } from '../domain/chaos-event';
 import { ShelfStability, shelfWobbleAngle } from '../domain/shelf-stability';
 import { ShelfArt } from './shelf-art';
@@ -11,7 +11,7 @@ import { StaticFurnitureArt } from './static-furniture-art';
 type ShelfDefinition = RoomDefinition['platforms'][number];
 type ShelfDecoration = Extract<Decoration, { kind: 'rect' }>;
 
-export class Shelf {
+export class Shelf implements Climbable {
   readonly id: string;
   readonly platform: Phaser.GameObjects.Rectangle;
   private wobbleStartedAt: number | null = null;
@@ -139,6 +139,19 @@ export class Shelf {
 
   get isFridge() {
     return Boolean(this.fridge);
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Der vollständige skalare Griffvertrag bleibt als ein zusammengehöriger Adapter sichtbar.
+  climbGrips(): readonly ClimbGrip[] {
+    return this.climbAreas().map((area, index) => ({
+      id: `${this.id}:${index === 0 ? 'left' : 'right'}`,
+      ownerId: this.id,
+      kind: 'fridge',
+      area,
+      speed: 100,
+      requireUp: true,
+      faceX: area.x + area.width / 2,
+    }));
   }
 
   climbAreas(): Bounds[] {
