@@ -1,4 +1,5 @@
 import { FridgeArt } from './fridge-art';
+import { motionPreferences } from '../settings/motion';
 import type Phaser from 'phaser';
 import type { ImpactBody, ImpactHit } from '../domain/impact-world';
 import type { RoomDefinition, Decoration } from '../content/definitions';
@@ -23,6 +24,7 @@ export class Shelf implements Climbable {
   private readonly graphic: Phaser.GameObjects.Container;
   private readonly art: ShelfArt | StaticFurnitureArt | FridgeArt;
   private readonly decorations: readonly ShelfDecoration[];
+  private readonly unsubscribeMotion: () => void;
 
   // eslint-disable-next-line max-lines-per-function -- Content, Grafik und unveränderlicher statischer Körper werden für dieselbe Regalfläche gemeinsam erzeugt.
   constructor(
@@ -54,6 +56,9 @@ export class Shelf implements Climbable {
           ? new StaticFurnitureArt(scene, b, floorY, definition.appearance)
           : new ShelfArt(scene, b, this.decorations);
     this.graphic = this.art.root;
+    this.unsubscribeMotion = motionPreferences.subscribe(() => {
+      if (motionPreferences.snapshot().reduced && !this.fridge) this.graphic.setAngle(0);
+    });
     this.draw();
   }
 
@@ -82,7 +87,7 @@ export class Shelf implements Climbable {
         );
     } else if (!this.fridge)
       this.graphic.setAngle(
-        state === 'intact' || this.wobbleStartedAt === null
+        motionPreferences.snapshot().reduced || state === 'intact' || this.wobbleStartedAt === null
           ? 0
           : shelfWobbleAngle(time - this.wobbleStartedAt, state === 'damaged'),
       );
@@ -233,6 +238,7 @@ export class Shelf implements Climbable {
   }
 
   destroy() {
+    this.unsubscribeMotion();
     this.platform.destroy();
     this.graphic.destroy();
   }

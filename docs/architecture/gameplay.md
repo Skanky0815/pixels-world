@@ -200,6 +200,17 @@ Spielmodelle, Eingabefristen oder Kamera. System-/Menüvorgaben für reduzierte
 Bewegung kombinieren sich per Oder; die mobile Statuszeile verwendet dieselben
 Hinweise ohne zusätzliche Dialogüberlagerung.
 
+Regalwarnungen behalten eine statische Markierung und sichtbare Risse. Reduzierte
+Bewegung unterdrückt nur die dekorative Wackelrotation; der echte Einsturz samt
+Auflagenverlust bleibt unverändert. Bruchobjekte zeigen ihre Scherben sofort an
+den verteilten Endpositionen, ohne Flug oder Rotation. Wird die Einstellung
+während einer laufenden Streuung oder Pause aktiviert, enden diese Dekorationen
+am gültigen Endanker und werden beim Fortsetzen nicht nachgeholt. Ein bereits
+begonnener tatsächlicher Inhaltsfall nach Auflagenverlust gehört nicht zu dieser
+Dekoration und läuft weiter. Reset entfernt die alten Darstellungen;
+Szenenabbau meldet die Einstellungsbeobachter ab. Diagnosewerte für Scherben sind
+losgelöste, unveränderliche Koordinaten und Winkel ohne Engine-Referenzen.
+
 ## Objekte und Schadensvertrag
 
 Fähigkeiten werden kombiniert, nicht durch eine universelle Phaser-Basisklasse
