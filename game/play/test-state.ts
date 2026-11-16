@@ -130,6 +130,7 @@ export interface GameTestState {
     readonly bodyWidth: number;
     readonly bodyHeight: number;
     readonly shards: number;
+    readonly shardPositions: readonly Readonly<{ x: number; y: number; angle: number }>[];
     readonly x: number;
     readonly y: number;
     readonly bottom: number;

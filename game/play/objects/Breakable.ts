@@ -52,6 +52,12 @@ export class Breakable implements Destructible, ObjectLifecycle {
   private finished: Phaser.GameObjects.Image | null = null;
   private supportReleased = false;
   private readonly profile: BreakableProfile;
+  private readonly debrisPositions = new Map<
+    Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle,
+    { readonly x: number; readonly y: number }
+  >();
+
+  private readonly unsubscribeMotion: () => void;
 
   // eslint-disable-next-line max-lines-per-function -- Texturerzeugung, Body und Splittercontainer werden gemeinsam aus einer Bruchobjekt-Konfiguration initialisiert.
   constructor(
@@ -76,6 +82,7 @@ export class Breakable implements Destructible, ObjectLifecycle {
       .setDepth(2);
     this.shards = scene.add.container(0, 0).setDepth(2);
     this.reset();
+    this.unsubscribeMotion = motionPreferences.subscribe(() => this.reduceDebrisMotion());
   }
 
   push(direction: number) {
@@ -255,15 +262,22 @@ export class Breakable implements Destructible, ObjectLifecycle {
   private scatterShards() {
     for (let i = 0; i < (this.profile.end?.shards ?? 7); i++) {
       const shard = this.createShard(i);
-
-      this.shards.add(shard);
-      this.scene.tweens.add({
-        targets: shard,
+      const position = {
         x: Math.max(4, Math.min(this.collider.x + (i - 3) * 9, this.config.roomWidth - 4)),
         y: this.debrisBaseline() - 2 - (i % 2),
-        angle: i * 31,
-        duration: 240,
-      });
+      };
+
+      this.shards.add(shard);
+      this.debrisPositions.set(shard, position);
+
+      if (motionPreferences.snapshot().reduced) shard.setPosition(position.x, position.y);
+      else
+        this.scene.tweens.add({
+          targets: shard,
+          ...position,
+          angle: i * 31,
+          duration: 240,
+        });
     }
   }
 
@@ -292,6 +306,7 @@ export class Breakable implements Destructible, ObjectLifecycle {
     const y = this.debrisBaseline();
 
     this.finished = this.scene.add.image(x, y, end.texture).setOrigin(0.5, 1).setDepth(2);
+    this.debrisPositions.set(this.finished, { x, y });
 
     if (motionPreferences.snapshot().reduced) return;
     this.finished.setY(Math.min(this.collider.y, y - 8)).setScale(0.85, 1);
@@ -301,6 +316,8 @@ export class Breakable implements Destructible, ObjectLifecycle {
   // eslint-disable-next-line max-lines-per-function -- Endbild und vorhandene Splitter verlieren gemeinsam ihre Auflage, ohne einen weiteren Schaden auszulösen.
   private dropContents() {
     if (!this.finished || !this.profile.end) return;
+    // Losing a real support is a physical fall, independent of decorative scattering.
+    this.debrisPositions.clear();
     this.scene.tweens.killTweensOf(this.finished);
     this.scene.tweens.killTweensOf(this.shards.list);
     this.scene.tweens.add({
@@ -330,9 +347,21 @@ export class Breakable implements Destructible, ObjectLifecycle {
 
   private clearContents() {
     if (!this.finished) return;
+    this.debrisPositions.delete(this.finished);
     this.scene.tweens.killTweensOf(this.finished);
     this.finished.destroy();
     this.finished = null;
+  }
+
+  private reduceDebrisMotion() {
+    if (!motionPreferences.snapshot().reduced) return;
+
+    for (const [target, position] of this.debrisPositions) {
+      this.scene.tweens.killTweensOf(target);
+      target.setPosition(position.x, position.y).setAngle(0);
+
+      if (target === this.finished) target.setScale(1);
+    }
   }
 
   private prepareFallback() {
@@ -364,6 +393,11 @@ export class Breakable implements Destructible, ObjectLifecycle {
       appearance: this.config.appearance,
       bodyHeight: body.height,
       shards: this.shards.length,
+      shardPositions: Object.freeze(
+        (this.shards.list as (Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle)[]).map(
+          (shard) => Object.freeze({ x: shard.x, y: shard.y, angle: shard.angle }),
+        ),
+      ),
       x: this.collider.x,
       y: this.collider.y,
       bottom: body.bottom,
@@ -379,6 +413,7 @@ export class Breakable implements Destructible, ObjectLifecycle {
   reset() {
     this.phase = 'resting';
     this.supportReleased = false;
+    this.debrisPositions.clear();
     this.clearContents();
     this.fallSpeed = 0;
     this.awaitingDrop = false;
@@ -403,6 +438,8 @@ export class Breakable implements Destructible, ObjectLifecycle {
   }
 
   destroy() {
+    this.unsubscribeMotion();
+    this.debrisPositions.clear();
     this.clearContents();
     this.scene.tweens.killTweensOf(this.shards.list);
     this.collider.destroy();

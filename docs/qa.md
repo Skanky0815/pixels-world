@@ -414,6 +414,15 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
 - Von beiden Seiten auf eine Vase springen: Sie kippt und rollt weg, ohne allein
   durch die Landung Punkte zu vergeben. Auch mit reduzierter Bewegung, während
   einer Pause und nach Neustart prüfen.
+- Reduzierte Bewegung aus System und Spielmenü für instabile Regale sowie
+  Vase, Tasse und Teller prüfen: statische Warnmarkierung/Riss und verteilte
+  Scherben bleiben sichtbar, Wackeln und dekorative Splitterflüge entfallen.
+  Während Warnung oder Bruch pausieren und die Einstellung wechseln; Fortsetzen
+  darf keine alte Streuung nachholen. Normalmodus behält seine Effekte. Echte
+  Objekt-, Regal- und Inhaltsfälle nach Auflagenverlust laufen in beiden Modi
+  weiter; Ereignisse und Punkte zählen weiterhin einmal. Reset entfernt die
+  Scherben. Die Objektprüfungen verwenden die gemeinsame Spielwiese und ihre
+  reguläre Spawnfunktion.
 - Im Wohnzimmer mit Raumseed `books-5` über den Vorhang rechts aufs mittlere Regal
   springen und die Vase nach links schieben. Sie kippt beim Fallen die Bücher
   auf dem unteren Regal um. Beide Schäden zählen je einmal; andere Regale und

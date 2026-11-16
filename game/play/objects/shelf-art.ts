@@ -50,6 +50,13 @@ export class ShelfArt {
         .fillStyle(state.stability === 'fragile' ? 0xa5654e : 0x718463)
         .fillRect(-this.bounds.width / 2 + 4, 5, 6, state.stability === 'fragile' ? 3 : 7);
 
+    if (state.state === 'wobbly') {
+      const x = -this.bounds.width / 2 + 26;
+
+      this.marks.lineStyle(2, 0x40332e).lineBetween(x, 2, x, 7);
+      this.marks.fillStyle(0x40332e).fillRect(x - 1, 9, 2, 2);
+    }
+
     if (state.state === 'damaged')
       this.marks
         .lineStyle(2, 0x40332e)
