@@ -122,6 +122,39 @@ Die [Kräutergrafiken samt Quellen und Prompts](../../../assets/objects/herbs/RE
 Die Metadaten dienen der unten beschriebenen Slotbelegung; ausdrücklich platzierte
 Rauminstanzen bleiben unabhängig von ihrer Zufallseignung erhalten.
 
+## Raumfreigabe und Albumkapitel
+
+Die **ausdrücklichen Pools der Raumdefinition** sind die einzige Freigabequelle
+für zufällige Belegung: Plattform- und Objekt-Slots nennen Objektvarianten,
+Wand-Slots nennen Wandvorlagen mit einer getrennten Zuordnung zur Bildvariante.
+`spawn` beschreibt Größe, Kategorie und Auflageneignung; Fähigkeiten kommen aus
+`capabilities`. Ein passendes Profil allein gibt keinen Platz in einem Raum frei. Die Auswahl
+schneidet den kuratierten Pool mit diesen Filtern und der Geometrieprüfung.
+Festobjekte stehen ausdrücklich in `objects`; das geschützte Hauptziel bleibt
+in `goal`. Beides wird nicht aus Zufallspools oder Albumkapiteln abgeleitet.
+
+Wir behalten diese Zuständigkeit bei und ergänzen kein `spawn.rooms`: Ein zweites
+Raumverzeichnis würde bei neuen Varianten zusätzlich zu den weiterhin nötigen
+Slot-Pools gepflegt werden müssen, ohne deren Platzierungsentscheidung zu ersetzen.
+Der Nachteil bleibt die bewusste Freigabe an mehreren passenden Slots. Der zentrale
+[Raumvertragstest](../../../tests/unit/room-spawn-contract.test.ts) prüft dafür
+alle Kandidaten einschließlich ungezogener Pools und der Zusatzplattformen für
+Schwer. Änderungen an der beabsichtigten Zusammenstellung benötigen eine bewusste
+Anpassung dieses Testvertrags; er ist keine zweite Laufzeitkonfiguration.
+
+`living-room` und die DEV-Variante `cozy-remix` bilden dabei eine Inhaltsfamilie,
+`kitchen` und `kitchen-preview` die andere. Katzengras gehört in die kuratierten
+Wohnzimmer-Pools, Küchenkräuter in die Küchen-Pools. Das sind Inhaltsentscheidungen,
+keine neuen physischen Fähigkeiten. Freie Aufbauten und importierte Rezepte der
+DEV-Spielwiese dürfen weiterhin beide Familien mischen, verwenden dieselbe
+Spawnfunktion und bleiben an die gemeinsame Geometrie-/Objektvalidierung gebunden.
+Die getrennten DEV-Rundenszenarien werden nicht automatisch öffentliche Räume.
+
+`album.rooms` ordnet ausschließlich Albumkapitel zu und erweitert weder Pools
+noch Spielregeln. Neue Kapitel oder eine andere Präsentation ändern somit keine
+Raumbelegung. Diese Absicherung ändert keine Pools, IDs, RNG-Aufrufe oder
+versionierten Erfolgsziele; bestehende Speicherstände benötigen keine Migration.
+
 ## Vor dem Engine-Start validieren
 
 [resolveRoom](resolve-room.ts) prüft alle Objektvorlagen und den gewählten Raum, bevor `Phaser.Game` erzeugt wird. Zusätzlich validiert die Vite-Konfiguration beim Build-/Dev-Start alle registrierten Räume, sodass Fehler schon dort scheitern. Geprüft werden Shape-Grundlagen, endliche Zahlen, sichere nicht negative Punktwerte, positive Intervalle, zulässige Geometrie/Farben, bekannte und passende Assets/Fähigkeiten, eindeutige IDs über Objekte und Flächen hinweg, Referenzen, Auflagegrenzen, Raumgrenzen, Spawn und zyklische Auflagen. Auch die insgesamt mögliche Punktzahl muss eine sichere Ganzzahl bleiben. Fehlermeldungen nennen den logischen Datenpfad, z. B. `rooms.living-room.objects.small-vase.placement.surfaceId`.
