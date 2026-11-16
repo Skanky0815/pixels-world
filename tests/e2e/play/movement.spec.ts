@@ -25,7 +25,6 @@ test(
     await until(page, (s) => s.pixel.animationFrame === 2);
     await until(page, (s) => s.pixel.animationFrame === 0);
     await holdUntil(page, ['ArrowRight'], (s) => s.pixel.animation === 'walk' && s.pixel.x > 150);
-    await expectActiveAudio(page, 1, true);
     expect((await state(page)).pixel.flipX).toBe(false);
     expect((await state(page)).pixel).toMatchObject({
       displayWidth: 64,
@@ -36,6 +35,7 @@ test(
     await page.keyboard.down('ArrowRight');
 
     try {
+      await expectActiveAudio(page, 1, true);
       const frame = (await state(page)).pixel.animationFrame;
 
       await until(page, (s) => s.pixel.animationFrame !== frame);
@@ -48,9 +48,16 @@ test(
     }
 
     await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.animation === 'walk' && s.pixel.flipX);
-    await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.left <= 0.1);
-    await framesPass(page);
-    await expectActiveAudio(page, 1, false);
+    await page.keyboard.down('ArrowLeft');
+
+    try {
+      await until(page, (s) => s.pixel.left <= 0.1);
+      await framesPass(page);
+      await expectActiveAudio(page, 1, false);
+    } finally {
+      await page.keyboard.up('ArrowLeft');
+    }
+
     const { pixel } = await state(page);
 
     expect(pixel.x).toBeGreaterThanOrEqual(0);
@@ -136,6 +143,7 @@ test('Vorhang wird beim Anspringen ohne Hoch/Runter automatisch gegriffen', asyn
 
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Klettern kollidiert mit Regalunterseite und Boden', async ({ page }) => {
+  await recordAudio(page);
   await start(page);
   await curtain(page);
   await holdUntil(page, ['ArrowRight'], (s) => s.pixel.x >= 826);
@@ -150,6 +158,8 @@ test('Klettern kollidiert mit Regalunterseite und Boden', async ({ page }) => {
     expect(blocked.pixel.top).toBeGreaterThanOrEqual(169);
     expect(blocked.pixel.top).toBeLessThan(173);
     expect(blocked.pixel.climbing).toBe(true);
+    await expectActiveAudio(page, 0.28, false);
+    await expectActiveAudio(page, 0.4, false);
   } finally {
     await page.keyboard.up('ArrowUp');
   }
@@ -160,6 +170,8 @@ test('Klettern kollidiert mit Regalunterseite und Boden', async ({ page }) => {
   try {
     await framesPass(page, 20);
     expect((await state(page)).pixel.bottom).toBeCloseTo(468, 0);
+    await expectActiveAudio(page, 0.28, false);
+    await expectActiveAudio(page, 0.4, false);
   } finally {
     await page.keyboard.up('ArrowDown');
   }

@@ -183,7 +183,15 @@ die Soundverwaltung. Die Aktivitätsgrenze pausiert/reaktiviert Audio selbst und
 ersetzt dafür Phasers unabhängige automatische Blur-Wiederaufnahme. Der Bücherstapel
 spielt über denselben Kanal einen kurzen, deterministisch synthetisierten Aufprall.
 Ohne WebAudio bleibt dieser Effekt stumm; Spielablauf und Wertung funktionieren weiter.
-Der E2E-Vertrag liest nur skalare Audiozustände.
+`Pixel` erfasst nach jedem kollisionsaufgelösten `WORLD_STEP` einen unveränderlichen
+Fortschrittswert aus Schrittnummer und Körperposition. `GameAudio` verwendet diesen
+Wert für Schritte und Vorhangreibung; Renderframes ohne neuen Physikschritt
+unterbrechen einen bestehenden Loop nicht. Ein neuer Physikschritt ohne Bewegung
+stoppt ihn auch bei weiterhin angeforderter Geschwindigkeit. Aktionswechsel,
+Absprung, Pause und Stummschaltung bleiben sofortige Abbruchgrenzen. Beim Abbau
+meldet Pixel den Beobachter an seiner ursprünglichen Physikwelt ab, auch wenn das
+Scene-Plugin diese Welt bereits freigegeben hat. Der E2E-Vertrag liest nur
+losgelöste Audiozustände und beobachtet Quellen an der WebAudio-Grenze.
 
 `FeedbackModel` ist ein passiver Darstellungsbeobachter. Bereits vergebene
 Schadensereignisse und Phasen-/Versöhnungssnapshots steuern begrenzte Hinweise.

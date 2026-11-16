@@ -513,6 +513,20 @@ Loopquelle darf weiterlaufen. Danach dieselben Abläufe im DEV-Playground testen
 Bei den aufgenommenen Aktionsgeräuschen die Schnittübergänge und Pegel per
 Hörprobe vergleichen. Schritte nur beim realen Laufen prüfen, einschließlich
 sofortigem Ende bei Luftphase, Vorhang, Stillstand, Wanddruck und Pause.
+Aktive Audioquellen über ein begrenztes Fenster mit weiterlaufender Browseruhr
+beobachten; ein eingefrorener Einzelzustand belegt keinen stabilen Loop. Auch
+unerwartete Stopps sowie negatives Verhalten prüfen. Natürliche, von Phaser
+vorgeplante Loop-Quellenwechsel dürfen nicht als Aktionsneustart gelten; nach einem
+Stopp darf dagegen keine neue Quelle beginnen.
+Renderframes ohne Physikschritt dürfen keine Quelle neu starten; echte Schritte
+ohne Positionsfortschritt müssen sie beenden. Die Vorhang-Regressionsfälle
+emulieren 8- und 33-ms-Renderabstände an `requestAnimationFrame`, ohne
+Physikrate oder Spielzustand zu verändern.
+Chromium verwendet für die automatisierten Prüfungen `--disable-audio-output`:
+Der [virtuelle Ausgabestream des Browsers](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/media/audio/audio_manager_base.cc)
+ersetzt nur das Host-Ausgabegerät. Native WebAudio-Quellen, Audiouhr und Pegel
+bleiben aktiv; schlafende oder fehlende Hardware darf sie nicht anhalten.
+Die manuelle Hörprobe erfolgt weiterhin im normalen Browser mit echter Ausgabe.
 Im Impressum müssen die Audio-Quellen samt alexarje, CC BY 4.0 und Hinweis auf
 Bearbeitung auch im Produktions-/Pages-Unterpfad erreichbar bleiben.
 

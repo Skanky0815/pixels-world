@@ -171,7 +171,11 @@ export class PlaygroundScene extends Phaser.Scene {
         (event) => this.damage(event),
         this.shelves,
       );
-      this.audio.updateMovement(this.pixel.activity, this.pixel.snapshot());
+      this.audio.updateMovement(
+        this.pixel.activity,
+        this.pixel.snapshot(),
+        this.pixel.physicsProgress,
+      );
     }
 
     this.diagnose(this.snapshot());

@@ -1,3 +1,4 @@
+import type { PhysicsProgress } from '../domain/physics-progress.ts';
 import { CUE_VOLUME, damageCue, actionCue, type ObjectCue } from '../assets/object-cues.ts';
 import type { ChaosEvent } from '../domain/chaos-event.ts';
 import { audioPreferences } from '../settings/audio.ts';
@@ -28,8 +29,7 @@ export class GameAudio {
   private variation = 0;
   private action: ObjectCue | undefined;
   private actionKey: string | undefined;
-  private previousY: number | undefined;
-  private previousX: number | undefined;
+  private previousMotion: PhysicsProgress | undefined;
   private active: boolean | undefined;
   private readonly sound: SoundPort;
   private readonly unsubscribe: () => void;
@@ -85,33 +85,50 @@ export class GameAudio {
     return this.sound.play?.(key, { volume: CUE_VOLUME[cue], loop }) ? key : undefined;
   }
 
-  updatePixel(action: string, y: number) {
-    const moving = this.previousY !== undefined && Math.abs(y - this.previousY) > 0.01;
+  updateMovement(action: string, pixel: PixelAudioFrame, progress: PhysicsProgress) {
+    const previous = this.previousMotion;
 
-    this.previousY = y;
-    this.syncAction(actionCue(action, moving));
+    this.previousMotion = progress;
+    const cue =
+      previous?.step === progress.step
+        ? this.retainedCue(action, pixel)
+        : this.progressCue(action, pixel, progress, previous);
+
+    this.syncAction(cue);
   }
 
-  updateMovement(action: string, pixel: PixelAudioFrame) {
-    const walking = this.walking(action, pixel);
+  // eslint-disable-next-line max-lines-per-function -- Echter Schrittfortschritt und aktuelle Bewegungsart entscheiden gemeinsam über den passenden Loop.
+  private progressCue(
+    action: string,
+    pixel: PixelAudioFrame,
+    progress: PhysicsProgress,
+    previous?: PhysicsProgress,
+  ) {
+    const dx = previous ? progress.x - previous.x : 0;
+    const dy = previous ? progress.y - previous.y : 0;
 
-    this.previousX = pixel.x;
+    if (this.walking(action, pixel) && Math.abs(dx) > 0.01) return 'walk';
 
-    if (walking) this.syncAction('walk');
-    else this.updatePixel(action, pixel.y);
-    this.previousY = pixel.y;
+    return actionCue(action, pixel.climbing && (action === 'climbing' ? dy < -0.01 : dy > 0.01));
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Bodenkontakt, freie Bewegung und realer Positionsfortschritt schließen Luft, Vorhang und Wanddruck aus.
+  private retainedCue(action: string, pixel: PixelAudioFrame): ObjectCue | undefined {
+    if (this.action === 'walk' && this.walking(action, pixel)) return 'walk';
+    const stationary = actionCue(action, false);
+
+    if (stationary) return stationary;
+    const movement = actionCue(action, pixel.climbing && Math.abs(pixel.velocityY) > 1);
+
+    return movement === this.action ? movement : undefined;
+  }
+
   private walking(action: string, pixel: PixelAudioFrame) {
     return (
       action === 'idle' &&
       pixel.grounded &&
       !pixel.climbing &&
       Math.abs(pixel.velocityX) > 1 &&
-      Math.abs(pixel.velocityY) < 1 &&
-      this.previousX !== undefined &&
-      Math.abs(pixel.x - this.previousX) > 0.01
+      Math.abs(pixel.velocityY) < 1
     );
   }
 
@@ -126,7 +143,7 @@ export class GameAudio {
     this.action = this.actionKey ? cue : undefined;
   }
 
-  private stopAction() {
+  stopAction() {
     if (this.actionKey) this.sound.removeByKey(this.actionKey);
     this.action = undefined;
     this.actionKey = undefined;
@@ -143,8 +160,7 @@ export class GameAudio {
   private stopEffects() {
     this.action = undefined;
     this.actionKey = undefined;
-    this.previousY = undefined;
-    this.previousX = undefined;
+    this.previousMotion = undefined;
     this.sound.stopAll();
     this.sound.removeAll();
   }

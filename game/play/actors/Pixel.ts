@@ -1,3 +1,4 @@
+import type { PhysicsProgress } from '../domain/physics-progress';
 import { motionPreferences } from '../settings/motion';
 import Phaser from 'phaser';
 import { PIXEL_ANIMATIONS, pixelAnimation } from './pixel-animations';
@@ -13,6 +14,7 @@ const SCALE = 2;
 export class Pixel {
   private readonly sprite: Phaser.Physics.Arcade.Sprite;
   private readonly visual: Phaser.GameObjects.Sprite;
+  private readonly physicsWorld: Phaser.Physics.Arcade.World;
   private climbing = false;
   private grabBlockedUntil = 0;
   private mustLeaveCurtain = false;
@@ -21,6 +23,12 @@ export class Pixel {
   private landingUntil = 0;
   private overlapsCurtain = false;
   private action: Activity = 'idle';
+  private progress: PhysicsProgress = Object.freeze({ step: 0, x: 0, y: 0 });
+  private readonly sampleProgress = () => {
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+
+    this.progress = Object.freeze({ step: this.progress.step + 1, x: body.x, y: body.y });
+  };
 
   // eslint-disable-next-line max-lines-per-function -- Physikkörper und sichtbares Sprite werden gemeinsam am identischen Spawnanker aufgebaut.
   constructor(
@@ -32,6 +40,11 @@ export class Pixel {
       .sprite(spawn.x, spawn.bottom - 16 * SCALE, 'pixel')
       .setScale(SCALE);
     this.sprite.setBodySize(26, 26).setOffset(3, 6).setCollideWorldBounds(true);
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+
+    this.progress = Object.freeze({ step: 0, x: body.x, y: body.y });
+    this.physicsWorld = scene.physics.world;
+    this.physicsWorld.on(Phaser.Physics.Arcade.Events.WORLD_STEP, this.sampleProgress);
     this.sprite.setMaxVelocity(260, 600).setVisible(false);
     this.visual = scene.add
       .sprite(spawn.x, spawn.bottom - 32, 'pixel', 0)
@@ -70,6 +83,10 @@ export class Pixel {
 
   get activity() {
     return this.action;
+  }
+
+  get physicsProgress() {
+    return this.progress;
   }
 
   /** Detached read-only contact data for interaction models. */
@@ -365,6 +382,7 @@ export class Pixel {
   }
 
   destroy() {
+    this.physicsWorld.off(Phaser.Physics.Arcade.Events.WORLD_STEP, this.sampleProgress);
     this.sprite.destroy();
     this.visual.destroy();
   }

@@ -830,12 +830,20 @@ export class LivingRoomScene extends Phaser.Scene {
     });
   }
 
+  private updateMovementAudio() {
+    this.audio.updateMovement(
+      this.pixel.activity,
+      this.pixel.snapshot(),
+      this.pixel.physicsProgress,
+    );
+  }
+
   private playFrame(input: InputState, elapsed: number) {
     const time = this.round.snapshot().elapsedMs;
 
     this.physics.world.update(time, elapsed);
     this.updateGameplay(input, time, elapsed);
-    this.audio.updateMovement(this.pixel.activity, this.pixel.snapshot());
+    this.updateMovementAudio();
 
     const reached = this.goal.advance(elapsed, this.pixel.snapshot(), input.active);
 
@@ -999,7 +1007,7 @@ export class LivingRoomScene extends Phaser.Scene {
   // eslint-disable-next-line max-lines-per-function -- Aktionssound und Zielanzeige enden gemeinsam vor der unveränderten Heimkehr.
   private startHomecoming() {
     if (this.goalActionActive()) return;
-    this.audio.updatePixel('idle', this.pixel.y);
+    this.audio.stopAction();
     const score = this.round.snapshot().finalChaosScore;
 
     if (score === null) return;
@@ -1057,7 +1065,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (this.returning.snapshot().stage === 'seated') this.faceSara();
     this.pixel.present(this.returnTime, 'idle', false);
-    this.audio.updateMovement(this.pixel.activity, this.pixel.snapshot());
+    this.updateMovementAudio();
 
     if (walking && this.returning.snapshot().stage === 'seated') this.syncActivity();
   }
