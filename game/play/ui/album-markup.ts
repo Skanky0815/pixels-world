@@ -1,6 +1,6 @@
 import { currentLanguage, t } from '../../shared/i18n/locale.ts';
 import type { AlbumEntry } from '../content/album/discovery.ts';
-import { ALBUM_ART } from './album-art.ts';
+import { albumPresentation } from './unlock-presentation.ts';
 import { roomIcon } from './album-room-icons.ts';
 export const ALBUM_CHAPTERS = [
   'living-room',
@@ -30,7 +30,11 @@ export function escape(value: string) {
 }
 
 export function entryImage(entry: AlbumEntry) {
-  return `<img src="${escape(ALBUM_ART[entry.asset])}" alt="${escape(entry.name[currentLanguage()])}" draggable="false">`;
+  const presentation = albumPresentation(entry);
+
+  return presentation
+    ? `<img src="${escape(presentation.image)}" alt="${escape(presentation.name[currentLanguage()])}" draggable="false">`
+    : '';
 }
 
 export function albumTabs(room: AlbumChapter, entries: readonly AlbumEntry[], overview = false) {

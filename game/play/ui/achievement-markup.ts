@@ -10,11 +10,7 @@ import type { AchievementData } from '../album/achievements.ts';
 import { achievementTargets, achievementValue } from '../album/achievement-metrics.ts';
 import { currentLanguage, t } from '../../shared/i18n/locale.ts';
 import { escape, albumPagination } from './album-markup.ts';
-
-export const ACHIEVEMENT_ART = {
-  love: new URL('../../../assets/community/slack-v1/pixel_love.png', import.meta.url).href,
-  chaos: new URL('../../../assets/community/slack-v1/pixel_chaos.png', import.meta.url).href,
-} as const;
+import { achievementPresentation } from './unlock-presentation.ts';
 
 export const ACHIEVEMENT_PAGE_SIZE = 4;
 
@@ -66,10 +62,12 @@ function achievementStory(entry: AchievementDefinition, data: AchievementData) {
   const earned = data.unlocked.includes(entry.id);
   const count = achievementCount(entry, data);
   const targets = entry.metric !== 'reconciliations' ? targetList(data, entry) : '';
+  const presentation = achievementPresentation(entry);
+  const image = presentation ? `<img src="${presentation.image}" alt="">` : '';
 
   return `<section class="achievement-story" data-metric="${entry.metric}">
     <div class="achievement-story-content">
-    <div class="achievement-heading"><img src="${ACHIEVEMENT_ART[entry.art]}" alt=""><div><p class="achievement-state">${earned ? `✓ ${t('achievementUnlocked')}` : t('achievementLocked')}</p><h3>${escape(entry.name[lang])}</h3></div></div>
+    <div class="achievement-heading">${image}<div><p class="achievement-state">${earned ? `✓ ${t('achievementUnlocked')}` : t('achievementLocked')}</p><h3>${escape(entry.name[lang])}</h3></div></div>
     <p class="achievement-description">${escape(entry.description[lang])}</p>
     <progress max="${entry.threshold}" value="${count}" aria-label="${escape(progress(entry, data))}"></progress>
     <p class="achievement-count">${progress(entry, data)}</p>${targets}

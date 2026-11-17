@@ -55,6 +55,7 @@ async function savedProgress(page: Page) {
 test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie hinter dem Albumfund ein @smoke', async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await seed(page, 9, ['vase', 'curtain', 'plant', 'books', 'picture', 'shelf']);
   await seedRoundRandom(page);
   await start(page, '/?round-profile=fast');
@@ -78,6 +79,17 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   await page.clock.runFor(3100);
   await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-10');
   await expect(banner).toContainText('Unschuldsengel II');
+  await openPause(page);
+  await page.locator('[data-reduce-motion]').check();
+  await page.locator('.pause-menu [data-language="en"]').click();
+  await page.clock.runFor(4000);
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-10');
+  await page.locator('[data-pause-resume]').click();
+  await expect(banner).toContainText('Little angel II');
+  await expect(banner).toHaveCSS('animation-name', 'none');
+  await changeLanguage(page, 'de');
+  await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-10');
+  await expect(banner).toContainText('Unschuldsengel II');
   await expect
     .poll(() =>
       banner
@@ -93,6 +105,12 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   await expect(banner).toContainText('Meister der Zerstörung');
   await page.clock.runFor(3100);
   await expect(banner).toBeHidden();
+  await openPause(page);
+  await page.locator('[data-reduce-motion]').uncheck();
+  await page.locator('[data-pause-resume]').click();
+  await changeLanguage(page, 'en');
+  await expect(banner).toBeHidden();
+  await changeLanguage(page, 'de');
   expect(await savedProgress(page)).toEqual(progress);
   await page.reload();
   await waitForGame(page);

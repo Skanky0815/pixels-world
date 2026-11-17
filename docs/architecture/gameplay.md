@@ -493,6 +493,14 @@ szenengebundene Warteschlange nutzt dieselbe aktive Spielzeit wie der Abschluss
 noch Fokus und wird beim Szenenwechsel entfernt. Bild und DE-/EN-Titel kommen aus
 den beiden Katalogen. Reduzierte Bewegung unterdrückt die Einblendbewegung.
 
+`ui/unlock-presentation.ts` löst bestätigte Freischalt-IDs in Titel, Bild und
+Hinweisart auf. Album-/Erfolgsansichten und Banner verwenden denselben
+Darstellungsvertrag und die vorhandenen Katalogmetadaten; Bildzuordnungen liegen
+außerhalb der Markupgeneratoren. Unbekannte IDs oder fehlende Bildzuordnungen
+liefern keine Darstellung und erzeugen kein defektes Bannerbild. Die Auflösung
+verändert weder Fortschritt noch Speicherung oder Queue. Sprachwechsel liest
+denselben Eintrag neu; Änderungen der Bewegungspräferenz starten ihn nicht erneut.
+
 Die datengetriebenen Definitionen in `content/achievements.ts` legen vier
 Versöhnungsschwellen (1, 10, 50, 100) und den festen Zerstörungskatalog der ersten
 Erfolgsversion fest. Nur eine vollständig erfolgreiche Versöhnung erhöht den
