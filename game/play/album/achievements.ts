@@ -4,8 +4,8 @@ import {
   ACHIEVEMENTS,
   DESTRUCTION_TARGETS,
   type DestructionTarget,
-  type AchievementDefinition,
 } from '../content/achievements.ts';
+import { achievementValue } from './achievement-metrics.ts';
 export interface AchievementData {
   readonly reconciliations: number;
   readonly ruined: readonly string[];
@@ -73,11 +73,19 @@ export class AchievementProgress {
     for (const id of rooms) if (ROOM_COMPLETIONS.includes(id)) this.completedRooms.add(id);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Ein gemeinsamer Durchlauf lässt Gesamterfolge neue Einzelfreischaltungen desselben Batches sehen.
   private earn() {
     const earned: string[] = [];
+    const data = {
+      reconciliations: this.total(),
+      ruined: this.ruined,
+      ruinedVariants: this.ruinedVariants,
+      completedRooms: this.completedRooms,
+      unlocked: this.unlocked,
+    };
 
     for (const entry of ACHIEVEMENTS) {
-      if (this.unlocked.has(entry.id) || this.value(entry) < entry.threshold) continue;
+      if (this.unlocked.has(entry.id) || achievementValue(entry, data) < entry.threshold) continue;
       this.unlocked.add(entry.id);
       earned.push(entry.id);
     }
@@ -87,21 +95,6 @@ export class AchievementProgress {
 
   private total() {
     return Math.min(Number.MAX_SAFE_INTEGER, this.baseline + this.pending);
-  }
-
-  private value(entry: AchievementDefinition) {
-    if (entry.targets)
-      return entry.targets.filter((id) => this.targetSet(entry.metric).has(id)).length;
-
-    return entry.metric === 'reconciliations' ? this.total() : this.ruined.size;
-  }
-
-  private targetSet(metric: AchievementDefinition['metric']) {
-    if (metric === 'all') return this.unlocked;
-
-    if (metric === 'destruction') return this.ruined;
-
-    return metric === 'rooms' ? this.completedRooms : this.ruinedVariants;
   }
 
   markSaved() {

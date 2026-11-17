@@ -7,6 +7,7 @@ import {
   destructionTarget,
 } from '../../game/play/content/achievements.ts';
 import { AchievementProgress } from '../../game/play/album/achievements.ts';
+import { achievementCount } from '../../game/play/ui/achievement-markup.ts';
 import { AlbumCollection } from '../../game/play/album/collection.ts';
 import { RoundAlbum } from '../../game/play/album/round.ts';
 import { chaosEvent } from '../../game/play/domain/chaos-event.ts';
@@ -110,6 +111,13 @@ test('Alle Versöhnungsschwellen werden beim Überschreiten genau einmal freiges
       [1, 10, 50, 100].includes(round) ? [`achievement.angel-${round}`] : [],
     );
     assert.equal(progress.snapshot().reconciliations, round);
+    assert.equal(
+      achievementCount(
+        ACHIEVEMENTS.find((entry) => entry.id === 'achievement.angel-10')!,
+        progress.snapshot(),
+      ),
+      Math.min(round, 10),
+    );
   }
 
   assert.equal(progress.snapshot().unlocked.length, 4);
@@ -469,6 +477,13 @@ test('Sanfte Pfoten verlangt friedliches Schwer ohne Schaden und zählt gleichze
   assert.deepEqual(round.confirmedBanners(), ['achievement.peaceful-living-room-v1']);
   assert.equal(collection.achievementSnapshot().reconciliations, 0);
   assert.ok(collection.achievementSnapshot().completedRooms?.includes('hard/living-room'));
+  assert.equal(
+    achievementCount(
+      ACHIEVEMENTS.find((entry) => entry.id === 'achievement.peaceful-living-room-v1')!,
+      collection.achievementSnapshot(),
+    ),
+    1,
+  );
   const repeat = new RoundAlbum(collection);
 
   repeat.confirm({ ...peaceful, difficulty: 'hard', score: 0 }, 'living-room');
