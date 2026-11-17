@@ -507,6 +507,16 @@ Erfolgsdefinition statt einer stillen Änderung des vorhandenen Ziels.
 Runden getrennt, damit Einschalten der Speicherwahl vorhandenen Fortschritt
 übernimmt und wiederholtes Umschalten keine Runden doppelt zählt.
 
+`album/achievement-metrics.ts` wertet bestätigten Fortschritt für Freischaltung,
+Fortschrittsanzeige und Zielhäkchen gemeinsam aus, ohne Phaser, DOM oder Speicherung.
+Die Auswertung liefert den fachlichen Rohwert anhand der jeweiligen festen
+Zielmenge; fehlende Varianten-/Raumfelder alter Spielstände gelten als leer.
+Die Anzeige begrenzt den Wert an der Schwelle und lokalisiert ihn, während
+`AchievementProgress` die Freischaltentscheidung trifft. Dessen Durchlauf verwendet
+die aktuellen Mengen, sodass Gesamterfolge zuvor im selben Batch freigeschaltete
+Einzelerfolge sehen. Katalogreihenfolge, historische Ziele und Speicherformat
+bleiben unverändert.
+
 Die sieben Kategorien in `content/achievement-categories.ts` frieren ihre jeweils
 veröffentlichten Varianten ein: vier Vasen, zwei Bücheranordnungen, drei Bilder,
 ein Sofa, ein Vorhang, ein Katzengras und zwei zerstörbare Regalvarianten. Das

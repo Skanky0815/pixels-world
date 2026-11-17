@@ -7,6 +7,7 @@ import {
   type AchievementDefinition,
 } from '../content/achievements.ts';
 import type { AchievementData } from '../album/achievements.ts';
+import { achievementTargets, achievementValue } from '../album/achievement-metrics.ts';
 import { currentLanguage, t } from '../../shared/i18n/locale.ts';
 import { escape, albumPagination } from './album-markup.ts';
 
@@ -18,13 +19,7 @@ export const ACHIEVEMENT_ART = {
 export const ACHIEVEMENT_PAGE_SIZE = 4;
 
 export function achievementCount(entry: AchievementDefinition, data: AchievementData) {
-  if (entry.targets)
-    return entry.targets.filter((id) => achievementTargets(entry, data).includes(id)).length;
-
-  return Math.min(
-    entry.threshold,
-    entry.metric === 'reconciliations' ? data.reconciliations : data.ruined.length,
-  );
+  return Math.min(entry.threshold, achievementValue(entry, data));
 }
 
 export function achievementOverall(data: AchievementData) {
@@ -97,17 +92,9 @@ function targetList(data: AchievementData, entry: AchievementDefinition) {
   const targets = entry.targets
     ? (entry.targets ?? []).map((id) => ({ id, name: targetName(id) }))
     : DESTRUCTION_TARGETS;
-  const found = achievementTargets(entry, data);
+  const found = achievementTargets(entry.metric, data);
 
-  return `<ul class="achievement-targets" aria-label="${t(entry.metric === 'rooms' ? 'achievementRoomTargets' : entry.metric === 'all' ? 'achievementGoalTargets' : 'achievementObjectTargets')}">${targets.map((target) => `<li><span aria-hidden="true">${found.includes(target.id) ? '✓' : '○'}</span> <span class="sr-only">${found.includes(target.id) ? t('achievementDone') : t('achievementMissing')}: </span>${escape(target.name[currentLanguage()])}</li>`).join('')}</ul>`;
-}
-
-function achievementTargets(entry: AchievementDefinition, data: AchievementData) {
-  if (entry.metric === 'all') return data.unlocked;
-
-  if (entry.metric === 'rooms') return data.completedRooms ?? [];
-
-  return entry.metric === 'variants' ? (data.ruinedVariants ?? []) : data.ruined;
+  return `<ul class="achievement-targets" aria-label="${t(entry.metric === 'rooms' ? 'achievementRoomTargets' : entry.metric === 'all' ? 'achievementGoalTargets' : 'achievementObjectTargets')}">${targets.map((target) => `<li><span aria-hidden="true">${found.has(target.id) ? '✓' : '○'}</span> <span class="sr-only">${found.has(target.id) ? t('achievementDone') : t('achievementMissing')}: </span>${escape(target.name[currentLanguage()])}</li>`).join('')}</ul>`;
 }
 
 function achievementPlaceholder() {

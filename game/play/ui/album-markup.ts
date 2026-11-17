@@ -1,7 +1,7 @@
-import { currentLanguage, t } from '../../shared/i18n/locale';
-import type { AlbumEntry } from '../content/album/discovery';
-import { ALBUM_ART } from './album-art';
-import { roomIcon } from './album-room-icons';
+import { currentLanguage, t } from '../../shared/i18n/locale.ts';
+import type { AlbumEntry } from '../content/album/discovery.ts';
+import { ALBUM_ART } from './album-art.ts';
+import { roomIcon } from './album-room-icons.ts';
 export const ALBUM_CHAPTERS = [
   'living-room',
   'kitchen',
