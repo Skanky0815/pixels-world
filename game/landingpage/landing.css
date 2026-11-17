@@ -10,11 +10,11 @@ body.landing-page {
   width: min(1160px, 100%);
   margin: 0 auto;
 }
-.landing-page a {
+.landing-page a:not(.ui-button) {
   color: inherit;
   text-underline-offset: 5px;
 }
-.landing-page :focus-visible {
+.landing-page :focus-visible:not(.ui-button):not(.ui-control) {
   outline: 2px solid #edc37c;
   outline-offset: 5px;
 }
@@ -97,25 +97,6 @@ body.landing-page {
   font:
     17px/1.75 system-ui,
     sans-serif;
-}
-.play-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  min-height: 44px;
-  padding: 0 22px;
-  border: 2px solid #e4c182;
-  box-shadow: 4px 4px 0 #171418;
-  background: #e4c182;
-  color: #2e2528 !important;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: bold;
-}
-.play-link:hover {
-  background: #f0d4a2;
-  border-color: #f0d4a2;
 }
 .play-note {
   font:

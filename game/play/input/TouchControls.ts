@@ -192,12 +192,12 @@ function inside(rect: DOMRect, x: number, y: number) {
 // eslint-disable-next-line max-lines-per-function -- Die sechs beschrifteten Touch-Ziele bleiben als deklarativer zugänglicher Aufbau gemeinsam lesbar.
 function markup() {
   return `<div class="touch-directions">
-    <button type="button" data-control="up" aria-label="${t('up')}" aria-pressed="false">↑</button>
-    <button type="button" data-control="left" aria-label="${t('left')}" aria-pressed="false">←</button>
-    <button type="button" data-control="down" aria-label="${t('down')}" aria-pressed="false">↓</button>
-    <button type="button" data-control="right" aria-label="${t('right')}" aria-pressed="false">→</button>
+    <button type="button" class="ui-control" data-control="up" aria-label="${t('up')}" aria-pressed="false">↑</button>
+    <button type="button" class="ui-control" data-control="left" aria-label="${t('left')}" aria-pressed="false">←</button>
+    <button type="button" class="ui-control" data-control="down" aria-label="${t('down')}" aria-pressed="false">↓</button>
+    <button type="button" class="ui-control" data-control="right" aria-label="${t('right')}" aria-pressed="false">→</button>
   </div><div class="touch-actions">
-    <button type="button" data-control="jump" aria-pressed="false">${t('continueLabel')}</button>
-    <button type="button" data-control="reset" aria-pressed="false" hidden>${t('newRoundLabel')}</button>
+    <button type="button" class="ui-control" data-control="jump" aria-pressed="false">${t('continueLabel')}</button>
+    <button type="button" class="ui-control" data-control="reset" aria-pressed="false" hidden>${t('newRoundLabel')}</button>
   </div>`;
 }

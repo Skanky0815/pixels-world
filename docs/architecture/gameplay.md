@@ -16,6 +16,28 @@ DEV-Ansichten dürfen Spielmodule verwenden; das Spiel lädt DEV-Helfer nur hint
 Spiel-Layout, Dialoge und Touch-Steuerung bleiben unter `play/`. Die Landingpage
 importiert weder Phaser noch das Spielstylesheet.
 
+### Gemeinsame Bedienelemente
+
+`shared/ui/button.ts` und `button.css` bilden die gemeinsame Grundlage für
+Standardaktionen, Icon-/Schließenbuttons und Link-CTAs auf Landingpage, Hilfe
+und im Spiel. Navigation bleibt ein `<a href>`, eine Aktion ein `<button>` mit
+nativem `disabled`. Statisches HTML verwendet denselben Klassenvertrag wie die
+Markup-/DOM-Helfer; die Komponenten besitzen keine Spielzustände oder Listener.
+
+`ui-button` bündelt Mindestzielgröße, Fokus sowie Hover-, Druck- und Disabledzustand.
+Die benannten Varianten `primary`, `cta`, `link`, `language` und `loading` erhalten
+die unterschiedlichen Gewichtungen und Maße. Farb-, Abstands- und Fokusanpassungen
+laufen über die dort definierten CSS-Variablen, Position und Anordnung bleiben
+beim jeweiligen Verbraucher. Hover gilt nur für Geräte mit Hover-Unterstützung;
+es gibt keine Bewegungsanimation für Buttonzustände.
+
+Raumkarten, Album-/Erfolgskacheln, Lesezeichen und Touchflächen teilen über
+`ui-control` Mindestzielgröße, Fokus und den deaktivierten Cursor. Ihre besondere
+Form, Auswahl- und Haltezustände sowie Ereignislogik bleiben bei den zuständigen
+Ansichten bzw. Eingabeadaptern. Sprachwechsel aktualisiert sichtbare und
+zugängliche Namen gemeinsam; die Sprachwahl behält die kurzen DE-/EN-Texte und
+beschreibt diese über ausgeschriebene zugängliche Namen.
+
 ### Bausteinsicht: Importgrenzen
 
 | Quellbaustein      | Erlaubte interne Ziele                                 |

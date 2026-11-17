@@ -29,8 +29,8 @@ export function menuMarkup() {
     <section data-menu-view="information" hidden><div data-game-information></div></section>
     <section data-menu-view="confirm" hidden><p data-menu-text="menuConfirmBody"></p><div class="menu-confirm-actions"><button type="button" class="ui-button" data-menu-cancel data-menu-text="albumCancel"></button><button type="button" class="ui-button" data-menu-confirm data-menu-text="menuConfirmAction"></button></div></section>
     <nav class="pause-actions" aria-label="${t('mainMenu')}">
-      <button type="button" class="ui-button menu-primary" data-menu-play data-menu-text="menuPlay"></button>
-      <button type="button" class="ui-button menu-primary" data-pause-resume data-menu-text="menuResume"></button>
+      <button type="button" class="ui-button ui-button--primary menu-primary" data-menu-play data-menu-text="menuPlay"></button>
+      <button type="button" class="ui-button ui-button--primary menu-primary" data-pause-resume data-menu-text="menuResume"></button>
       <button type="button" class="ui-button" data-pause-album aria-haspopup="dialog"></button>
       <button type="button" class="ui-button" data-menu-settings data-menu-text="gameOptions"></button>
       <a class="ui-button" href="./help.html" target="_blank" rel="noopener noreferrer" data-menu-text="menuHelp"></a>

@@ -265,7 +265,6 @@
 }
 
 .album-dialog .achievement-tile:disabled {
-  cursor: default;
   background: #b18c5520;
   border-style: dashed;
   opacity: 1;
