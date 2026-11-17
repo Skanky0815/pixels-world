@@ -307,10 +307,23 @@ bei blockiertem Browser-Speicher funktionsfähig. **Optionen** in der Einführun
 übernommen; Presets und Snapshot-Vertrag stehen in der
 [Gameplay-Architektur](architecture/gameplay.md#schwierigkeitsgrade).
 
+Menüaktionen sind zusätzlich mit ↑/↓ erreichbar. Die Raumauswahl nutzt die
+sichtbare Anordnung für alle vier Pfeile; deaktivierte Zimmer werden übersprungen.
+Am Rand bleibt der Fokus stehen, es gibt kein Umlaufen. Pfeile ändern den Fokus,
+Enter/Leertaste bestätigen die fokussierte vorhandene Aktion. Erst die
+Startaktion betritt das ausgewählte Zimmer. Tab/Shift+Tab und Esc bleiben erhalten;
+native Regler, Auswahl- und Textfelder behalten ihre eigene Pfeilbedienung.
+Unteransichten merken ihr Fokusziel; Sprachwechsel und Größenwechsel erhalten
+ein gültiges Ziel. Wiederholte Tastendrücke aktivieren keine zweite Aktion.
+
 `PlayActivity` verknüpft Menüpause mit Fokus/Sichtbarkeit. Fortsetzen verwirft das
 erste Zeitdelta, während `InputFrames` eine dabei noch unbenutzte frische
 Eingabeflanke für den nächsten aktiven Frame bewahrt. Cleanup verwirft den Puffer;
-gehaltene Bewegung wird nicht wiederholt. Menütasten werden in der Menüansicht behandelt,
+gehaltene Bewegung wird nicht wiederholt. `KeyboardRelease` merkt physisch gehaltene
+Tasten getrennt von Phasers zurückgesetztem Zustand. Menü-/Fokusübergänge sperren
+sie bis zum eigenen Keyup; unbekannte Wiederholungen nach Blur oder Szenenneustart
+bleiben ebenfalls gesperrt. Erst eine frische Taste steuert wieder Bewegung,
+Sprung, Reset oder Versöhnung. Touch bleibt eine unabhängige Quelle. Menütasten werden in der Menüansicht behandelt,
 damit Phasers globale Tastensperre native Regler und Formularbedienung nicht stört.
 
 `AudioPreferences` speichert `master` und `effects` unter `pixels-world.audio`.

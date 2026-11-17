@@ -1,3 +1,8 @@
+import {
+  focusTargets,
+  installFocusNavigation,
+  preserveFocus,
+} from '../../shared/ui/focus-navigation';
 import livingRoomPreview from '../../../assets/landing/living-room.png';
 import kitchenPreview from '../../../assets/landing/kitchen.png';
 import { ROOM_CHOICES, playableRoom } from '../content/rooms/selection';
@@ -13,6 +18,7 @@ const previews = {
 /** Menu presentation only: the scene owns room selection, reset and start state. */
 export class RoomSelection {
   private selected = 'living-room';
+  private focusIndex = -1;
   private readonly root = document.createElement('section');
   private readonly back = document.createElement('button');
   private readonly portrait = matchMedia('(orientation: portrait) and (max-width: 1024px)');
@@ -37,6 +43,14 @@ export class RoomSelection {
     this.back.addEventListener('keyup', this.key, options);
     this.root.addEventListener('keydown', this.key, options);
     this.root.addEventListener('keyup', this.key, options);
+    installFocusNavigation(this.root, this.abort.signal, true);
+    this.root.addEventListener(
+      'focusin',
+      () => {
+        this.focusIndex = focusTargets(this.root).indexOf(document.activeElement as HTMLElement);
+      },
+      options,
+    );
     this.root.addEventListener(
       'click',
       (event) => {
@@ -69,6 +83,14 @@ export class RoomSelection {
       this.root.querySelector<HTMLButtonElement>('[data-room-start]')?.focus();
   }
 
+  restoreFocus() {
+    const targets = focusTargets(this.root);
+    const target =
+      targets[this.focusIndex] ?? this.root.querySelector<HTMLElement>('[data-room-start]');
+
+    target?.focus({ preventScroll: true });
+  }
+
   private readonly key = (event: KeyboardEvent) => {
     if (!['Escape', 'F2'].includes(event.code)) event.stopPropagation();
   };
@@ -88,13 +110,11 @@ export class RoomSelection {
   }
 
   private refresh() {
-    const focused = this.root.contains(document.activeElement);
-
     this.root.setAttribute('aria-label', t('roomsTitle'));
-    this.root.innerHTML = markup(this.selected);
+    preserveFocus(this.root, () => {
+      this.root.innerHTML = markup(this.selected);
+    });
     this.back.textContent = t('roomsBack');
-
-    if (focused) this.root.querySelector<HTMLButtonElement>('[data-room-start]')?.focus();
   }
 
   private select(id: string) {

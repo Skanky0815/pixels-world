@@ -1,3 +1,4 @@
+import { canFocus, installFocusNavigation, preserveFocus } from '../../shared/ui/focus-navigation';
 import { StoragePanel } from './StoragePanel';
 import { difficultyPreferences } from '../settings/difficulty';
 import { DIFFICULTY_LABELS, isDifficulty, type Difficulty } from '../content/difficulty';
@@ -26,11 +27,13 @@ interface PauseActions {
   difficulty(): Difficulty;
   rooms(): void;
   play(): void;
+  focus(): void;
 }
 
 export class PauseMenu {
   private view: 'home' | 'settings' | 'information' | 'confirm' = 'home';
   private returnable = true;
+  private readonly rememberedFocus = new Map<string, HTMLElement>();
   private pending?: 'restart' | 'rooms';
   private readonly album: AlbumView;
   private readonly albumReset: AlbumResetSetting;
@@ -50,12 +53,10 @@ export class PauseMenu {
   // eslint-disable-next-line max-lines-per-function -- Zugänglicher Dialog und sämtliche Ereignisse teilen eine szenengebundene Lebensdauer.
   constructor(private readonly actions: PauseActions) {
     this.album = new AlbumView(() => {
-      if (this.root.hidden) this.actions.pause(false);
-      const target = !this.root.hidden
-        ? this.element('[data-pause-album]')
-        : document.getElementById('game');
-
-      target?.focus({ preventScroll: true });
+      if (this.root.hidden) {
+        this.actions.pause(false);
+        this.actions.focus();
+      } else this.element('[data-pause-album]').focus({ preventScroll: true });
     });
     this.root.className = 'pause-menu game-menu';
     this.root.hidden = true;
@@ -102,7 +103,8 @@ export class PauseMenu {
     document.addEventListener('keydown', this.keyDown, options);
     this.root.addEventListener('keydown', this.menuKey, options);
     this.root.addEventListener('keyup', this.menuKey, options);
-    this.unsubscribe = onLanguageChange(() => this.refresh());
+    installFocusNavigation(this.root, this.abort.signal);
+    this.unsubscribe = onLanguageChange(() => preserveFocus(this.root, () => this.refresh()));
     this.unsubscribeAudio = audioPreferences.subscribe(() => this.refreshAudio());
     this.unsubscribeMotion = motionPreferences.subscribe(() => this.refreshMotion());
     this.refresh();
@@ -160,10 +162,15 @@ export class PauseMenu {
       this.element(`[${hook}]`).addEventListener('click', action, options);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Neuer Menüeintritt setzt seinen Fokuskontext zurück; Unteransichten merken ihn danach innerhalb derselben Pause.
   open(initial = false) {
     if (this.album.opened || document.querySelector('dialog[open]')) return;
 
-    if (this.root.hidden) this.returnable = !initial;
+    if (this.root.hidden) {
+      this.returnable = !initial;
+      this.rememberedFocus.clear();
+    }
+
     this.actions.pause(true);
     this.root.hidden = false;
     document.documentElement.classList.add('menu-open');
@@ -181,7 +188,7 @@ export class PauseMenu {
 
     if (!this.returnable) return this.show('home');
     this.leave();
-    document.getElementById('game')?.focus({ preventScroll: true });
+    this.actions.focus();
   }
 
   dismiss() {
@@ -194,7 +201,12 @@ export class PauseMenu {
     this.actions.pause(false);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Fokus, sichtbare Unteransicht und ihre Aktionen wechseln gemeinsam, bevor ein gültiges Ziel wiederhergestellt wird.
   private show(view: typeof this.view) {
+    const active = document.activeElement;
+
+    if (active instanceof HTMLElement && this.root.contains(active) && canFocus(active))
+      this.rememberedFocus.set(this.view, active);
     this.view = view;
     this.refresh();
 
@@ -207,6 +219,7 @@ export class PauseMenu {
     this.focusView();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Gemerkter Fokus und sichere ansichtsspezifische Einstiegsziele bilden dieselbe Wiederherstellungsregel.
   private focusView() {
     const hooks = {
       confirm: '[data-menu-cancel]',
@@ -215,7 +228,11 @@ export class PauseMenu {
       home: this.returnable ? '[data-pause-resume]' : '[data-menu-play]',
     };
 
-    this.element(hooks[this.view]).focus({ preventScroll: true });
+    const remembered = this.rememberedFocus.get(this.view);
+    const target =
+      remembered?.isConnected && canFocus(remembered) ? remembered : this.element(hooks[this.view]);
+
+    target.focus({ preventScroll: true });
   }
 
   private ask(action: 'restart' | 'rooms') {
