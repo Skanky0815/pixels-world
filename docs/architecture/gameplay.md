@@ -475,6 +475,15 @@ bleibt ohne Minispiel positiv, erzeugt aber keine Funde.
 Bei Erfolg bestätigt `RoundAlbum.confirm` Albumfunde und Erfolge einmalig über
 `AlbumCollection.completeRound`; ein gemeinsamer Speichervorgang und eine
 Benachrichtigung übernehmen den vollständigen Batch.
+`LivingRoomScene.completeRound` behandelt das terminale Ergebnis an den Übergängen
+von Heimkehr und Versöhnung einmalig. Es behält die Zahl neuer Funde für die
+Ergebnisansicht und übergibt den bestätigten Bannerbatch einmal an `AlbumBanners.start`.
+Der zusätzliche Idempotenzschutz in `RoundAlbum.confirm` bleibt erhalten.
+`renderResult` liest ausschließlich Darstellungsdaten; Sprach- und Layoutwechsel
+bestätigen nichts und starten weder Banner noch Abschlussanimation erneut.
+Nur `advanceResult` reicht aktive Zeit an Banner und Abschlussanimation weiter;
+der Übergangsframe startet beide bei null. Reset und Raumwechsel ersetzen die
+szenengebundenen Abschlussdaten und Darstellungen.
 Bereits bekannte IDs zählen nicht erneut. Wiederholtes Rendern und Sprachwechsel
 schreiben nicht erneut. Die Auswertung zeigt die Anzahl tatsächlich neuer Einträge
 oder bei Scheitern ausdrücklich, warum keine neuen Einträge gespeichert wurden.
