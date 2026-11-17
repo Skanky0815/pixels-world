@@ -563,6 +563,10 @@ export class LivingRoomScene extends Phaser.Scene {
       difficulty: () => this.difficulty,
       rooms: () => this.returnToRooms(),
       play: () => this.openRooms(),
+      focus: () => {
+        if (this.roomSelection.opened) this.roomSelection.restoreFocus();
+        else document.getElementById('game')?.focus({ preventScroll: true });
+      },
     });
     this.roomSelection = new RoomSelection(
       this.choosingRoom,
@@ -573,6 +577,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.syncActivity();
 
     if (this.menuHome && !this.started) this.menu.open(true);
+    else if (!this.choosingRoom) document.getElementById('game')?.focus({ preventScroll: true });
     const unsubscribe = onLanguageChange(() => this.refreshLanguage());
     const unsubscribeMotion = motionPreferences.subscribe(() => {
       if (this.ballPlay.snapshot().active) this.renderBallPlay();

@@ -38,6 +38,14 @@ Ansichten bzw. Eingabeadaptern. Sprachwechsel aktualisiert sichtbare und
 zugängliche Namen gemeinsam; die Sprachwahl behält die kurzen DE-/EN-Texte und
 beschreibt diese über ausgeschriebene zugängliche Namen.
 
+`shared/ui/focus-navigation.ts` teilt die DOM-Fokusnavigation von Menü und
+Raumauswahl. Es liest nur sichtbare, bedienbare native Ziele, erhält deren
+Klickpfad und schützt Enter/Leertaste vor Wiederholung. Die reine Zielwahl in
+`focus-target.ts` begrenzt lineare Reihenfolgen bzw. verwendet aktuelle
+Elementgeometrie für räumliche Navigation. Es gibt keine feste Spaltenzahl,
+Raumlogik oder Spieleingabe in diesem Helfer. Beide Besitzer entsorgen die
+Listener über ihren vorhandenen Abort-Lebenszyklus.
+
 ### Bausteinsicht: Importgrenzen
 
 | Quellbaustein      | Erlaubte interne Ziele                                 |
