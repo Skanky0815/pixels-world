@@ -151,6 +151,7 @@ for (const mobile of [false, true]) {
 test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Reload, Sprache und Album-Löschen @smoke', async ({
   page,
 }) => {
+  await observeAlbumWrites(page);
   await scratch(page);
   await besidePlant(page);
   await until(page, (s) => s.plant.damage === 1);
@@ -182,6 +183,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   expect(result.outcome).toBe('success');
   expect(result.newDiscoveries).toBe(2);
   expect(result.albumText).toBe('Neue Album-Einträge: 2');
+  expect(await albumWrites(page)).toBe(1);
   const banner = page.locator('.album-banner');
 
   await expect(banner).toBeVisible();
@@ -189,12 +191,47 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await expect(banner).toContainText('Neuer Album-Eintrag freigeschaltet');
   await expect(banner.locator('strong')).toHaveText('Das gemütliche Sofa');
   await bannerFits(page);
+  await openPause(page);
+  const ending = (await state(page)).ending;
+
+  expect(ending.elapsed).toBeLessThan(3000);
+
+  for (const language of ['en', 'de', 'en', 'de']) {
+    await page.locator(`[data-language="${language}"]`).click();
+    await expect(banner.locator('strong')).toHaveText(
+      language === 'en' ? 'The cozy couch' : 'Das gemütliche Sofa',
+    );
+    expect((await state(page)).result?.newDiscoveries).toBe(2);
+    expect((await state(page)).ending).toEqual(ending);
+  }
+
+  await page.setViewportSize({ width: 1100, height: 800 });
+  await page.clock.runFor(4000);
+  expect((await state(page)).ending).toEqual(ending);
+  await expect(banner).toHaveAttribute('data-entry', 'couch.cozy');
+  expect(await albumWrites(page)).toBe(1);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.locator('[data-pause-resume]').click();
+  await page.clock.runFor(100);
+  await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+  const blurred = (await state(page)).ending;
+
+  expect((await state(page)).active).toBe(false);
+  await page.clock.runFor(10_000);
+  expect((await state(page)).ending).toEqual(blurred);
+  await expect(banner).toHaveAttribute('data-entry', 'couch.cozy');
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await until(page, (snapshot) => snapshot.ending.elapsed > blurred.elapsed, 100);
+  expect((await state(page)).active).toBe(true);
+  expect((await state(page)).ending.elapsed - blurred.elapsed).toBeLessThan(200);
+  expect(await albumWrites(page)).toBe(1);
   await test
     .info()
     .attach('album-banner-desktop', { body: await page.screenshot(), contentType: 'image/png' });
   const field = await page.locator('#game').boundingBox();
 
   await page.clock.runFor(3100);
+  await until(page, (snapshot) => snapshot.ending.complete, 100);
   await expect(banner).toHaveAttribute('data-entry', 'plant.catgrass');
   await openFromMenu(page);
   await page.clock.runFor(4000);
@@ -251,6 +288,9 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await album.locator('[data-action="close"]').click();
   await page.locator('[data-pause-resume]').click();
   await reset(page);
+  expect(await albumWrites(page)).toBe(1);
+  await expect(banner).toBeHidden();
+  expect((await state(page)).ending.kind).toBeNull();
   await page.reload();
   await waitForGame(page);
   await (await introAction(page, 'album')).click();
@@ -500,3 +540,24 @@ test.describe('Album-Banner auf dem Handy', () => {
     await expect(banner).toBeHidden();
   });
 });
+
+async function observeAlbumWrites(page: Page) {
+  await page.addInitScript(() => {
+    let writes = 0;
+    const setItem = Storage.prototype.setItem;
+
+    Storage.prototype.setItem = function (key, value) {
+      if (this === window.localStorage && key === 'pixels-world.album') writes++;
+
+      return setItem.call(this, key, value);
+    };
+
+    Object.defineProperty(window, '__albumWrites', { get: () => writes });
+  });
+}
+
+async function albumWrites(page: Page) {
+  return page.evaluate(
+    () => (window as Window & { readonly __albumWrites?: number }).__albumWrites,
+  );
+}

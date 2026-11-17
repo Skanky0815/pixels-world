@@ -51,7 +51,7 @@ import { MobileReadout } from '../ui/MobileReadout';
 import { MainGoal } from '../domain/main-goal';
 import { GoalView } from '../ui/GoalView';
 import { StartScreen } from '../ui/StartScreen';
-import { roundResult } from '../domain/round-result';
+import { roundResult, type RoundResult } from '../domain/round-result';
 import { RoundResultView } from '../ui/RoundResultView';
 import { Reconciliation } from '../domain/reconciliation';
 import { CharmPresentation } from '../domain/charm-presentation';
@@ -113,6 +113,8 @@ export class LivingRoomScene extends Phaser.Scene {
   private round!: RoundController;
   private charm!: Reconciliation;
   private charmPresentation!: CharmPresentation;
+  private completedResult: RoundResult | null = null;
+  private newDiscoveries = 0;
   private ending = new EndingPresentation();
   private albumBanners!: AlbumBanners;
   private resultView!: RoundResultView;
@@ -300,6 +302,8 @@ export class LivingRoomScene extends Phaser.Scene {
     });
     this.charm = new Reconciliation(this.random);
     this.charmPresentation = new CharmPresentation();
+    this.completedResult = null;
+    this.newDiscoveries = 0;
     this.ending = new EndingPresentation();
     this.returnTime = 0;
     this.goal = new MainGoal(this.room.goal);
@@ -1070,6 +1074,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (walking && this.returning.snapshot().stage === 'seated') this.syncActivity();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Eingabe, einmaliger Abschluss und aktive Darstellungszeit folgen demselben Versöhnungsframe.
   private advanceCharm(input: InputState, elapsed: number) {
     const before = this.charm.snapshot();
 
@@ -1080,7 +1085,8 @@ export class LivingRoomScene extends Phaser.Scene {
     this.charmPresentation.update(before, this.charm.snapshot(), elapsed);
     this.renderCharmMotion();
     this.charmView.render(this.charm.snapshot());
-    this.renderResult(elapsed);
+    this.advanceResult(elapsed);
+    this.renderResult();
   }
 
   private renderCharmMotion() {
@@ -1091,24 +1097,49 @@ export class LivingRoomScene extends Phaser.Scene {
     this.pixel.presentCharm(homecomingCharmPose(pose, this.room.definition.homecomingSide));
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Ergebnis, Album und rein visuelle Abschlusszeit werden in derselben Darstellung synchronisiert.
-  private renderResult(elapsed = 0) {
-    const result = roundResult(
+  private readRoundResult() {
+    return roundResult(
       this.round.snapshot(),
       this.homecoming.snapshot(),
       this.charm.snapshot(),
       this.difficulty,
     );
+  }
 
+  // eslint-disable-next-line max-lines-per-function -- Ein terminaler Übergang übergibt den bestätigten Batch und startet beide Darstellungen genau einmal.
+  private completeRound() {
+    if (this.completedResult) return false;
+    const result = this.readRoundResult();
+
+    if (!result) return false;
+    this.completedResult = result;
+    this.newDiscoveries = this.roundAlbum.confirm(result, this.room.definition.id).length;
     this.ending.update(
       result,
       this.charmPresentation.motion.pose(motionPreferences.snapshot().reduced),
+      0,
+    );
+    this.albumBanners.start(this.roundAlbum.confirmedBanners());
+
+    return true;
+  }
+
+  private advanceResult(elapsed: number) {
+    if (this.completeRound() || !this.completedResult) return;
+    this.ending.update(
+      this.completedResult,
+      this.charmPresentation.motion.pose(motionPreferences.snapshot().reduced),
       elapsed,
     );
-    this.presentEnding();
-    this.resultView.render(result, this.roundAlbum.confirm(result, this.room.definition.id).length);
+    this.albumBanners.advance(elapsed);
+  }
 
-    if (result) this.albumBanners.show(this.roundAlbum.confirmedBanners(), elapsed);
+  private renderResult() {
+    const result = this.completedResult ? this.readRoundResult() : null;
+
+    this.presentEnding();
+    this.resultView.render(result, this.newDiscoveries);
+    this.albumBanners.render();
     this.controls.showRestart(result !== null);
     this.roomSelection.showReturn(result !== null);
   }
@@ -1140,6 +1171,7 @@ export class LivingRoomScene extends Phaser.Scene {
     }
 
     this.sara.render(snapshot, this.returning.snapshot().stage === 'seated');
+    this.completeRound();
     this.renderResult();
   }
 

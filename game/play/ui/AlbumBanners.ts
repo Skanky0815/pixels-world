@@ -30,14 +30,17 @@ export class AlbumBanners {
     document.getElementById('game')?.append(this.root);
   }
 
-  show(entries: readonly string[], elapsed: number) {
-    if (!this.queue.start(entries)) this.queue.advance(elapsed);
-    this.root.dataset.reduced = String(motionPreferences.snapshot().reduced);
-    this.render();
+  start(entries: readonly string[]) {
+    this.queue.start(entries);
+  }
+
+  advance(elapsed: number) {
+    this.queue.advance(elapsed);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Nur ein neuer Eintrag oder Sprachwechsel verändert den Live-Bereich; Frames erzeugen keine Wiederholungen.
-  private render() {
+  render() {
+    this.root.dataset.reduced = String(motionPreferences.snapshot().reduced);
     const id = this.queue.current();
     const key = `${id}/${currentLanguage()}`;
 
