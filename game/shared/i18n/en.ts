@@ -1,5 +1,13 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  pixelRoomWasd:
+    'Pixel’s room. Use arrows or A/D to move and W/S to climb, Space to jump. Click the room to focus.',
+  keyboardSettings: 'Keyboard',
+  wasdEnable: 'Also use WASD',
+  wasdHelp:
+    'A/D: left/right · W/S: climb. Also for menus and making amends. Arrows and touch stay active.',
+  wasdControlHelp:
+    'Enable additional WASD controls in Options: A/D move Pixel, W/S climb. In menus and when making amends, W/A/S/D match the arrows ↑/←/↓/→. Space and Esc stay the same.',
   feedbackFridge: 'Fridge rummaged!',
   fridgeRummaging: 'Rumble … rustle …',
   fridgeHandle: 'Hold on … pull it open!',

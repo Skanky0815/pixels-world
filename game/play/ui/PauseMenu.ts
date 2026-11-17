@@ -1,3 +1,4 @@
+import { keyboardPreferences } from '../../shared/input/keyboard-preferences';
 import { canFocus, installFocusNavigation, preserveFocus } from '../../shared/ui/focus-navigation';
 import { StoragePanel } from './StoragePanel';
 import { difficultyPreferences } from '../settings/difficulty';
@@ -48,6 +49,7 @@ export class PauseMenu {
   private readonly unsubscribeAudio: () => void;
   private readonly removeLanguage: () => void;
   private readonly unsubscribeDifficulty: () => void;
+  private readonly unsubscribeKeyboard: () => void;
   private readonly unsubscribeMotion: () => void;
 
   // eslint-disable-next-line max-lines-per-function -- Zugänglicher Dialog und sämtliche Ereignisse teilen eine szenengebundene Lebensdauer.
@@ -100,6 +102,16 @@ export class PauseMenu {
       },
       options,
     );
+    this.element('[data-wasd]').addEventListener(
+      'change',
+      (event) => {
+        if (event.target instanceof HTMLInputElement)
+          keyboardPreferences.setEnabled(event.target.checked);
+      },
+      options,
+    );
+    this.unsubscribeKeyboard = keyboardPreferences.subscribe(() => this.refreshKeyboard());
+    this.refreshKeyboard();
     document.addEventListener('keydown', this.keyDown, options);
     this.root.addEventListener('keydown', this.menuKey, options);
     this.root.addEventListener('keyup', this.menuKey, options);
@@ -256,6 +268,10 @@ export class PauseMenu {
       audioPreferences.update(input.dataset.audio as keyof AudioLevels, Number(input.value) / 100);
   }
 
+  private refreshKeyboard() {
+    (this.element('[data-wasd]') as HTMLInputElement).checked = keyboardPreferences.snapshot();
+  }
+
   private refreshMotion() {
     const preference = motionPreferences.snapshot();
     const input = this.element('[data-reduce-motion]') as HTMLInputElement;
@@ -340,6 +356,7 @@ export class PauseMenu {
     this.unsubscribe();
     this.unsubscribeAudio();
     this.unsubscribeMotion();
+    this.unsubscribeKeyboard();
     this.updates.destroy();
     this.storage.destroy();
     this.unsubscribeDifficulty();

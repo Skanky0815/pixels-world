@@ -1,17 +1,10 @@
-import { KeyboardRelease } from './keyboard-release';
+import { KeyboardRelease } from '../../shared/input/keyboard-release';
+import { keyboardBindings } from '../../shared/input/keyboard-bindings';
+import { keyboardPreferences } from '../../shared/input/keyboard-preferences';
+import { InputSources } from './input-sources';
 import { TouchControls } from './TouchControls';
-import { DIRECTIONS } from '../content/reconciliation';
 import Phaser from 'phaser';
 import { InputFrames, type InputState } from './input-state';
-
-const KEY_CODES = {
-  left: 'ArrowLeft',
-  right: 'ArrowRight',
-  up: 'ArrowUp',
-  down: 'ArrowDown',
-  jump: 'Space',
-  reset: 'KeyR',
-} as const;
 
 const BLOCKED_INPUT: InputState = Object.freeze({
   arrows: Object.freeze([]),
@@ -26,30 +19,32 @@ const BLOCKED_INPUT: InputState = Object.freeze({
 /** Owns keyboard and pointer bindings and their lifecycle; consumers only receive InputState. */
 export class InputController {
   private readonly keyboard: Phaser.Input.Keyboard.KeyboardPlugin;
-  private readonly keys: Record<
-    'left' | 'right' | 'up' | 'down' | 'jump' | 'reset',
-    Phaser.Input.Keyboard.Key
-  >;
+  private keys: {
+    binding: ReturnType<typeof keyboardBindings>[number];
+    key: Phaser.Input.Keyboard.Key;
+  }[] = [];
+
+  private readonly sources = new InputSources();
+  private readonly freshKeys = new Set<string>();
+  private readonly unsubscribeKeyboard: () => void;
 
   private readonly frames = new InputFrames();
   private readonly keyboardRelease = new KeyboardRelease();
   private readonly abort = new AbortController();
-  private readonly touch = new TouchControls();
+  private readonly touch = new TouchControls(this.sources);
 
-  // eslint-disable-next-line max-lines-per-function -- Die sechs deklarativen Tastenbindungen bleiben gemeinsam neben der zugehörigen Blur-Anmeldung.
+  // eslint-disable-next-line max-lines-per-function -- Bindungen, Optionswechsel und Fokusgrenzen teilen die Szenenlebensdauer.
   constructor(private readonly scene: Phaser.Scene) {
     const keyboard = scene.input.keyboard;
 
     if (!keyboard) throw new Error('Pixel’s World requires keyboard input.');
     this.keyboard = keyboard;
-    this.keys = {
-      left: keyboard.addKey('LEFT'),
-      right: keyboard.addKey('RIGHT'),
-      up: keyboard.addKey('UP'),
-      down: keyboard.addKey('DOWN'),
-      jump: keyboard.addKey('SPACE'),
-      reset: keyboard.addKey('R'),
-    };
+    this.bindKeys();
+    this.unsubscribeKeyboard = keyboardPreferences.subscribe(() => {
+      this.release();
+      this.removeKeys();
+      this.bindKeys();
+    });
     this.bindKeyboardRelease();
     scene.game.events.on(Phaser.Core.Events.BLUR, this.release, this);
   }
@@ -58,12 +53,27 @@ export class InputController {
   private bindKeyboardRelease() {
     const options = { capture: true, signal: this.abort.signal };
 
+    window.addEventListener('keydown', (event) => this.trackDown(event), options);
     window.addEventListener(
       'keydown',
-      (event) => this.keyboardRelease.down(event.code, event.repeat),
+      (event) => {
+        if (
+          !this.focusBlocked() &&
+          !modified(event) &&
+          this.keys.some(({ binding }) => binding.code === event.code)
+        )
+          event.preventDefault();
+      },
+      { signal: this.abort.signal },
+    );
+    window.addEventListener(
+      'keyup',
+      (event) => {
+        this.keyboardRelease.up(event.code);
+        this.sources.releaseSource(event.code);
+      },
       options,
     );
-    window.addEventListener('keyup', (event) => this.keyboardRelease.up(event.code), options);
     window.addEventListener('blur', () => this.keyboardRelease.blur(), options);
     document.addEventListener(
       'visibilitychange',
@@ -74,14 +84,29 @@ export class InputController {
     );
   }
 
-  private allowed(action: keyof typeof KEY_CODES) {
-    return this.keyboardRelease.allows(KEY_CODES[action]);
+  private trackDown(event: KeyboardEvent) {
+    const fresh = this.keyboardRelease.down(event.code, event.repeat);
+
+    if (this.focusBlocked() || modified(event)) return this.release();
+    const binding = this.keys.find(({ binding }) => binding.code === event.code)?.binding;
+
+    if (!binding || !fresh || controlActivation(event)) return;
+
+    if (this.sources.press(event.code, binding.action)) this.freshKeys.add(event.code);
   }
 
-  private keyboardActive() {
-    return (Object.keys(this.keys) as (keyof typeof KEY_CODES)[]).some(
-      (action) => this.keys[action].isDown && this.allowed(action),
-    );
+  private bindKeys() {
+    this.keys = keyboardBindings(keyboardPreferences.snapshot()).map((binding) => ({
+      binding,
+      key: this.keyboard.addKey(binding.key, false),
+    }));
+  }
+
+  private removeKeys() {
+    for (const { key } of this.keys) {
+      this.keyboard.removeCapture(key.keyCode);
+      this.keyboard.removeKey(key, true);
+    }
   }
 
   read(frame: number) {
@@ -94,48 +119,45 @@ export class InputController {
     return this.frames.read(frame, () => this.readKeys());
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Spielhost und native Bedienfelder definieren gemeinsam die Grenze für Spielaktionen.
   private focusBlocked() {
     const focused = document.activeElement;
 
     return (
       !!document.querySelector('dialog[open]') ||
       document.documentElement.classList.contains('menu-open') ||
-      (!!focused?.closest('a, button, input, textarea, select') &&
-        !focused.closest('[data-control]'))
+      !focused?.closest('#game, [data-control]') ||
+      !!focused?.closest(
+        'a, button:not([data-control]), input, textarea, select, [contenteditable]:not([contenteditable="false"])',
+      )
     );
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Ein deklarativer Snapshot konsumiert jede Tastenflanke genau einmal pro Frame.
+  // eslint-disable-next-line max-lines-per-function -- Physische Tastatur- und Touchquellen werden einmal pro Frame vor der semantischen Zusammenführung erfasst.
   private readKeys() {
-    const k = this.keys;
     const touch = this.touch.read();
-    const held = (action: keyof typeof k) =>
-      (k[action].isDown && this.allowed(action)) || touch.held.includes(action);
-    const space = this.readSpace();
+    const keyboard = this.keys.map(({ binding, key }) => ({
+      id: binding.code,
+      action: binding.action,
+      held: key.isDown && this.keyboardRelease.allows(binding.code),
+      pressed:
+        freshDown(key) &&
+        this.freshKeys.has(binding.code) &&
+        this.keyboardRelease.allows(binding.code),
+    }));
+    const actions = new Set([...touch.held, ...touch.pressed]);
 
-    return {
-      horizontal: Number(held('right')) - Number(held('left')),
-      vertical: Number(held('down')) - Number(held('up')),
-      jumpPressed: space.jumpPressed || touch.pressed.includes('jump'),
-      confirmPressed: space.confirmPressed || touch.pressed.includes('jump'),
-      arrows: Object.freeze(
-        DIRECTIONS.filter(
-          (direction) =>
-            (freshDown(k[direction]) && this.allowed(direction)) ||
-            touch.pressed.includes(direction),
-        ),
-      ),
-      resetPressed:
-        (Phaser.Input.Keyboard.JustDown(k.reset) && this.allowed('reset')) ||
-        touch.pressed.includes('reset'),
-      active: this.keyboardActive() || touch.held.length > 0 || touch.pressed.length > 0,
-    };
-  }
+    this.freshKeys.clear();
 
-  private readSpace() {
-    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.keys.jump) && this.allowed('jump');
-
-    return { jumpPressed, confirmPressed: jumpPressed && !this.keys.jump.originalEvent?.repeat };
+    return this.sources.read([
+      ...keyboard,
+      ...Array.from(actions, (action) => ({
+        id: `touch:${action}`,
+        action,
+        held: touch.held.includes(action),
+        pressed: touch.pressed.includes(action),
+      })),
+    ]);
   }
 
   defer(input: InputState) {
@@ -155,6 +177,8 @@ export class InputController {
     this.keyboard.resetKeys();
     this.touch.clear();
     this.frames.clear();
+    this.sources.clear();
+    this.freshKeys.clear();
   }
 
   destroy() {
@@ -162,11 +186,8 @@ export class InputController {
     this.touch.destroy();
     this.scene.game.events.off(Phaser.Core.Events.BLUR, this.release, this);
 
-    for (const key of Object.values(this.keys)) {
-      // Phaser may already have removed Key objects during its own shutdown.
-      this.keyboard.removeCapture(key.keyCode);
-      this.keyboard.removeKey(key, true);
-    }
+    this.unsubscribeKeyboard();
+    this.removeKeys();
 
     this.frames.clear();
   }
@@ -174,4 +195,16 @@ export class InputController {
 
 function freshDown(key: Phaser.Input.Keyboard.Key) {
   return Phaser.Input.Keyboard.JustDown(key) && !key.originalEvent?.repeat;
+}
+
+function modified(event: KeyboardEvent) {
+  return event.altKey || event.ctrlKey || event.metaKey;
+}
+
+function controlActivation(event: KeyboardEvent) {
+  return (
+    event.target instanceof Element &&
+    !!event.target.closest('[data-control]') &&
+    ['Space', 'Enter'].includes(event.code)
+  );
 }

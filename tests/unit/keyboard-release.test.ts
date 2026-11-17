@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function -- Zustandsfolgen prüfen gehaltene Tasten, Loslassen und frische Eingaben gemeinsam. */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { KeyboardRelease } from '../../game/play/input/keyboard-release.ts';
+import { KeyboardRelease } from '../../game/shared/input/keyboard-release.ts';
 
 test('Menü-/Fokuswechsel sperrt gehaltene Quellen bis zu deren eigenem Loslassen', () => {
   const keys = new KeyboardRelease();

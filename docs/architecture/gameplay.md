@@ -123,6 +123,16 @@ getrennt und über den Pfoten-/Sohlenanker ausgerichtet.
 ## Eingabe, Zeit und Lifecycle
 
 `InputController` liefert pro Game-Frame genau einen unveränderlichen `InputState`.
+Die deklarativen Bindungen in `shared/input/keyboard-bindings.ts` ergänzen bei
+aktivierter WASD-Präferenz A/D und W/S. Pfeile und Touch bleiben parallel aktiv.
+`InputSources` führt physische Quellen vor den Spielverbrauchern zusammen: Eine
+weiter gehaltene Quelle unterdrückt zusätzliche Flanken derselben Aktion. Die
+physische Ereignisreihenfolge bewahrt dies auch beim Quellenwechsel zwischen Frames;
+unterschiedliche frische Richtungen bleiben für die Versöhnung mehrdeutig.
+`KeyboardPreferences` speichert die standardmäßig ausgeschaltete Option unabhängig
+vom Album; Optionswechsel lösen die alten Eingaben bis zum eigenen Loslassen.
+Menünavigation nutzt dieselben Richtungsbindungen; native Felder und Fokus außerhalb
+des Spiels erzeugen keine Spielaktionen.
 Alle Verbraucher sehen dieselben Flanken. Tastatur und Touch vereinigen gehaltene
 Aktionen; Gegenrichtungen neutralisieren sich, ein Fingerwechsel löst keine andere
 gehaltene Quelle. Native Wiederholung erzeugt keine neue Aktion. Pointer-Capture,

@@ -1,11 +1,8 @@
 import { nextFocusIndex, type FocusDirection } from './focus-target.ts';
+import { directionForCode, keyboardBindings } from '../input/keyboard-bindings.ts';
+import { keyboardPreferences } from '../input/keyboard-preferences.ts';
+import { KeyboardRelease } from '../input/keyboard-release.ts';
 
-const ARROWS: Readonly<Record<string, FocusDirection>> = {
-  ArrowUp: 'up',
-  ArrowDown: 'down',
-  ArrowLeft: 'left',
-  ArrowRight: 'right',
-};
 const TARGETS = 'button, a[href], input, select, textarea, summary, [tabindex]';
 
 export function focusTargets(root: HTMLElement) {
@@ -32,25 +29,57 @@ export function preserveFocus(root: HTMLElement, update: () => void) {
 }
 
 /** DOM navigation only; native fields and the game input adapter retain their responsibilities. */
+// eslint-disable-next-line max-lines-per-function -- Navigation, physische Quellen und Optionsabonnement gehören demselben abbrechbaren DOM-Lebenszyklus.
 export function installFocusNavigation(root: HTMLElement, signal: AbortSignal, spatial = false) {
   const navigation = new FocusNavigation(root, spatial);
   const options = { signal };
+  const capture = { signal, capture: true };
+  const unsubscribe = keyboardPreferences.subscribe(navigation.release);
 
+  signal.addEventListener('abort', unsubscribe, { once: true });
+  window.addEventListener('keydown', navigation.trackDown, capture);
+  window.addEventListener('keyup', navigation.trackUp, capture);
   root.addEventListener('keydown', navigation.down, options);
   root.addEventListener('keyup', navigation.up, options);
   window.addEventListener('keyup', navigation.cancel, options);
-  window.addEventListener('blur', navigation.cancel, options);
+  window.addEventListener('blur', navigation.blur, options);
   root.addEventListener('focusout', navigation.cancel, options);
-  document.addEventListener('visibilitychange', navigation.cancel, options);
+  document.addEventListener('visibilitychange', navigation.blur, options);
 }
 
 class FocusNavigation {
   private pressed: HTMLElement | null = null;
+  private readonly keyboard = new KeyboardRelease();
+  private readonly fresh = new WeakSet<KeyboardEvent>();
 
   constructor(
     private readonly root: HTMLElement,
     private readonly spatial: boolean,
   ) {}
+
+  readonly trackDown = (event: KeyboardEvent) => {
+    const wasd = keyboardPreferences.snapshot();
+    const direction = directionForCode(event.code, wasd);
+    const continuing =
+      direction &&
+      keyboardBindings(wasd).some(
+        (binding) => binding.action === direction && this.keyboard.isHeld(binding.code),
+      );
+
+    if (this.keyboard.down(event.code, event.repeat) && !continuing) this.fresh.add(event);
+  };
+
+  readonly trackUp = (event: KeyboardEvent) => this.keyboard.up(event.code);
+
+  readonly release = () => {
+    this.keyboard.release();
+    this.cancel();
+  };
+
+  readonly blur = () => {
+    this.keyboard.blur();
+    this.cancel();
+  };
 
   // eslint-disable-next-line max-lines-per-function -- Native Felder, Pfeilfokus und einmalige Aktivierung werden an derselben DOM-Eingabegrenze getrennt.
   readonly down = (event: KeyboardEvent) => {
@@ -62,12 +91,12 @@ class FocusNavigation {
       nativeField(event.target)
     )
       return;
-    const direction = ARROWS[event.code];
+    const direction = directionForCode(event.code, keyboardPreferences.snapshot());
 
     if (direction) {
       event.preventDefault();
 
-      if (!event.repeat) this.move(direction);
+      if (this.fresh.has(event)) this.move(direction);
 
       return;
     }

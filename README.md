@@ -37,6 +37,9 @@ Weitere Befehle und DEV-Werkzeuge: [Lokal entwickeln](docs/development.md).
 
 **← / →** bewegen Pixel, **Leertaste** springt oder bestätigt Texte,
 **↑ / ↓** klettern an Vorhang, Tischdecke und Kühlschrank. **Esc** öffnet das Pause-Menü.
+Unter **Optionen → Tastatur** lässt sich zusätzlich **WASD** einschalten: **A/D** bewegen,
+**W/S** klettern und entsprechen in Menüs und bei der Versöhnung den Pfeilen.
+Pfeile bleiben parallel aktiv; Leertaste und Esc ändern sich nicht.
 Auf Touch-Geräten erscheinen Bildschirmtasten; die Tastatur bleibt zusätzlich nutzbar.
 
 ## Entwickeln und mitmachen

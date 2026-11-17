@@ -1,3 +1,4 @@
+import type { InputSources } from './input-sources';
 import { t, translateExact, onLanguageChange } from '../../shared/i18n/locale';
 import { PointerActions, type ControlAction } from './pointer-actions';
 
@@ -9,7 +10,7 @@ export class TouchControls {
   private readonly host: HTMLElement;
 
   // eslint-disable-next-line max-lines-per-function -- Die zugängliche Steuerungsgruppe wird atomar neben dem Canvas initialisiert und an ihre Lebensdauer gebunden.
-  constructor() {
+  constructor(private readonly sources: InputSources) {
     const host = document.getElementById('game');
 
     if (!host) throw new Error('Game host missing');
@@ -57,7 +58,11 @@ export class TouchControls {
     const action = button.dataset.control as ControlAction;
 
     if (action === 'reset') return this.restart();
-    this.actions.press(event.pointerId, action);
+    this.actions.press(
+      event.pointerId,
+      action,
+      this.sources.press(`touch:${event.pointerId}`, action),
+    );
     this.root.setPointerCapture(event.pointerId);
     this.render();
   };
@@ -74,6 +79,7 @@ export class TouchControls {
   private readonly cancel = (event: PointerEvent) => this.finish(event.pointerId, true);
 
   private finish(id: number, cancelled = false) {
+    this.sources.releaseSource(`touch:${id}`);
     this.actions.release(id, cancelled);
 
     if (this.root.hasPointerCapture(id)) this.root.releasePointerCapture(id);
@@ -85,7 +91,8 @@ export class TouchControls {
   }
 
   private pulse(action: ControlAction) {
-    this.actions.press(-2, action);
+    this.actions.press(-2, action, this.sources.press('touch:-2', action));
+    this.sources.releaseSource('touch:-2');
     this.actions.release(-2);
     this.host.focus({ preventScroll: true });
   }
@@ -115,7 +122,7 @@ export class TouchControls {
     if (event.repeat) return;
 
     if (action === 'reset') this.restart();
-    else this.actions.press(-1, action);
+    else this.actions.press(-1, action, this.sources.press('touch:-1', action));
     this.render();
   };
 
@@ -123,6 +130,7 @@ export class TouchControls {
     if (!this.button(event.target) || !['Enter', ' '].includes(event.key)) return;
     event.preventDefault();
     event.stopPropagation();
+    this.sources.releaseSource('touch:-1');
     this.actions.release(-1);
     this.render();
   };
@@ -171,6 +179,7 @@ export class TouchControls {
   readonly clear = () => {
     const ids = this.actions.ids();
 
+    for (const id of ids) this.sources.releaseSource(`touch:${id}`);
     this.actions.clear();
 
     for (const id of ids) if (this.root.hasPointerCapture(id)) this.root.releasePointerCapture(id);

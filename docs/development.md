@@ -307,12 +307,24 @@ bei blockiertem Browser-Speicher funktionsfähig. **Optionen** in der Einführun
 übernommen; Presets und Snapshot-Vertrag stehen in der
 [Gameplay-Architektur](architecture/gameplay.md#schwierigkeitsgrade).
 
-Menüaktionen sind zusätzlich mit ↑/↓ erreichbar. Die Raumauswahl nutzt die
+Unter **Optionen → Tastatur** ergänzt WASD die Pfeile (standardmäßig aus): A/D
+bewegen, W/S klettern. `KeyboardPreferences` speichert diese unabhängige Präferenz
+unter `pixels-world.wasd`; Speicherfehler lassen die Sitzung bedienbar.
+`shared/input/keyboard-bindings.ts` ordnet physische Tasten deklarativ Aktionen zu.
+`InputSources` vereinigt Tastatur und Touch vor dem gemeinsamen `InputState`: gleiche
+Richtungen zählen einmal, Gegensätze neutralisieren die Bewegung, unterschiedliche
+frische Richtungen bleiben für die Versöhnung mehrdeutig. Solange eine Quelle
+gehalten bleibt, erzeugt eine zusätzliche Quelle derselben Aktion keine neue Flanke.
+Optionswechsel lösen Eingaben und sperren gehaltene alte Tasten bis zum Loslassen.
+
+Menüaktionen sind zusätzlich mit ↑/↓ (bei aktivem WASD auch W/S) erreichbar. Die Raumauswahl nutzt die
 sichtbare Anordnung für alle vier Pfeile; deaktivierte Zimmer werden übersprungen.
 Am Rand bleibt der Fokus stehen, es gibt kein Umlaufen. Pfeile ändern den Fokus,
 Enter/Leertaste bestätigen die fokussierte vorhandene Aktion. Erst die
 Startaktion betritt das ausgewählte Zimmer. Tab/Shift+Tab und Esc bleiben erhalten;
-native Regler, Auswahl- und Textfelder behalten ihre eigene Pfeilbedienung.
+native Regler, Auswahl- und Textfelder behalten ihre eigene Tastaturbedienung.
+Außerhalb des fokussierten Spiels entstehen keine Spielaktionen; Phaser registriert
+Tasten ohne globale Browser-Tastensperren.
 Unteransichten merken ihr Fokusziel; Sprachwechsel und Größenwechsel erhalten
 ein gültiges Ziel. Wiederholte Tastendrücke aktivieren keine zweite Aktion.
 
