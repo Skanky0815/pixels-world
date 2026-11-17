@@ -124,7 +124,7 @@ function roomCard(choice: (typeof ROOM_CHOICES)[number], selected: string) {
   const playable = Boolean(choice.definition);
   const picture = roomPicture(choice.id);
 
-  return `<button type="button" class="room-choice${choice.id === selected ? ' room-choice-selected' : ''}" ${playable ? `data-room-choice="${choice.id}" aria-pressed="${choice.id === selected}"` : 'disabled'}>
+  return `<button type="button" class="ui-control room-choice${choice.id === selected ? ' room-choice-selected' : ''}" ${playable ? `data-room-choice="${choice.id}" aria-pressed="${choice.id === selected}"` : 'disabled'}>
     <span class="room-choice-picture">${picture}</span><span class="room-choice-copy"><strong>${translateExact(choice.name)}</strong><span>${t(playable ? 'roomsAvailable' : 'roomsLater')}</span></span></button>`;
 }
 
@@ -132,5 +132,5 @@ function markup(id: string) {
   const selected = ROOM_CHOICES.find((choice) => choice.id === id && choice.definition);
 
   return `<div class="room-selection-heading"><h2>${t('roomsTitle')}</h2><button type="button" class="ui-button" data-rooms-menu>${t('menuBack')}</button></div><div class="room-choices">${ROOM_CHOICES.map((choice) => roomCard(choice, id)).join('')}</div>
-    <div class="room-selection-start"><button type="button" class="ui-button" data-room-start="${selected?.id ?? ''}" ${selected ? '' : 'disabled'}>${t('roomsEnter')}</button></div>`;
+    <div class="room-selection-start"><button type="button" class="ui-button ui-button--primary" data-room-start="${selected?.id ?? ''}" ${selected ? '' : 'disabled'}>${t('roomsEnter')}</button></div>`;
 }

@@ -162,30 +162,6 @@ kbd {
   font-size: 12px;
   color: #b6a195;
 }
-.language-setting button {
-  min-width: 44px;
-  min-height: 44px;
-  padding: 4px;
-  border: 0;
-  border-radius: 4px;
-  background: none;
-  color: #b6a195;
-  font: inherit;
-  cursor: pointer;
-}
-.language-setting button[aria-pressed='true'] {
-  color: #e4c182;
-  font-weight: bold;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.language-setting button:hover {
-  color: #fff1cf;
-}
-.language-setting button:focus-visible {
-  outline: 2px solid #edc37c;
-  outline-offset: 2px;
-}
 @media (max-width: 600px) {
   header {
     flex-wrap: wrap;

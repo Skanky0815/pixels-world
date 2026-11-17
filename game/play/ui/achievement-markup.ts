@@ -53,7 +53,7 @@ function progress(entry: AchievementDefinition, data: AchievementData) {
 function achievementTile(entry: AchievementDefinition, data: AchievementData, selected?: string) {
   const earned = data.unlocked.includes(entry.id);
 
-  return `<button type="button" class="achievement-tile" ${earned ? '' : 'disabled'} data-achievement="${entry.id}" data-focus="${entry.id}" aria-pressed="${entry.id === selected}"><span class="achievement-mark" aria-hidden="true">${earned ? '✓' : '○'}</span><strong>${escape(entry.name[currentLanguage()])}</strong><small>${earned ? t('achievementUnlocked') : progress(entry, data)}</small></button>`;
+  return `<button type="button" class="ui-control achievement-tile" ${earned ? '' : 'disabled'} data-achievement="${entry.id}" data-focus="${entry.id}" aria-pressed="${entry.id === selected}"><span class="achievement-mark" aria-hidden="true">${earned ? '✓' : '○'}</span><strong>${escape(entry.name[currentLanguage()])}</strong><small>${earned ? t('achievementUnlocked') : progress(entry, data)}</small></button>`;
 }
 
 // eslint-disable-next-line max-lines-per-function -- Zugänglicher Status, Fortschritt und feste Objektziele teilen eine Detailansicht ohne zweite Fortschrittsquelle.

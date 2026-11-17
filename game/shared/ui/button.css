@@ -1,25 +1,41 @@
-.ui-button {
+:root {
+  --ui-target-size: 44px;
+  --ui-focus-color: #edc37c;
+  --ui-focus-width: 2px;
+  --ui-focus-offset: 3px;
+}
+/* Specialized controls share states while keeping their own shape and selection. */
+:where(.ui-button, .ui-control) {
   box-sizing: border-box;
+  min-height: var(--ui-target-size);
+  min-width: var(--ui-target-size);
+  cursor: pointer;
+}
+:where(.ui-button, .ui-control):focus-visible {
+  outline: var(--ui-focus-width) solid var(--ui-focus-color);
+  outline-offset: var(--ui-focus-offset);
+}
+:is(.ui-button, .ui-control):disabled {
+  cursor: default;
+}
+.ui-button {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 44px;
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0 14px;
-  border: 1px solid #b79879;
-  border-radius: 4px;
-  background: #493a3d;
-  color: #f3e3c9;
+  height: var(--ui-target-size);
+  padding: var(--button-padding, 0 14px);
+  border: var(--button-border-width, 1px) solid var(--button-border, #b79879);
+  border-radius: var(--button-radius, 4px);
+  background: var(--button-background, #493a3d);
+  color: var(--button-text, #f3e3c9);
   font: inherit;
-  line-height: 1.2;
+  line-height: var(--button-line-height, 1.2);
   text-decoration: none;
-  cursor: pointer;
 }
 .ui-button--icon {
-  width: 44px;
+  width: var(--ui-target-size);
   padding: 0;
 }
 .ui-button--icon svg {
@@ -29,13 +45,80 @@
 .ui-button[hidden] {
   display: none;
 }
-.ui-button:focus-visible {
-  outline: 2px solid #edc37c;
-  outline-offset: 3px;
-}
 .ui-button:disabled {
-  cursor: default;
   opacity: 0.4;
+}
+@media (hover: hover) {
+  .ui-button:hover:not(:disabled) {
+    background: var(--button-hover-background, #59464a);
+    border-color: var(--button-hover-border, var(--button-border, #d4b488));
+    color: var(--button-hover-text, var(--button-text, #fff1cf));
+  }
+}
+.ui-button:active:not(:disabled) {
+  background: var(--button-active-background, #382c30);
+  border-color: var(--button-active-border, var(--ui-focus-color));
+}
+.ui-button--primary {
+  --button-background: #e1b66e;
+  --button-text: #2c2429;
+  --button-hover-background: #f0d4a2;
+  --button-active-background: #cda15b;
+}
+.ui-button--cta {
+  --button-background: #e4c182;
+  --button-text: #2e2528;
+  --button-padding: 0 22px;
+  --button-border-width: 2px;
+  --button-border: #e4c182;
+  --button-hover-background: #f0d4a2;
+  --button-hover-border: #f0d4a2;
+  --button-active-background: #cda15b;
+  box-shadow: 4px 4px 0 #171418;
+  font-size: 15px;
+  font-weight: bold;
+}
+.ui-button--link,
+.ui-button--language {
+  --button-background: transparent;
+  --button-border-width: 0px;
+  --button-hover-background: transparent;
+  --button-hover-text: #fff1cf;
+  --button-active-background: #382c30;
+}
+.ui-button--link {
+  --button-text: #d8af79;
+  --button-padding: 8px 0;
+  --button-line-height: 1.5;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.ui-button--language {
+  --button-text: #b6a195;
+  --button-padding: 4px;
+  --ui-focus-offset: 2px;
+  width: var(--ui-target-size);
+}
+.ui-button--language[aria-pressed='true'] {
+  --button-text: #e4c182;
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.ui-button--loading {
+  --button-background: #edc37c;
+  --button-text: #302a27;
+  --button-border: #edc37c;
+  --button-radius: 6px;
+  --button-padding: 10px 18px;
+  --button-line-height: 1.5;
+  --button-hover-background: #f0d4a2;
+  --button-active-background: #cda15b;
+  --ui-focus-color: #fff1cf;
+  --ui-focus-width: 3px;
+  --ui-focus-offset: 4px;
+  height: auto;
 }
 
 dialog .popup-heading {

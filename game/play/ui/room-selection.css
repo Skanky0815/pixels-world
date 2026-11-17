@@ -83,10 +83,6 @@
   display: flex;
   justify-content: flex-end;
 }
-.room-selection-start button {
-  background: #e1b66e;
-  color: #2c2429;
-}
 .room-selection-return {
   position: absolute;
   bottom: 12px;

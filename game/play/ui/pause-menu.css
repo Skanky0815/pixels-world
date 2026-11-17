@@ -54,8 +54,6 @@
 }
 .game-menu .menu-primary {
   grid-column: 1 / -1;
-  background: #e1b66e;
-  color: #2c2429;
 }
 .menu-settings {
   display: grid;

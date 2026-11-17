@@ -42,7 +42,7 @@ export function albumTabs(room: AlbumChapter, entries: readonly AlbumEntry[], ov
     const exists = id === 'achievements' || entries.some((entry) => entry.rooms.includes(id));
     const label = `${roomName(id)}${exists ? '' : ` ${t('albumSoon')}`}`;
 
-    return `<button type="button" class="album-bookmark" role="tab" id="album-tab-${id}" aria-controls="album-room" aria-selected="${id === room}" aria-label="${escape(label)}" title="${escape(label)}" data-room="${id}" data-focus="room-${id}">${roomIcon(id)}${id === 'achievements' ? `<span>${overview && id === room ? '← ' : ''}${t('albumAchievements')}</span>` : ''}</button>`;
+    return `<button type="button" class="ui-control album-bookmark" role="tab" id="album-tab-${id}" aria-controls="album-room" aria-selected="${id === room}" aria-label="${escape(label)}" title="${escape(label)}" data-room="${id}" data-focus="room-${id}">${roomIcon(id)}${id === 'achievements' ? `<span>${overview && id === room ? '← ' : ''}${t('albumAchievements')}</span>` : ''}</button>`;
   };
 
   return `<nav class="album-tabs" role="tablist" aria-label="${t('albumRooms')}"><div class="album-tabs-coming">${ALBUM_CHAPTERS.map(marker).join('')}</div></nav>`;
@@ -70,7 +70,7 @@ export function albumTile(
   selected?: string,
 ) {
   if (!found.has(entry.id))
-    return `<button type="button" class="album-tile" disabled aria-label="${t('albumUnknown', { number: index + 1 })}"><span aria-hidden="true">?</span></button>`;
+    return `<button type="button" class="ui-control album-tile" disabled aria-label="${t('albumUnknown', { number: index + 1 })}"><span aria-hidden="true">?</span></button>`;
 
-  return `<button type="button" class="album-tile" data-entry="${index}" data-focus="entry-${index}" aria-pressed="${entry.id === selected}" aria-label="${escape(entry.name[currentLanguage()])}">${entryImage(entry)}</button>`;
+  return `<button type="button" class="ui-control album-tile" data-entry="${index}" data-focus="entry-${index}" aria-pressed="${entry.id === selected}" aria-label="${escape(entry.name[currentLanguage()])}">${entryImage(entry)}</button>`;
 }

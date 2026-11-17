@@ -50,9 +50,8 @@
   font: inherit;
   cursor: pointer;
 }
-.album-dialog :where(button:not(.ui-button)):focus-visible {
-  outline: 3px solid #edc37c;
-  outline-offset: 3px;
+.album-dialog .ui-control {
+  --ui-focus-width: 3px;
 }
 .album-dialog button[aria-selected='true'],
 .album-dialog button[aria-pressed='true'] {
@@ -157,7 +156,6 @@
 .album-dialog .album-tile:disabled {
   color: #c5b29e;
   border: 1px dashed #806b52;
-  cursor: default;
   opacity: 1;
   font-size: 26px;
 }
@@ -467,10 +465,6 @@
   padding: 0;
   font-size: 26px;
   flex-shrink: 0;
-}
-.album-pagination button:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 .album-dialog footer {
   margin-top: 12px;

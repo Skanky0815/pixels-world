@@ -1,3 +1,4 @@
+import { buttonMarkup } from '../ui/button';
 import { currentLanguage, setLanguage, onLanguageChange, t } from './locale';
 
 // eslint-disable-next-line max-lines-per-function -- Ein wiederverwendbarer Sprachwähler besitzt ausschließlich seine DOM-Ereignisse und die gemeinsame Lokalisierung.
@@ -7,8 +8,7 @@ export function createLanguageSetting(host: Element) {
 
   picker.className = 'language-setting';
   picker.setAttribute('role', 'group');
-  picker.innerHTML =
-    '<button type="button" class="ui-button ui-button--icon" data-language="de" aria-label="Deutsch" lang="de">DE</button><span aria-hidden="true">/</span><button type="button" class="ui-button ui-button--icon" data-language="en" aria-label="English" lang="en">EN</button>';
+  picker.innerHTML = `${buttonMarkup({ label: 'Deutsch', text: 'DE', variant: 'language' }, 'data-language="de" lang="de"')}<span aria-hidden="true">/</span>${buttonMarkup({ label: 'English', text: 'EN', variant: 'language' }, 'data-language="en" lang="en"')}`;
   const refresh = () => {
     picker.setAttribute('aria-label', t('language'));
 
