@@ -4,8 +4,25 @@ import type { PlaygroundScene } from '../../../game/dev/PlaygroundScene';
 
 export type Snapshot = ReturnType<PlaygroundScene['snapshot']>;
 
+// eslint-disable-next-line max-lines-per-function -- Nur ein tatsächlich veröffentlichter Diagnosewert wird gelesen; Warten verändert weder Spieluhr noch Szenenzustand.
 export async function snapshot(page: Page): Promise<Snapshot> {
-  return JSON.parse((await page.locator('#playground-diagnostics').textContent()) ?? '{}');
+  let value: Snapshot | undefined;
+
+  await expect
+    .poll(
+      async () => {
+        const text = await page.locator('#playground-diagnostics').textContent();
+
+        if (!text) return false;
+        value = JSON.parse(text);
+
+        return true;
+      },
+      { intervals: [0] },
+    )
+    .toBe(true);
+
+  return value!;
 }
 
 // eslint-disable-next-line max-lines-per-function -- Clock und lesbare DOM-Diagnose bilden eine gemeinsame Polling-Grenze.
