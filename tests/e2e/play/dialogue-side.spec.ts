@@ -57,6 +57,8 @@ for (const mobile of [false, true])
           body: await page.screenshot(),
           contentType: 'image/png',
         });
+        await page.locator('.mobile-hint').scrollIntoViewIfNeeded();
+        await expect(page.locator('.mobile-hint')).toBeInViewport({ ratio: 1 });
       });
     });
 
@@ -77,6 +79,16 @@ async function assertSide(page: Page, side: 'left' | 'right', margin: number) {
   await expect(panel).toHaveAttribute('data-entry-side', side);
   await expect(panel).toHaveAttribute('data-dialogue-side', side === 'left' ? 'right' : 'left');
   await expect(panel).toHaveClass(/dialogue-box/);
+  await expect(panel).toHaveCSS('border-radius', '0px');
+  await expect(panel).toHaveCSS('border-top-width', '2px');
+  const menu = (await page.locator('.game-menu-actions').boundingBox())!;
+
+  expect(
+    card.x + card.width <= menu.x ||
+      menu.x + menu.width <= card.x ||
+      card.y >= menu.y + menu.height ||
+      menu.y >= card.y + card.height,
+  ).toBe(true);
   await expect(panel).toBeInViewport({ ratio: 1 });
   expect(side === 'left' ? host.right - card.x - card.width : card.x - host.left).toBeCloseTo(
     margin,

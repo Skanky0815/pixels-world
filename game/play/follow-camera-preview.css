@@ -88,11 +88,10 @@
       left: 8px;
       right: auto;
       width: min(340px, calc(50% - var(--camera-pixel-half, 48px) - 20px));
-      border: 1px solid #a78d77;
-      border-radius: 8px;
       overflow-wrap: anywhere;
     }
     .mobile-dialogue[data-dialogue-side='right']:not([hidden]) {
+      top: calc(16px + var(--ui-target-size));
       left: auto;
       right: 8px;
     }
