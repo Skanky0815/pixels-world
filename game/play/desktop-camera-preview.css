@@ -57,11 +57,11 @@
       line-height: 1.5;
       white-space: pre-line;
     }
-    .mobile-dialogue[data-entry-side='left']:not([hidden]) {
+    .mobile-dialogue[data-dialogue-side='right']:not([hidden]) {
       left: auto;
       right: 24px;
     }
-    #play-area:has(.mobile-dialogue[data-entry-side='left']:not([hidden])) .mobile-hud {
+    #play-area:has(.mobile-dialogue[data-dialogue-side='right']:not([hidden])) .mobile-hud {
       left: 24px;
       right: auto;
     }

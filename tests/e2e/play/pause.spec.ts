@@ -1,5 +1,5 @@
 import { test, expect, start, loadIntro, state, until } from '../support/support';
-import { openPause } from '../support/pause-support';
+import { openPause, returnToMenu } from '../support/pause-support';
 import { advanceRoundTo, seedRoundRandom, useIdleFrames } from '../support/round-clock';
 
 const menu = '.pause-menu';
@@ -77,9 +77,10 @@ test('Pause schützt die Versöhnungsfrist und erhält Sprachwechsel ohne Neusta
 
   await page.clock.runFor(10_000);
   await page.locator(menu).getByRole('button', { name: 'English', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Pause & settings' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Options' })).toBeVisible();
   expect((await state(page)).reconciliation).toEqual(paused.reconciliation);
   expect((await state(page)).generation).toBe(paused.generation);
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await until(page, (s) => s.reconciliation.remainingMs < paused.reconciliation.remainingMs, 100);
   expect((await state(page)).reconciliation.failures).toBe(0);
@@ -117,6 +118,7 @@ test('Lautstärke bleibt gespeichert und Neue Runde ist ausschließlich im Menü
   await openPause(page);
   const generation = (await state(page)).generation;
 
+  await returnToMenu(page);
   await page.locator(menu).getByRole('button', { name: 'Neue Runde', exact: true }).click();
   await page.locator('[data-menu-confirm]').click();
   await until(page, (s) => s.generation > generation && s.pixel.grounded);
@@ -152,6 +154,7 @@ test.describe('Pause auf Touch-Geräten', () => {
       body: await page.locator(menu).screenshot(),
       contentType: 'image/png',
     });
+    await returnToMenu(page);
     await page.locator('[data-pause-resume]').tap();
     await expect(page.locator(menu)).not.toBeVisible();
     expect((await state(page)).active).toBe(true);

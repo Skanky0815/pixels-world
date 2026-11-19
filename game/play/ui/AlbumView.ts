@@ -38,7 +38,7 @@ export class AlbumView {
 
   // eslint-disable-next-line max-lines-per-function -- Dialog, Fokusgrenze und sämtliche Ressourcen teilen eine szenengebundene Lebensdauer.
   constructor(private readonly onClose: () => void) {
-    this.root.className = 'album-dialog';
+    this.root.className = 'album-dialog dialogue-box';
     document.body.append(this.root);
     const options = { signal: this.abort.signal };
 

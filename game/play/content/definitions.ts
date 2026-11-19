@@ -9,6 +9,7 @@ import type { TrashBinConfig } from '../objects/TrashBin.ts';
 import type { FoodBagConfig } from '../objects/FoodBag.ts';
 import type { TopplingRules } from '../interactions/toppling.ts';
 import type { HomecomingSide } from './homecoming-layout.ts';
+import type { DialoguePlacement } from './dialogue-layout.ts';
 import type { DamageAlbumEntry } from './album/discovery.ts';
 import type { CarpetConfig } from '../objects/Carpet.ts';
 import type { CarpetRules } from '../interactions/carpet-hairball.ts';
@@ -158,6 +159,7 @@ export interface RoomDefinition {
     readonly entries: readonly (SpawnSlot & { readonly surfaceId: string })[];
   }[];
   readonly homecomingSide?: HomecomingSide;
+  readonly dialogue?: DialoguePlacement;
   readonly environment?: 'cozy-room' | 'kitchen-preview';
   readonly difficultyObjects?: {
     readonly easyOmit: readonly string[];
@@ -214,6 +216,7 @@ export type ResolvedObject =
   | (ResolvedBase & { readonly kind: 'plant'; readonly config: PlantObjectConfig })
   | (ResolvedBase & { readonly kind: 'vase'; readonly config: VaseConfig });
 export interface ResolvedRoom {
+  readonly dialogue: DialoguePlacement;
   readonly goal: ResolvedGoal;
   readonly definition: RoomDefinition;
   readonly spawn: { readonly x: number; readonly bottom: number };

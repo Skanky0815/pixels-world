@@ -21,6 +21,14 @@ for (const mobile of [false, true])
         await seedRoundRandom(page);
         await page.goto(`/play.html?room=${room}&round-profile=fast`);
         await waitForGame(page);
+        await expect(page.locator('.start-screen')).toHaveAttribute(
+          'data-dialogue-side',
+          side === 'left' ? 'right' : 'left',
+        );
+        await test.info().attach(`Einführung-${room}-${mobile ? 'Handy' : 'Desktop'}`, {
+          body: await page.screenshot(),
+          contentType: 'image/png',
+        });
         await move(page, ['Space'], (s) => s.started && s.pixel.grounded);
         await useIdleFrames(page);
         await page.clock.runFor((await observe(page)).round.returnAtMs);
@@ -67,6 +75,8 @@ async function assertSide(page: Page, side: 'left' | 'right', margin: number) {
   });
 
   await expect(panel).toHaveAttribute('data-entry-side', side);
+  await expect(panel).toHaveAttribute('data-dialogue-side', side === 'left' ? 'right' : 'left');
+  await expect(panel).toHaveClass(/dialogue-box/);
   await expect(panel).toBeInViewport({ ratio: 1 });
   expect(side === 'left' ? host.right - card.x - card.width : card.x - host.left).toBeCloseTo(
     margin,

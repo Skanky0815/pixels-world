@@ -233,7 +233,7 @@ canvas {
     line-height: 1.4;
     white-space: pre-line;
   }
-  .mobile-dialogue[data-entry-side='left']:not([hidden]) {
+  .mobile-dialogue[data-dialogue-side='right']:not([hidden]) {
     left: auto;
     right: 0;
   }

@@ -15,6 +15,7 @@ export const KITCHEN_PREVIEW = {
   caption: copy('kitchenPreviewTitle'),
   environment: 'kitchen-preview',
   homecomingSide: 'left',
+  dialogue: { side: 'right' },
   wallSlots: KITCHEN_WALL_SLOTS,
   objectSlots: KITCHEN_FLOOR_SLOTS,
   navigationClearances: [

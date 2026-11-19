@@ -1,7 +1,7 @@
 import { recordAudio, expectAudio } from './audio-support';
 import { advanceRoundTo, useIdleFrames } from '../support/round-clock';
 import { test, expect, start, state, firstVase, holdUntil, until, reset } from '../support/support';
-import { openPause } from '../support/pause-support';
+import { openPause, returnToMenu } from '../support/pause-support';
 import { BOOK_TOPPLE } from '../../../game/play/interactions/book-toppling';
 
 test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattform und Reset repariert', async ({
@@ -46,6 +46,7 @@ test('Regal: Landungen belasten, Pause friert ein, Einsturz entfernt die Plattfo
 
   await page.clock.runFor(1000);
   expect(await shelf()).toEqual(paused);
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await page.locator('#game').focus();
   await page.clock.runFor(800);

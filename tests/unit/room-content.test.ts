@@ -3,12 +3,30 @@ import { test } from 'node:test';
 import { OBJECTS } from '../../game/play/content/objects/catalog.ts';
 import { LIVING_ROOM } from '../../game/play/content/rooms/living-room.ts';
 import { COZY_REMIX } from '../../game/play/content/rooms/cozy-remix.ts';
+import { KITCHEN } from '../../game/play/content/rooms/kitchen.ts';
 import { selectRoom } from '../../game/play/content/rooms/index.ts';
 import { resolveRoom } from '../../game/play/content/resolve-room.ts';
 import type { ObjectCatalog, RoomDefinition } from '../../game/play/content/definitions.ts';
 
 const bad = (room: unknown, catalog: unknown = OBJECTS) =>
   resolveRoom(room as RoomDefinition, catalog as ObjectCatalog);
+
+test('Dialogplatzierung folgt den Leveldaten unabhängig von Saras Auftritt', () => {
+  const room = resolveRoom({ ...LIVING_ROOM, homecomingSide: 'left' }, OBJECTS);
+
+  assert.deepEqual(room.dialogue, { side: 'left' });
+  assert.ok(Object.isFrozen(room.dialogue));
+  assert.deepEqual(resolveRoom(KITCHEN, OBJECTS).dialogue, { side: 'right' });
+  assert.deepEqual(bad({ ...LIVING_ROOM, dialogue: { side: 'right' } }).dialogue, {
+    side: 'right',
+  });
+  assert.deepEqual(bad({ ...LIVING_ROOM, dialogue: undefined }).dialogue, { side: 'left' });
+});
+
+test('Ungültige Dialoganker scheitern vor dem Szenenaufbau mit Contentpfad', () => {
+  for (const dialogue of [null, [], 'right', {}, { side: 'center' }])
+    assert.throws(() => bad({ ...LIVING_ROOM, dialogue }), /rooms.living-room.dialogue/);
+});
 
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Standardcontent erhält Raum, Spawn, Sofageometrie und Vasenscoring des Prototyps', () => {

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function -- Echte Runden prüfen Greifen, Timer-Heimkehr und Neustart ohne Zustandssetter als einen Ablauf. */
 import { test, expect, waitForGame } from '../support/support';
-import { openPause } from '../support/pause-support';
+import { openPause, returnToMenu } from '../support/pause-support';
 import { observe, until, move, climbToCounterLanding } from './kitchen-support';
 
 for (const kind of ['curtain', 'tablecloth', 'fridge'] as const)
@@ -41,6 +41,7 @@ for (const kind of ['curtain', 'tablecloth', 'fridge'] as const)
     expect((await observe(page)).pixel.climbing).toBe(false);
     expect((await observe(page)).pixel.visible).toBe(true);
     await openPause(page);
+    await returnToMenu(page);
     await page.getByRole('button', { name: 'Neue Runde', exact: true }).click();
     await page.locator('[data-menu-confirm]').click();
     await until(page, (s) => s.generation > before.generation && s.pixel.grounded);

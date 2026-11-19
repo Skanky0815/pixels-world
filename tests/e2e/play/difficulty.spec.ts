@@ -10,7 +10,7 @@ import {
   holdUntil,
 } from '../support/support';
 import { startDifficulty } from './difficulty-support';
-import { openPause } from '../support/pause-support';
+import { openPause, returnToMenu } from '../support/pause-support';
 
 // eslint-disable-next-line max-lines-per-function -- Auswahl vor Spielbeginn, eingefrorene laufende Runde und nächste Runde bilden einen gemeinsamen Benutzerablauf.
 test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async ({ page }) => {
@@ -37,6 +37,7 @@ test('Schwierigkeit gilt ab Rundenstart und bleibt nach Reload erhalten', async 
   expect((await state(page)).objects).toEqual(paused.objects);
   expect((await state(page)).difficulty).toBe('hard');
   expect((await state(page)).goalView).toEqual(paused.goalView);
+  await returnToMenu(page);
   await page.locator('[data-pause-restart]').click();
   await page.locator('[data-menu-confirm]').click();
   await until(page, (s) => s.started && s.difficulty === 'easy');
@@ -76,6 +77,7 @@ test.describe('Schwierigkeitswahl mit Touch', () => {
       body: await page.screenshot(),
       contentType: 'image/png',
     });
+    await returnToMenu(page);
     await page.locator('[data-pause-resume]').tap();
     const touch = await TouchDriver.create(page);
 

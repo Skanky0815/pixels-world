@@ -112,6 +112,15 @@ test(
     await page.clock.runFor(100);
     await until(page, (s) => s.result?.canvasTextVisible === true, 100);
     await expect(page.locator('.mobile-dialogue')).toBeHidden();
+    const completed = await state(page);
+
+    expect(completed.result?.dialogueBounds).toEqual(completed.sara.dialogueBounds);
+    expect(completed.charmDisplay.dialogueBounds).toEqual(completed.sara.dialogueBounds);
+    await page.clock.runFor(500);
+    await test.info().attach('canvas-ergebnis-englisch', {
+      body: await page.screenshot(),
+      contentType: 'image/png',
+    });
   },
 );
 

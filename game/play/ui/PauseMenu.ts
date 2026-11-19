@@ -36,6 +36,7 @@ export class PauseMenu {
   private returnable = true;
   private readonly rememberedFocus = new Map<string, HTMLElement>();
   private pending?: 'restart' | 'rooms';
+  private albumReturnFocus?: HTMLElement;
   private readonly album: AlbumView;
   private readonly albumReset: AlbumResetSetting;
   private readonly storage: StoragePanel;
@@ -58,9 +59,9 @@ export class PauseMenu {
       if (this.root.hidden) {
         this.actions.pause(false);
         this.actions.focus();
-      } else this.element('[data-pause-album]').focus({ preventScroll: true });
+      } else this.restoreAlbumFocus();
     });
-    this.root.className = 'pause-menu game-menu';
+    this.root.className = 'pause-menu game-menu game-screen';
     this.root.hidden = true;
     this.root.inert = true;
     this.root.innerHTML = menuMarkup();
@@ -191,8 +192,16 @@ export class PauseMenu {
   }
 
   openAlbum() {
+    this.albumReturnFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.actions.pause(true);
     this.album.open();
+  }
+
+  private restoreAlbumFocus() {
+    if (this.albumReturnFocus?.isConnected && canFocus(this.albumReturnFocus))
+      this.albumReturnFocus.focus({ preventScroll: true });
+    else this.focusView();
   }
 
   private close() {
@@ -225,7 +234,7 @@ export class PauseMenu {
     for (const panel of Array.from(this.root.querySelectorAll<HTMLElement>('[data-menu-view]')))
       panel.hidden = panel.dataset.menuView !== view;
     this.element('[data-menu-back]').hidden = view === 'home' || view === 'confirm';
-    this.element('.pause-actions').hidden = view === 'confirm';
+    this.element('.pause-actions').hidden = view !== 'home';
 
     if (view === 'settings') this.updates.showAvailable();
     this.focusView();
@@ -315,7 +324,6 @@ export class PauseMenu {
   }
 
   private refresh() {
-    this.root.setAttribute('aria-label', t('mainMenu'));
     this.element('.pause-actions').setAttribute('aria-label', t('mainMenu'));
     this.refreshHeading();
     this.refreshToggle();
@@ -329,11 +337,12 @@ export class PauseMenu {
   private refreshHeading() {
     const keys = {
       home: 'menuReady',
-      settings: 'pauseSettings',
+      settings: 'gameOptions',
       information: 'gameInformation',
       confirm: 'menuConfirmTitle',
     } as const;
 
+    this.root.setAttribute('aria-label', t(this.view === 'home' ? 'mainMenu' : keys[this.view]));
     this.element('[data-menu-heading]').textContent = t(keys[this.view]);
   }
 

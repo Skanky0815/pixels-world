@@ -1,4 +1,5 @@
 import { validateTableclothRules } from '../interactions/tablecloth-pulling.ts';
+import { resolveDialoguePlacement } from './dialogue-layout.ts';
 import { TRASH_BIN_PROFILE } from '../assets/trash-bin-profile.ts';
 import { PANTRY_PROFILES, isPantryAppearance } from '../assets/pantry-appearance.ts';
 import { isPlantAppearance } from '../assets/plant-appearance.ts';
@@ -276,7 +277,17 @@ function validateRoom(room: RoomDefinition) {
   if (room.homecomingSide !== undefined && !['left', 'right'].includes(room.homecomingSide))
     fail(`${root}.homecomingSide`, 'unknown homecoming side');
 
+  validateDialogue(room, root);
+
   validateFloorAndLists(room, root);
+}
+
+function validateDialogue(room: RoomDefinition, root: string) {
+  if (room.dialogue === undefined) return;
+  record(room.dialogue, `${root}.dialogue`);
+
+  if (!['left', 'right'].includes(room.dialogue.side))
+    fail(`${root}.dialogue.side`, 'unknown dialogue side');
 }
 
 // eslint-disable-next-line max-lines-per-function -- Bodenparameter und Listenform werden vor jeder Iteration zusammen geprüft.
@@ -873,6 +884,7 @@ class RoomResolver {
     };
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Geprüfte Raumteile und unabhängiger Dialoganker werden atomar an die Szene übergeben.
   run(): ResolvedRoom {
     const { room } = this;
     const objects = room.objects.map((instance) => this.resolve(instance));
@@ -880,7 +892,13 @@ class RoomResolver {
     this.validateMaximumScore(objects);
     const spawn = this.resolveSpawn();
 
-    return { definition: room, spawn, objects, goal: this.resolveGoal() };
+    return {
+      definition: room,
+      dialogue: resolveDialoguePlacement(room.dialogue),
+      spawn,
+      objects,
+      goal: this.resolveGoal(),
+    };
   }
 
   // eslint-disable-next-line max-lines-per-function, complexity -- Die unterschiedlichen Wertungsformen und die Ganzzahlprüfung nach jeder Addition bleiben in einer Schleife sichtbar.

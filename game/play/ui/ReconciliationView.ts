@@ -1,19 +1,18 @@
 import { t } from '../../shared/i18n/locale.ts';
+import { dialogueFrame, dialogueTextStyle as style } from './dialogue-frame';
+import type { DialoguePlacement } from '../content/dialogue-layout';
 import { compactVisibility } from './compact-visibility';
 import { DialoguePortrait, placeDialogueText } from './DialoguePortrait';
 import { charmPortrait } from '../domain/dialogue-portrait';
 import type Phaser from 'phaser';
 import { ARROW_LABELS, CHARM_LINES } from '../content/reconciliation';
 import type { ReconciliationSnapshot } from '../domain/reconciliation';
-import {
-  homecomingPositions,
-  homecomingPanel,
-  type HomecomingSide,
-} from '../content/homecoming-layout';
+import { homecomingPositions, type HomecomingSide } from '../content/homecoming-layout';
 /** Reading and timed input are visually separate; only the current arrow needs attention. */
 export class ReconciliationView {
   private readonly removeCompactListener: () => void;
   private readonly panelLeft: number;
+  private readonly panelRight: number;
   private readonly root: Phaser.GameObjects.Container;
   private readonly message: Phaser.GameObjects.Text;
   private readonly quote: Phaser.GameObjects.Text;
@@ -28,15 +27,20 @@ export class ReconciliationView {
   private readonly portrait: DialoguePortrait;
   private selectedPortrait: ReturnType<typeof charmPortrait> = null;
   // eslint-disable-next-line max-lines-per-function -- Deklarativer Aufbau trennt Lesetext, große Tastenkachel, zugehörige Zeit und Herzfortschritt räumlich.
-  constructor(scene: Phaser.Scene, width: number, floorY: number, side: HomecomingSide = 'right') {
+  constructor(
+    scene: Phaser.Scene,
+    width: number,
+    floorY: number,
+    side: HomecomingSide | undefined,
+    placement: DialoguePlacement,
+  ) {
     this.root = scene.add.container(0, 0).setDepth(14).setVisible(false);
-    const { left, width: panelWidth, right } = homecomingPanel(width, side);
+    const { left, width: panelWidth, right, panel } = dialogueFrame(scene, width, placement);
 
     this.panelLeft = left;
+    this.panelRight = right;
     const keyX = left + panelWidth * 0.72;
-    const panel = scene.add.rectangle(left + panelWidth / 2, 235, panelWidth, 218, 0x403a35, 1);
 
-    panel.setStrokeStyle(2, 0xd4b488);
     this.message = scene.add.text(left + 20, 140, '', {
       ...style(16),
       wordWrap: { width: panelWidth - 40 },
@@ -135,6 +139,7 @@ export class ReconciliationView {
     return Object.freeze({
       heartsText: this.heartLabel.text,
       canvasTextVisible: this.root.visible && this.message.parentContainer.visible,
+      dialogueBounds: Object.freeze({ left: this.panelLeft, right: this.panelRight }),
       portrait: this.portrait.snapshot(),
     });
   }
@@ -143,10 +148,6 @@ export class ReconciliationView {
     this.removeCompactListener();
     this.root.destroy(true);
   }
-}
-
-function style(size: number) {
-  return { fontFamily: 'monospace', fontSize: `${size}px`, color: '#fff1cf', lineSpacing: 8 };
 }
 
 function charmText(s: ReconciliationSnapshot) {

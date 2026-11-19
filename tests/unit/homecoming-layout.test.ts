@@ -3,14 +3,14 @@ import { test } from 'node:test';
 import {
   homecomingPositions,
   homecomingCharmPose,
-  homecomingPanel,
 } from '../../game/play/content/homecoming-layout.ts';
 import { CharmMotion } from '../../game/play/domain/charm-motion.ts';
+import { dialoguePanel } from '../../game/play/content/dialogue-layout.ts';
 
-test('Dialog und Versöhnung nutzen die freie Seite gegenüber Saras Eintritt', () => {
+test('Explizite Raumanker halten Dialoge neben der Heimkehrinszenierung frei', () => {
   for (const width of [960, 1320]) {
-    const left = homecomingPanel(width, 'right');
-    const right = homecomingPanel(width, 'left');
+    const left = dialoguePanel(width, { side: 'left' });
+    const right = dialoguePanel(width, { side: 'right' });
 
     assert.equal(left.left, 40);
     assert.equal(right.right, width - 40);

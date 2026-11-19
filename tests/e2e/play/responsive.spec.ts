@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 import type { Page } from '@playwright/test';
 import { test, expect, loadIntro, state, until, besideCouch } from '../support/support';
 import { startTouch } from '../support/touch-support';
@@ -164,9 +165,11 @@ async function largestRoom(page: Page, height: number, room: Bounds, left: Bound
 // eslint-disable-next-line max-lines-per-function -- Quellen, Rechtslinks, Version und Sprachwechsel bleiben über das tatsächlich bediente Menü zugänglich.
 async function informationMenu(page: Page) {
   await page.locator('.pause-toggle').tap();
+  await returnToMenu(page);
   await page.locator('[data-menu-settings]').tap();
   const menu = page.locator('.pause-menu');
 
+  await returnToMenu(page);
   await menu.locator('[data-menu-information]').tap();
   await expect(menu.locator('.age-rating')).toContainText('Ab 6 Jahren');
   await expect(menu.locator('.build-info')).toContainText("Pixel's World");
@@ -181,11 +184,14 @@ async function informationMenu(page: Page) {
     'href',
     './datenschutz.html',
   );
+  await returnToMenu(page);
   await menu.locator('[data-menu-settings]').tap();
   await menu.getByRole('button', { name: 'English', exact: true }).tap();
+  await returnToMenu(page);
   await menu.locator('[data-menu-information]').tap();
   await expect(menu.locator('.age-rating')).toContainText('Ages 6');
   await expect(menu.locator('[data-menu-heading]')).toHaveText('About the game');
+  await returnToMenu(page);
   await menu.locator('[data-pause-resume]').tap();
   await expect(menu).toBeHidden();
   await expect(page.locator('.pause-toggle')).toBeInViewport({ ratio: 1 });

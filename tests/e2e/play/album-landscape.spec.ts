@@ -2,7 +2,7 @@
 import type { Page } from '@playwright/test';
 import { ALBUM_ROOMS } from '../../../game/play/ui/album-markup';
 import { albumEntries } from '../../../game/play/content/album/index';
-import { changeLanguage, openPause } from '../support/pause-support';
+import { changeLanguage, openPause, returnToMenu } from '../support/pause-support';
 import { introAction, test, expect, loadIntro } from '../support/support';
 
 const savedEntries = albumEntries(true).map((entry) => entry.id);
@@ -170,6 +170,7 @@ test.describe('Album im Smartphone-Querformat', () => {
 
         await options.locator('[data-album-reset="ask"]').tap();
         await options.locator('[data-album-reset="confirm"]').tap();
+        await returnToMenu(page);
         await options.locator('[data-pause-resume]').tap();
         await (await introAction(page, 'album')).tap();
         await expect(album.locator('.album-tile:disabled')).toHaveCount(6);

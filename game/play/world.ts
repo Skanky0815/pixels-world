@@ -7,6 +7,7 @@ import './mobile-landscape.css';
 import './follow-camera-preview.css';
 import './desktop-camera-preview.css';
 import './ui/shell/shell.css';
+import './ui/dialogue-box.css';
 import { observeGameHost } from './host-resize';
 import { OBJECTS } from './content/objects/catalog';
 import { selectRoom } from './content/rooms';

@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 /* eslint-disable max-lines-per-function -- Echte Auswahl, Modal-Dialoge und Rundenreset bilden die Integrationsgrenze des neuen Einstiegs. */
 import { test, expect, state, until, besideCouch, waitForGame } from '../support/support';
 
@@ -67,6 +68,7 @@ test(
     await page.locator('main > header .pause-toggle').click();
     await page.locator('[data-menu-settings]').click();
     await page.locator('[data-language="en"]').click();
+    await returnToMenu(page);
     await page.locator('[data-pause-resume]').click();
     await expect(rooms).toContainText('Where to today, Pixel?');
     await expect(rooms).toContainText('Kitchen');
@@ -139,6 +141,7 @@ for (const viewport of [
         await expect(rooms.locator('[data-room-start]')).toBeInViewport({ ratio: 1 });
         await page.locator('main > header .pause-toggle').tap();
         await expect(page.locator('.pause-menu')).toBeVisible();
+        await returnToMenu(page);
         await page.locator('[data-pause-resume]').tap();
         await rooms.locator('[data-room-start]').tap();
         await expect(page.locator('.start-screen')).toBeVisible();

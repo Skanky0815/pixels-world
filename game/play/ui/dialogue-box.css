@@ -1,0 +1,58 @@
+/* Shared visual contract; level anchors and responsive camera regions own placement. */
+:root {
+  --dialogue-background: #403a35;
+  --dialogue-text: #fff1cf;
+  --dialogue-border: #d4b488;
+  --dialogue-accent: #e4c182;
+  --dialogue-font: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+:is(.start-screen, .mobile-dialogue, .album-dialog).dialogue-box {
+  background: var(--dialogue-background);
+  color: var(--dialogue-text);
+  border: 2px solid var(--dialogue-border);
+  border-radius: 0;
+  font-family: var(--dialogue-font);
+  overflow-wrap: anywhere;
+}
+.dialogue-box .mobile-quote,
+.dialogue-box .mobile-hint,
+.dialogue-box .mobile-key {
+  color: var(--dialogue-accent);
+}
+.dialogue-box[hidden] {
+  display: none;
+}
+
+/* Navigation remains a screen, with its own content width and normal page scrolling. */
+.game-menu.game-screen,
+.room-selection.game-screen {
+  background: #26212c;
+  color: var(--dialogue-text);
+  font-family: var(--dialogue-font);
+}
+.game-screen h2 {
+  color: var(--dialogue-accent);
+}
+
+@media (pointer: fine) and (min-width: 1025px) {
+  .start-screen.dialogue-box {
+    inset: 24px auto 24px 24px;
+    width: min(610px, calc(70% - 48px));
+  }
+  .start-screen.dialogue-box[data-dialogue-side='right'] {
+    left: auto;
+    right: 24px;
+  }
+}
+
+@media (any-pointer: coarse), (max-width: 1024px) {
+  .mobile-dialogue.dialogue-box {
+    border: 2px solid var(--dialogue-border);
+    border-radius: 0;
+  }
+}
+.follow-camera .mobile-dialogue.dialogue-box {
+  border: 2px solid var(--dialogue-border);
+  border-radius: 0;
+}

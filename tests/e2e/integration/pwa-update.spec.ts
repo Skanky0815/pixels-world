@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 import { enterSelectedRoom } from '../support/support';
 /* eslint-disable max-lines-per-function -- Echter A→B-Wechsel, unterbrochene Installation und zwei unabhängige Tabs bilden einen zusammenhängenden Release-Ablauf. */
 import { test, expect, type Page } from '@playwright/test';
@@ -133,11 +134,13 @@ async function intro(page: Page) {
 
 async function menu(page: Page) {
   if (!(await page.locator('.pause-menu').isVisible())) await page.locator('.pause-toggle').click();
+  await returnToMenu(page);
   await page.locator('[data-menu-settings]').click();
   await expect(page.locator('.pause-menu')).toBeVisible();
 }
 
 async function closeMenu(page: Page) {
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await page.locator('#game').focus();
 }
@@ -325,7 +328,7 @@ for (const scope of ['/', '/pixels-world/']) {
     for (const [key, value] of Object.entries(saved)) expect(after[key]).toBe(value);
     await menu(page);
     await page.locator('[data-remember-album]').check();
-    await page.locator('[data-pause-album]').click();
+    await page.locator('.album-toggle').click();
     await expect(page.locator('.album-overall')).toContainText('1 von');
     expect(await other.evaluate(() => performance.timeOrigin)).toBe(oldOrigin);
     await expect(other.locator('#legacy-version')).toContainText('v0.4.1');

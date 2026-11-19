@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 import type { Page } from '@playwright/test';
 import { test, expect, waitForLoadingScreen, enterSelectedRoom } from '../support/support';
 import type { DebugPort, DebugScenario } from '../../../game/dev/game-debug-model';
@@ -219,6 +220,7 @@ for (const [mobile, hasTouch] of [
       await page.locator('.pause-toggle').click();
       await page.locator('[data-menu-settings]').click();
       await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('hard');
+      await returnToMenu(page);
       await page.locator('[data-pause-resume]').click();
       await page.keyboard.press('F2');
       await launch(page, 'result-success', 60);
@@ -255,6 +257,7 @@ for (const [mobile, hasTouch] of [
       await page.locator('.pause-toggle').click();
       await page.locator('[data-menu-settings]').click();
       await page.getByLabel('Schwierigkeitsgrad', { exact: true }).selectOption('easy');
+      await returnToMenu(page);
       await page.locator('[data-pause-resume]').click();
       await page.keyboard.press('F2');
       expect((await snapshot(page))?.reconciliation).toMatchObject({

@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 import { PNG } from 'pngjs';
 import type { Page } from '@playwright/test';
 import { test, expect, waitForLoadingScreen, enterSelectedRoom } from '../support/support';
@@ -85,6 +86,7 @@ for (const base of ['http://127.0.0.1:4177/', 'http://127.0.0.1:4175/pixels-worl
     await page.locator('[data-menu-settings]').click();
     await page.locator('[data-offline-game]').click();
     await expect(page.locator('[data-offline-game]')).toBeEnabled({ timeout: 20000 });
+    await returnToMenu(page);
     await page.locator('[data-pause-resume]').click();
     await expect
       .poll(
@@ -113,6 +115,7 @@ for (const base of ['http://127.0.0.1:4177/', 'http://127.0.0.1:4175/pixels-worl
       await expectDrawnRoom(page);
       await page.locator('.pause-toggle').click();
       await page.locator('[data-menu-settings]').click();
+      await returnToMenu(page);
       await page.getByRole('link', { name: 'Beenden', exact: true }).click();
       await expect(page).toHaveURL(base);
       await expect(page.locator('h1')).toHaveText('Ein Zimmer. Eine Katze. Dein Chaos.');
