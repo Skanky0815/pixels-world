@@ -1,4 +1,7 @@
 export const de = {
+  settingsAutoApply: 'Änderungen werden direkt übernommen.',
+  settingsApplied: '✓ Einstellungen übernommen.',
+  settingsAppliedNextRound: '✓ Übernommen. Der Schwierigkeitsgrad gilt ab der nächsten Runde.',
   pixelRoomWasd:
     'Pixels Zimmer. Pfeile oder A/D zum Laufen und W/S zum Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',
   keyboardSettings: 'Tastatur',

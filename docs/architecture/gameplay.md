@@ -410,7 +410,13 @@ Hauptmenü, Optionen, Information, Bestätigung und Levelwahl bleiben eigene
 Bildschirmansichten. Sie teilen Schrift-/Farbgrundlagen, werden jedoch nicht als
 Dialog über das laufende Level gelegt. Optionen zeigen ihre Einstellungen und
 den Zurück-Weg; Hauptmenüaktionen einschließlich des Optionen-Buttons erscheinen
-nur im Hauptmenü. Die bestehende Esc-Pausenbedienung bleibt erhalten. Album und
+nur im Hauptmenü. Optionen nutzen die volle Inhaltsbreite und stapeln ihre
+Bereiche auf schmalen Fenstern. Eine beim Scrollen sichtbare Statuszeile bestätigt
+übernommene Einstellungen auf Deutsch/Englisch, ohne Fokuswechsel oder eine
+zugesicherte dauerhafte Speicherung. Der Schwierigkeitsgrad verweist in laufenden
+Runden ausdrücklich auf die nächste Runde. Asynchrone Offline-/Updateaufträge
+behalten ihre eigene Erfolgs-/Fehleranzeige. Die bestehende Esc-Pausenbedienung
+bleibt erhalten. Album und
 Erfolge behalten ihren nativen Buchdialog mit eigener Inhaltsanordnung und
 Fokusgrenze; das gemeinsame Overlay-Zusammenspiel ist der Folgeschritt #338.
 

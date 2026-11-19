@@ -1,6 +1,7 @@
 import { keyboardPreferences } from '../../shared/input/keyboard-preferences';
 import { canFocus, installFocusNavigation, preserveFocus } from '../../shared/ui/focus-navigation';
 import { StoragePanel } from './StoragePanel';
+import { SettingsFeedback } from './SettingsFeedback';
 import { difficultyPreferences } from '../settings/difficulty';
 import { DIFFICULTY_LABELS, isDifficulty, type Difficulty } from '../content/difficulty';
 import { motionPreferences } from '../settings/motion';
@@ -40,6 +41,7 @@ export class PauseMenu {
   private readonly album: AlbumView;
   private readonly albumReset: AlbumResetSetting;
   private readonly storage: StoragePanel;
+  private readonly settingsFeedback: SettingsFeedback;
   private readonly updates: UpdatePanel;
   private readonly root = document.createElement('section');
   private readonly toggle = document.createElement('button');
@@ -65,6 +67,11 @@ export class PauseMenu {
     this.root.hidden = true;
     this.root.inert = true;
     this.root.innerHTML = menuMarkup();
+    this.settingsFeedback = new SettingsFeedback(
+      this.root,
+      () => this.actions.started(),
+      this.abort.signal,
+    );
     this.albumReset = new AlbumResetSetting(this.element('[data-pause-album-reset]'));
     this.toggle.type = 'button';
     this.toggle.className = 'pause-toggle';
@@ -235,6 +242,7 @@ export class PauseMenu {
       panel.hidden = panel.dataset.menuView !== view;
     this.element('[data-menu-back]').hidden = view === 'home' || view === 'confirm';
     this.element('.pause-actions').hidden = view !== 'home';
+    this.settingsFeedback.show(view === 'settings');
 
     if (view === 'settings') this.updates.showAvailable();
     this.focusView();
@@ -324,6 +332,7 @@ export class PauseMenu {
   }
 
   private refresh() {
+    this.settingsFeedback.render();
     this.element('.pause-actions').setAttribute('aria-label', t('mainMenu'));
     this.refreshHeading();
     this.refreshToggle();
