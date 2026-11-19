@@ -15,6 +15,9 @@ export function menuMarkup() {
       <p id="difficulty-help" class="difficulty-help" aria-live="polite"></p>
       <p id="difficulty-current" data-difficulty-current></p></section>
     <section><h3 data-menu-text="language"></h3><div data-pause-language></div></section>
+    <section><h3 data-menu-text="keyboardSettings"></h3>
+      <label class="motion-setting"><input type="checkbox" data-wasd aria-describedby="wasd-help"><span data-menu-text="wasdEnable"></span></label>
+      <p id="wasd-help" data-menu-text="wasdHelp"></p></section>
     <section><h3 data-menu-text="audioSettings"></h3>
       <label for="pause-master-volume"><span data-menu-text="masterVolume"></span><output data-audio-value="master"></output>
         <input id="pause-master-volume" type="range" data-audio="master" min="0" max="100" step="1"></label>

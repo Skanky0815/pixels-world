@@ -1,4 +1,12 @@
 export const de = {
+  pixelRoomWasd:
+    'Pixels Zimmer. Pfeile oder A/D zum Laufen und W/S zum Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',
+  keyboardSettings: 'Tastatur',
+  wasdEnable: 'WASD zusätzlich verwenden',
+  wasdHelp:
+    'A/D: links/rechts · W/S: klettern. Auch für Menü und Versöhnung. Pfeile und Touch bleiben aktiv.',
+  wasdControlHelp:
+    'In den Optionen kannst du zusätzlich WASD einschalten: A/D bewegen Pixel, W/S klettern. Im Menü und bei der Versöhnung entsprechen W/A/S/D den Pfeilen ↑/←/↓/→. Leertaste und Esc bleiben gleich.',
   feedbackFridge: 'Kühlschrank durchwühlt!',
   fridgeRummaging: 'Rumpel … raschel …',
   fridgeHandle: 'Festhalten … Tür auf!',

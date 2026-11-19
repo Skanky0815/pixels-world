@@ -1,9 +1,11 @@
+import { keyboardPreferences } from '../../shared/input/keyboard-preferences';
 import { t, onLanguageChange, translateExact } from '../../shared/i18n/locale';
 import type { ResolvedGoal } from '../domain/main-goal';
 
 /** Responsive introduction only; gameplay and keyboard transitions remain scene-owned. */
 export class StartScreen {
   private readonly root: HTMLElement;
+  private readonly unsubscribeKeyboard: () => void;
   private readonly unsubscribe: () => void;
 
   // eslint-disable-next-line max-lines-per-function -- Die zusammengehörige DOM-Initialisierung bindet Einführung, Zieltext und Sichtbarkeit atomar an den Spielbereich.
@@ -30,6 +32,7 @@ export class StartScreen {
     this.root.hidden = !visible;
     host.append(this.root);
     this.unsubscribe = onLanguageChange(() => this.refresh());
+    this.unsubscribeKeyboard = keyboardPreferences.subscribe(() => this.refresh());
   }
 
   private describeGoal(goal: ResolvedGoal) {
@@ -77,6 +80,7 @@ export class StartScreen {
 
   destroy() {
     this.unsubscribe();
+    this.unsubscribeKeyboard();
     this.root.remove();
   }
 }
@@ -90,9 +94,9 @@ function introMarkup() {
       <p class="start-goal-text"></p>
     </aside>
     <dl class="start-controls">
-      <div><dt>← →</dt><dd>${t('moveAndSteerInMidAir')}</dd></div>
+      <div><dt>${keyboardPreferences.snapshot() ? '← →<br><small>A D</small>' : '← →'}</dt><dd>${t('moveAndSteerInMidAir')}</dd></div>
       <div><dt><span class="space-key" role="img" aria-label="${t('spaceLabel')}">␣</span></dt><dd>${t('jumpAndLeapOffTheCurtain')}</dd></div>
-      <div><dt>↑ ↓</dt><dd>${t('climbTheCurtain')}</dd></div>
+      <div><dt>${keyboardPreferences.snapshot() ? '↑ ↓<br><small>W S</small>' : '↑ ↓'}</dt><dd>${t('climbTheCurtain')}</dd></div>
     </dl>
   </div><p class="start-prompt"><span class="keyboard-prompt" role="img" aria-label="${t('pressSpaceToStart')}">${t('startShort')}</span>
   <span class="touch-prompt">${t('startTouchShort')}</span><button type="button" class="ui-button" data-start-rooms>${t('roomsBack')}</button></p>

@@ -4,8 +4,12 @@ export class KeyboardRelease {
   private readonly blocked = new Set<string>();
 
   down(code: string, repeat: boolean) {
+    const fresh = !repeat && !this.held.has(code) && !this.blocked.has(code);
+
     if (repeat && !this.held.has(code)) this.blocked.add(code);
     this.held.add(code);
+
+    return fresh;
   }
 
   up(code: string) {
@@ -20,6 +24,10 @@ export class KeyboardRelease {
   blur() {
     this.held.clear();
     this.blocked.clear();
+  }
+
+  isHeld(code: string) {
+    return this.held.has(code) && this.allows(code);
   }
 
   allows(code: string) {

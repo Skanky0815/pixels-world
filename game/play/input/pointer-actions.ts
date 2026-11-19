@@ -7,10 +7,10 @@ export class PointerActions {
   private readonly pointers = new Map<number, ControlAction>();
   private readonly pressed = new Set<ControlAction>();
 
-  press(id: number, action: ControlAction) {
+  press(id: number, action: ControlAction, fresh = true) {
     if (this.pointers.has(id)) return;
 
-    if (![...this.pointers.values()].includes(action)) this.pressed.add(action);
+    if (fresh && ![...this.pointers.values()].includes(action)) this.pressed.add(action);
     this.pointers.set(id, action);
   }
 
