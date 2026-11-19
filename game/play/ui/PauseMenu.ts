@@ -1,4 +1,5 @@
 import { keyboardPreferences } from '../../shared/input/keyboard-preferences';
+import { configureCloseButton } from '../../shared/ui/button';
 import { canFocus, installFocusNavigation, preserveFocus } from '../../shared/ui/focus-navigation';
 import { StoragePanel } from './StoragePanel';
 import { SettingsFeedback } from './SettingsFeedback';
@@ -324,6 +325,7 @@ export class PauseMenu {
   }
 
   private refreshToggle() {
+    configureCloseButton(this.element('[data-menu-back]') as HTMLButtonElement, t('menuClose'));
     configureAction(this.toggle, 'menu');
     configureAction(this.albumToggle, 'album');
     this.element('[data-pause-album]').setAttribute('aria-label', t('albumOpen'));

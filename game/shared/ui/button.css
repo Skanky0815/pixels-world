@@ -121,6 +121,7 @@
   height: auto;
 }
 
+.popup-heading,
 dialog .popup-heading {
   display: flex;
   flex-wrap: nowrap;
@@ -130,6 +131,8 @@ dialog .popup-heading {
   margin: 0 0 16px;
   padding: 0;
 }
+.popup-heading > div,
+.popup-heading h2,
 dialog .popup-heading > div,
 dialog .popup-heading h2 {
   min-width: 0;

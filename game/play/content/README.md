@@ -650,8 +650,8 @@ eine quadratische Icon-Variante und gemeinsame Fokus-/Disabled-Zustände.
 `game-action.ts` ordnet Buch und Menüsymbol samt lokalisierter Beschriftung zu.
 Die Sammlungskacheln und stoffförmigen Raum-Lesezeichen behalten ihre Buchform.
 
-Optionen sind eine eigene Bildschirmansicht des Hauptmenüs. „Zurück“ führt ins
-Hauptmenü und lässt eine laufende Runde pausiert; „Fortsetzen“ oder Esc setzt sie
-fort. Die Optionen enthalten weder die Hauptmenü-Aktionsliste noch einen eigenen
+Optionen sind eine eigene Bildschirmansicht des Hauptmenüs. Das X oben rechts
+führt ins Hauptmenü und lässt eine laufende Runde pausiert; „Fortsetzen“ oder Esc
+setzt sie fort. Die Optionen enthalten weder die Hauptmenü-Aktionsliste noch einen eigenen
 Optionen-Button. Album und Installationshilfe behalten ihre native Popup-Fläche
 mit `popup-heading` und lokalisiertem 44×44-Schließen-Button.

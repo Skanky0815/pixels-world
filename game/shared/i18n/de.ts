@@ -1,4 +1,5 @@
 export const de = {
+  menuClose: 'Zurück zum Hauptmenü',
   settingsAutoApply: 'Änderungen werden direkt übernommen.',
   settingsApplied: '✓ Einstellungen übernommen.',
   settingsAppliedNextRound: '✓ Übernommen. Der Schwierigkeitsgrad gilt ab der nächsten Runde.',
