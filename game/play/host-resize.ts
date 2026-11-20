@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
 import { followsPixel } from './camera-mode';
+import { OverlayLayout } from './ui/OverlayLayout';
 
 /** CSS grid can settle after the window resize event; track the actual game host. */
+// eslint-disable-next-line max-lines-per-function -- Host und Overlaybeobachter teilen die Lebensdauer des Spiels.
 export function observeGameHost(game: Phaser.Game) {
   const observer = new ResizeObserver(([entry]) => {
     resizeHost(game, entry.contentRect.width, entry.contentRect.height);
@@ -9,7 +11,13 @@ export function observeGameHost(game: Phaser.Game) {
 
   const host = game.canvas.parentElement;
 
-  if (host) observer.observe(host);
+  if (host) {
+    observer.observe(host);
+    const overlays = new OverlayLayout(host);
+
+    game.events.once(Phaser.Core.Events.DESTROY, () => overlays.destroy());
+  }
+
   game.events.once(Phaser.Core.Events.DESTROY, () => observer.disconnect());
 }
 

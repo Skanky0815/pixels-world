@@ -372,27 +372,42 @@ verändern keine Quelldaten und erzeugen keine Engine-Objekte. Neue Mechaniken
 bleiben Code; neue Platzierungen/Werte sind Content. Ein künftiger Import oder
 Generator muss denselben validierten Vertrag verwenden, keine zweite Regelsprache.
 
-Canvas und Raum behalten ihr Seitenverhältnis. `#play-area` ordnet mobile
-Steuerungsgruppen außerhalb des Zimmers an. `MobileReadout` rendert vorhandene
-Text-/Fortschrittsdaten in CSS-Pixeln; kompakt sind entsprechende Canvas-Textpanels
-verborgen, nicht die Figuren. `any-pointer: coarse` aktiviert dieselbe Oberfläche
+Die Standardansicht füllt den verfügbaren dynamischen Viewport mit dem Level;
+die Kamera folgt Pixel in allen Bildschirmformaten. HUD, Menü, Dialoge, Banner und
+Touchflächen liegen darüber und verkleinern den Spielbereich nicht. Die explizite
+Vergleichsansicht `?camera=room` zeigt weiterhin den vollständigen Raum im passenden
+Seitenverhältnis. `MobileReadout` rendert vorhandene Text-/Fortschrittsdaten in
+CSS-Pixeln; in der Standardansicht sind entsprechende Canvas-Textpanels verborgen,
+nicht die Figuren. `any-pointer: coarse` aktiviert Touchflächen
 auch auf breiten Tablets und Hybrid-Geräten; die Bildschirmbreite allein bestimmt
 den Eingabemodus nicht. Maus und Tastatur bleiben parallel nutzbar. Große
 Touch-Flächen erhalten über CSS-Variablen größere Tasten mit mehr Abstand.
-Die folgende Handykamera besitzt einen kleinen Ruhebereich von vier Spielpixeln
+Die Kamera auf kurzen Querformaten besitzt einen kleinen Ruhebereich von vier Spielpixeln
 pro Achse, damit kleinste Standkorrekturen nicht das ganze Zimmer mitziehen.
-Die Desktopkamera und die Raumübersicht behalten ihre bisherige Führung.
+Im Hochformat nutzt die Kamera den Raumhöhenmaßstab, im größeren Querformat
+einen moderaten Zoom. Kameraränder berücksichtigen sichtbare Touchflächen.
 Rotation erhält die Szene und löst Eingaben. Ein spielweiter `ResizeObserver`
 aktualisiert Phasers FIT-Skalierung nach Größenänderungen des CSS-Spielfensters,
 auch wenn das Grid erst nach dem Browser-Resize-Ereignis seine Größe erreicht.
 Beim Zerstören des Spiels wird der Observer entfernt.
 Szeneneigene DOM- und MediaQuery-Ressourcen werden beim Shutdown entsorgt.
-Grobe Zeiger und Fenster bis 1024 CSS-Pixel Breite zeigen lesbare DOM-Texte;
-breite Mausfenster verwenden die bisherigen Canvas-Texte. Die Umschaltung
+Nur in der Raumvergleichsansicht verwenden breite Mausfenster die bisherigen
+Canvas-Texte; grobe Zeiger und Fenster bis 1024 CSS-Pixel lesen DOM-Texte. Die Umschaltung
 aktiviert keine Touch-Steuerung auf Mausgeräten. Das Spiel verwendet Canvas 2D
 auch auf Desktop, damit ein Größenwechsel mit DOM-Dialog keinen Rendererwechsel
 oder Szenenneustart benötigt:
 [ADR 0002](../adr/0002-mobile-text-rendering.md).
+
+`OverlayLayout` beobachtet die tatsächlichen Größen von Menübuttons, Touchgruppen,
+Rückkehraktion und aktivem Banner einschließlich Sprachwechsel und Szenenneustart.
+`overlay-layout.css` verwendet diese gemeinsamen Flächen in dieser Priorität:
+Safe Areas und Bedienung, Banner, dann der scrollbar begrenzte Dialog auf der
+Levelseite. Im Querformat liegt das Banner zwischen den unteren Touchgruppen,
+im Hochformat darüber. Die Dialogkarte hält den Kameramittelpunkt frei; im
+Hochformat nutzt sie die obere Bildschirmbreite. Banner werden nacheinander
+angezeigt, übernehmen keinen Fokus und sperren keine Eingabe. Optionen und Album
+behalten ihre vorhandene Pausengrenze; der Bannerablauf wartet ebenfalls.
+Die Bannerkomponente positioniert keine fremden Dialoge oder Buttons mehr.
 
 `RoomDefinition.dialogue` bestimmt die Dialogseite ausdrücklich; der Resolver
 übergibt den geprüften, unveränderlichen Anker unabhängig von `homecomingSide`.

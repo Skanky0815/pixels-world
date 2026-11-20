@@ -1,0 +1,359 @@
+/* One placement contract: safe edges → input surfaces → banner → scrollable dialogue.
+   These are overlay regions, never space subtracted from the camera host. */
+main:has(#play-area) {
+  --overlay-gap: 8px;
+  --overlay-edge: 12px;
+  --overlay-top: max(var(--overlay-edge), env(safe-area-inset-top));
+  --overlay-left: max(var(--overlay-edge), env(safe-area-inset-left));
+  --overlay-right: max(var(--overlay-edge), env(safe-area-inset-right));
+  --overlay-bottom: max(var(--overlay-edge), env(safe-area-inset-bottom));
+  --overlay-controls-height: max(
+    var(--overlay-directions-height, 0px),
+    var(--overlay-actions-height, 0px),
+    var(--overlay-return-height, 0px)
+  );
+  --overlay-banner-bottom: calc(
+    var(--overlay-bottom) + var(--overlay-controls-height) + var(--overlay-gap)
+  );
+  --overlay-dialogue-top: calc(
+    var(--overlay-top) + var(--overlay-menu-height, 44px) + var(--overlay-gap)
+  );
+  --overlay-dialogue-bottom: calc(
+    var(--overlay-banner-bottom) + var(--overlay-banner-height, 0px) + var(--overlay-gap)
+  );
+}
+
+.follow-camera:not(.menu-open):not(.room-selecting) body:has(#play-area) {
+  display: block;
+  height: 100dvh;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+
+  main:has(#play-area) {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  main > header {
+    display: contents;
+  }
+
+  main > footer {
+    display: none;
+  }
+
+  #play-area {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+
+  #play-area #game {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto !important;
+    border: 0;
+    box-shadow: none;
+  }
+
+  main > header > div:first-child,
+  main > header > .game-menu-actions {
+    position: absolute;
+    top: var(--overlay-top);
+    z-index: 5;
+    margin: 0;
+  }
+
+  main > header > div:first-child {
+    left: var(--overlay-left);
+    text-shadow: 0 1px 3px #241f29;
+  }
+
+  main > header > div:first-child :is(.eyebrow, h1 span),
+  main > header > .badge {
+    display: none;
+  }
+
+  main > header h1 {
+    font-size: 20px;
+    letter-spacing: 0;
+  }
+
+  main > header > .game-menu-actions {
+    right: var(--overlay-right);
+    width: auto;
+    flex-direction: row;
+    gap: var(--overlay-gap);
+    align-self: auto;
+  }
+
+  main:has(.mobile-dialogue:not([hidden])) > header > div:first-child {
+    visibility: hidden;
+  }
+}
+
+.follow-camera body main:has(#play-area) {
+  #play-area .mobile-hud:not([hidden]) {
+    display: block;
+    position: absolute;
+    top: var(--overlay-dialogue-top);
+    right: var(--overlay-right);
+    left: auto;
+    width: min(260px, 40%);
+    padding: 8px;
+    z-index: 2;
+    background: #241f2966;
+    border: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    text-shadow: 0 1px 3px #241f29;
+    pointer-events: none;
+  }
+
+  #play-area .mobile-hud:has(.mobile-notice:empty) {
+    background: transparent;
+  }
+
+  .mobile-hud p {
+    margin: 0;
+  }
+  .mobile-notice {
+    display: block;
+    height: 2.8em;
+    min-height: 2.8em;
+    overflow: auto;
+    pointer-events: auto;
+  }
+  .game-feedback-layer {
+    display: none;
+  }
+
+  #play-area .touch-controls {
+    display: none;
+  }
+
+  #play-area .touch-directions,
+  #play-area .touch-actions {
+    position: absolute;
+    top: auto;
+    bottom: var(--overlay-bottom);
+    z-index: 4;
+    transform: none;
+    padding: 0;
+  }
+
+  #play-area .touch-directions {
+    left: var(--overlay-left);
+  }
+  #play-area .touch-actions {
+    right: var(--overlay-right);
+    width: 88px;
+    gap: var(--overlay-gap);
+  }
+
+  .touch-controls button,
+  main > header .game-menu-actions button {
+    background: #403a3566;
+    border-color: #f3e3c980;
+  }
+
+  .touch-controls button[aria-pressed='true'] {
+    background: #765d43cc;
+  }
+
+  #play-area #game > :is(.start-screen, .mobile-dialogue):not([hidden]) {
+    display: block;
+    position: absolute;
+    inset: var(--overlay-dialogue-top) auto auto var(--overlay-left);
+    width: min(480px, calc(50% - var(--camera-pixel-half, 48px) - 32px));
+    max-height: calc(100% - var(--overlay-dialogue-top) - var(--overlay-dialogue-bottom));
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 16px;
+    font-size: 16px;
+    line-height: 1.5;
+    white-space: pre-line;
+    z-index: 3;
+  }
+
+  #play-area #game > .start-screen:not([hidden]) {
+    display: flex;
+    white-space: normal;
+    width: min(610px, calc(100% - var(--overlay-left) - var(--overlay-right)));
+    bottom: var(--overlay-dialogue-bottom);
+    max-height: none;
+  }
+
+  #play-area
+    #game
+    > :is(.start-screen, .mobile-dialogue)[data-dialogue-side='right']:not([hidden]) {
+    left: auto;
+    right: var(--overlay-right);
+  }
+
+  #play-area:has(.mobile-dialogue[data-dialogue-side='right']:not([hidden])) .mobile-hud {
+    right: auto;
+    left: var(--overlay-left);
+  }
+
+  .mobile-dialogue p {
+    margin: 0 0 8px;
+  }
+  .mobile-dialogue p:empty {
+    display: none;
+  }
+  .mobile-hint {
+    text-align: right;
+  }
+  .mobile-quote {
+    font-style: italic;
+  }
+
+  #play-area #game > .mobile-dialogue:has(.mobile-key:not(:empty)):not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 48px;
+    gap: 4px 8px;
+  }
+
+  .mobile-dialogue:has(.mobile-key:not(:empty)) .mobile-portrait {
+    display: none;
+  }
+  .mobile-dialogue:has(.mobile-key:not(:empty)) > .mobile-message {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    padding-left: 0;
+    min-height: 0;
+  }
+  .mobile-dialogue .mobile-key {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    font-size: 44px;
+    line-height: 1;
+    text-align: center;
+  }
+  .mobile-dialogue progress {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    height: 8px;
+    margin: 8px auto;
+    accent-color: #e4c182;
+  }
+  .mobile-dialogue progress[hidden] {
+    display: none;
+  }
+  .mobile-quote,
+  .mobile-hint {
+    grid-column: 1 / -1;
+  }
+  .mobile-result:not([hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #play-area .album-banner {
+    inset: auto var(--overlay-right) var(--overlay-banner-bottom) var(--overlay-left);
+    width: min(360px, calc(100% - var(--overlay-left) - var(--overlay-right)));
+    height: auto;
+    min-height: 72px;
+  }
+
+  #play-area .room-selection-return {
+    right: var(--overlay-right);
+    bottom: var(--overlay-bottom);
+    max-width: calc(100% - var(--overlay-left) - var(--overlay-right));
+  }
+  #play-area .touch-actions .room-selection-return {
+    position: static;
+    max-width: 100%;
+  }
+
+  [data-start-rooms] {
+    position: static;
+    width: auto;
+  }
+  .start-age {
+    display: block;
+  }
+}
+
+@media (any-pointer: coarse) {
+  .follow-camera body main:has(#play-area) #play-area .touch-controls {
+    display: contents;
+  }
+}
+
+@media (orientation: landscape) {
+  .follow-camera main:has(#play-area) {
+    --overlay-banner-bottom: var(--overlay-bottom);
+    --overlay-dialogue-bottom: calc(
+      var(--overlay-bottom) +
+        max(var(--overlay-controls-height), var(--overlay-banner-height, 0px)) + var(--overlay-gap)
+    );
+  }
+  .follow-camera body main:has(#play-area) #play-area .album-banner {
+    left: calc(var(--overlay-left) + var(--overlay-directions-width, 0px) + var(--overlay-gap));
+    right: calc(var(--overlay-right) + var(--overlay-actions-width, 0px) + var(--overlay-gap));
+    width: auto;
+    max-width: 360px;
+  }
+}
+
+@media (orientation: portrait) {
+  .follow-camera body main:has(#play-area) {
+    #play-area #game > .mobile-dialogue:not([hidden]) {
+      left: var(--overlay-left);
+      right: var(--overlay-right);
+      width: auto;
+      max-height: min(
+        40%,
+        calc(
+          100% - var(--overlay-dialogue-top) - var(--overlay-dialogue-bottom) -
+            var(--camera-actor-height, 192px) - 2 * var(--overlay-gap)
+        )
+      );
+    }
+    #play-area:has(.mobile-dialogue:not([hidden])) .mobile-hud {
+      visibility: hidden;
+    }
+  }
+}
+
+@media (max-height: 550px) {
+  .follow-camera main:has(#play-area) {
+    --overlay-edge: 8px;
+  }
+  .follow-camera
+    body
+    main:has(#play-area)
+    #play-area
+    #game
+    > :is(.start-screen, .mobile-dialogue):not([hidden]) {
+    padding: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+
+@media (pointer: fine) and (min-width: 1025px) and (min-height: 551px) {
+  .follow-camera main:has(#play-area) {
+    --overlay-edge: 24px;
+  }
+}
+
+/* Complete-room comparison uses the same measured banner/action reserves. */
+html:not(.follow-camera) #game > .mobile-dialogue:not([hidden]) {
+  max-height: calc(
+    100% - var(--overlay-banner-height, 0px) - 2 * var(--overlay-edge) -
+      var(--overlay-return-height, 0px)
+  );
+}
+html:not(.follow-camera) #game > .room-selection-return {
+  bottom: calc(var(--overlay-edge) + var(--overlay-banner-height, 0px) + var(--overlay-gap));
+}

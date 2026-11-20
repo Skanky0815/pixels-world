@@ -3,17 +3,23 @@ import { test, expect, waitForGame } from '../support/support';
 import { observe, move } from './kitchen-support';
 import { seedRoundRandom, useIdleFrames } from '../support/round-clock';
 import type { Page } from '@playwright/test';
+import { fullViewport } from './overlay-support';
 
-for (const mobile of [false, true])
+for (const view of [
+  { name: 'Desktop', mobile: false, width: 1366, height: 900, margin: 24 },
+  { name: 'Handy quer', mobile: true, width: 568, height: 320, margin: 8 },
+  { name: 'Handy hoch', mobile: true, width: 390, height: 844, margin: 12 },
+  { name: 'Tablet', mobile: true, width: 1024, height: 768, margin: 12 },
+])
   for (const [room, side] of [
     ['living-room', 'right'],
     ['kitchen', 'left'],
   ] as const)
-    test.describe(`Dialog ${room} ${mobile ? 'Touch' : 'Desktop'}`, () => {
+    test.describe(`Dialog ${room} ${view.name}`, () => {
       test.use({
-        hasTouch: mobile,
-        isMobile: mobile,
-        viewport: mobile ? { width: 568, height: 320 } : { width: 1366, height: 900 },
+        hasTouch: view.mobile,
+        isMobile: view.mobile,
+        viewport: { width: view.width, height: view.height },
       });
       test('Textbox liegt gegenüber Sara und bleibt beim Übergang zur Versöhnung dort @smoke', async ({
         page,
@@ -25,7 +31,7 @@ for (const mobile of [false, true])
           'data-dialogue-side',
           side === 'left' ? 'right' : 'left',
         );
-        await test.info().attach(`Einführung-${room}-${mobile ? 'Handy' : 'Desktop'}`, {
+        await test.info().attach(`Einführung-${room}-${view.name}`, {
           body: await page.screenshot(),
           contentType: 'image/png',
         });
@@ -43,7 +49,7 @@ for (const mobile of [false, true])
             { intervals: [0], timeout: 15000 },
           )
           .toBe(true);
-        await assertSide(page, side, mobile ? 8 : 24);
+        await assertSide(page, side, view.margin);
         const s = await observe(page);
 
         expect(
@@ -52,8 +58,8 @@ for (const mobile of [false, true])
             : s.sara.dialogueBounds.right < s.sara.x,
         ).toBe(true);
         await move(page, ['Space'], (s) => s.reconciliation.stage === 'reading');
-        await assertSide(page, side, mobile ? 8 : 24);
-        await test.info().attach(`Dialog-${room}-${mobile ? 'Handy' : 'Desktop'}`, {
+        await assertSide(page, side, view.margin);
+        await test.info().attach(`Dialog-${room}-${view.name}`, {
           body: await page.screenshot(),
           contentType: 'image/png',
         });
@@ -63,6 +69,7 @@ for (const mobile of [false, true])
     });
 
 async function assertSide(page: Page, side: 'left' | 'right', margin: number) {
+  await fullViewport(page);
   const panel = page.locator('.mobile-dialogue');
   const card = (await panel.boundingBox())!;
   const canvas = (await page.locator('canvas').boundingBox())!;
@@ -94,10 +101,12 @@ async function assertSide(page: Page, side: 'left' | 'right', margin: number) {
     margin,
     0,
   );
-  expect(
-    side === 'left'
-      ? card.x > canvas.x + canvas.width / 2
-      : card.x + card.width < canvas.x + canvas.width / 2,
-  ).toBe(true);
+
+  if (canvas.width > canvas.height)
+    expect(
+      side === 'left'
+        ? card.x > canvas.x + canvas.width / 2
+        : card.x + card.width < canvas.x + canvas.width / 2,
+    ).toBe(true);
   expect(await panel.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
 }

@@ -319,7 +319,7 @@ export class LivingRoomScene extends Phaser.Scene {
     const { width, height } = this.room.definition;
 
     this.cameras.main.setBounds(0, 0, width, height);
-    installFollowCamera(this, this.pixel.collider);
+    installFollowCamera(this, this.pixel.collider, this.room.definition.floor.y);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der vollständige DEV-Port bleibt innerhalb der Build-Grenze; weder Aktionen noch Engine-Referenzen werden global exponiert.

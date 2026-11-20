@@ -66,7 +66,11 @@ test('Kameraversuch: Vorhang und Rotation behalten Runde und Raumgrenzen', async
   expect(top).toBeGreaterThanOrEqual(-1);
   expect(top + camera.height / camera.zoom).toBeLessThanOrEqual(541);
   await page.setViewportSize({ width: 390, height: 844 });
-  await until(page, (s) => s.camera.zoom === 1 && s.camera.width === 960);
+  await until(
+    page,
+    (s) => s.camera.zoom === 1 && Math.abs(s.camera.width / s.camera.height - 390 / 844) < 0.01,
+  );
+  await fillsViewport(page);
   expect((await state(page)).started).toBe(true);
   await page.setViewportSize({ width: 844, height: 330 });
   await until(page, (s) => s.camera.zoom === 2);
