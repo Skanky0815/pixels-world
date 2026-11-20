@@ -1,6 +1,8 @@
 import { keyboardPreferences } from '../../shared/input/keyboard-preferences';
+import { configureCloseButton } from '../../shared/ui/button';
 import { canFocus, installFocusNavigation, preserveFocus } from '../../shared/ui/focus-navigation';
 import { StoragePanel } from './StoragePanel';
+import { SettingsFeedback } from './SettingsFeedback';
 import { difficultyPreferences } from '../settings/difficulty';
 import { DIFFICULTY_LABELS, isDifficulty, type Difficulty } from '../content/difficulty';
 import { motionPreferences } from '../settings/motion';
@@ -36,9 +38,11 @@ export class PauseMenu {
   private returnable = true;
   private readonly rememberedFocus = new Map<string, HTMLElement>();
   private pending?: 'restart' | 'rooms';
+  private albumReturnFocus?: HTMLElement;
   private readonly album: AlbumView;
   private readonly albumReset: AlbumResetSetting;
   private readonly storage: StoragePanel;
+  private readonly settingsFeedback: SettingsFeedback;
   private readonly updates: UpdatePanel;
   private readonly root = document.createElement('section');
   private readonly toggle = document.createElement('button');
@@ -58,12 +62,17 @@ export class PauseMenu {
       if (this.root.hidden) {
         this.actions.pause(false);
         this.actions.focus();
-      } else this.element('[data-pause-album]').focus({ preventScroll: true });
+      } else this.restoreAlbumFocus();
     });
-    this.root.className = 'pause-menu game-menu';
+    this.root.className = 'pause-menu game-menu game-screen';
     this.root.hidden = true;
     this.root.inert = true;
     this.root.innerHTML = menuMarkup();
+    this.settingsFeedback = new SettingsFeedback(
+      this.root,
+      () => this.actions.started(),
+      this.abort.signal,
+    );
     this.albumReset = new AlbumResetSetting(this.element('[data-pause-album-reset]'));
     this.toggle.type = 'button';
     this.toggle.className = 'pause-toggle';
@@ -191,8 +200,16 @@ export class PauseMenu {
   }
 
   openAlbum() {
+    this.albumReturnFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.actions.pause(true);
     this.album.open();
+  }
+
+  private restoreAlbumFocus() {
+    if (this.albumReturnFocus?.isConnected && canFocus(this.albumReturnFocus))
+      this.albumReturnFocus.focus({ preventScroll: true });
+    else this.focusView();
   }
 
   private close() {
@@ -225,7 +242,8 @@ export class PauseMenu {
     for (const panel of Array.from(this.root.querySelectorAll<HTMLElement>('[data-menu-view]')))
       panel.hidden = panel.dataset.menuView !== view;
     this.element('[data-menu-back]').hidden = view === 'home' || view === 'confirm';
-    this.element('.pause-actions').hidden = view === 'confirm';
+    this.element('.pause-actions').hidden = view !== 'home';
+    this.settingsFeedback.show(view === 'settings');
 
     if (view === 'settings') this.updates.showAvailable();
     this.focusView();
@@ -307,6 +325,7 @@ export class PauseMenu {
   }
 
   private refreshToggle() {
+    configureCloseButton(this.element('[data-menu-back]') as HTMLButtonElement, t('menuClose'));
     configureAction(this.toggle, 'menu');
     configureAction(this.albumToggle, 'album');
     this.element('[data-pause-album]').setAttribute('aria-label', t('albumOpen'));
@@ -315,7 +334,7 @@ export class PauseMenu {
   }
 
   private refresh() {
-    this.root.setAttribute('aria-label', t('mainMenu'));
+    this.settingsFeedback.render();
     this.element('.pause-actions').setAttribute('aria-label', t('mainMenu'));
     this.refreshHeading();
     this.refreshToggle();
@@ -329,11 +348,12 @@ export class PauseMenu {
   private refreshHeading() {
     const keys = {
       home: 'menuReady',
-      settings: 'pauseSettings',
+      settings: 'gameOptions',
       information: 'gameInformation',
       confirm: 'menuConfirmTitle',
     } as const;
 
+    this.root.setAttribute('aria-label', t(this.view === 'home' ? 'mainMenu' : keys[this.view]));
     this.element('[data-menu-heading]').textContent = t(keys[this.view]);
   }
 

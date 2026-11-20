@@ -14,7 +14,7 @@ import {
 } from '../support/support';
 import { finishAlbumRound } from './album-support';
 import { seedRoundRandom } from '../support/round-clock';
-import { changeLanguage, openPause } from '../support/pause-support';
+import { changeLanguage, openPause, returnToMenu } from '../support/pause-support';
 import type { Page } from '@playwright/test';
 
 async function seed(
@@ -84,6 +84,7 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   await page.locator('.pause-menu [data-language="en"]').click();
   await page.clock.runFor(4000);
   await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-10');
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await expect(banner).toContainText('Little angel II');
   await expect(banner).toHaveCSS('animation-name', 'none');
@@ -107,6 +108,7 @@ test('Echte letzte Schadensstufe bestätigt zwei Erfolge einmalig und reiht sie 
   await expect(banner).toBeHidden();
   await openPause(page);
   await page.locator('[data-reduce-motion]').uncheck();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await changeLanguage(page, 'en');
   await expect(banner).toBeHidden();
@@ -230,7 +232,7 @@ for (const mobile of [false, true])
       await openPause(page);
       await page.locator('[data-album-reset="ask"]').click();
       await page.locator('[data-album-reset="confirm"]').click();
-      await page.locator('[data-pause-album]').click();
+      await page.locator('.album-toggle').click();
       await page.getByRole('tab', { name: 'Achievements', exact: true }).click();
       await expect(album.locator('.achievement-tile:not(:disabled)')).toHaveCount(0);
       await expect(album.locator('.achievement-state')).toHaveCount(0);

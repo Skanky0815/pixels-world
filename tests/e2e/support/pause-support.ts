@@ -10,6 +10,14 @@ export async function openPause(page: Page) {
 export async function changeLanguage(page: Page, language: 'de' | 'en') {
   await openPause(page);
   await page.locator(`.pause-menu [data-language="${language}"]`).click();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await expect(page.locator('.pause-menu')).not.toBeVisible();
+}
+
+/** Follow the explicit back action before using main-menu navigation. */
+export async function returnToMenu(page: Page) {
+  const back = page.locator('[data-menu-back]');
+
+  if (await back.isVisible()) await back.click();
 }

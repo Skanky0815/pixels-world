@@ -394,9 +394,33 @@ auch auf Desktop, damit ein Größenwechsel mit DOM-Dialog keinen Rendererwechse
 oder Szenenneustart benötigt:
 [ADR 0002](../adr/0002-mobile-text-rendering.md).
 
-Dialog und Versöhnung nutzen die freie Seite gegenüber Saras Eintrittsseite: bei
-Eintritt von links rechts, bei Eintritt von rechts links. Canvas und DOM folgen
-demselben Raumvertrag. Während der Runde zeigen Rückmeldungen keine Zahlen;
+`RoomDefinition.dialogue` bestimmt die Dialogseite ausdrücklich; der Resolver
+übergibt den geprüften, unveränderlichen Anker unabhängig von `homecomingSide`.
+Einführung, Heimkehr einschließlich friedlicher Begrüßung, Versöhnung und Ergebnis
+verwenden denselben Anker. Im Wohnzimmer liegt er links, in der Küche rechts;
+kleine Ansichten dürfen zugunsten lesbarer Texte die verfügbare Breite nutzen.
+`dialogue-frame.ts` und `dialogue-box.css` teilen Rahmen, Schrift, Farben und
+Porträt-/Textgrundlagen zwischen Canvas- und DOM-Adaptern. Die Einführung behält
+ihre Bedienübersicht, Versöhnung die Tastenkachel und Ergebnis die Auswertung;
+Spielzustand, Fristen und Bestätigung bleiben bei Szene und Domain. Größen- und
+Sprachwechsel bestätigen keine Runde erneut. Fehlende Porträts lassen Text und
+Aktionen erreichbar; Listener werden weiterhin beim Szenen-Shutdown entfernt.
+
+Hauptmenü, Optionen, Information, Bestätigung und Levelwahl bleiben eigene
+Bildschirmansichten. Sie teilen Schrift-/Farbgrundlagen, werden jedoch nicht als
+Dialog über das laufende Level gelegt. Optionen zeigen ihre Einstellungen und
+den Zurück-Weg; Hauptmenüaktionen einschließlich des Optionen-Buttons erscheinen
+nur im Hauptmenü. Optionen nutzen die volle Inhaltsbreite und stapeln ihre
+Bereiche auf schmalen Fenstern. Eine beim Scrollen sichtbare Statuszeile bestätigt
+übernommene Einstellungen auf Deutsch/Englisch, ohne Fokuswechsel oder eine
+zugesicherte dauerhafte Speicherung. Der Schwierigkeitsgrad verweist in laufenden
+Runden ausdrücklich auf die nächste Runde. Asynchrone Offline-/Updateaufträge
+behalten ihre eigene Erfolgs-/Fehleranzeige. Die bestehende Esc-Pausenbedienung
+bleibt erhalten. Album und
+Erfolge behalten ihren nativen Buchdialog mit eigener Inhaltsanordnung und
+Fokusgrenze; das gemeinsame Overlay-Zusammenspiel ist der Folgeschritt #338.
+
+Während der Runde zeigen Rückmeldungen keine Zahlen;
 Schadensereignisse und Ledger werten unverändert weiter, die Punktzahl erscheint
 im Ergebnis.
 

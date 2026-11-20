@@ -1,4 +1,4 @@
-import { openPause } from '../support/pause-support';
+import { openPause, returnToMenu } from '../support/pause-support';
 import { test, expect, until, waitForGame, waitForLoadingScreen } from '../support/support';
 import { expectArtwork, expectTeam } from '../support/landing';
 
@@ -48,6 +48,7 @@ test(
     await until(page, (s) => s.started);
     await page.keyboard.up('Space');
     await openPause(page);
+    await returnToMenu(page);
     await page.getByRole('link', { name: 'Quit game', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL('http://127.0.0.1:4174/');
@@ -95,6 +96,7 @@ test(
     await waitForLoadingScreen(page);
     await page.locator('.pause-toggle').click();
     await page.locator('[data-menu-settings]').click();
+    await returnToMenu(page);
     await page.getByRole('link', { name: 'Beenden', exact: true }).click();
     await expect(page).toHaveURL(base);
     await expect(page.locator('canvas')).toHaveCount(0);

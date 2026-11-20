@@ -21,11 +21,11 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
     await page.evaluate(() => navigator.serviceWorker.getRegistrations().then((r) => r.length)),
   ).toBe(0);
   expect(await page.evaluate(() => caches.keys())).toEqual([]);
-  await page.locator('[data-pause-album]').click();
+  await page.locator('.album-toggle').click();
   await expect(page.locator('.album-overall')).toContainText('0 von');
   await page.locator('.album-dialog [data-action="close"]').click();
   await page.locator('[data-remember-album]').check();
-  await page.locator('[data-pause-album]').click();
+  await page.locator('.album-toggle').click();
   await expect(page.locator('.album-overall')).toContainText('1 von');
   await page.locator('.album-dialog [data-action="close"]').click();
   const migrated = await page.evaluate(() => localStorage.getItem('pixels-world.album'));

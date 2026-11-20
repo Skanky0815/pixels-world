@@ -1,4 +1,6 @@
 import { t } from '../../shared/i18n/locale.ts';
+import { dialogueFrame, dialogueTextStyle } from './dialogue-frame';
+import type { DialoguePlacement } from '../content/dialogue-layout';
 import { compactVisibility } from './compact-visibility';
 import { DialoguePortrait, placeDialogueText } from './DialoguePortrait';
 import {
@@ -11,11 +13,7 @@ import { SARA_ANIMATIONS } from '../content/sara-reactions';
 import type { EndingPose } from '../domain/ending-presentation';
 import type { EndingAnimation } from '../actors/sara-endings';
 import { SARA_CLIPS, SARA_SPRITE } from '../actors/sara-animations';
-import {
-  homecomingPositions,
-  homecomingPanel,
-  type HomecomingSide,
-} from '../content/homecoming-layout';
+import { homecomingPositions, type HomecomingSide } from '../content/homecoming-layout';
 const REACTION_LABELS = { calm: t('aSuspiciousLook'), annoyed: t('anExasperatedSigh'), angry: '…' };
 
 /** Scene-owned sprite and dialogue view; selection and timing stay in the domain. */
@@ -41,10 +39,11 @@ export class SaraReturnView {
       readonly floorY: number;
       readonly backgroundDoor?: boolean;
       readonly entrySide?: HomecomingSide;
+      readonly dialogue: DialoguePlacement;
     },
   ) {
     this.root = scene.add.container(0, 0).setDepth(12).setVisible(false);
-    const { left, width, right } = homecomingPanel(layout.width, layout.entrySide);
+    const { left, width, right, panel } = dialogueFrame(scene, layout.width, layout.dialogue);
 
     this.panelLeft = left;
     this.panelRight = right;
@@ -53,21 +52,18 @@ export class SaraReturnView {
       : fallbackDoor(scene, layout.width, layout.floorY, layout.entrySide);
 
     this.actor = this.buildActor();
-    const panel = scene.add.rectangle(left + width / 2, 235, width, 218, 0x403a35, 0.96);
-
-    panel.setStrokeStyle(2, 0xd4b488);
     this.message = scene.add.text(left + 20, 140, '', {
-      ...this.textStyle(16),
+      ...dialogueTextStyle(16),
       wordWrap: { width: width - 40 },
       lineSpacing: 6,
     });
     this.quote = scene.add.text(left + 20, 172, '', {
-      ...this.textStyle(16),
+      ...dialogueTextStyle(16),
       fontStyle: 'italic',
       color: '#e4c182',
       wordWrap: { width: width - 40 },
     });
-    this.hint = scene.add.text(right - 20, 330, '', this.textStyle(14)).setOrigin(1, 1);
+    this.hint = scene.add.text(right - 20, 330, '', dialogueTextStyle(14)).setOrigin(1, 1);
     this.portrait = new DialoguePortrait(scene, left + 60, 188);
     const dialogue = scene.add.container(0, 0, [
       panel,
@@ -178,10 +174,6 @@ export class SaraReturnView {
 
   portraitId() {
     return this.selectedPortrait;
-  }
-
-  private textStyle(size: number) {
-    return { fontFamily: 'monospace', fontSize: `${size}px`, color: '#fff1cf' };
   }
 
   // eslint-disable-next-line max-lines-per-function -- Der flache nur lesbare Darstellungsvertrag enthält Anker, Textur und den tatsächlichen Animationsframe.

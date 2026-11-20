@@ -1,3 +1,5 @@
+import { mountDialogueFrame } from './dialogue-frame';
+import type { DialoguePlacement } from '../content/dialogue-layout';
 import { MobileResultCard } from './MobileResultCard';
 import { t } from '../../shared/i18n/locale.ts';
 import type { HomecomingSide } from '../content/homecoming-layout';
@@ -32,7 +34,7 @@ export class MobileReadout {
   private readonly timer = document.createElement('progress');
   private readonly portrait = document.createElement('img');
   // eslint-disable-next-line max-lines-per-function -- Die rein lesende DOM-Ansicht bindet Textknoten und Lebensdauer gemeinsam an den Spielbereich.
-  constructor() {
+  constructor(placement: DialoguePlacement) {
     this.hud.className = 'mobile-hud';
     this.hud.hidden = true;
     this.hud.setAttribute('aria-label', t('gameStatus'));
@@ -41,6 +43,7 @@ export class MobileReadout {
     this.status.append(this.notice);
     this.hud.append(this.status);
     this.panel.className = 'mobile-dialogue';
+    mountDialogueFrame(this.panel, placement);
     this.panel.setAttribute('aria-label', t('gameDialogue'));
     this.panel.hidden = true;
     this.portrait.className = 'mobile-portrait';

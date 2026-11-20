@@ -1,3 +1,5 @@
+import { mountDialogueFrame } from './dialogue-frame';
+import type { DialoguePlacement } from '../content/dialogue-layout';
 import { keyboardPreferences } from '../../shared/input/keyboard-preferences';
 import { t, onLanguageChange, translateExact } from '../../shared/i18n/locale';
 import type { ResolvedGoal } from '../domain/main-goal';
@@ -13,12 +15,14 @@ export class StartScreen {
     visible: boolean,
     private readonly goal: ResolvedGoal,
     private readonly rooms: () => void,
+    placement: DialoguePlacement,
   ) {
     const host = document.getElementById('game');
 
     if (!host) throw new Error('Game host missing');
     this.root = document.createElement('section');
     this.root.className = 'start-screen';
+    mountDialogueFrame(this.root, placement);
     this.root.addEventListener('keydown', this.buttonKey);
     this.root.addEventListener('keyup', this.buttonKey);
     this.root.addEventListener('click', (event) => {

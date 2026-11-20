@@ -1,5 +1,9 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  menuClose: 'Back to main menu',
+  settingsAutoApply: 'Changes are applied immediately.',
+  settingsApplied: '✓ Settings applied.',
+  settingsAppliedNextRound: '✓ Applied. The difficulty takes effect next round.',
   pixelRoomWasd:
     'Pixel’s room. Use arrows or A/D to move and W/S to climb, Space to jump. Click the room to focus.',
   keyboardSettings: 'Keyboard',

@@ -10,7 +10,7 @@ import {
   besideCouch,
   waitForGame,
 } from '../support/support';
-import { openPause } from '../support/pause-support';
+import { openPause, returnToMenu } from '../support/pause-support';
 
 // Existing persistence/layout contracts start with a returning player's saved choice.
 test.beforeEach(async ({ page }) => {
@@ -99,6 +99,7 @@ test(
       completedRooms: [],
       unlocked: [],
     });
+    await returnToMenu(page);
     await options.locator('[data-pause-resume]').click();
     await page.locator('.album-toggle').click();
     await expect(page.locator('.album-overall')).toHaveText(

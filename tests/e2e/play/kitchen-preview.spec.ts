@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 /* eslint-disable max-lines-per-function -- Die echte Sprungroute prüft alle Auflagen, Pause und Reset als zusammenhängenden Raumablauf. */
 import { test, expect, waitForGame, waitForLoadingScreen } from '../support/support';
 import { observe, until, move, climbToCounter } from './kitchen-support';
@@ -64,6 +65,7 @@ for (const [difficulty, viewport] of [
         expect((await observe(page)).round).toEqual(paused.round);
         expect((await observe(page)).foodEating).toEqual(paused.foodEating);
         expect((await observe(page)).pixel.visualFrame).toBe(paused.pixel.visualFrame);
+        await returnToMenu(page);
         await page.locator('[data-pause-resume]').click();
         await move(page, ['r'], (s) => s.generation > reached.generation);
         await until(page, (s) => s.pixel.grounded && Math.abs(s.pixel.bottom - 468) < 2);
@@ -124,6 +126,7 @@ test(
 
     await page.clock.runFor(500);
     expect((await observe(page)).sara.x).toBe(paused.sara.x);
+    await returnToMenu(page);
     await page.locator('[data-pause-resume]').click();
     await until(page, (s) => s.homecoming.stage === 'dialogue' && s.pixelReturn.stage === 'seated');
     const seated = await observe(page);

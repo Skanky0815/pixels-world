@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 import { albumEntries } from '../../../game/play/content/album/index.ts';
 import {
   introAction,
@@ -362,6 +363,7 @@ async function expectEndingPause(page: Page) {
   await page.clock.runFor(1000);
   expect((await state(page)).ending).toEqual(paused.ending);
   await reduced.uncheck();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await until(page, (s) => s.ending.elapsed > paused.ending.elapsed);
 }

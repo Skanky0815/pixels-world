@@ -2,14 +2,6 @@ import type { CharmPose } from '../domain/charm-motion.ts';
 
 export type HomecomingSide = 'left' | 'right';
 
-/** Dialogue and charm share the free side opposite Sara's entrance. */
-export function homecomingPanel(width: number, side: HomecomingSide = 'right') {
-  const panelWidth = Math.min(width - 80, 610);
-  const left = side === 'left' ? width - 40 - panelWidth : 40;
-
-  return { left, width: panelWidth, right: left + panelWidth };
-}
-
 /** Shared presentation positions for Sara and Pixel, independent of texture filenames. */
 export function homecomingPositions(width: number, side: HomecomingSide = 'right') {
   const saraStartX = width + 32;

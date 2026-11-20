@@ -51,17 +51,15 @@
       padding: 20px;
       background: var(--popup-background);
       color: var(--popup-text);
-      border: 1px solid #a78d77;
-      border-radius: 8px;
       font-size: 16px;
       line-height: 1.5;
       white-space: pre-line;
     }
-    .mobile-dialogue[data-entry-side='left']:not([hidden]) {
+    .mobile-dialogue[data-dialogue-side='right']:not([hidden]) {
       left: auto;
       right: 24px;
     }
-    #play-area:has(.mobile-dialogue[data-entry-side='left']:not([hidden])) .mobile-hud {
+    #play-area:has(.mobile-dialogue[data-dialogue-side='right']:not([hidden])) .mobile-hud {
       left: 24px;
       right: auto;
     }

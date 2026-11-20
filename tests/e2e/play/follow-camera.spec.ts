@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 import {
   test,
   expect,
@@ -42,6 +43,7 @@ for (const viewport of [
     await page.locator('.pause-toggle').tap();
     await page.locator('[data-menu-settings]').tap();
     await expect(page.locator('.pause-menu')).toBeVisible();
+    await returnToMenu(page);
     await page.locator('[data-pause-resume]').tap();
     await expect(page.locator('.pause-menu')).toBeHidden();
     await cannotHide(page, touch);

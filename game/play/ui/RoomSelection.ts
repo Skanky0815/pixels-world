@@ -31,7 +31,7 @@ export class RoomSelection {
     returnToRooms: () => void,
     openMenu: () => void,
   ) {
-    this.root.className = 'room-selection';
+    this.root.className = 'room-selection game-screen';
     this.root.inert = true;
     this.back.className = 'ui-button room-selection-return';
     this.back.type = 'button';

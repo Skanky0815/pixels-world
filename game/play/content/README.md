@@ -15,8 +15,13 @@ zum Boden. `appearance` erlaubt dafür `stool`, `table` oder `counter` ausschlie
 mit stabiler Auflage. Oberhalb hängende Schränke sind vorerst reine Kulisse.
 `homecomingSide: 'left'` legt hier Tür und Saras Auftritt nach links; Pixel kehrt
 auf den freien Boden vor dem Hocker zurück. Blickrichtungen, Charmeposen,
-Abschlussannäherung und das gegenüberliegende Versöhnungspanel folgen derselben
-Seite. Ohne Angabe bleibt der bisherige Auftritt von rechts erhalten.
+Abschlussannäherung folgen derselben Seite. Ohne Angabe bleibt der bisherige
+Auftritt von rechts erhalten. Die Dialogseite ist davon unabhängig: `dialogue:
+{ side: 'right' }` in der Küche und `{ side: 'left' }` im Wohnzimmer steuern
+Einführung, Heimkehr, Versöhnung und Ergebnis gemeinsam. Der Resolver prüft den
+Anker vor dem Szenenaufbau; alte DEV-Definitionen ohne Vorgabe verwenden links.
+Responsive Ansichten passen die Breite an den verfügbaren Raum an, ohne die
+Levelvorgabe aus Saras Auftritt oder dem Dialoginhalt erneut abzuleiten.
 Die [Küchen-Slots](rooms/kitchen-slots.ts) reservieren Plätze auf Tisch,
 Arbeitsplatte, beiden Regalen und am Boden. Diese verwenden schon den gemeinsamen
 Slot-Vertrag: Der Boden-Slot `food-bag` enthält bereits einen Trockenfutterbeutel
@@ -31,9 +36,9 @@ frisst Pixel kurz, bevor die gemeinsame Heimkehr beginnt. Der optionale Futterbe
 steht darunter im vorhandenen Boden-Slot als eigener Chaosgegenstand. Die Vorschau verwendet eine eigene Raum-ID,
 zählt nicht für Küchen-/Raumerfolge. Die öffentliche Definition `kitchen` ist in der Raumauswahl freigeschaltet und zählt für die neuen Raumziele. Produktions-URLs ignorieren die DEV-Raumauswahl weiterhin.
 
-[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Wohnzimmer und Küche sind auswählbar; Schlafzimmer und Arbeitszimmer bleiben bis zu ihrer Umsetzung deaktiviert. Die gewählte Karte und der Startknopf beziehen sich auf dieselbe Raum-ID. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ in Optionen, Einführung und Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
+[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Wohnzimmer und Küche sind auswählbar; Schlafzimmer und Arbeitszimmer bleiben bis zu ihrer Umsetzung deaktiviert. Die gewählte Karte und der Startknopf beziehen sich auf dieselbe Raum-ID. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ im Hauptmenü, in der Einführung und im Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
 
-Die Spielhülle verwendet dieselben Header-/Footer-Bausteine aus `game/play/ui/shell/` für Auswahl, Einführung und Runde. Vite setzt das native HTML bereits beim Ausliefern zusammen; Rechtslinks bleiben ohne zusätzliches Browser-JavaScript vorhanden. Die bestehenden Album-/Optionsbuttons bleiben im Header, statt je Ansicht neu angelegt zu werden.
+Die Spielhülle verwendet dieselben Header-/Footer-Bausteine aus `game/play/ui/shell/` für Auswahl, Einführung und Runde. Vite setzt das native HTML bereits beim Ausliefern zusammen; Rechtslinks bleiben ohne zusätzliches Browser-JavaScript vorhanden. Die bestehenden Album-/Menübuttons bleiben im Header, statt je Ansicht neu angelegt zu werden.
 
 ## Vorlagen und Instanzen
 
@@ -634,16 +639,19 @@ Ein Buchsymbol neben dem Menü im Spielkopf öffnet das Album direkt und pausier
 die laufende Runde. Leere Raumkapitel zeigen auf breiten Displays ebenfalls
 einen mittleren Buchfalz mit Raumname links und Leerhinweis rechts.
 
-Album und Optionen nutzen in Einführung, Spielkopf und Pause-Menü dieselben
-Icon-Buttons aus `game-action.ts`/`game-action.css`, einschließlich zugänglicher
-DE-/EN-Namen. Die Popup-Flächen teilen `--popup-background` ohne Stoffraster;
-Papiertextur und darunterliegender Bucheinband gehören nur zu den Buchseiten.
+Album und Hauptmenü verwenden im Spielkopf dieselben Icon-Buttons aus
+`game-action.ts`/`game-action.css`, einschließlich zugänglicher DE-/EN-Namen.
+Einführung und laufende Runde verwenden den gemeinsamen Dialograhmen aus
+`dialogue-frame.ts` und `dialogue-box.css`; die Papiertextur und der Bucheinband
+bleiben Inhalte der Albumseiten.
 
 Normale UI-Buttons teilen `game/shared/ui/button.ts` und `button.css`: 44 Pixel Höhe,
 eine quadratische Icon-Variante und gemeinsame Fokus-/Disabled-Zustände.
-`game-action.ts` ordnet Buch und Zahnrad samt lokalisierter Beschriftung zu.
+`game-action.ts` ordnet Buch und Menüsymbol samt lokalisierter Beschriftung zu.
 Die Sammlungskacheln und stoffförmigen Raum-Lesezeichen behalten ihre Buchform.
 
-Öffentliche Popups (Optionen, Album, Installationshilfe) teilen dieselbe
-`popup-heading` mit einem 44×44-X oben rechts. Der zugängliche Name und Tooltip
-bleiben lokalisiert; das Schließen der Optionen setzt eine laufende Runde fort.
+Optionen sind eine eigene Bildschirmansicht des Hauptmenüs. Das X oben rechts
+führt ins Hauptmenü und lässt eine laufende Runde pausiert; „Fortsetzen“ oder Esc
+setzt sie fort. Die Optionen enthalten weder die Hauptmenü-Aktionsliste noch einen eigenen
+Optionen-Button. Album und Installationshilfe behalten ihre native Popup-Fläche
+mit `popup-heading` und lokalisiertem 44×44-Schließen-Button.

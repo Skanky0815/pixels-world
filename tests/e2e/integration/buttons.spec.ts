@@ -73,7 +73,7 @@ test('Sprachwahl, Iconbuttons und Albumaktionen behalten Namen, Fokus und gesper
     'aria-pressed',
     'false',
   );
-  await page.locator('[data-pause-album]').click();
+  await page.locator('.album-toggle').click();
   const close = page.locator('.album-dialog [data-popup-close]');
 
   await expect(close).toHaveAccessibleName('Close album');

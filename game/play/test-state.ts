@@ -53,6 +53,7 @@ export interface GameTestState {
   readonly charmDisplay: {
     readonly heartsText: string;
     readonly canvasTextVisible: boolean;
+    readonly dialogueBounds: Readonly<{ left: number; right: number }>;
     readonly portrait: Readonly<{ visible: boolean; texture: string; flipped: boolean }>;
   };
   readonly reconciliation: ReconciliationSnapshot;

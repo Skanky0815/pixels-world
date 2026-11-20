@@ -1,3 +1,4 @@
+import { returnToMenu } from '../support/pause-support';
 /* eslint-disable max-lines-per-function -- Zusammenhängende Tablet-Szenarien und ihre Geometrieprüfung bleiben als vollständige Nutzerabläufe lesbar. */
 import type { Page } from '@playwright/test';
 import { test, expect, loadIntro, state, until, reset } from '../support/support';
@@ -94,6 +95,7 @@ async function tabletMenu(page: Page) {
 
   expect(menu.y).toBeGreaterThanOrEqual(0);
   expect(menu.x + menu.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').scrollIntoViewIfNeeded();
   await expect(page.locator('[data-pause-resume]')).toBeInViewport();
   await page.locator('[data-pause-resume]').tap();

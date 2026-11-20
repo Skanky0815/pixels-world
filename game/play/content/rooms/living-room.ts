@@ -14,6 +14,7 @@ const decorations: readonly Decoration[] = [
 
 export const LIVING_ROOM = {
   id: 'living-room',
+  dialogue: { side: 'left' },
   wallSlots: WALL_SLOTS,
   navigationClearances: [
     { x: 0, y: 194, width: 710, height: 230 },

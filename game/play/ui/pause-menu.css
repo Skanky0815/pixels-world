@@ -15,14 +15,24 @@
   width: min(700px, 100%);
   margin-inline: auto;
 }
-.menu-heading {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: start;
-  gap: 16px;
-  margin-bottom: 20px;
+.game-menu:has(.menu-settings:not([hidden])) > * {
+  width: 100%;
 }
-.menu-heading h2 {
+.menu-settings-feedback {
+  position: sticky;
+  top: max(0px, env(safe-area-inset-top));
+  z-index: 1;
+  min-height: calc(3.2em + 16px);
+  margin-block: 0 16px;
+  padding-block: 8px;
+  background: #26212c;
+  color: #d7c1a4;
+  overflow-wrap: anywhere;
+}
+.menu-settings-feedback[data-state='applied'] {
+  color: #c8dfa0;
+}
+.game-menu .menu-heading h2 {
   margin: 0;
 }
 .menu-welcome {

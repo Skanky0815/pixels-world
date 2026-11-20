@@ -533,7 +533,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.ballPlay = new BallPlay();
     this.foodEating = new FoodEating();
-    this.mobile = new MobileReadout();
+    this.mobile = new MobileReadout(this.room.dialogue);
     this.feedback = new GameFeedback(this);
     this.controls = new InputController(this);
     this.activity = new PlayActivity(() => this.syncActivity());
@@ -543,13 +543,23 @@ export class LivingRoomScene extends Phaser.Scene {
       width: room.width,
       floorY: room.floor.y,
       entrySide: room.homecomingSide,
+      dialogue: this.room.dialogue,
       backgroundDoor: room.decorations.some((d) => d.kind === 'image' && d.asset === 'room-door'),
     });
-    this.charmView = new ReconciliationView(this, room.width, room.floor.y, room.homecomingSide);
+    this.charmView = new ReconciliationView(
+      this,
+      room.width,
+      room.floor.y,
+      room.homecomingSide,
+      this.room.dialogue,
+    );
     this.albumBanners = new AlbumBanners();
-    this.resultView = new RoundResultView(this, room.width);
-    this.startScreen = new StartScreen(!this.started && !this.choosingRoom, this.room.goal, () =>
-      this.returnToRooms(),
+    this.resultView = new RoundResultView(this, room.width, this.room.dialogue);
+    this.startScreen = new StartScreen(
+      !this.started && !this.choosingRoom,
+      this.room.goal,
+      () => this.returnToRooms(),
+      this.room.dialogue,
     );
     this.goalView = new GoalView(this, this.room.goal, this.difficulty);
     this.goalView.render(this.goal.snapshot(), this.started);

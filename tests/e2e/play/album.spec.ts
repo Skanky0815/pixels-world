@@ -15,7 +15,7 @@ import {
   waitForGame,
   waitForLoadingScreen,
 } from '../support/support';
-import { openPause } from '../support/pause-support';
+import { openPause, returnToMenu } from '../support/pause-support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from '../support/round-clock';
 import { finishAlbumRound } from './album-support';
 import type { Page } from '@playwright/test';
@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }, info) => {
 
 async function openFromMenu(page: Page) {
   await openPause(page);
-  await page.locator('[data-pause-album]').click();
+  await page.locator('.album-toggle').click();
   await expect(page.locator('.album-dialog')).toBeVisible();
 }
 
@@ -172,6 +172,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.clock.runFor(2000);
   expect((await state(page)).round).toEqual(before.round);
   await album.locator('[data-action="close"]').click();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await useIdleFrames(page);
   await advanceRoundTo(page, (await state(page)).round.returnAtMs);
@@ -211,6 +212,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await expect(banner).toHaveAttribute('data-entry', 'couch.cozy');
   expect(await albumWrites(page)).toBe(1);
   await page.setViewportSize({ width: 1280, height: 900 });
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await page.clock.runFor(100);
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));
@@ -237,6 +239,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.clock.runFor(4000);
   await expect(banner).toHaveAttribute('data-entry', 'plant.catgrass');
   await page.locator('.album-dialog [data-action="close"]').click();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await page.clock.runFor(3300);
   const unlocked: string[] = await page.evaluate(
@@ -282,10 +285,11 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await expect(album).toBeHidden();
   await expect(page.locator('.pause-menu')).toBeVisible();
   await page.locator('[data-language="en"]').click();
-  await page.locator('[data-pause-album]').click();
+  await page.locator('.album-toggle').click();
   await expect(album.locator('.album-story')).toContainText('The cozy couch');
   await expect(album).toHaveAttribute('aria-label', 'Album of mischief');
   await album.locator('[data-action="close"]').click();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await reset(page);
   expect(await albumWrites(page)).toBe(1);
@@ -304,6 +308,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await expect(page.locator('.pause-menu [data-album-reset="ask"]')).toBeVisible();
   await page.locator('.pause-menu [data-album-reset="ask"]').click();
   await page.locator('.pause-menu [data-album-reset="confirm"]').click();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await (await introAction(page, 'album')).click();
   await expect(page.locator('.album-overall')).toHaveText(
@@ -339,6 +344,7 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
   await scratch(page);
   await openPause(page);
   await page.locator('[data-remember-album]').check();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await finishAlbumRound(page, true);
   await expect(page.locator('.album-banner')).toHaveAttribute('data-entry', 'couch.cozy');
@@ -350,6 +356,7 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
     'Speichern ist nicht verfügbar',
   );
   await page.locator('.album-dialog [data-action="close"]').click();
+  await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await reset(page);
   await openFromMenu(page);
