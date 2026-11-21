@@ -37,7 +37,7 @@ async function openDebug(page: Page) {
       async () => {
         await page.clock.runFor(32);
 
-        return page.getByRole('button', { name: 'Debug (F2)', exact: true }).count();
+        return page.locator('main > footer .game-debug-toggle').count();
       },
       { intervals: [0], timeout: 15_000 },
     )
@@ -185,7 +185,8 @@ test.describe('Debug auf Touch-Geräten', () => {
   }, testInfo) => {
     await openDebug(page);
     await dialog(page).getByRole('button', { name: 'Schließen · F2' }).tap();
-    await page.getByRole('button', { name: 'Debug (F2)', exact: true }).tap();
+    await page.locator('.pause-toggle').tap();
+    await page.locator('main > footer .game-debug-toggle').tap();
     await expect(dialog(page)).toBeVisible();
     await launch(page, 'reconciliation', 0);
     await untilDebug(page, (s) => s.reconciliation.stage === 'reading');

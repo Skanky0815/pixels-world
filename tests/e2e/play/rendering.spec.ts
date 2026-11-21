@@ -56,7 +56,7 @@ test('Raum startet und zeichnet sichtbaren Inhalt', async ({ page }) => {
 // eslint-disable-next-line max-lines-per-function -- Arrange, Aktionen und Assertions dieses Szenarios bleiben gemeinsam lesbar; keine künstliche Aufteilung des Testablaufs.
 test('Kleiner Viewport zeigt den ganzen Raum ohne Seitenüberlauf', async ({ page }) => {
   await page.setViewportSize({ width: 480, height: 720 });
-  await start(page);
+  await start(page, '/?camera=room');
   const canvas = page.locator('canvas');
   const box = await canvas.boundingBox();
 

@@ -459,16 +459,22 @@ prüfen; auf Touch-Laptops zusätzlich Maus und Tastatur verwenden.
   bleiben scrollbar. Lange Texte scrollen innerhalb ihrer
   Box. Unterhalb der getesteten Viewports in `responsive.spec.ts` gegebenenfalls
   mehr Platz oder Hochformat verwenden. Emulation ist kein Hardware-Nachweis.
-- Standardkamera mit `play.html` im Handy-Querformat prüfen:
+- Standardkamera mit `play.html` auf Desktop, Handy und Tablet in beiden Orientierungen prüfen:
   Leinwand füllt die Fläche, transparente Tasten unten reagieren auch gleichzeitig,
   Kamera folgt Pixel; die Kulisse setzt sich seitlich außerhalb des Spielraums fort.
   Die sichtbare Randfläche passt sich an die Touch-Tasten an und hält nur einen
   kleinen Sicherheitsabstand frei.
   Pixel erreicht die ursprünglichen Raumgrenzen und bleibt vor den Tasten sichtbar.
   Randobjekte, beide Räume und Rückkehr nach Rotation prüfen. Dialoge, Minispiel
-  und Ergebnis stehen links über den Pfeiltasten; Sara und Pixel bleiben daneben
+  und Ergebnis stehen auf der Levelseite über den unteren Bedienflächen; Sara und Pixel bleiben daneben
   sichtbar. Lange Texte innerhalb der Karte scrollen und Richtungsvorgaben prüfen. Raumränder, Vorhang, Sprünge, Pause
   und Rotation prüfen; mit `?camera=room` bleibt die Zimmerübersicht erreichbar.
+  Im Hochformat liegen Dialoge oben, Banner über den unteren Touchflächen und
+  die Figuren sichtbar dazwischen. Einen aktiven Fund-/Erfolgsbanner im Ergebnis
+  mit langen DE/EN-Texten, mehreren Meldungen nacheinander, Optionen und Album
+  prüfen. Rotation und Rückkehr erhalten Runde und Bannerfolge; Menü und Album
+  halten den Ablauf an. Safe Areas ändern die Overlayabstände, nicht die volle
+  Spielfläche. Texte bleiben innerhalb ihrer Karte scrollbar.
 - Desktop-Standardkamera vergleichen: moderater Zoom,
   Tastatursteuerung und unveränderte Objektpositionen; Status und seitliche Dialogkarte
   bleiben unabhängig von der Kamera lesbar. Die größere Desktopkarte mit größerer

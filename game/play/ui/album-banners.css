@@ -45,29 +45,6 @@
   font-size: 14px;
   line-height: 1.2;
 }
-#game:has(.album-banner:not([hidden])) {
-  .room-selection-return {
-    bottom: 92px;
-  }
-  .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
-    bottom: 92px;
-    max-height: calc(100% - 116px);
-  }
-}
-@media (any-pointer: coarse) and (orientation: landscape) and (max-height: 550px) {
-  #game:has(.album-banner:not([hidden]))
-    .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
-    bottom: calc(2 * var(--touch-target) + var(--touch-gap) + 16px);
-    max-height: calc(100% - 2 * var(--touch-target) - var(--touch-gap) - 24px);
-  }
-  .follow-camera .album-banner {
-    left: calc(var(--touch-directions-width) + 16px);
-    right: 104px;
-    bottom: 8px;
-    width: auto;
-    max-width: 360px;
-  }
-}
 @keyframes album-banner-appear {
   from {
     opacity: 0;
@@ -85,14 +62,4 @@
 }
 .album-banner[data-reduced='true'] {
   animation: none;
-}
-
-@media (orientation: portrait) and (max-width: 1024px) {
-  .touch-actions .room-selection-return {
-    position: static;
-  }
-  #game:has(.album-banner:not([hidden]))
-    .mobile-dialogue:has(.mobile-result:not([hidden])):not([hidden]) {
-    max-height: calc(100% - 92px);
-  }
 }

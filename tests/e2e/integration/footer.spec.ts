@@ -7,7 +7,7 @@ const packageVersion = (
 ).version;
 
 test(
-  'Footer zeigt aktuelles Jahr und zentrale Build-Version außerhalb der Spielfläche',
+  'Footer und Spielinformation zeigen aktuelles Jahr und zentrale Build-Version außerhalb des Levels',
   { tag: '@integration' },
   async ({
     page,
@@ -38,18 +38,33 @@ test(
       const releaseTag = base.includes(':4175') && process.env.PIXELS_RELEASE_TAG;
 
       if (releaseTag) {
-        await expect(footer.getByRole('link')).toHaveAttribute(
+        await expect(footer.getByRole('link', { includeHidden: true })).toHaveAttribute(
           'href',
           `https://github.com/Skanky0815/pixels-world/releases/tag/${encodeURIComponent(releaseTag)}`,
         );
-        await expect(footer.getByRole('link')).toHaveAttribute('target', '_blank');
-        await expect(footer.getByRole('link')).toHaveAttribute('rel', 'noopener noreferrer');
+        await expect(footer.getByRole('link', { includeHidden: true })).toHaveAttribute(
+          'target',
+          '_blank',
+        );
+        await expect(footer.getByRole('link', { includeHidden: true })).toHaveAttribute(
+          'rel',
+          'noopener noreferrer',
+        );
       } else await expect(footer.getByRole('link')).toHaveCount(0);
-      const footerBox = await footer.boundingBox(),
-        gameBox = await page.locator('#game').boundingBox();
+      await expect(footer).toBeHidden();
+      await page.locator('.pause-toggle').click();
+      await page.locator('[data-menu-information]').click();
+      await expect(page.locator('[data-game-information]')).toContainText(
+        `© ${year} Pixel's World · v${packageVersion}`,
+      );
+      await expect(footer).toBeVisible();
+      const footerBox = await footer.boundingBox();
 
-      expect(footerBox && gameBox && footerBox.y >= gameBox.y + gameBox.height).toBe(true);
-      const feedbackBox = await page.getByRole('link', { name: 'Feedback & Ideen' }).boundingBox();
+      footerBelow(await page.locator('.game-menu').boundingBox(), footerBox);
+      const feedbackBox = await page
+        .locator('main > footer')
+        .getByRole('link', { name: 'Feedback & Ideen' })
+        .boundingBox();
 
       expect(feedbackBox).not.toBeNull();
 

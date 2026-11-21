@@ -7,7 +7,7 @@ export function drawRoomEnvironment(scene: Phaser.Scene, room: RoomDefinition, p
 
   tile(scene, 'room-plaster', x, 0, width, room.floor.y);
   tile(scene, 'room-panel', x, room.floor.y - 128, width, 128);
-  tile(scene, 'room-floor', x, room.floor.y, width, room.height - room.floor.y)
+  tile(scene, 'room-floor', x, room.floor.y, width, room.height - room.floor.y + padding)
     .setTileScale(room.floor.plankWidth / 48, room.floor.plankHeight / 12)
     .setTilePosition(x / (room.floor.plankWidth / 48), 0);
   tile(scene, 'room-ceiling', x, 0, width, 14);

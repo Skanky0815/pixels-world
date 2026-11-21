@@ -208,7 +208,7 @@ test(
     await expectClearTouchDialogue(page);
     await expect(page.locator('.result-hearts svg[data-filled="true"]')).toHaveCount(1);
     await expect(page.locator('.result-hearts')).toHaveAttribute('aria-label', '1 von 1 Herzen');
-    await expectResultColumns(page);
+    await expectResultStack(page);
     expect(
       await page.locator('.mobile-result').evaluate((el) => el.scrollWidth <= el.clientWidth),
     ).toBe(true);
@@ -222,7 +222,7 @@ test(
     await page.clock.runFor(100);
     await expect(page.locator('.mobile-dialogue')).toBeVisible();
     expect((await state(page)).result!.canvasTextVisible).toBe(false);
-    await expectResultColumns(page);
+    await expectResultStack(page);
     await page.setViewportSize({ width: 844, height: 390 });
     await page.clock.runFor(100);
     await until(page, (s) => !s.result!.canvasTextVisible, 100);
@@ -252,21 +252,15 @@ async function expectClearTouchDialogue(page: import('@playwright/test').Page) {
   for (const control of [directions, action]) expect(separate(dialogue, control)).toBe(true);
 }
 
-// eslint-disable-next-line max-lines-per-function -- Schmale Kamerakarten stapeln die Ergebnisse, Tablets behalten ihre zwei Spalten.
-async function expectResultColumns(page: import('@playwright/test').Page) {
+/** Side cards keep both result sections readable in one column on every viewport. */
+async function expectResultStack(page: import('@playwright/test').Page) {
   const chaos = await page.locator('.result-chaos').boundingBox();
   const charm = await page.locator('.result-charm').boundingBox();
 
   if (!chaos || !charm) throw new Error('Ergebnisspalten fehlen');
 
-  if (page.viewportSize()!.height <= 550) {
-    expect(chaos.y + chaos.height).toBeLessThanOrEqual(charm.y);
-
-    return;
-  }
-
-  expect(chaos.x + chaos.width).toBeLessThanOrEqual(charm.x);
-  expect(chaos.y).toBe(charm.y);
+  expect(chaos.y + chaos.height).toBeLessThanOrEqual(charm.y);
+  expect(chaos.x).toBeCloseTo(charm.x, 0);
 }
 
 type Rect = { x: number; y: number; width: number; height: number };

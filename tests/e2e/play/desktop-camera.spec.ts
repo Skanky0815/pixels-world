@@ -1,6 +1,7 @@
 import { test, expect, start, state, until, holdUntil } from '../support/support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from '../support/round-clock';
 import type { Page } from '@playwright/test';
+import { fullViewport } from './overlay-support';
 
 test.use({ viewport: { width: 1366, height: 900 } });
 
@@ -20,7 +21,7 @@ test('Desktopkamera: erkunden, Dialog und Minispiel mit Tastatur; klassische Ans
 
   for (const width of [1920, 1000, 1366]) {
     await page.setViewportSize({ width, height: 900 });
-    await until(page, (s) => s.camera.zoom === (width > 1024 ? 1.35 : 1));
+    await until(page, (s) => s.camera.zoom === 1.35);
     expect((await state(page)).started).toBe(true);
   }
 
@@ -82,6 +83,7 @@ async function completeCharm(page: Page) {
 
 // eslint-disable-next-line max-lines-per-function -- Kameraprojektion und echte DOM-Geometrie sichern die freie Sicht auf die beiden Figuren.
 async function leftCard(page: Page) {
+  await fullViewport(page);
   const s = await state(page);
   const card = (await page.locator('.mobile-dialogue').boundingBox())!;
   const canvas = (await page.locator('canvas').boundingBox())!;

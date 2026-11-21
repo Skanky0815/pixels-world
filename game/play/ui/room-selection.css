@@ -89,6 +89,9 @@
   right: 12px;
   z-index: 4;
 }
+.touch-actions .room-selection-return {
+  position: static;
+}
 @media (any-pointer: coarse) and (orientation: landscape) and (max-height: 550px) {
   [data-start-rooms] {
     position: fixed;

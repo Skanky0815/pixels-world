@@ -1,9 +1,9 @@
-import { desktopFollowsPixel } from '../camera-mode';
+import { followsPixel } from '../camera-mode';
 
 /** Keep the desktop canvas labels; touch and narrow windows read the same data in CSS pixels. */
 export function compactVisibility(target: { setVisible(visible: boolean): unknown }) {
   const media = matchMedia('(any-pointer: coarse), (max-width: 1024px)');
-  const update = () => target.setVisible(!media.matches && !desktopFollowsPixel());
+  const update = () => target.setVisible(!media.matches && !followsPixel());
 
   update();
   media.addEventListener('change', update);

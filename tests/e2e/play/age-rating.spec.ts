@@ -30,7 +30,7 @@ for (const viewport of [
       await expect(loading).toBeInViewport({ ratio: 1 });
       await waitForLoadingScreen(page);
       await enterSelectedRoom(page);
-      const intro = page.locator('main > footer .age-rating');
+      const intro = page.locator('.start-age .age-rating');
 
       await expect(intro).toContainText('Cartoon property damage');
       await intro.scrollIntoViewIfNeeded();

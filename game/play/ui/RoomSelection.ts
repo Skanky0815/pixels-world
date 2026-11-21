@@ -21,7 +21,7 @@ export class RoomSelection {
   private focusIndex = -1;
   private readonly root = document.createElement('section');
   private readonly back = document.createElement('button');
-  private readonly portrait = matchMedia('(orientation: portrait) and (max-width: 1024px)');
+  private readonly touch = matchMedia('(any-pointer: coarse)');
   private readonly abort = new AbortController();
   private readonly unsubscribe: () => void;
   // eslint-disable-next-line max-lines-per-function -- Auswahl und Rückkehr teilen eine szenengebundene DOM-Lebensdauer und dieselben vorhandenen Menübuttons.
@@ -104,7 +104,7 @@ export class RoomSelection {
     this.back.hidden = !visible || this.opened;
 
     if (this.back.hidden) return;
-    const parent = document.querySelector(this.portrait.matches ? '.touch-actions' : '#game');
+    const parent = document.querySelector(this.touch.matches ? '.touch-actions' : '#game');
 
     if (parent && this.back.parentElement !== parent) parent.append(this.back);
   }

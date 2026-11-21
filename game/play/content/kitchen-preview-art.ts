@@ -13,7 +13,7 @@ export function drawKitchenPreview(scene: Phaser.Scene, room: RoomDefinition, pa
     .setTileScale(2)
     .setTilePosition(x / 2, 0);
   scene.add
-    .tileSprite(x, room.floor.y, width, room.height - room.floor.y, 'kitchen-floor-tiles')
+    .tileSprite(x, room.floor.y, width, room.height - room.floor.y + padding, 'kitchen-floor-tiles')
     .setOrigin(0)
     .setTilePosition(x, 0);
   scene.add

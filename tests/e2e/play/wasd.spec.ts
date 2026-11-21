@@ -172,7 +172,7 @@ test('Optionswechsel, Pause, Außenfokus, Blur und Reset übernehmen keine gehal
   await page.clock.runFor(100);
   expect((await state(page)).pixel.velocityX).toBe(0);
   await page.keyboard.up('a');
-  await page.locator('main > footer a').first().focus();
+  await page.locator('.album-toggle').focus();
   await page.keyboard.down('d');
   await page.clock.runFor(100);
   expect((await state(page)).pixel.velocityX).toBe(0);

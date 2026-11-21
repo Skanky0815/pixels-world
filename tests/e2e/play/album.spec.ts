@@ -15,10 +15,11 @@ import {
   waitForGame,
   waitForLoadingScreen,
 } from '../support/support';
-import { openPause, returnToMenu } from '../support/pause-support';
+import { openPause, returnToMenu, changeLanguage } from '../support/pause-support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from '../support/round-clock';
 import { finishAlbumRound } from './album-support';
 import type { Page } from '@playwright/test';
+import { fullViewport, actorsClear } from './overlay-support';
 
 // Existing persistence/layout contracts start with a returning player's saved choice.
 test.beforeEach(async ({ page }, info) => {
@@ -468,6 +469,8 @@ test.describe('Mobile Buchseiten', () => {
 });
 
 async function bannerFits(page: Page) {
+  await fullViewport(page);
+  await actorsClear(page);
   const banner = await page.locator('.album-banner').boundingBox();
   const game = await page.locator('#game').boundingBox();
 
@@ -476,7 +479,12 @@ async function bannerFits(page: Page) {
   expect(banner!.x + banner!.width).toBeLessThanOrEqual(game!.x + game!.width);
   expect(banner!.y + banner!.height).toBeLessThanOrEqual(game!.y + game!.height);
 
-  for (const selector of ['.room-selection-return', '.mobile-dialogue', '.touch-actions button']) {
+  for (const selector of [
+    '.room-selection-return',
+    '.mobile-dialogue',
+    '.touch-actions button',
+    '.touch-directions button',
+  ]) {
     for (const element of await page.locator(selector).all()) {
       if (!(await element.isVisible())) continue;
       const box = await element.boundingBox();
@@ -514,10 +522,19 @@ test.describe('Album-Banner auf dem Handy', () => {
       .info()
       .attach('album-banner-hoch', { body: await page.screenshot(), contentType: 'image/png' });
 
+    await changeLanguage(page, 'en');
+    await bannerFits(page);
+    await changeLanguage(page, 'de');
+
     for (const viewport of [
       { width: 320, height: 568 },
       { width: 568, height: 320 },
       { width: 844, height: 390 },
+      { width: 1024, height: 768 },
+      { width: 769, height: 768 },
+      { width: 768, height: 768 },
+      { width: 767, height: 768 },
+      { width: 768, height: 1024 },
     ]) {
       await page.setViewportSize(viewport);
       await page.clock.runFor(100);
@@ -527,15 +544,17 @@ test.describe('Album-Banner auf dem Handy', () => {
     await test
       .info()
       .attach('album-banner-quer', { body: await page.screenshot(), contentType: 'image/png' });
+    const pausedEntry = (await banner.getAttribute('data-entry'))!;
+
     await page.locator('.album-toggle').click();
     await page.clock.runFor(4000);
     await page.keyboard.press('Escape');
     await expect(banner).toBeVisible();
-    await page.clock.runFor(3300);
-    await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-1');
-    await page.clock.runFor(3300);
-    await expect(banner).toHaveAttribute('data-entry', 'achievement.category-couches-v1');
-    await page.clock.runFor(3300);
+    await expect(banner).toHaveAttribute('data-entry', pausedEntry);
+    await waitForBanner(page, 'achievement.angel-1');
+    await waitForBanner(page, 'achievement.category-couches-v1');
+    await bannerFits(page);
+    await waitForBanner(page, '');
     await expect(banner).toBeHidden();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.clock.runFor(100);
@@ -547,6 +566,19 @@ test.describe('Album-Banner auf dem Handy', () => {
     await expect(banner).toBeHidden();
   });
 });
+
+async function waitForBanner(page: Page, entry: string) {
+  await expect
+    .poll(
+      async () => {
+        await page.clock.runFor(100);
+
+        return page.locator('.album-banner').getAttribute('data-entry');
+      },
+      { intervals: [0] },
+    )
+    .toBe(entry);
+}
 
 async function observeAlbumWrites(page: Page) {
   await page.addInitScript(() => {

@@ -16,7 +16,12 @@ test(
         else await loadIntro(page);
         const pages = page.context().pages().length;
 
-        await page.getByRole('link', { name: title, exact: true }).click();
+        await page.locator('.pause-toggle').click();
+        await page.locator('[data-menu-information]').click();
+        await page
+          .locator('[data-game-information]')
+          .getByRole('link', { name: title, exact: true })
+          .click();
         await expect(page).toHaveURL(new RegExp(`/${path}$`));
         expect(page.context().pages()).toHaveLength(pages);
         await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
