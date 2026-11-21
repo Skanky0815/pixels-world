@@ -439,13 +439,11 @@ canvas {
     gap: 4px 12px;
   }
   main:has(#play-area) .feedback-link a {
-    color: #b6a195;
     text-decoration: none;
     padding: 6px 0;
   }
   main:has(#play-area) .feedback-link a:hover,
   main:has(#play-area) .feedback-link a:focus-visible {
-    color: #e4c182;
     text-decoration: underline;
   }
   main:has(#play-area) .build-info {

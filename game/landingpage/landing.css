@@ -10,11 +10,11 @@ body.landing-page {
   width: min(1160px, 100%);
   margin: 0 auto;
 }
-.landing-page a:not(.ui-button) {
+.landing-page a:not(.ui-button):not(footer a) {
   color: inherit;
   text-underline-offset: 5px;
 }
-.landing-page :focus-visible:not(.ui-button):not(.ui-control) {
+.landing-page :focus-visible:not(.ui-button):not(.ui-control):not(footer a) {
   outline: 2px solid #edc37c;
   outline-offset: 5px;
 }

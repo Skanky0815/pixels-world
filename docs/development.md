@@ -393,10 +393,13 @@ Ungenutzte Ausnahmen und Warnungen blockieren. Prüfungen, Reports und manueller
 Spieltest: [QA](qa.md). Branches, Review und Dokumentationsregeln:
 [CONTRIBUTING](../CONTRIBUTING.md). Release-Bedienung: [Deployment](deployment.md).
 
-Die Rechtsseiten erhalten Copyright und Versionsanzeige aus demselben
-`buildInfoMarkup` wie Landingpage und Spiel. Das Vite-Plugin `legal-footer.ts`
-setzt diesen Block beim Ausliefern beziehungsweise Bauen statisch ein; die
-Rechtsseiten benötigen dafür kein JavaScript und laden keine Spielengine.
+Alle öffentlichen Seiten erhalten Header und Footer aus
+`game/shared/ui/page-shell.ts`. Das Vite-Plugin `html-shell.ts` setzt die
+Seitenvarianten ein; `page-information.ts` ergänzt Copyright und Versionsanzeige
+über `buildInfoMarkup` sowie die Altersmetadaten bereits beim Ausliefern
+beziehungsweise Bauen. Die Rechtsseiten benötigen dafür kein JavaScript und
+laden keine Spielengine. Zuständigkeiten und Spielergänzungen beschreibt die
+[Architektur](architecture/gameplay.md#gemeinsame-kopf--und-fußbereiche).
 
 Ein gemeinsamer DE-/EN-Footer-Hinweis benennt KI-erstellten Code, Grafiken und
 Texte sowie Ricos Idee und Review. Auf den deutschen Rechtsseiten wird dieser

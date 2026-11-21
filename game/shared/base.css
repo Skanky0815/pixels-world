@@ -128,25 +128,15 @@ kbd {
   gap: 4px 12px;
   font-size: 12px;
 }
-.feedback-link a {
+:is(.game-footer, .landing-footer, .game-information) a {
   color: #e4c182;
   text-underline-offset: 3px;
 }
-.feedback-link a:focus-visible {
-  outline: 2px solid #edc37c;
-  outline-offset: 4px;
+:is(.game-footer, .landing-footer, .game-information) a:hover,
+:is(.game-footer, .landing-footer, .game-information) a:focus-visible {
+  color: #fff1cf;
 }
-.build-info a {
-  color: inherit;
-  text-underline-offset: 3px;
-  text-decoration-style: dotted;
-}
-.build-info a:hover,
-.build-info a:focus-visible {
-  color: #e4c182;
-  text-decoration-style: solid;
-}
-.build-info a:focus-visible {
+:is(.game-footer, .landing-footer, .game-information) a:focus-visible {
   outline: 2px solid #edc37c;
   outline-offset: 4px;
 }

@@ -10,7 +10,7 @@ import { populateSpawnSlots } from './game/play/content/spawn-slots';
 import { DIFFICULTIES, difficultyRoom } from './game/play/content/difficulty';
 import { releaseUrl } from './tools/release-metadata';
 import { roundConfigForBuild } from './tools/e2e-timing';
-import { legalFooter } from './tools/legal-footer';
+import { pageInformation } from './tools/page-information';
 import { versionMetadata } from './tools/version-metadata';
 import { htmlShell } from './tools/html-shell';
 import { applicationPages, publishedPages } from './tools/application-pages';
@@ -31,18 +31,16 @@ export default defineConfig(({ mode, command }) => ({
     applicationPages(),
     htmlShell('game', ['play']),
     htmlShell('landing', ['index', 'help']),
+    htmlShell('legal', ['impressum', 'datenschutz']),
     versionMetadata(),
     VitePWA(pwaOptions(mode)),
-    legalFooter(
-      {
-        year: new Date().getFullYear(),
-        version,
-        releaseUrl: releaseUrl(mode, command, version, env.PIXELS_RELEASE_TAG),
-        releaseTitle: de.releaseNotesForVNewTab.replace('{v0}', version),
-        dev: command === 'serve',
-      },
-      de.aiDisclosure,
-    ),
+    pageInformation({
+      year: new Date().getFullYear(),
+      version,
+      releaseUrl: releaseUrl(mode, command, version, env.PIXELS_RELEASE_TAG),
+      releaseTitle: de.releaseNotesForVNewTab.replace('{v0}', version),
+      dev: command === 'serve',
+    }),
   ],
   define: {
     __APP_VERSION__: JSON.stringify(version),
