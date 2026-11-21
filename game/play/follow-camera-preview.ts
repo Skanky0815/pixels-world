@@ -46,7 +46,7 @@ function refreshCamera(scene: Phaser.Scene, target: Phaser.Physics.Arcade.Sprite
 
   const room = scene.physics.world.bounds;
   const portrait = scene.scale.height > scene.scale.width;
-  const short = matchMedia('(orientation: landscape) and (max-height: 550px)').matches;
+  const short = matchMedia('(min-aspect-ratio: 1/1) and (max-height: 550px)').matches;
   const zoom = portrait ? 1 : short ? Math.max(2, Math.ceil(scene.scale.width / room.width)) : 1.35;
 
   camera.setSize(scene.scale.width, scene.scale.height).setZoom(followsPixel() ? zoom : 1);

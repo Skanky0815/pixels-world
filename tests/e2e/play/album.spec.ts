@@ -19,7 +19,7 @@ import { openPause, returnToMenu, changeLanguage } from '../support/pause-suppor
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from '../support/round-clock';
 import { finishAlbumRound } from './album-support';
 import type { Page } from '@playwright/test';
-import { fullViewport, portraitActorsClear } from './overlay-support';
+import { fullViewport, actorsClear } from './overlay-support';
 
 // Existing persistence/layout contracts start with a returning player's saved choice.
 test.beforeEach(async ({ page }, info) => {
@@ -470,7 +470,7 @@ test.describe('Mobile Buchseiten', () => {
 
 async function bannerFits(page: Page) {
   await fullViewport(page);
-  await portraitActorsClear(page);
+  await actorsClear(page);
   const banner = await page.locator('.album-banner').boundingBox();
   const game = await page.locator('#game').boundingBox();
 
@@ -531,6 +531,9 @@ test.describe('Album-Banner auf dem Handy', () => {
       { width: 568, height: 320 },
       { width: 844, height: 390 },
       { width: 1024, height: 768 },
+      { width: 769, height: 768 },
+      { width: 768, height: 768 },
+      { width: 767, height: 768 },
       { width: 768, height: 1024 },
     ]) {
       await page.setViewportSize(viewport);

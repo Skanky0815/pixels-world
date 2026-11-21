@@ -385,7 +385,8 @@ Touch-Flächen erhalten über CSS-Variablen größere Tasten mit mehr Abstand.
 Die Kamera auf kurzen Querformaten besitzt einen kleinen Ruhebereich von vier Spielpixeln
 pro Achse, damit kleinste Standkorrekturen nicht das ganze Zimmer mitziehen.
 Im Hochformat nutzt die Kamera den Raumhöhenmaßstab, im größeren Querformat
-einen moderaten Zoom. Kameraränder berücksichtigen sichtbare Touchflächen.
+einen moderaten Zoom. Quadratische Fenster gelten für Kamera und Overlays als
+Querformat. Kameraränder berücksichtigen sichtbare Touchflächen.
 Rotation erhält die Szene und löst Eingaben. Ein spielweiter `ResizeObserver`
 aktualisiert Phasers FIT-Skalierung nach Größenänderungen des CSS-Spielfensters,
 auch wenn das Grid erst nach dem Browser-Resize-Ereignis seine Größe erreicht.

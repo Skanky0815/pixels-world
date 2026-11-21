@@ -240,9 +240,26 @@ test('Schmales Hochformat: Einführung scrollbar, Start erreichbar und Rotation 
   await loadIntro(page);
   await expect(page.locator('.start-prompt')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Weiter', exact: true })).toBeVisible();
-  expect(
-    await page.locator('.start-copy').evaluate((node) => node.scrollHeight > node.clientHeight),
-  ).toBe(true);
+  const copy = page.locator('.start-copy');
+
+  await expect(copy.locator('h2')).toBeInViewport({ ratio: 1 });
+  // Content may fit completely at 320×568; reserve a separate short viewport for scrolling.
+  await page.setViewportSize({ width: 320, height: 400 });
+  await page.clock.runFor(100);
+  expect(await copy.evaluate((node) => node.scrollHeight > node.clientHeight)).toBe(true);
+  await copy.hover();
+  await page.mouse.wheel(0, 500);
+  await expect
+    .poll(
+      async () => {
+        await page.clock.runFor(32);
+
+        return copy.evaluate((node) => node.scrollTop);
+      },
+      { intervals: [0] },
+    )
+    .toBeGreaterThan(0);
+  await expect(page.locator('.start-prompt')).toBeInViewport({ ratio: 1 });
   await page.setViewportSize({ width: 390, height: 844 });
   const touch = await startTouch(page);
   const before = await state(page);

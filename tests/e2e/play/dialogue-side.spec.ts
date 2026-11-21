@@ -10,6 +10,7 @@ for (const view of [
   { name: 'Handy quer', mobile: true, width: 568, height: 320, margin: 8 },
   { name: 'Handy hoch', mobile: true, width: 390, height: 844, margin: 12 },
   { name: 'Tablet', mobile: true, width: 1024, height: 768, margin: 12 },
+  { name: 'Tablet quadratisch', mobile: true, width: 768, height: 768, margin: 12 },
 ])
   for (const [room, side] of [
     ['living-room', 'right'],
@@ -52,6 +53,7 @@ for (const view of [
         await assertSide(page, side, view.margin);
         const s = await observe(page);
 
+        if (view.width === view.height) expect(s.camera.zoom).toBe(1.35);
         expect(
           side === 'left'
             ? s.sara.dialogueBounds.left > s.sara.x
@@ -102,11 +104,12 @@ async function assertSide(page: Page, side: 'left' | 'right', margin: number) {
     0,
   );
 
-  if (canvas.width > canvas.height)
+  if (canvas.width >= canvas.height)
     expect(
       side === 'left'
         ? card.x > canvas.x + canvas.width / 2
         : card.x + card.width < canvas.x + canvas.width / 2,
     ).toBe(true);
+
   expect(await panel.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
 }

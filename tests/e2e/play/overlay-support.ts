@@ -24,8 +24,10 @@ async function fitsViewport(page: Page) {
 
 /** Project authored actor bounds through the real camera, rather than moving test state. */
 // eslint-disable-next-line max-lines-per-function -- Figuren und DOM-Grenzen werden aus demselben unveränderlichen Ergebnisframe projiziert.
-export async function portraitActorsClear(page: Page) {
-  if (page.viewportSize()!.width >= page.viewportSize()!.height) return;
+export async function actorsClear(page: Page) {
+  const viewport = page.viewportSize()!;
+
+  if (viewport.width > viewport.height) return;
   const s = await state(page);
   const banner = (await page.locator('.album-banner').boundingBox())!;
   const dialog = (await page.locator('.mobile-dialogue').boundingBox())!;
@@ -34,9 +36,10 @@ export async function portraitActorsClear(page: Page) {
   const project = (y: number) =>
     canvas.y + ((y - viewTop) * s.camera.zoom * canvas.height) / s.camera.height;
 
-  expect(project(s.sara.soleY - s.sara.displayHeight * s.sara.originY)).toBeGreaterThanOrEqual(
-    dialog.y + dialog.height,
-  );
+  if (viewport.width < viewport.height)
+    expect(project(s.sara.soleY - s.sara.displayHeight * s.sara.originY)).toBeGreaterThanOrEqual(
+      dialog.y + dialog.height,
+    );
   expect(project(s.sara.soleY + s.sara.displayHeight * (1 - s.sara.originY))).toBeLessThanOrEqual(
     banner.y,
   );

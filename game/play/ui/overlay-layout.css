@@ -289,7 +289,7 @@ main:has(#play-area) {
   }
 }
 
-@media (orientation: landscape) {
+@media (min-aspect-ratio: 1/1) {
   .follow-camera main:has(#play-area) {
     --overlay-banner-bottom: var(--overlay-bottom);
     --overlay-dialogue-bottom: calc(
@@ -305,7 +305,7 @@ main:has(#play-area) {
   }
 }
 
-@media (orientation: portrait) {
+@media (aspect-ratio < 1/1) {
   .follow-camera body main:has(#play-area) {
     #play-area #game > .mobile-dialogue:not([hidden]) {
       left: var(--overlay-left);
