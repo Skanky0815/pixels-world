@@ -544,16 +544,17 @@ test.describe('Album-Banner auf dem Handy', () => {
     await test
       .info()
       .attach('album-banner-quer', { body: await page.screenshot(), contentType: 'image/png' });
+    const pausedEntry = (await banner.getAttribute('data-entry'))!;
+
     await page.locator('.album-toggle').click();
     await page.clock.runFor(4000);
     await page.keyboard.press('Escape');
     await expect(banner).toBeVisible();
-    await page.clock.runFor(3300);
-    await expect(banner).toHaveAttribute('data-entry', 'achievement.angel-1');
-    await page.clock.runFor(3300);
-    await expect(banner).toHaveAttribute('data-entry', 'achievement.category-couches-v1');
+    await expect(banner).toHaveAttribute('data-entry', pausedEntry);
+    await waitForBanner(page, 'achievement.angel-1');
+    await waitForBanner(page, 'achievement.category-couches-v1');
     await bannerFits(page);
-    await page.clock.runFor(3300);
+    await waitForBanner(page, '');
     await expect(banner).toBeHidden();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.clock.runFor(100);
@@ -565,6 +566,19 @@ test.describe('Album-Banner auf dem Handy', () => {
     await expect(banner).toBeHidden();
   });
 });
+
+async function waitForBanner(page: Page, entry: string) {
+  await expect
+    .poll(
+      async () => {
+        await page.clock.runFor(100);
+
+        return page.locator('.album-banner').getAttribute('data-entry');
+      },
+      { intervals: [0] },
+    )
+    .toBe(entry);
+}
 
 async function observeAlbumWrites(page: Page) {
   await page.addInitScript(() => {
