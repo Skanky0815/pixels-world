@@ -19,6 +19,25 @@ const requireThat = (condition, message) => {
 
 export const contentsJson = (api, path, ref) => JSON.parse(contentsText(api, path, ref));
 
+/** Only list requests paginate; failed later pages must abort the entire read. */
+export function githubApi(repository, execute = execFileSync) {
+  return (path, { paginate = false } = {}) => {
+    const flags = paginate ? ['--paginate', '--slurp'] : [];
+    const response = JSON.parse(
+      execute('gh', ['api', `repos/${repository}/${path}`, ...flags], {
+        encoding: 'utf8',
+        maxBuffer: 32 * 1024 * 1024,
+      }),
+    );
+    if (!paginate) return response;
+    requireThat(
+      Array.isArray(response) && response.every(Array.isArray),
+      'Paginierte GitHub-Liste hat ein unerwartetes Format.',
+    );
+    return response.flat();
+  };
+}
+
 // A merged manifest is a preparation result, not proof of publication. Recover only
 // the reviewed root-package case; ambiguous or partially published states stop here.
 export function recoveryBase(api, sha, config, version) {
@@ -29,8 +48,8 @@ export function recoveryBase(api, sha, config, version) {
     'Release-Vorbereitung unterstützt nur ein Root-Paket mit v-Tags.',
   );
   requireThat(stableVersion.test(version), 'Keine eindeutige stabile Manifestversion.');
-  const tags = api(`git/matching-refs/tags/v${version}`);
-  const releases = api('releases?per_page=100');
+  const tags = api(`git/matching-refs/tags/v${version}`, { paginate: true });
+  const releases = api('releases?per_page=100', { paginate: true });
   const tagExists = tags.some((tag) => tag.ref === `refs/tags/v${version}`);
   const matching = releases.filter((release) => release.tag_name === `v${version}`);
   if (tagExists || matching.length) {
@@ -40,7 +59,7 @@ export function recoveryBase(api, sha, config, version) {
     );
     return undefined;
   }
-  const merged = api('pulls?state=closed&base=main&per_page=100').filter(
+  const merged = api('pulls?state=closed&base=main&per_page=100', { paginate: true }).filter(
     (pr) =>
       pr.merged_at &&
       pr.user.login === 'github-actions[bot]' &&
@@ -52,7 +71,7 @@ export function recoveryBase(api, sha, config, version) {
     merged.length === 1,
     'Unveröffentlichte Manifestversion ohne eindeutigen Versions-Merge.',
   );
-  const files = api(`pulls/${merged[0].number}/files?per_page=100`);
+  const files = api(`pulls/${merged[0].number}/files?per_page=100`, { paginate: true });
   requireThat(
     files.length === 4 && files.every((file) => versionFiles.includes(file.filename)),
     'Versions-Merge enthält unerwartete Dateien.',
@@ -126,13 +145,7 @@ async function main() {
     /^[\w.-]+\/[\w.-]+$/.test(repository ?? '') && /^[0-9a-f]{40}$/.test(sha ?? ''),
     'Repository oder SHA fehlt.',
   );
-  const api = (path) =>
-    JSON.parse(
-      execFileSync('gh', ['api', `repos/${repository}/${path}`], {
-        encoding: 'utf8',
-        maxBuffer: 32 * 1024 * 1024,
-      }),
-    );
+  const api = githubApi(repository);
   const config = contentsJson(api, configPath, sha);
   const version = contentsJson(api, manifestPath, sha)['.'];
   const recovery = recoveryBase(api, sha, config, version);

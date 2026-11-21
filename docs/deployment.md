@@ -215,6 +215,9 @@ Release Please; kein manuelles `tagged`, keine manuelle Versionsänderung.
 Die PR-Vorbereitung nutzt die bereits gepinnte Release-Please-Bibliothek. Fehlt
 für die gemergte Manifestversion noch Tag und Release, bestätigt sie den eindeutigen
 Versions-Merge und die letzte veröffentlichte Root-Version samt Tag und Main-Abstammung.
+Dabei werden PR-, Release-, Tag- und Dateilisten über alle GitHub-Ergebnisseiten
+geladen. Auch spätere Treffer zählen für Eindeutigkeit und Teilveröffentlichung;
+ein Lesefehler auf einer Folgeseite bricht die Vorbereitung ab.
 Nur Manifest und Changelog werden für den Generator aus dieser veröffentlichten Basis
 gelesen; Konfiguration, Paketdateien und Abhängigkeiten bleiben auf aktuellem Main.
 Der Generator bereitet eine neue Patchversion oberhalb des unveröffentlichten
