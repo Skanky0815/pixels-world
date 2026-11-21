@@ -79,7 +79,7 @@ Versionsregeln, Identitäts-Gates und Wiederanlauf stehen ausschließlich unter
 - Vor einer neuen Markdown-Datei einen vorhandenen Zweck prüfen und die zuständige
   Datei aktualisieren. Kleine Feature-Änderungen brauchen keine eigene Statusseite.
 - README erklärt Einstieg und Spiel; Entwicklung erklärt Werkzeuge/Code-Stil,
-  QA Prüfverfahren, Deployment Veröffentlichungen, Architektur stabile Verträge.
+  QA Prüfverfahren, Deployment Veröffentlichungen, [arc42](docs/arc42/README.md) stabile Verträge.
   Content-Anleitung und Asset-Prompts bleiben nah an ihren Quellen.
 - Code/Tests/Konfiguration sind maßgeblich für Verhalten, Parameter und Testumfang;
   Issues/PRs für Planung und Verlauf, Actions für aktuelle Testergebnisse.

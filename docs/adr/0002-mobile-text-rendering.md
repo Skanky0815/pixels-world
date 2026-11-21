@@ -1,9 +1,12 @@
 # ADR 0002: Lesbare mobile Texte und Canvas-Renderer
 
 - Datum: 2026-11-06
-- Status: Implementiert
+- Status: Implementiert; aktuelle Darstellung siehe [Architektur](../arc42/README.md#dialoge-kamera-und-overlays)
 
 ## Anlass
+
+Die folgenden Abschnitte bewahren die damalige Entscheidungssituation; die heutige
+Standardkamera verwendet die oben verlinkte Darstellung.
 
 Das vollständige Zimmer muss auf kleine Displays passen. Canvas-Schrift mit
 12–16 logischen Pixeln würde dabei auf wenige CSS-Pixel schrumpfen. In der

@@ -49,8 +49,7 @@ aber mit weiteren offenen Spiel-Tabs weiter beim alten Worker bleiben. Ein norma
 Reload kann dadurch erneut das gecachte Spiel zeigen
 ([Service-Worker-Lebenszyklus](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/skipWaiting)).
 
-Nach Veröffentlichung dieser Änderung hilft der [Update-FAQ-Punkt](https://skanky0815.github.io/pixels-world/help.html#updates),
-auch direkt als Link für betroffene Spieler. „Aktuelle Version öffnen“ prüft online
+Der [Update-FAQ-Punkt](https://skanky0815.github.io/pixels-world/help.html#updates) hilft auch als direkter Link für betroffene Spieler. „Aktuelle Version öffnen“ prüft online
 die veröffentlichte Version und öffnet unmittelbar `play.html` mit einem frischen,
 nicht als Trackingparameter behandelten `fresh`-Wert. Es gibt keinen zweiten
 Bestätigungsschritt auf einer Zwischenseite. Der frühere Link `update.html` leitet
@@ -62,14 +61,6 @@ Der alte Spiel-Precache reicht die frische Dokumentanfrage ans Netz weiter.
 Bei fehlender Verbindung oder ungültiger Versionsantwort zeigt der FAQ-Punkt einen
 Fehler und bleibt erneut bedienbar. Er aktiviert keinen wartenden Worker und lädt
 andere Tabs nicht neu. Zum erstmaligen Öffnen der FAQ ist eine Verbindung nötig.
-
-Bis zur Veröffentlichung funktioniert auch ein direkter
-[frischer Spieleinstieg](https://skanky0815.github.io/pixels-world/play.html?fresh=20261113).
-Die laufende Runde vorher beenden. Album und Einstellungen bleiben gespeichert;
-bisherige Albumfunde werden über „Album für später merken“ ausdrücklich übernommen.
-Keine pauschale Löschung der Website-Daten nötig. Die bereits vorhandene Migration
-entfernt bei nicht gewählter Offline-Nutzung weiterhin nur die Offline-Kopie des
-exakten App-Scopes. Andere Projekte bleiben unberührt.
 
 Der Browsertest bildet den alten Registrierungs- und Cachevertrag mit einem kleinen
 Legacy-Profil nach und prüft den echten Worker-Wechsel am Root und am Pages-Unterpfad.
@@ -96,7 +87,7 @@ Versionssprung den Vorschlag; die Prüfung erfolgt weiterhin im Versions-PR.
 Nur generierte Root-Dateien sind gezielt von Prettier ausgenommen.
 
 Vor dem nächsten öffentlichen Release ist außerdem die
-[Prüfliste zu Jugendschutz und Speicherung](legal/phase2-review.md#vor-dem-release-prüfen)
+[Prüfliste zu Jugendschutz und Speicherung](legal/phase2-review.md#verbleibende-arbeit-aus-252)
 aus #252 abzuarbeiten; die Anbieter-Einstufung gehört in Ricos normales PR-Review. Grüne technische
 QA ersetzt diese Prüfung nicht.
 

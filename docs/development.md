@@ -1,27 +1,25 @@
 # Lokal entwickeln
 
-Node.js 22.12+ oder eine unterstützte neuere LTS-Version und npm verwenden.
+Voraussetzungen und erster Start: [README](../README.md#lokal-starten).
 Die verfügbaren Befehle stehen in [package.json](../package.json).
 
 Die Anwendungsquellen liegen unter `game/landingpage`, `game/play`, `game/shared`
-und `game/dev`. Die [Architektur](architecture/gameplay.md#anwendungsbereiche-und-auslieferung)
+und `game/dev`. Die [Architektur](arc42/README.md#5-bausteinsicht)
 erklärt Importgrenzen und die Zuordnung zu öffentlichen URLs. HTML-Quellen direkt
 im zugehörigen Bereich bearbeiten; keine zusätzlichen HTML-Kopien im Root anlegen.
 
 `npm run check:imports` prüft die vereinbarten Abhängigkeiten unabhängig vom Build;
 die reguläre QA führt den Check ebenfalls aus. Erlaubte Ziele und begrenzte
-DEV-Ausnahmen stehen in der [Bausteinsicht](architecture/gameplay.md#bausteinsicht-importgrenzen).
+DEV-Ausnahmen stehen in der [Bausteinsicht](arc42/README.md#anwendungsbereiche-und-importgrenzen).
 
 ## Spiel und Vorschau
 
 ```sh
-npm ci
-npm run dev
 npm run build
 npm run preview
 ```
 
-Vite gibt die lokale Adresse aus. `build` prüft TypeScript und schreibt nach `dist/`.
+Den Dev-Server gemäß README starten. Vite gibt die lokale Adresse aus. `build` prüft TypeScript und schreibt nach `dist/`.
 Phaser ist lokal gebündelt; ein Hinweis zur Engine-Chunkgröße ist kein Messwert für
 Laufzeitprobleme. Die Steuerung erklärt [README](../README.md#steuerung).
 Die versteckte Debug-Taste R startet nach Spielbeginn die Szene neu.
@@ -60,8 +58,22 @@ Firewall und WLAN-Gastnetz können Verbindungen verhindern. Einen zusätzlichen
 Hostnamen bei Bedarf gezielt mit `__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS`
 freigeben, nicht pauschal alle Hosts erlauben.
 
-`/?room=cozy-remix` wählt nur im Dev-/E2E-Betrieb eine Inhaltsvariante.
+`/play.html?room=cozy-remix` wählt nur im Dev-/E2E-Betrieb eine Inhaltsvariante.
 [Raum- und Objektinhalte](../game/play/content/README.md) erklären den Datenvertrag.
+
+## Release-ZIP lokal ansehen
+
+Das ZIP eines veröffentlichten Releases in einen eigenen Ordner entpacken und
+im entpackten Ordner einen lokalen HTTP-Server starten. Beispielsweise mit
+installiertem Python 3:
+
+```sh
+python3 -m http.server 8080 --bind 127.0.0.1
+```
+
+`http://127.0.0.1:8080/` öffnet die Landingpage, `/play.html` das Spiel. Die Dateien
+nicht über `file://` öffnen; Module und Offline-Funktionen benötigen einen passenden
+HTTP-Kontext. Dieser Schritt installiert oder verändert keine Release-Dateien.
 
 ## Linkvorschau und Suchmaschinen
 
@@ -99,16 +111,9 @@ bestätigtem Idle-Master. Der Ausschnitt zeigt seinen Kopf; das maskierbare Icon
 hält die Figur im sicheren zentralen Bereich. Die Dateien stehen unter
 `public/icons/` und werden lokal ausgeliefert.
 
-`vite-plugin-pwa` erzeugt Manifest und Workbox-Service-Worker beim Produktionsbuild.
-Die relative App-ID, Startadresse und Scope unterstützen den Pages-Unterpfad.
-Die Registrierung erfolgt erst nach „Offline-Spiel vorbereiten“ in den Optionen der
-veröffentlichten Spielseite, nicht auf der Landingpage oder im E2E-/DEV-Spiel.
-Die normale Online-Update-Prüfung nutzt `version.json`. Es gibt keinen allgemeinen
-Navigations-Fallback: fehlende DEV-Seiten bleiben auch mit Service Worker 404.
-Bereitstehende Updates werden in den Optionen angeboten; jeder Tab bestätigt seinen
-Neustart selbst. Siehe [Spielupdates](deployment.md#spielupdates-und-offlineversion).
-Für Offline-Prüfungen `npm run build` und `npm run preview` verwenden und die Offline-Kopie
-in den Optionen vorbereiten.
+Für Offline-Prüfungen Produktionsbuild und Vorschau wie oben starten und die
+Offline-Kopie in den Optionen vorbereiten. Verhalten, Cachegrenzen und Update-
+Bedienung: [Deployment](deployment.md#spielupdates-und-offlineversion).
 
 ## Animationen vergleichen
 
@@ -293,77 +298,24 @@ geladen; Pixel wird dort per CSS zu Sara gespiegelt. Ricos Vorlage ist sein
 
 ## Pause und Einstellungen
 
-Der kompakte Spieleinstieg öffnet zuerst das Hauptmenü. **Spielen** führt zur
-Zimmerauswahl und danach zur Einführung. Esc oder der Menüknopf öffnet während
-der Runde dieselbe eigene Menüansicht; die Runde pausiert und bleibt erhalten.
-**Fortsetzen** kehrt ohne Reset zurück. **Optionen** wechselt in die eigene
-Einstellungsansicht; **Hauptmenü** führt von dort zurück. Die Hilfe öffnet separat.
-Die Sprachwahl befindet sich ausschließlich dort. **Neue Runde** ist erst nach
-Rundenstart sichtbar und verlangt wie **Zimmer wechseln** eine Bestätigung; der Ergebnis-Button bleibt erhalten. Die Ansicht verwendet
-den gemeinsamen DE-/EN-Katalog, speichert Sprache, Audiopegel, Bewegungswunsch
-und Schwierigkeit lokal und bleibt
-bei blockiertem Browser-Speicher funktionsfähig. **Optionen** in der Einführung
-öffnet dieselbe Einstellungsansicht. Die Schwierigkeit wird erst beim nächsten Rundenstart
-übernommen; Presets und Snapshot-Vertrag stehen in der
-[Gameplay-Architektur](architecture/gameplay.md#schwierigkeitsgrade).
+Für Einstellungsprüfungen im Dev-Spiel die Optionen aus Hauptmenü oder Einführung
+öffnen. Eine laufende Runde bleibt dabei pausiert. Sprache, Audio, Bewegungswunsch
+und WASD auch nach Reload prüfen; bei einer geänderten Schwierigkeit eine neue
+Runde starten. Speicherfehler dürfen die aktuelle Sitzung nicht verhindern.
 
-Unter **Optionen → Tastatur** ergänzt WASD die Pfeile (standardmäßig aus): A/D
-bewegen, W/S klettern. `KeyboardPreferences` speichert diese unabhängige Präferenz
-unter `pixels-world.wasd`; Speicherfehler lassen die Sitzung bedienbar.
-`shared/input/keyboard-bindings.ts` ordnet physische Tasten deklarativ Aktionen zu.
-`InputSources` vereinigt Tastatur und Touch vor dem gemeinsamen `InputState`: gleiche
-Richtungen zählen einmal, Gegensätze neutralisieren die Bewegung, unterschiedliche
-frische Richtungen bleiben für die Versöhnung mehrdeutig. Solange eine Quelle
-gehalten bleibt, erzeugt eine zusätzliche Quelle derselben Aktion keine neue Flanke.
-Optionswechsel lösen Eingaben und sperren gehaltene alte Tasten bis zum Loslassen.
-
-Menüaktionen sind zusätzlich mit ↑/↓ (bei aktivem WASD auch W/S) erreichbar. Die Raumauswahl nutzt die
-sichtbare Anordnung für alle vier Pfeile; deaktivierte Zimmer werden übersprungen.
-Am Rand bleibt der Fokus stehen, es gibt kein Umlaufen. Pfeile ändern den Fokus,
-Enter/Leertaste bestätigen die fokussierte vorhandene Aktion. Erst die
-Startaktion betritt das ausgewählte Zimmer. Tab/Shift+Tab und Esc bleiben erhalten;
-native Regler, Auswahl- und Textfelder behalten ihre eigene Tastaturbedienung.
-Außerhalb des fokussierten Spiels entstehen keine Spielaktionen; Phaser registriert
-Tasten ohne globale Browser-Tastensperren.
-Unteransichten merken ihr Fokusziel; Sprachwechsel und Größenwechsel erhalten
-ein gültiges Ziel. Wiederholte Tastendrücke aktivieren keine zweite Aktion.
-
-`PlayActivity` verknüpft Menüpause mit Fokus/Sichtbarkeit. Fortsetzen verwirft das
-erste Zeitdelta, während `InputFrames` eine dabei noch unbenutzte frische
-Eingabeflanke für den nächsten aktiven Frame bewahrt. Cleanup verwirft den Puffer;
-gehaltene Bewegung wird nicht wiederholt. `KeyboardRelease` merkt physisch gehaltene
-Tasten getrennt von Phasers zurückgesetztem Zustand. Menü-/Fokusübergänge sperren
-sie bis zum eigenen Keyup; unbekannte Wiederholungen nach Blur oder Szenenneustart
-bleiben ebenfalls gesperrt. Erst eine frische Taste steuert wieder Bewegung,
-Sprung, Reset oder Versöhnung. Touch bleibt eine unabhängige Quelle. Menütasten werden in der Menüansicht behandelt,
-damit Phasers globale Tastensperre native Regler und Formularbedienung nicht stört.
-
-`AudioPreferences` speichert `master` und `effects` unter `pixels-world.audio`.
-`GameAudio` setzt Gesamt- × Effektpegel und übernimmt Pause/Resume von der
-Aktivitätsgrenze; Szenenabbau stoppt alte Sounds. Bewegungsloops verwenden Pixels
-nach realen Physikschritten erfassten `PhysicsProgress`, nicht Positionsdifferenzen
-zwischen Renderframes. Die [Audio-Assets und Quellen](../assets/audio/README.md)
-liegen bei den WAV-Dateien. E2E-Snapshots enthalten nur losgelöste Pegel/Statuswerte.
+Die Bedienung erklärt [README](../README.md#steuerung). Technische Verträge für
+[Eingabe und Fokus](arc42/README.md#eingabe-und-fokus),
+[Pause](arc42/README.md#aktiver-frame-und-pause) und
+[Audio](arc42/README.md#sprache-audio-und-reduzierte-bewegung) stehen ausschließlich
+in der Architektur. Balancingwerte bearbeiten: [Content](../game/play/content/README.md#schwierigkeitsprofile).
 
 ## Visuelles Feedback abstimmen
 
-`game/play/content/feedback.ts` enthält die kurzen Anzeigezeiten, Ausblenddauer und
-Bewegungsdistanz. `FeedbackModel` beobachtet bereits vergebene Chaosereignisse und
-vorhandene Phasen-/Versöhnungssnapshots. Es vergibt weder Punkte noch verändert es
-Eingaben, Physik oder Domain-Zeit. Pro Kanal bleibt nur die jüngste Meldung; identische
-Schadensereignisse lösen keine zweite Meldung aus.
-
-`GameFeedback` zeigt am Desktop kompakte Hinweise in freien Zimmerrändern. Im
-Handheld ersetzt dieselbe Rückmeldung kurz die vorhandene Statuszeile, ohne
-neue Flächen über Dialog oder Pfeiltasten zu legen. Darstellung altert nur mit
-aktiver Zeit; Pause, Fokusverlust und Lesesprachwechsel erzeugen keine neuen
-Ereignisse. Reset entfernt Ansichten und Listener des vorherigen Durchlaufs.
-
-`MotionPreferences` kombiniert `prefers-reduced-motion` mit dem Wunsch aus dem
-Pause-Menü. `pixels-world.reduced-motion` speichert nur die lokale Auswahl.
-Reduzierte Bewegung bleibt sichtbar als statischer Text ohne Versatz/Ausblenden;
-eine Systemvorgabe kann im Spiel nicht aufgehoben werden. Audio-Cues warten auf
-passende Assets, die vorhandenen Lautstärkeeinstellungen bleiben unverändert.
+Anzeigezeiten und Bewegungsdistanz in `game/play/content/feedback.ts` ändern und
+im Dev-Spiel reguläre Schäden beziehungsweise Heimkehr auslösen. Normale und
+reduzierte Bewegung sowie Pause und DE/EN vergleichen. Der Darstellungsbeobachter
+vergibt keine Punkte; seine Grenzen stehen in der
+[Architektur](arc42/README.md#sprache-audio-und-reduzierte-bewegung).
 
 ## Lesbarer TypeScript-Code
 
@@ -393,18 +345,6 @@ Ungenutzte Ausnahmen und Warnungen blockieren. Prüfungen, Reports und manueller
 Spieltest: [QA](qa.md). Branches, Review und Dokumentationsregeln:
 [CONTRIBUTING](../CONTRIBUTING.md). Release-Bedienung: [Deployment](deployment.md).
 
-Alle öffentlichen Seiten erhalten Header und Footer aus
-`game/shared/ui/page-shell.ts`. Das Vite-Plugin `html-shell.ts` setzt die
-Seitenvarianten ein; `page-information.ts` ergänzt Copyright und Versionsanzeige
-über `buildInfoMarkup` sowie die Altersmetadaten bereits beim Ausliefern
-beziehungsweise Bauen. Die Rechtsseiten benötigen dafür kein JavaScript und
-laden keine Spielengine. Zuständigkeiten und Spielergänzungen beschreibt die
-[Architektur](architecture/gameplay.md#gemeinsame-kopf--und-fußbereiche).
-
-Ein gemeinsamer DE-/EN-Footer-Hinweis benennt KI-erstellten Code, Grafiken und
-Texte sowie Ricos Idee und Review. Auf den deutschen Rechtsseiten wird dieser
-Hinweis ebenfalls statisch ausgeliefert.
-
 ## Ladescreen ansehen
 
 Unter `/play.html?loading-preview=1` bleibt im Dev-Server die reale Ladeansicht
@@ -415,8 +355,5 @@ Im normalen Spiel dauert die Anzeige mindestens zwei Sekunden, folgt aber dem
 echten Ladefortschritt. Die Vorschau-Query hat im Produktions-/E2E-Build keine
 Wirkung; dort wird das Spiel regulär geladen.
 
-Nach vollständigem Laden kann die verbleibende Mindestanzeige mit einer frischen
-Leertaste oder „Los geht’s!“ übersprungen werden. Vorher ist diese Aktion nicht
-verfügbar; gehaltene Tasten werden nicht nachträglich als Freigabe gewertet.
-Der Button-Platz ist von Beginn an reserviert. Das Fortsetzen zeigt die Einführung
-und startet nicht mit derselben Eingabe schon die Runde.
+Ladeablauf, Eingabesperre und Fehlergrenzen:
+[Architektur](arc42/README.md#einstieg-und-rundenstart).

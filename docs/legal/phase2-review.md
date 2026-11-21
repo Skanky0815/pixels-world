@@ -1,9 +1,10 @@
 # Rechtliche Seiten, Quellen und Datenflüsse
 
-Die öffentlichen Seiten liegen unter
-`impressum.html` und `datenschutz.html`; sie sind aus Einführung, Spiel und
-Ergebnis über denselben Footer erreichbar. Die internen Rechtsseiten öffnen nach Ricos Vorgabe im selben Tab. „Zum Spiel“
-lädt die Einführung neu; ein laufender Spielstand wird dabei nicht gespeichert.
+Die Quellen der öffentlichen Rechtsseiten liegen unter `game/landingpage/`, ihre
+URLs bleiben `impressum.html` und `datenschutz.html`. Die gemeinsamen Footerlinks
+und die Spielinformation öffnen sie im selben Tab. Ihre Nutzung startet keine
+Spielengine. Die Navigation ersetzt die Spielseite; laufende Runden werden nicht
+als Spielstand gespeichert.
 
 ## Freigegebene Kontaktdaten
 

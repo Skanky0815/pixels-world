@@ -2,7 +2,7 @@
 
 - Datum: 2026-11-02
 - Status: Implementiert; aktuelle Verträge siehe Architektur
-- Kontext: [Gameplay-Architektur](../architecture/gameplay.md), [ursprüngliches Review #22](https://github.com/Skanky0815/pixels-world/issues/22)
+- Kontext: [Architektur nach arc42](../arc42/README.md), [ursprüngliches Review #22](https://github.com/Skanky0815/pixels-world/issues/22)
 
 ## Anlass
 

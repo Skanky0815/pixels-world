@@ -25,7 +25,7 @@ Levelvorgabe aus Saras Auftritt oder dem Dialoginhalt erneut abzuleiten.
 Die [Küchen-Slots](rooms/kitchen-slots.ts) reservieren Plätze auf Tisch,
 Arbeitsplatte, beiden Regalen und am Boden. Diese verwenden schon den gemeinsamen
 Slot-Vertrag: Der Boden-Slot `food-bag` enthält bereits einen Trockenfutterbeutel
-je Schwierigkeitsgrad. Tasse und Teller belegen Tisch, Arbeitsplatte und beide Regale über dieselbe seeded Auswahl; die Dichten steigen auf den Wandregalen mit der Schwierigkeit. Weitere Varianten folgen in #227–#229. Kräuter auf erhöhten Flächen benötigen vorher #229.
+je Schwierigkeitsgrad. Tasse und Teller belegen Tisch, Arbeitsplatte und beide Regale über dieselbe seeded Auswahl; die Dichten steigen auf den Wandregalen mit der Schwierigkeit. Vorräte und Küchenkräuter verwenden ebenfalls diese vorhandenen Pools und Auflagen.
 Zwei Wandbereiche verwenden die vorhandenen interaktiven Bildvarianten; Leicht
 belegt einen, Normal/Schwer beide. Regale bleiben feste Raumgeometrie. Saras
 Bodenbereich, der Ausstieg vom Tisch und der Napfplatz sind zusätzlich als
@@ -38,11 +38,9 @@ zählt nicht für Küchen-/Raumerfolge. Die öffentliche Definition `kitchen` is
 
 [rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Wohnzimmer und Küche sind auswählbar; Schlafzimmer und Arbeitszimmer bleiben bis zu ihrer Umsetzung deaktiviert. Die gewählte Karte und der Startknopf beziehen sich auf dieselbe Raum-ID. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ im Hauptmenü, in der Einführung und im Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
 
-Die Spielhülle verwendet dieselben Header-/Footer-Bausteine aus `game/play/ui/shell/` für Auswahl, Einführung und Runde. Vite setzt das native HTML bereits beim Ausliefern zusammen; Rechtslinks bleiben ohne zusätzliches Browser-JavaScript vorhanden. Die bestehenden Album-/Menübuttons bleiben im Header, statt je Ansicht neu angelegt zu werden.
-
 ## Vorlagen und Instanzen
 
-Eine `ObjectDefinition` ist eine diskriminierte Vorlage (`couch`, `curtain`, `plant`, `vase`, `books`, `picture` oder `carpet`). Sie beschreibt einen bekannten symbolischen Asset-Schlüssel, tatsächlich implementierte Fähigkeiten und Geometrie/Regelwerte. Mehrere Varianten desselben Typs können andere Werte haben. Eine Rauminstanz referenziert ihre Vorlage über `variant` und besitzt eine eigene eindeutige `id` sowie Platzierung. Keine Definition enthält Klassen-/Funktionsnamen zur Ausführung oder eine allgemeine Regelsprache.
+Eine `ObjectDefinition` ist eine diskriminierte Vorlage für die in [definitions.ts](definitions.ts) unterstützten Objekttypen. Sie beschreibt einen bekannten symbolischen Asset-Schlüssel, tatsächlich implementierte Fähigkeiten und Geometrie/Regelwerte. Mehrere Varianten desselben Typs können andere Werte haben. Eine Rauminstanz referenziert ihre Vorlage über `variant` und besitzt eine eigene eindeutige `id` sowie Platzierung. Keine Definition enthält Klassen-/Funktionsnamen zur Ausführung oder eine allgemeine Regelsprache.
 
 - `placement.mode: 'surface'`: x-Position auf einer benannten Auflage. Unterstützt Boden, Raumplattformen und Sitzflächen anderer Sofas. Sofa-x bezeichnet die linke Sitzkante, Teppich-x die linke Kante, Pflanzen-/Vasen-x die Mitte. Die Auflagehöhe wird aus der Referenz berechnet; sie wird nicht nochmals in die Instanz eingetragen.
 - `placement.mode: 'area'`: linke obere Ecke eines Vorhangs oder Wandbildes. Breite und Höhe stammen aus der Vorlage beziehungsweise dem bekannten Bild-Asset.
@@ -168,36 +166,24 @@ Die Auflösung ändert keine Quelldaten und erzeugt noch keine Phaser-Objekte. [
 
 ## Vorschau und Assets
 
-Normaler Start verwendet das Standardzimmer mit der unten beschriebenen Slotbelegung. Im Dev-/E2E-Betrieb zeigt `/?room=cozy-remix` die zweite Variante; die Produktion ignoriert diese Vorschauwahl. Weitere handgebaute Räume werden im Raumindex registriert. Es gibt keinen Raumeditor; #29 kann später denselben `RoomDefinition`-Vertrag liefern und anschließend validieren. Zufall betrifft ausschließlich die ausdrücklich deklarierten Slots.
+Normaler Start verwendet das Standardzimmer mit der unten beschriebenen Slotbelegung. Im Dev-/E2E-Betrieb zeigt `/play.html?room=cozy-remix` die zweite Variante; die Produktion ignoriert diese Vorschauwahl. Weitere handgebaute Räume werden im Raumindex registriert. Die DEV-Spielwiese bearbeitet freie Objektaufbauten, keine öffentlichen Raumdefinitionen. Ein künftiger Levelgenerator (#29) muss denselben validierten `RoomDefinition`-Vertrag verwenden. Zufall betrifft ausschließlich die ausdrücklich deklarierten Slots.
 
 Content verwendet nur Schlüssel aus [dem Asset-Katalog](../assets/definitions.ts). Prozedurale Platzhalter sind ihrem tatsächlichen Objekttyp zugeordnet. Das Pixel-Sheet wird über einen Vite-Asset-Import aufgelöst, ohne fest codierten Host oder Repository-Präfix. Die Asset-Auflösung muss auch mit `--base=/pixels-world/` funktionieren; siehe [QA](../../../docs/qa.md). Der öffentliche Spielstand ist über [GitHub Pages](https://skanky0815.github.io/pixels-world/) erreichbar.
 
-Die Versionsangabe im normalen Seitenfooter stammt beim Build aus der zentralen `package.json`. Das Jahr wird zur Laufzeit ermittelt. Die Anzeige ist eine Build-Version, kein zusätzlicher Veröffentlichungsmechanismus; Release Please pflegt dieselbe Versionsquelle.
-
 ## Saras Dialogvarianten
 
-`sara-reactions.ts` hält `SARA_DIALOGUE` für allgemeine Sätze je Ärgerstufe und
-`SARA_ROOM_DIALOGUE` für Ergänzungen pro `RoomDefinition.id`. Zur Auswahl stehen
-die allgemeinen und die raumspezifischen Zeilen gemeinsam. Eine unbekannte Raum-ID
-nutzt nur den allgemeinen Pool; fehlende Stufen und leere Pools haben einen sicheren
-Fallback. Raumtexte passen zur fest definierten Einrichtung und setzen keine
-konkrete Schadensaktion voraus.
-
-`SARA_DAMAGE_RULES` verbindet tatsächliche Objekt-/Ereignispaare mit einem
-Dialogthema und dessen Priorität. `SARA_DAMAGE_DIALOGUE` enthält die zugehörigen
-Zeilen je Gesamtärgerstufe. Ein erkannter Vorfall verwendet diesen Pool bevorzugt;
-ohne passenden Pool bleiben die allgemeinen/raumbezogenen Varianten erhalten.
-Einsturz steht vor Vasenbruch, gekippter Pflanze, Vorhangriss und Sofakratzen.
-Weitere Themen benötigen einen passenden Eintrag in Regeln und Textkatalog,
-keine Abhängigkeit der Objektadapter von der Dialoglogik. Auch bei hohem Gesamtscore
-darf ein Satz nur den tatsächlich gemeldeten Schaden behaupten.
+Dialogtexte und Themen in `sara-reactions.ts` pflegen: `SARA_DIALOGUE` enthält
+allgemeine Sätze je Ärgerstufe, `SARA_ROOM_DIALOGUE` Ergänzungen pro Raum-ID.
+`SARA_DAMAGE_RULES` ordnet akzeptierte Objekt-/Ereignispaare einem Thema und einer
+Priorität zu; `SARA_DAMAGE_DIALOGUE` enthält passende Zeilen je Gesamtärgerstufe.
+Neue Themen brauchen Regel und Textpool. Ein Satz darf nur tatsächlichen Schaden
+behaupten; Auswahl, Rückfall und Wiederholungsvermeidung beschreibt die
+[Architektur](../../../docs/arc42/README.md#dialoge-kamera-und-overlays).
 
 Neue Sätze in `game/shared/i18n/de.ts` und `game/shared/i18n/en.ts` unter demselben Schlüssel
 ergänzen, dann im passenden Pool über `copy('schluessel')` referenzieren. Die
 kanonische deutsche Fassung bleibt unabhängig von der Anzeigesprache. Keine
-Szenenänderung ist für zusätzliche Sätze nötig. Doppelte und leere Zeilen werden
-bei der Auswahl bereinigt; bei mehreren Varianten wird die letzte Zeile derselben
-Raum-/Ärgerstufe während der laufenden Spielsitzung vermieden.
+Szenenänderung ist für zusätzliche Sätze nötig.
 
 Im Dev-Spiel `/play.html?room=cozy-remix` für die Leseecke wählen. Mit **F2** lassen
 sich Chaoswerte und Heimkehrphasen reproduzierbar prüfen. Ein explizites
@@ -228,8 +214,7 @@ Ein optionaler `albumVariant` aus dem [Zielkatalog](album/goals.ts) erzeugt
 `goal-reached` als friedlichen Albumfund, kein Schadensereignis. Vormerkung,
 erfolgreiche Bestätigung, Speicherwahl und einmalige Banner verwenden dieselben
 Systeme wie alle anderen Albumfunde. Der Napf gehört mit der öffentlichen Küche zum Album; als friedliches Ziel erweitert er keine Zerstörungskategorie. Bestehende Erfolgsfassungen behalten ihre Ziele.
-Die aktuelle Platzierung am oberen Regal ist in beiden Räumen schadenfrei
-per Tastatur erreichbar; neue Platzierungen benötigen denselben Spieltest.
+Ball und Napf sind in ihren öffentlichen Räumen schadenfrei per Tastatur erreichbar; neue Platzierungen benötigen denselben Spieltest.
 
 ## Geschirr und gemeinsamer Bruch
 
@@ -592,14 +577,61 @@ Spawn, Abbruch und Runden-Reset erzeugen keinen Fund. Die gemeinsame Sammlung
 übernimmt Persistenz und Deduplication erst bei erreichter Rundenauswertung nach
 erfolgreicher Versöhnung.
 
+## Schwierigkeitsprofile
+
+Die JSON-Datei [difficulty.json](difficulty.json) enthält die Playtest-Presets;
+[difficulty.ts](difficulty.ts) liest und validiert sie. Die Auswahl gilt jeweils
+ab dem nächsten Rundenstart. Normal bleibt die Referenz, Balancing ist vorläufig.
+
+Im Dev-Modus die JSON-Datei speichern und die Spielseite neu laden; danach den
+gewünschten Grad wählen und eine neue Runde starten. Veröffentlichte Versionen
+übernehmen Änderungen beim nächsten Build/Release. Timer- und Versöhnungswerte bleiben zunächst
+identisch zu den bisherigen Presets.
+
+| Feld unter `presets.easy`, `.normal` oder `.hard` | Wirkung                                                                                                                                                        |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `timeScale`                                       | Faktor für beide Heimkehr-Timergrenzen. `1` = bisherige Zeit, `1.5` = 50 % mehr, `0.75` = 25 % weniger.                                                        |
+| `hearts.calm`, `.annoyed`, `.angry`               | Benötigte Herzen bei 0–24, 25–59 und mindestens 60 Chaospunkten. Positive ganze Zahlen.                                                                        |
+| `lengthDelta`                                     | Zusätzliche Pfeile je Folge gegenüber dem bisherigen Ärgerprofil; `-1` verkürzt um einen Pfeil. Die resultierende Länge muss eine positive ganze Zahl bleiben. |
+| `inputScale`                                      | Faktor für die Eingabefrist je Pfeil. `1.3` = 30 % mehr Zeit, `0.8` = 20 % weniger. Die bestehende Wiederholungshilfe bleibt erhalten.                         |
+
+Unter `livingRoom.easyOmit` stehen die Objekt-IDs, die auf Leicht fehlen.
+Nur optionale Vasen auslassen; Sofa, Vorhang und Pflanze erhalten.
+`livingRoom.hardPlatforms` ergänzt Regale für Schwer (`id`, `x`, `y`,
+`width`, `slots`). Die gemeinsame Slotwahl erzeugt pro Zusatzregal genau eine
+Vase aus dem konfigurierten Pool. Drei lokale Plätze erlauben Variation, halten
+aber die Anflugseite der Regaltreppe frei. Counts, IDs, Filter, Pools und exakte
+Geometrie werden wie bei den Hauptregalen validiert. Gleicher Seed und Grad
+reproduzieren die Belegung beim Neustart; die Regalgeometrie bleibt fest.
+`difficultyObjects.hardAdd` bleibt für bewusst feste Zusatzobjekte verfügbar,
+ist in den Wohnzimmern aber leer. Das Hauptziel bleibt ausdrücklich fixiert.
+`livingRoom.hardStability` überschreibt die Stabilitätsklasse einzelner Regal-IDs
+auf Schwer (`fragile`, `normal`, `stable`). Aktuell wird das mittlere Regal fragil;
+die zusätzliche Treppe wechselt fragil/normal/fragil/normal. Fragile Regale stürzen
+nach drei, normale nach fünf Landungen ein. Leicht und Normal behalten ihre
+Raumkonfiguration. Unbekannte Regal-IDs und ein instabiles Zielregal werden vor
+dem Szenenaufbau abgewiesen.
+Die vorhandene Content-Prüfung verlangt, dass die ganze Vase auf ihre Unterlage passt. Diese Belegung gilt auch für Cozy Remix;
+Ballroute und Erreichbarkeit nach Änderungen in beiden Räumen testen.
+Zusätzlich materialisiert `populateSpawnSlots` die optionalen lokalen Plätze eines
+Regals einmal vor dem Szenenaufbau. Dichte, Filter, Pool und Seed-Vertrag stehen
+in der [Slotbelegung](#zufällige-belegung-fester-regalplätze).
+Die erzeugten Instanzen verwenden dieselben Objektklassen und verlieren beim
+Herunterfallen jede Bindung an den ursprünglichen Platz.
+
+Zeitfaktoren müssen positiv und endlich sein. Fehlerhafte Profile werden beim
+Laden mit `difficulty.json` und dem betroffenen Feld gemeldet, statt ein
+unlösbares Minispiel zu starten. Den Prüfumfang beschreibt [QA](../../../docs/qa.md#gezielt-prüfen). Nach eigenen Balancing-Änderungen erwartete
+Werte in Tests bewusst abgleichen; Normal bleibt die Referenz des bisherigen
+Balancings.
+
 ## Album der Schandtaten
 
 `objects/catalog.ts` hält die Album-Metadaten direkt als `album` an der jeweiligen
 Objektvariante. `album/index.ts` leitet daraus den gemeinsamen Katalog ab. Jeder Eintrag enthält
 stabile ID, Asset-Schlüssel, DE-/EN-Name, Flufftext, Saras Kommentar, Erfolgsbedingung
 und Raumzuordnungen. Vasen, Sofas, Vorhang, Katzengras, Bücher, Bilder und Teppich
-werden an derselben Quelle gepflegt. Einträge entstehen nur nach vom Chaossystem akzeptiertem Schaden; es gibt
-keine zusätzliche Punktevergabe. Neue Varianten benötigen einen eindeutigen Eintrag
+werden an derselben Quelle gepflegt. Objektfunde verlangen akzeptierten Schaden; konfigurierte Ziele können zusätzlich `goal-reached` als friedlichen Fund verwenden. Ein Albumfund vergibt keine zusätzlichen Punkte. Neue Varianten benötigen einen eindeutigen Eintrag
 und eine PNG-Zuordnung in `album-art.ts`.
 
 Neue Objekte und Varianten pflegen zugleich die versionierten Kategorieziele in
@@ -614,7 +646,7 @@ Die beiden Wohnzimmer-Varianten teilen das Kapitel `living-room`. Weitere Räume
 können dieselbe ID verwenden, ohne den Gesamtzähler zu erhöhen. Noch nicht mit
 Einträgen belegte Raum-Tabs zeigen einen Leerzustand und zählen keine Platzhalter.
 Unentdeckte Plätze zeigen ausschließlich `?` und neutrale zugängliche Beschriftungen;
-Name, Bild und Texte werden erst nach erfolgreicher Versöhnung am Rundenende in den Dialog eingefügt.
+Name, Bild und Texte werden erst nach erfolgreichem Rundenabschluss in den Dialog eingefügt.
 `previewOnly` kennzeichnet Varianten, die ausschließlich in DEV-/E2E-Räumen
 erreichbar sind. Sie fehlen im veröffentlichten Album und dessen Zählern, bleiben
 aber mit ihren stabilen IDs in Entwicklungsvorschauen sammelbar.
@@ -628,30 +660,7 @@ Raum-Icons bleiben schlanke SVG-Bediensymbole, die ausgefransten Stoff-Lesezeich
 und der Bucheinband verwenden CSS. Raumfarben für noch nicht gestaltete Zimmer
 sind vorläufig; die Beschriftungen bleiben als Tooltip und für Screenreader erhalten.
 
-Die Objektübersicht zeigt neun Plätze pro Seite im 3×3-Raster mit Vor-/Zurück-Navigation.
-Das Album bleibt in der Bildschirmhöhe begrenzt und nutzt auf breiten Displays
-beide Buchhälften für ein Kapitel. Auf schmalen oder niedrigen Displays wechselt
-es zwischen Übersicht und ausgewähltem Eintrag; „Zur Übersicht“ führt zurück.
-Beim Raumwechsel wandern ausschließlich die Lesezeichen bereits besuchter
-Kapitel auf die rechte Buchhälfte. Inaktive Enden liegen hinter den Seiten.
-
-Ein Buchsymbol neben dem Menü im Spielkopf öffnet das Album direkt und pausiert
-die laufende Runde. Leere Raumkapitel zeigen auf breiten Displays ebenfalls
-einen mittleren Buchfalz mit Raumname links und Leerhinweis rechts.
-
-Album und Hauptmenü verwenden im Spielkopf dieselben Icon-Buttons aus
-`game-action.ts`/`game-action.css`, einschließlich zugänglicher DE-/EN-Namen.
-Einführung und laufende Runde verwenden den gemeinsamen Dialograhmen aus
-`dialogue-frame.ts` und `dialogue-box.css`; die Papiertextur und der Bucheinband
-bleiben Inhalte der Albumseiten.
-
-Normale UI-Buttons teilen `game/shared/ui/button.ts` und `button.css`: 44 Pixel Höhe,
-eine quadratische Icon-Variante und gemeinsame Fokus-/Disabled-Zustände.
-`game-action.ts` ordnet Buch und Menüsymbol samt lokalisierter Beschriftung zu.
-Die Sammlungskacheln und stoffförmigen Raum-Lesezeichen behalten ihre Buchform.
-
-Optionen sind eine eigene Bildschirmansicht des Hauptmenüs. Das X oben rechts
-führt ins Hauptmenü und lässt eine laufende Runde pausiert; „Fortsetzen“ oder Esc
-setzt sie fort. Die Optionen enthalten weder die Hauptmenü-Aktionsliste noch einen eigenen
-Optionen-Button. Album und Installationshilfe behalten ihre native Popup-Fläche
-mit `popup-heading` und lokalisiertem 44×44-Schließen-Button.
+Darstellung, Speicherwahl, Bestätigung und Banner gehören zur
+[Architektur](../../../docs/arc42/README.md#album-erfolge-und-speicherwahl).
+Gemeinsame Buttons, Dialograhmen und Menübildschirme werden dort beschrieben;
+Content definiert weder eigene UI-Komponenten noch einen zweiten Speicherpfad.
