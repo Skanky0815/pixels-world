@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { Buffer } from 'node:buffer';
 import { URL } from 'node:url';
-import { recoveryBase, releaseManifest } from '../../tools/prepare-release.mjs';
+import { githubApi, recoveryBase, releaseManifest } from '../../tools/prepare-release.mjs';
 
 const config = JSON.parse(
   readFileSync(new URL('../../release-please-config.json', import.meta.url)),
@@ -62,6 +62,93 @@ const apiFor = (data) => (path) => {
   assert.ok(data.has(path), `Unerwarteter API-Aufruf: ${path}`);
   return data.get(path);
 };
+
+// Exercise the production gh adapter: without pagination only page one is returned.
+function pagedApi(data) {
+  return githubApi('example/game', (command, args) => {
+    assert.equal(command, 'gh');
+    assert.equal(args[0], 'api');
+    const path = args[1].replace('repos/example/game/', '');
+    const value = apiFor(data)(path);
+    if (!Array.isArray(value)) {
+      assert.equal(args.includes('--paginate'), false);
+      return JSON.stringify(value);
+    }
+    if (!args.includes('--paginate')) return JSON.stringify(value.slice(0, 100));
+    assert.ok(args.includes('--slurp'));
+    const pages = [];
+    for (let start = 0; start < value.length; start += 100)
+      pages.push(value.slice(start, start + 100));
+    return JSON.stringify(pages.length ? pages : [[]]);
+  });
+}
+
+function laterPages() {
+  const data = fixture();
+  const pulls = data.get('pulls?state=closed&base=main&per_page=100');
+  data.set('pulls?state=closed&base=main&per_page=100', [
+    ...Array.from({ length: 100 }, (_, number) => ({ number, merged_at: null })),
+    ...pulls,
+  ]);
+  data.set('releases?per_page=100', [
+    ...Array.from({ length: 100 }, (_, patch) => ({
+      tag_name: `v0.1.${patch}`,
+      draft: false,
+      prerelease: false,
+    })),
+    ...data.get('releases?per_page=100'),
+  ]);
+  return data;
+}
+
+test('Recovery findet Versions-Merge und höchste veröffentlichte Basis nach über 100 Einträgen', () => {
+  assert.deepEqual(recoveryBase(pagedApi(laterPages()), current, config, '0.5.0'), {
+    sha: published,
+    version: '0.5.1',
+    tag: 'v0.4.1',
+  });
+});
+
+test('Widersprechender Versions-Merge auf Seite drei blockiert Recovery', () => {
+  const data = laterPages();
+  const pulls = data.get('pulls?state=closed&base=main&per_page=100');
+  const candidate = pulls[100];
+  while (pulls.length < 200) pulls.push({ merged_at: null });
+  pulls.push({ ...candidate, number: 288 });
+  assert.throws(
+    () => recoveryBase(pagedApi(data), current, config, '0.5.0'),
+    /ohne eindeutigen Versions-Merge/,
+  );
+});
+
+test('Release auf späterer Seite verhindert falsche Recovery und erkennt Teilpublikation', () => {
+  const data = laterPages();
+  data.get('releases?per_page=100').push({ tag_name: 'v0.5.0', draft: false, prerelease: false });
+  assert.throws(
+    () => recoveryBase(pagedApi(data), current, config, '0.5.0'),
+    /teilweise oder uneindeutig veröffentlicht/,
+  );
+  data.set('git/matching-refs/tags/v0.5.0', [{ ref: 'refs/tags/v0.5.0' }]);
+  assert.equal(recoveryBase(pagedApi(data), current, config, '0.5.0'), undefined);
+  data.get('releases?per_page=100').push({ tag_name: 'v0.5.0', draft: true });
+  assert.throws(
+    () => recoveryBase(pagedApi(data), current, config, '0.5.0'),
+    /teilweise oder uneindeutig veröffentlicht/,
+  );
+});
+
+test('Fehler beim Lesen einer Folgeseite und unerwartete Antwortformate werden nicht verschluckt', () => {
+  const failure = new Error('GitHub-Folgeseite nicht lesbar');
+  const failing = githubApi('example/game', () => {
+    throw failure;
+  });
+  assert.throws(() => failing('releases?per_page=100', { paginate: true }), failure);
+  const malformed = githubApi('example/game', () => '[{"message":"unexpected"}]');
+  assert.throws(
+    () => malformed('releases?per_page=100', { paginate: true }),
+    /unerwartetes Format/,
+  );
+});
 
 test('Veröffentlichte Manifestversion verwendet die reguläre Vorbereitung', () => {
   const data = fixture();
