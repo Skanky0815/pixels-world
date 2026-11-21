@@ -1,4 +1,4 @@
-/** Reuse the localized page information without copying document identifiers. */
+/** Reuse the shared footer after localization and keyboard updates, without document identifiers. */
 export function gameInformation() {
   const information = document.querySelector('main > footer')?.cloneNode(true);
 

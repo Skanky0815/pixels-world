@@ -16,6 +16,24 @@ DEV-Ansichten dürfen Spielmodule verwenden; das Spiel lädt DEV-Helfer nur hint
 Spiel-Layout, Dialoge und Touch-Steuerung bleiben unter `play/`. Die Landingpage
 importiert weder Phaser noch das Spielstylesheet.
 
+### Gemeinsame Kopf- und Fußbereiche
+
+`shared/ui/page-shell.ts` erzeugt Header und Footer für Landingpage, Hilfe,
+Spiel und Rechtsseiten. Marke, Navigationsziele, Linktexte, KI-Hinweis und
+Alterskennzeichnung haben dort beziehungsweise im gemeinsamen Sprachkatalog
+eine Quelle. `tools/html-shell.ts` setzt die Bausteine vor der Auslieferung ins
+HTML ein; `tools/page-information.ts` ergänzt Buildangabe und Altersmetadaten.
+Diese Informationen und Links sind damit auch ohne JavaScript vorhanden.
+
+Die Varianten erhalten ihre bisherige Anordnung und nutzen `shared/base.css`:
+Landingpage und Hilfe besitzen Seitennavigation und Sprachwahl, die Rechtsseiten
+bleiben statisch ohne Spielcode. `update.html` bleibt eine Weiterleitung zur Hilfe.
+Das Spiel ergänzt ausschließlich Titel und Steuerhinweise aus `play/ui/shell/`;
+Album und Menü bleiben Laufzeitaktionen des Spiels. Header und Footer bleiben
+direkte Kinder von `main`, damit die Vollbildkamera ihre Overlays steuern kann.
+Die Informationsansicht übernimmt den bereits übersetzten Spiel-Footer samt
+aktuellen Tastaturhinweisen und entfernt beim Kopieren die Dokument-IDs.
+
 ### Gemeinsame Bedienelemente
 
 `shared/ui/button.ts` und `button.css` bilden die gemeinsame Grundlage für
