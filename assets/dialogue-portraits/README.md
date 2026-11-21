@@ -24,9 +24,9 @@ nach rechts zum Dialogtext schaut. Die Bildquellen bleiben dabei unverändert;
 Pixel behält seine bereits nach rechts gerichtete Ansicht. Im Spiel übernimmt
 Phaser dieselbe Spiegelung; auf Touch-Geräten die mobile DOM-Ansicht.
 
-`game/domain/dialogue-portrait.ts` ordnet die Phasen zu: Sara kommt neutral herein,
+`game/play/domain/dialogue-portrait.ts` ordnet die Phasen zu: Sara kommt neutral herein,
 reagiert bei höherem Chaos überrascht und spricht anschließend genervt. Pixel
 begleitet die Charme-Eingaben, Sara antwortet auf Feedback und im Ergebnis.
 Erfolgreiche Versöhnung zeigt ihre freundliche Ansicht. Der URL-Katalog liegt in
-`game/assets/dialogue-portraits.ts`. Fehlende Phaser-Texturen geben die Textbreite
+`game/play/assets/dialogue-portraits.ts`. Fehlende Phaser-Texturen geben die Textbreite
 wieder frei; mobile Bildfehler blenden nur das dekorative Bild aus.

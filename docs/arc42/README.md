@@ -4,15 +4,14 @@ Diese Architekturdokumentation folgt der [deutschen arc42-Gliederung](https://ar
 Sie beschreibt die implementierten Verträge. Offene Änderungen stehen in Abschnitt 11;
 Arbeitsanleitungen bleiben bei ihren jeweiligen Verantwortlichen:
 
-| Aufgabe                                      | Maßgebliche Anleitung                                                                                                                                                                                         |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Spielen und lokal starten                    | [README](../../README.md)                                                                                                                                                                                     |
-| Beitragen und Änderungen veröffentlichen     | [CONTRIBUTING](../../CONTRIBUTING.md)                                                                                                                                                                         |
-| Entwickeln und DEV-Werkzeuge verwenden       | [Entwicklung](../development.md)                                                                                                                                                                              |
-| Räume, Varianten und Balancing pflegen       | [Content](../../game/play/content/README.md)                                                                                                                                                                  |
-| Prüfen und Ergebnisse auswerten              | [QA](../qa.md)                                                                                                                                                                                                |
-| Releases, Pages und Offlineversion betreiben | [Deployment](../deployment.md)                                                                                                                                                                                |
-| Grafiken und Audio bearbeiten                | Anleitungen bei [Pixel](../../assets/pixel/README.md), [Sara](../../assets/sara/README.md), [Objektfamilien](../../game/play/content/README.md#vorschau-und-assets) und [Audio](../../assets/audio/README.md) |
+| Aufgabe                                    | Maßgebliche Anleitung                                                                                                                                                                                         |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Spielen und lokal starten                  | [README](../../README.md)                                                                                                                                                                                     |
+| Entwickeln, Beiträge und Releases bedienen | [CONTRIBUTING](../../CONTRIBUTING.md)                                                                                                                                                                         |
+| Räume, Varianten und Balancing pflegen     | [Content](../../game/play/content/README.md)                                                                                                                                                                  |
+| Prüfen und Ergebnisse auswerten            | [CONTRIBUTING](../../CONTRIBUTING.md#qualität-prüfen)                                                                                                                                                         |
+| Build- und Releaseabläufe prüfen           | [GitHub-Workflows](../../.github/workflows) und zugehörige Skripte                                                                                                                                            |
+| Grafiken und Audio bearbeiten              | Anleitungen bei [Pixel](../../assets/pixel/README.md), [Sara](../../assets/sara/README.md), [Objektfamilien](../../game/play/content/README.md#vorschau-und-assets) und [Audio](../../assets/audio/README.md) |
 
 ## 1. Einführung und Ziele
 
@@ -99,7 +98,7 @@ Spiel → DEV ist nur dynamisch im positiven `import.meta.env.DEV`-Zweig erlaubt
 Negation, Else-Zweige und umbenannte Flags reichen nicht. Der gemeinsame
 `DebugScenario`-Typ liegt deshalb im Spiel. Berechnete Modulpfade und neue
 Glob-Imports sind nicht freigegeben; der vorhandene Audio-Glob bündelt nur WAV-Assets.
-Verbindliche Ausnahmen stehen im Prüfcode; Aufruf und Gegenbeispiele in [QA](../qa.md#gezielt-prüfen).
+Verbindliche Ausnahmen stehen im Prüfcode; Aufruf und Gegenbeispiele in [CONTRIBUTING](../../CONTRIBUTING.md#gezielt-prüfen).
 
 ### Aufbau des Spiels
 
@@ -219,12 +218,24 @@ bleiben erhalten; Dialogerinnerung lebt nur über reguläre Szenenneustarts, nic
 
 ### Online-Update und Offline-Spiel
 
-Die Online-Prüfung liest `version.json`, ohne einen Service Worker zu verlangen.
-Eine Offline-Kopie wird erst auf ausdrücklichen Wunsch im Produktionsspiel
-vorbereitet. Ein bereitstehendes Update ersetzt keine laufende Runde automatisch:
-Jeder Tab bestätigt seinen Neustart selbst. Fehlende Verbindung oder blockierter
-Speicher beendet keine laufende Sitzung. Details, Fehlerfälle und Wiederanlauf:
-[Deployment](../deployment.md#spielupdates-und-offlineversion).
+Die Online-Prüfung liest `version.json` mit `no-store`, ohne einen Service Worker
+zu verlangen. Sie läuft beim Spielstart, nach Rückkehr ins sichtbare Fenster und
+im Vordergrund regelmäßig. Eine Offline-Kopie wird erst auf ausdrücklichen Wunsch
+im Produktionsspiel vorbereitet; App-Installation und Offline-Freigabe sind getrennt.
+
+Ein bereitstehendes Update ersetzt keine laufende Runde automatisch: Jeder Tab
+bestätigt seinen Neustart selbst, auch wenn ein anderer Tab bereits die neue
+Version aktiviert hat. Gespeicherte Alben und Einstellungen bleiben erhalten;
+fehlende Verbindung oder blockierter Speicher beendet keine laufende Sitzung.
+Das Entfernen von Offline-Dateien betrifft nur den genauen App-Scope und dessen
+Workbox-Caches, keine fremden Projekte oder Albumdaten.
+
+Hilfe und Update-Einstieg bleiben außerhalb des Offline-Precache. Der frische
+Spieleinstieg aus der Hilfe prüft die veröffentlichte Version online und aktiviert
+keinen wartenden Worker in anderen Tabs. Er benötigt eine Verbindung und bleibt
+bei Fehlern erneut bedienbar. Ein alter geladener Client erhält neue Menüfunktionen
+erst nach einem echten Versionswechsel. Bedienung: [Spielhilfe](../../game/landingpage/help.html#updates),
+Prüfverfahren: [CONTRIBUTING](../../CONTRIBUTING.md#updates-auf-echten-geräten-prüfen).
 
 ## 7. Verteilungssicht
 
@@ -236,7 +247,7 @@ Speicher beendet keine laufende Sitzung. Details, Fehlerfälle und Wiederanlauf:
 Dev-Server und beim Build; im Root werden keine zweiten HTML-Quellen gepflegt.
 Relative Links und gebündelte Assets funktionieren auch unter `/pixels-world/`.
 DEV-Einstiege fehlen in Produktion und E2E. Ein entpacktes ZIP benötigt einen
-lokalen HTTP-Server; die Bedienung steht in [Entwicklung](../development.md).
+lokalen HTTP-Server; die Bedienung steht in [CONTRIBUTING](../../CONTRIBUTING.md#lokal-entwickeln).
 
 Der Produktionsbuild enthält die Spielabhängigkeiten und kompakten Laufzeitassets.
 Quellbilder, Prompts und Exportanleitungen bleiben im Repository.
@@ -256,10 +267,15 @@ Kandidaten ab.
 
 Der Release-Ablauf verlangt vollständige QA vor Tagging/Veröffentlichung. Pages
 übernimmt nur den geprüften Produktionsbuild desselben Workflow-Laufs und SHAs;
-fehlende Artefakte führen nicht zu einem ungeprüften Ersatzbuild. Operative
-Befehle, Freigaben, Berechtigungen, Aufbewahrung und Wiederanlauf haben genau eine
-maßgebliche Stelle: [Deployment](../deployment.md). QA-Profile und Ergebnisauswertung
-stehen ausschließlich in [QA](../qa.md#ci-und-runnerverbrauch).
+fehlende Artefakte führen nicht zu einem ungeprüften Ersatzbuild. Trigger, Rechte, Gates und Artefaktaufbewahrung werden direkt in den
+[Workflows](../../.github/workflows) und zugehörigen Skripten gepflegt. Bedienung
+und Fehlerhilfe stehen in [CONTRIBUTING](../../CONTRIBUTING.md#release-bedienen). Die CI-Auswahl steht im [QA-Workflow](../../.github/workflows/qa.yml) und [Profilauswahl](../../tools/qa-profiles.ts).
+
+Der geplante `release_tag` wird für QA über `PIXELS_RELEASE_TAG` in den Build
+gegeben und mit der Paketversion abgeglichen. Der Footer-Link ist damit Teil
+desselben geprüften Artefakts, wird aber erst nach verifizierter Veröffentlichung
+öffentlich ausgeliefert. Ein Versions-Define allein erlaubt kein Deployment;
+Entwicklungs-/Vorschaubuilds ohne Release-Kontext zeigen nur die Version.
 
 ## 8. Querschnittliche Konzepte
 
@@ -409,10 +425,52 @@ und bekannte Katalogschlüssel; neue Grafiken ändern nicht stillschweigend Kör
 Interaktionsflächen oder Punkte. Raster, Palette und Fußanker stehen in den jeweiligen
 Familienanleitungen. Gemeinsame Exportfunktionen sind noch Gegenstand von #348.
 
+### Browser-Prüfvertrag
+
 DEV-Szenarien verwenden dieselben Modelle und Adapter mit lokalen Zufallsquellen.
-E2E-Snapshots sind eingefrorene Kopien ohne Engine-Objekte oder Mutatoren und fehlen
-in Produktion. Tests bedienen reale Tastatur-/Pointer-/Touchpfade. Der vollständige
-Prüfvertrag steht ausschließlich in [QA](../qa.md#browser-vertrag-und-rundenprofile).
+Spieltests bedienen reale Tastatur-/Pointer-/Touchpfade und verwenden gemeinsame
+Gesundheits-/Clock-Fixtures. `window.__pixelTest` ist ausschließlich im E2E-Build
+ein lesender Observer mit eingefrorenen Kopien, ohne Engine-Objekte oder Mutatoren;
+seine Abwesenheit in Produktion wird geprüft. DEV-Diagnose und F2-Szenarien bleiben
+von diesem Observer getrennt.
+
+Reine Album-Layoutfälle dürfen bestätigte Einträge vor dem Start über den regulären
+Browser-Speicher vorbereiten. Freischaltung/Verwerfen nach echten Runden bleiben
+separate Prüfungen. Pause und Fortsetzen sind an einer aktiven Runde zu prüfen,
+damit ein bereits beendeter Timer keine fehlende Pause verdeckt.
+
+Die pausierte Playwright-Uhr wird schrittweise über `clock.runFor` weitergeführt;
+Runnerlatenz verlängert keine gehaltene Eingabe. Gröbere RAF-Schritte sind nur in
+entsprechend vorbereiteten langen Rundenszenarien zulässig, kein Ersatz für echte
+Bewegungs-/Renderprüfungen. `fastForward` ersetzt keine aktive Spielzeit;
+simulierte Headless-Visibility ersetzt keinen Tab-/Appwechsel auf Hardware.
+Voll- und Kurzprofil verwenden dieselben Regeln/Assertions, aber unterschiedliche
+Rundenzeiten ausschließlich im E2E-Build. Wiederholungen sind bewusst, automatische
+Retries bleiben ausgeschaltet. Mehrfingerfreigaben werden an der Browsergrenze geprüft.
+
+Feste Charakter-Bildausschnitte verwenden beobachtete Posen sowie definierte
+Seeds, Viewports und DPR. Sie folgen Weltgrenzen statt einer möglicherweise falsch
+positionierten Figur. Bildvergleiche ergänzen Zustands-/Eingabe-/Layoutprüfungen.
+Ausdrückliche Gegenproben dürfen ausschließlich Canvas-Zeichenaufrufe im Testbrowser
+verändern, müssen die Einspritzung nachweisen und am Bildvergleich scheitern. Das
+ist keine Erlaubnis für Spielzustandssetter oder Produktionsinstrumentierung.
+Referenzpflege und Gegenproben bedienen: [CONTRIBUTING](../../CONTRIBUTING.md#bildreferenzen-und-gegenproben).
+
+Vollständige Runden decken Erfolg, Scheitern, friedlichen Abschluss und Touch ab;
+reine UI-Fälle benötigen keinen erneut erspielten Abschluss. Bei einer Testreduktion
+muss jede einzigartige Assertion einer verbleibenden Modell-/Browserprüfung
+zugeordnet sein. Die geplanten CI-Gruppen sollen alle nötigen Fälle ohne doppelte
+Ausführung abdecken; eine kleinere Fallzahl allein belegt keine gleiche Prüfdeckung.
+Matrix, Zuordnung und konservative Ausweichregeln stehen in
+[qa.yml](../../.github/workflows/qa.yml), [qa-selection.ts](../../tools/qa-selection.ts)
+und [qa-profiles.ts](../../tools/qa-profiles.ts).
+
+Automatisierte Audiofälle verwenden Chromiums virtuellen Ausgabestream über
+`--disable-audio-output`; native WebAudio-Quellen, Uhr und Pegel bleiben aktiv.
+Ein eingefrorener Audio-Snapshot beweist keinen stabilen Loop: Quellen werden über
+ein begrenztes Zeitfenster beobachtet. Renderframes ohne Physikschritt starten
+keine neue Quelle, echte Schritte ohne Fortschritt beenden sie. Hörproben verwenden
+den normalen Browser mit realer Ausgabe.
 
 ## 9. Architekturentscheidungen
 
@@ -426,14 +484,14 @@ Entscheidungen folgen der Zuständigkeitsregel in [CONTRIBUTING](../../CONTRIBUT
 
 ## 10. Qualitätsanforderungen
 
-| Ziel und Auslöser                                                      | Beobachtbares Ergebnis                                                                  | Nachweis                                                                               |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Lebenszyklus: Pause, Blur oder Rotation während einer Aktion           | Keine Hintergrundzeit, gehaltene alte Eingaben bleiben gesperrt, keine doppelte Wertung | Input-/Pause-/Touchfälle gemäß [QA](../qa.md#browser-vertrag-und-rundenprofile)        |
-| Konsistenz: Sprach-/Größenwechsel nach erfolgreicher Auswertung        | Funde, Storage und Banner werden nicht erneut bestätigt                                 | Album-/Erfolgs-/Overlayfälle und lesender Observer gemäß [QA](../qa.md#gezielt-prüfen) |
-| Erreichbarkeit: schmales/kurzes Fenster, Tastatur oder Touch           | Lesbarer Dialog, erreichbare Start-/Menüaktionen und freier Bedienbereich               | Responsive Browserfälle und [manueller Spieltest](../qa.md#manueller-spieltest)        |
-| Datenverträglichkeit: alter, fehlerhafter oder blockierter Speicher    | Gültige bestätigte Funde erhalten; keine erfundene Historie; Sitzung bedienbar          | Codec-/Sammlungsfälle und Speicherprüfungen gemäß [QA](../qa.md#gezielt-prüfen)        |
-| Modulgrenze: falscher Import oder DEV-URL in Produktion                | Importprüfung lehnt Abhängigkeit ab; Produktionsseite bietet keine Diagnosemutatoren    | [Importprüfung und Build-Isolation](../qa.md#gezielt-prüfen)                           |
-| Auslieferung: Teilpublikation, falscher SHA oder fehlendes QA-Artefakt | Release/Pages stoppen statt ungeprüft zu veröffentlichen                                | [Release-Gates und Wiederanlauf](../deployment.md#identität-und-wiederanlauf)          |
+| Ziel und Auslöser                                                      | Beobachtbares Ergebnis                                                                  | Nachweis                                                                                                                 |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Lebenszyklus: Pause, Blur oder Rotation während einer Aktion           | Keine Hintergrundzeit, gehaltene alte Eingaben bleiben gesperrt, keine doppelte Wertung | Input-/Pause-/Touchfälle gemäß [Browser-Prüfvertrag](#browser-prüfvertrag)                                               |
+| Konsistenz: Sprach-/Größenwechsel nach erfolgreicher Auswertung        | Funde, Storage und Banner werden nicht erneut bestätigt                                 | Album-/Erfolgs-/Overlayfälle und lesender Observer gemäß [CONTRIBUTING](../../CONTRIBUTING.md#gezielt-prüfen)            |
+| Erreichbarkeit: schmales/kurzes Fenster, Tastatur oder Touch           | Lesbarer Dialog, erreichbare Start-/Menüaktionen und freier Bedienbereich               | Responsive Browserfälle und [manueller Spieltest](../../CONTRIBUTING.md#manueller-spieltest)                             |
+| Datenverträglichkeit: alter, fehlerhafter oder blockierter Speicher    | Gültige bestätigte Funde erhalten; keine erfundene Historie; Sitzung bedienbar          | Codec-/Sammlungsfälle und Speicherprüfungen gemäß [CONTRIBUTING](../../CONTRIBUTING.md#gezielt-prüfen)                   |
+| Modulgrenze: falscher Import oder DEV-URL in Produktion                | Importprüfung lehnt Abhängigkeit ab; Produktionsseite bietet keine Diagnosemutatoren    | [Importprüfung und Build-Isolation](../../CONTRIBUTING.md#gezielt-prüfen)                                                |
+| Auslieferung: Teilpublikation, falscher SHA oder fehlendes QA-Artefakt | Release/Pages stoppen statt ungeprüft zu veröffentlichen                                | [Release-Workflow](../../.github/workflows/release.yml) und [Fehlerhilfe](../../CONTRIBUTING.md#fehler-und-wiederanlauf) |
 
 Die wichtigsten Achsen sind Bedienbarkeit, fachliche Zuverlässigkeit,
 Wartbarkeit und überprüfbare Auslieferung. Es gibt derzeit keine dokumentierte

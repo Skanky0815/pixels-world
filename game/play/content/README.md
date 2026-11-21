@@ -168,7 +168,7 @@ Die Auflösung ändert keine Quelldaten und erzeugt noch keine Phaser-Objekte. [
 
 Normaler Start verwendet das Standardzimmer mit der unten beschriebenen Slotbelegung. Im Dev-/E2E-Betrieb zeigt `/play.html?room=cozy-remix` die zweite Variante; die Produktion ignoriert diese Vorschauwahl. Weitere handgebaute Räume werden im Raumindex registriert. Die DEV-Spielwiese bearbeitet freie Objektaufbauten, keine öffentlichen Raumdefinitionen. Ein künftiger Levelgenerator (#29) muss denselben validierten `RoomDefinition`-Vertrag verwenden. Zufall betrifft ausschließlich die ausdrücklich deklarierten Slots.
 
-Content verwendet nur Schlüssel aus [dem Asset-Katalog](../assets/definitions.ts). Prozedurale Platzhalter sind ihrem tatsächlichen Objekttyp zugeordnet. Das Pixel-Sheet wird über einen Vite-Asset-Import aufgelöst, ohne fest codierten Host oder Repository-Präfix. Die Asset-Auflösung muss auch mit `--base=/pixels-world/` funktionieren; siehe [QA](../../../docs/qa.md). Der öffentliche Spielstand ist über [GitHub Pages](https://skanky0815.github.io/pixels-world/) erreichbar.
+Content verwendet nur Schlüssel aus [dem Asset-Katalog](../assets/definitions.ts). Prozedurale Platzhalter sind ihrem tatsächlichen Objekttyp zugeordnet. Das Pixel-Sheet wird über einen Vite-Asset-Import aufgelöst, ohne fest codierten Host oder Repository-Präfix. Die Asset-Auflösung muss auch mit `--base=/pixels-world/` funktionieren; siehe [CONTRIBUTING](../../../CONTRIBUTING.md#qualität-prüfen). Der öffentliche Spielstand ist über [GitHub Pages](https://skanky0815.github.io/pixels-world/) erreichbar.
 
 ## Saras Dialogvarianten
 
@@ -621,7 +621,7 @@ Herunterfallen jede Bindung an den ursprünglichen Platz.
 
 Zeitfaktoren müssen positiv und endlich sein. Fehlerhafte Profile werden beim
 Laden mit `difficulty.json` und dem betroffenen Feld gemeldet, statt ein
-unlösbares Minispiel zu starten. Den Prüfumfang beschreibt [QA](../../../docs/qa.md#gezielt-prüfen). Nach eigenen Balancing-Änderungen erwartete
+unlösbares Minispiel zu starten. Den Prüfumfang beschreibt [CONTRIBUTING](../../../CONTRIBUTING.md#gezielt-prüfen). Nach eigenen Balancing-Änderungen erwartete
 Werte in Tests bewusst abgleichen; Normal bleibt die Referenz des bisherigen
 Balancings.
 

@@ -31,7 +31,7 @@ npm run dev
 
 Öffne die von Vite ausgegebene Adresse, üblicherweise `http://127.0.0.1:5173`.
 Unter `/` liegt die Landingpage, unter `/play.html` das Spiel.
-Weitere Befehle und DEV-Werkzeuge: [Lokal entwickeln](docs/development.md).
+Weitere Befehle und DEV-Werkzeuge: [CONTRIBUTING](CONTRIBUTING.md#lokal-entwickeln).
 
 ## Steuerung
 
@@ -49,8 +49,8 @@ Aufgaben, Fehlerberichte und Planung stehen in [Issues](https://github.com/Skank
 und [Milestones](https://github.com/Skanky0815/pixels-world/milestones).
 
 - [Beitragsregeln und Arbeitsablauf](CONTRIBUTING.md)
-- [Qualitätsprüfungen und manueller Spieltest](docs/qa.md)
+- [Qualitätsprüfungen und manueller Spieltest](CONTRIBUTING.md#qualität-prüfen)
 - [Architektur nach arc42](docs/arc42/README.md)
 - [Räume, Objektvorlagen und Assets](game/play/content/README.md)
-- [Release und GitHub Pages](docs/deployment.md)
+- [Release bedienen](CONTRIBUTING.md#release-bedienen)
 - [Arbeitsregeln für Agenten](AGENTS.md)

@@ -66,5 +66,5 @@ Animation aus tatsächlich erreichten Spielzuständen prüfen.
 
 Raum-Auswahl- und Landingbilder aus dem Produktionsspiel aufnehmen, ohne Figuren,
 UI oder Objektzustände nachträglich hineinzumalen. Aufnahmewege stehen unter
-`docs/development.md` im Abschnitt „Spiel und Vorschau“. Wenn eine Grafik im Code
+`assets/landing/README.md` im Abschnitt „Spielaufnahmen erneuern“. Wenn eine Grafik im Code
 integriert wird, gelten die normalen Repository-Prüfungen vor dem PR.
