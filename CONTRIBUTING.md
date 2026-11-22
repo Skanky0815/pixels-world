@@ -415,6 +415,16 @@ abarbeiten; grüne technische QA ersetzt diese nicht.
    Spiel, Assets, Rechtsseiten, DE/EN und mobiles Layout prüfen. Versionslink und
    veröffentlichter Tag müssen zusammenpassen; kein E2E-Observer im Produktionsspiel.
 
+Die Vorbereitung verlinkt den konkreten Smoke-QA-Lauf samt Versuch und vollständigem
+PR-Commit in der Actions-Summary. Der Dispatch verwendet die Run-ID aus der
+[GitHub-API-Antwort](https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event)
+(API-Version `2026-03-10`) und prüft Workflow, Repository, Branch und Commit;
+anschließend muss der PR weiterhin auf demselben Commit stehen. Bei fehlender oder
+widersprüchlicher Zuordnung stoppt der Schritt. Ein angeforderter Lauf kann trotzdem
+bereits existieren: den verlinkten Lauf prüfen, bevor erneut gestartet wird.
+Die Zuordnung bestätigt keinen Testerfolg. Status und nötige Freigaben im Lauf
+prüfen; nach neuen PR-Commits ist ein Nachweis für den neuen Commit erforderlich.
+
 Ein manueller QA-Start auf einem passenden gemergten Versions-Kandidaten kann die
 Veröffentlichung auslösen; Diagnose-QA ist deshalb keine pauschal folgenlose Aktion.
 Die Zuordnung entscheidet das Gate im Release-Workflow. Spielupdate und Recovery
