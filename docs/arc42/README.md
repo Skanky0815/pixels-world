@@ -267,7 +267,10 @@ Kandidaten ab.
 
 Der Release-Ablauf verlangt vollständige QA vor Tagging/Veröffentlichung. Pages
 übernimmt nur den geprüften Produktionsbuild desselben Workflow-Laufs und SHAs;
-fehlende Artefakte führen nicht zu einem ungeprüften Ersatzbuild. Trigger, Rechte, Gates und Artefaktaufbewahrung werden direkt in den
+fehlende Artefakte führen nicht zu einem ungeprüften Ersatzbuild. Ein Pages-Teilwiederanlauf
+verwendet dieselbe veröffentlichte Identität und setzt einen unveränderten Tag
+sowie Main-SHA voraus. Die Artefaktaufbewahrung begrenzt das Wiederanlauffenster;
+nach dessen Ablauf erfolgt die Veröffentlichung über eine neue reguläre Version. Trigger, Rechte, Gates und Artefaktaufbewahrung werden direkt in den
 [Workflows](../../.github/workflows) und zugehörigen Skripten gepflegt. Bedienung
 und Fehlerhilfe stehen in [CONTRIBUTING](../../CONTRIBUTING.md#release-bedienen). Die CI-Auswahl steht im [QA-Workflow](../../.github/workflows/qa.yml) und [Profilauswahl](../../tools/qa-profiles.ts).
 
@@ -504,7 +507,6 @@ bleiben zusätzlich zu den automatisierten Browserfällen nötig.
 | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Eindeutige Run-/Commit-Zuordnung der Versions-PR-QA                | [#349](https://github.com/Skanky0815/pixels-world/issues/349); Voraussetzung für sichere verbindliche Checks                                                                      |
 | Wirksame Main-Regeln und Required Checks                           | [#342](https://github.com/Skanky0815/pixels-world/issues/342); aktuelle Schutzkonfiguration gesondert nachweisen                                                                  |
-| Abgelaufene geprüfte Pages-Artefakte                               | [#346](https://github.com/Skanky0815/pixels-world/issues/346); keine automatische Ersatzbuild-Zusage                                                                              |
 | Gewachsene Toolordnung und doppelte Exportfunktionen               | [#347](https://github.com/Skanky0815/pixels-world/issues/347), [#348](https://github.com/Skanky0815/pixels-world/issues/348)                                                      |
 | Reproduzierbarer lokaler Einstieg und frühe Voraussetzungenprüfung | [#352](https://github.com/Skanky0815/pixels-world/issues/352)                                                                                                                     |
 | JSON-Contentimport / Generator                                     | [#43](https://github.com/Skanky0815/pixels-world/issues/43), [#29](https://github.com/Skanky0815/pixels-world/issues/29); noch keine allgemeine Import-/Generierungsschnittstelle |
