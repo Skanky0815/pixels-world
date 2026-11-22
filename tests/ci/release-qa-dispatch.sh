@@ -37,17 +37,17 @@ reject() {
   if bash "$root/.github/scripts/dispatch-release-qa.sh" > "$fixture/output" 2>&1; then
     echo "Ungültige Zuordnung akzeptiert: $*" >&2; exit 1
   fi
-  ! rg -q 'Kurze QA zugeordnet' "$fixture/output" "${GITHUB_STEP_SUMMARY}" 2>/dev/null
-  rg -q 'nicht eindeutig zugeordnet' "$fixture/output"
+  ! grep -Fq 'Kurze QA zugeordnet' "$fixture/output" "${GITHUB_STEP_SUMMARY}" 2>/dev/null
+  grep -Fq 'nicht eindeutig zugeordnet' "$fixture/output"
 }
 for RUN_ID in 123 456; do
   export RUN_ID
   reset_fixture
   bash "$root/.github/scripts/dispatch-release-qa.sh" > "$fixture/output"
   test -f "$fixture/dispatched"
-  rg -q "Lauf $RUN_ID, Versuch 1" "$fixture/summary"
-  rg -q "$sha" "$fixture/summary"
-  rg -q 'keinen Testerfolg' "$fixture/summary"
+  grep -Fq "Lauf $RUN_ID, Versuch 1" "$fixture/summary"
+  grep -Fq "$sha" "$fixture/summary"
+  grep -Fq 'keinen Testerfolg' "$fixture/summary"
   test "$(wc -l < "$fixture/calls" | tr -d ' ')" = 4
   cmp "$fixture/output" "$fixture/summary"
 done
@@ -68,7 +68,7 @@ done
 reset_fixture
 change_fixture run '.status="completed" | .conclusion="failure"'
 bash "$root/.github/scripts/dispatch-release-qa.sh" > "$fixture/output"
-rg -q 'keinen Testerfolg' "$fixture/summary"
+grep -Fq 'keinen Testerfolg' "$fixture/summary"
 reset_fixture
 : > "$fixture/dispatch.json"
 reject 'Leere Dispatch-Antwort'
