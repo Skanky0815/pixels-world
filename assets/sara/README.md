@@ -7,13 +7,13 @@ gemeinsame Sohlenzeile **89**. Die bestätigte Idle-Silhouette bleibt 60 Quellpi
 bzw. 120 Spielpixel hoch. Sara ist eine reine sichtbare Figur ohne Physikkörper;
 ihre Animation verändert weder Pixels Kollisionen noch Punkte oder Phasen.
 
-| Frames | Key | Wiedergabe |
-| --- | --- | --- |
-| 0–1 | `sara-idle` | 0, 0, 1, 0 · 2 FPS · wiederholt |
-| 2–5 | `sara-enter` | seitlicher Eintritt · 7 FPS · wiederholt |
-| 6–7 | `sara-react-calm` | skeptischer Blick / Hand zum Kinn · 3 FPS · einmalig |
-| 8–9 | `sara-react-annoyed` | Hände in die Hüften / trockene Geste · 3 FPS · einmalig |
-| 10–11 | `sara-react-angry` | fassungslos / Hände am Kopf · 3 FPS · einmalig |
+| Frames | Key                  | Wiedergabe                                              |
+| ------ | -------------------- | ------------------------------------------------------- |
+| 0–1    | `sara-idle`          | 0, 0, 1, 0 · 2 FPS · wiederholt                         |
+| 2–5    | `sara-enter`         | seitlicher Eintritt · 7 FPS · wiederholt                |
+| 6–7    | `sara-react-calm`    | skeptischer Blick / Hand zum Kinn · 3 FPS · einmalig    |
+| 8–9    | `sara-react-annoyed` | Hände in die Hüften / trockene Geste · 3 FPS · einmalig |
+| 10–11  | `sara-react-angry`   | fassungslos / Hände am Kopf · 3 FPS · einmalig          |
 
 Die Brille bleibt in allen Posen erhalten. `game/play/actors/sara-animations.ts`
 enthält die gemeinsam von Spiel und Dev-Vorschau verwendeten Werte. Reaktionen
@@ -50,12 +50,10 @@ je Figur sowie gemeinsam; ein Auswahlwechsel startet beim ersten Frame. Die Dev-
 einmalige Reaktionen zur Kontrolle; das Spiel spielt sie einmalig ab. Die Seite ist
 kein Produktionsartefakt. Dialog-/Score-Auswahl bleiben im bestehenden Domain-Modell.
 
-
-## Abschlussentwürfe (#274)
+## Abschlussanimationen
 
 `ending-v1/ending-sheet-v1.png` enthält die freigegebenen Abschlussposen für Spiel
-und Animationsvergleichsseite. Die Vorschau zeigt Kopf-
-und Bauchstreicheln getrennt neben den unveränderten Pixel-Sprites, außerdem
+und Animationsvergleichsseite. Spiel und Animationsvergleich zeigen Kopf- und Bauchstreicheln neben Pixel, außerdem
 verschränkte Arme und Abwenden nach einer gescheiterten Versöhnung.
 
 Die mit dem eingebauten Bildwerkzeug erzeugten Originale und die vollständigen
@@ -63,8 +61,8 @@ Die mit dem eingebauten Bildwerkzeug erzeugten Originale und die vollständigen
 Arm-Entwurf hebt die Hand für den sitzenden Pixel an; die niedrigere Hand bleibt
 für Pixels bestehende Rückenlage erhalten.
 
-`node tools/prepare-sara-endings.mjs` exportiert 16 Zellen zu je 96×96 Pixeln:
-0–5 Bauch, 6–11 Kopf, 12–15 sauer. 16–17 sind leer. Je Quellenblatt bestimmt
+`node tools/prepare-sara-endings.mjs` exportiert ein 576×288-Sheet mit 18 Zellen
+zu je 96×96 Pixeln: 0–5 Bauch, 6–11 Kopf, 12–15 sauer; 16–17 bleiben leer. Je Quellenblatt bestimmt
 nur der erste stehende Frame den gemeinsamen Maßstab; die Hocke wird nicht
 individuell vergrößert. Ein gemeinsamer horizontaler Fußanker je Blatt erhält
 Armbewegungen, die Sohlenzeile bleibt 89. Die erste Zelle jeder Gruppe übernimmt
@@ -73,7 +71,6 @@ Die vorhandene 24-Farben-Palette und binäres Alpha ab 192 gelten auch hier.
 Details stehen in `ending-v1/metadata-v1.json`. Die großen Quellen werden nicht
 vom Spiel oder der Dev-Seite geladen. Pause, Einzelschritt und ruhige Endposen
 stehen auf `/animation-compare.html#ending-heading` zur Abstimmung bereit.
-
 
 `game/play/actors/sara-endings.ts` hält die gemeinsamen Clips. Die rein darstellende
 `EndingPresentation` startet einmal mit dem endgültigen Ergebnis, wählt bei Erfolg
