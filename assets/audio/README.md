@@ -72,3 +72,14 @@ werden nicht nachgeholt. Loops und Impacts teilen das Stimmenlimit.
 
 Die automatische Rückkehr zu Sara nutzt dieselbe Schrittregel; beim Sitzen endet
 auch dort der Schrittsound. Der Wechsel zur Heimkehr spielt keine alte Aktion nach.
+
+Schnittübergänge und Pegel im normalen Browser auf Desktop und echten Mobilgeräten
+vergleichen. Den ersten Ton nach Tastatur-/Touch-Start sowie verweigerte Audiofreigabe
+prüfen: Stille darf das Spiel nicht blockieren. Gesamt-/Effektregler einzeln auf null
+setzen und nach Reload prüfen; gleichzeitige Aufpralle dürfen keine Lautstärkespitze
+bilden. Pause, Tabwechsel und Neustart mitten im Klang dürfen keine alten Töne nachholen.
+Würgen, Kratzen und Knabbern beim Weglaufen/Sprung abbrechen; Wartephasen bleiben still.
+Klettern/Rutschen am Anschlag und Schritte bei Wanddruck, Luftphase oder Sitzen abhören.
+Im Produktions-/Pages-Impressum müssen die Quellen samt Bearbeitung und Lizenz
+weiter erreichbar sein. Automatisierte Audio-Prüfgrenzen stehen im
+[Browser-Prüfvertrag](../../docs/arc42/README.md#browser-prüfvertrag).
