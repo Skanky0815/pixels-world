@@ -1,5 +1,7 @@
 # Vorratsbehälter: vollständige Erzeugungsprompts
 
+Die ursprüngliche Dosen-Vorgabe im Prompt lautet 36×28; der aktuelle Export verwendet 32×28 Pixel. Maßgeblich sind [README](README.md) und [prepare-pantry-assets.mjs](../../../tools/prepare-pantry-assets.mjs).
+
 Modus: integriertes Bildwerkzeug (`image_gen`) mit transparentem Hintergrund. Intaktes Glas und Dose sowie der Glassplitter wurden neu erzeugt; die Endzustände verwenden das jeweilige intakte Objekt als Referenz. Die v2-Bearbeitung der offenen Dose dreht ausschließlich ihr aufgedrucktes Herz passend zur Lage.
 
 ## jar
@@ -45,4 +47,3 @@ Create ONE tiny transparent low-resolution pixel-art glass shard for a cozy side
 Use case: precise-object-edit
 Edit the attached opened biscuit-tin sprite. Change ONLY the cream heart printed on the body of the tipped tin: rotate that heart exactly 90 degrees clockwise so the pointed bottom of the heart points LEFT, matching the tipped container. Keep its center, cream color, size and pixel clusters. Preserve EVERYTHING else exactly: tin shape and open mouth facing right, detached lid on left, cookies on right, palette, outline, layout, true transparent background and margins. No added elements, text or shadows.
 ```
-

@@ -1,5 +1,7 @@
 # Futternapf – Quellprompt
 
+Die im Originalprompt genannten 36×18 Pixel sind das Entwurfsmaß. Maßgeblich für den aktuellen 36×16-Export sind [README](README.md) und [prepare-food-bowl.mjs](../../../tools/prepare-food-bowl.mjs).
+
 Erzeugt mit dem integrierten Bildwerkzeug, transparenter Hintergrund. Quelle:
 `sources/food-bowl-source-v1.png`; keine Bildreferenzen. Unveränderte Quelle aufbewahren.
 
@@ -12,4 +14,3 @@ Composition/framing: exactly ONE standalone bowl, centered, width-to-height appr
 Scene/backdrop: genuinely transparent alpha background, no floor, no scene, no cast shadow outside the object.
 Constraints: no cat, no character, no spoon, no mat, no extra object, no text, no labels, no watermark, no collage, no sprite sheet, no perspective tilt. Preserve a simple readable bowl silhouette at tiny scale.
 ```
-
