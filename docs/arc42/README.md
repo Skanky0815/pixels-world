@@ -92,7 +92,7 @@ Konfiguration, `tools/`, Tests und Assetquellen bleiben außerhalb der Anwendung
 
 Unter `tools/` liegen Buildmodule in `build/`, Releasevorbereitung und
 Release-Note-Prüfung in `release/`, Assetexporte in `assets/`, Prüfwerkzeuge und
-Browserprofile in `qa/` sowie die lokale Hookinstallation in `hooks/`.
+Browserprofile in `qa/` sowie die lokale Hookinstallation in `hooks/`. Der kleine lokale Startcheck liegt in `dev/`.
 Assetexporte lösen Quellen und Ausgaben relativ zu ihrer Datei auf; ihre
 familienbezogenen Anleitungen unterscheiden Originale, Laufzeitdateien,
 Vorschauen und veröffentlichte Downloads.
