@@ -7,7 +7,7 @@ import { cwd, chdir, execPath } from 'node:process';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { after, test } from 'node:test';
 import { parse } from 'yaml';
-import { checkImportBoundaries } from '../../tools/check-import-boundaries.mjs';
+import { checkImportBoundaries } from '../../tools/qa/check-import-boundaries.mjs';
 
 const repository = fileURLToPath(new URL('../../', import.meta.url));
 const previous = cwd();
@@ -190,7 +190,7 @@ test('Unbekannte Aliase, berechnete Imports und Globs blockieren; bestehender As
 test('Alle Anwendungs-Codeformate werden erfasst; CLI und reguläre QA/CI verwenden dieselbe Prüfung', async () => {
   for (const extension of ['ts', 'js', 'mts', 'mjs', 'cts', 'cjs', 'tsx', 'jsx'])
     await rejected("import '../play/a';", `game/landingpage/probe.${extension}`);
-  const script = join(repository, 'tools/check-import-boundaries.mjs');
+  const script = join(repository, 'tools/qa/check-import-boundaries.mjs');
   assert.match(
     execFileSync(execPath, [script], { cwd: repository, encoding: 'utf8' }),
     /Anwendungsdateien geprüft/,

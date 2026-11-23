@@ -7,7 +7,7 @@
   ],
   "approval": "Terracotta/blue/gold style and 18x28 scale approved; Mellow explicitly requested with its own silhouette",
   "export": {
-    "command": "node tools/prepare-vase-assets.mjs",
+    "command": "node tools/assets/prepare-vase-assets.mjs",
     "boundsAlphaThreshold": 192,
     "rgba": "preserve nearest-neighbour samples",
     "intactCell": [

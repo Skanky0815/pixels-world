@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { Buffer } from 'node:buffer';
 import { URL } from 'node:url';
-import { githubApi, recoveryBase, releaseManifest } from '../../tools/prepare-release.mjs';
+import { githubApi, recoveryBase, releaseManifest } from '../../tools/release/prepare-release.mjs';
 
 const config = JSON.parse(
   readFileSync(new URL('../../release-please-config.json', import.meta.url)),

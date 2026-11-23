@@ -1,7 +1,7 @@
 import { test, expect, state, start, until, reset, besideCouch } from '../support/support';
 import { advanceRoundTo, useIdleFrames } from '../support/round-clock';
 import { expectCharacterView, prepareCharacterView } from './character-visuals';
-import { FAST_ROUND_CONFIG } from '../../../tools/e2e-timing';
+import { FAST_ROUND_CONFIG } from '../../../tools/qa/e2e-timing';
 import { ROUND_CONFIG } from '../../../game/play/domain/round-controller';
 import { SARA_CLIPS } from '../../../game/play/actors/sara-animations';
 

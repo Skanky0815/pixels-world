@@ -16,7 +16,7 @@
 
 Mit dem eingebauten Bildwerkzeug anhand des bestätigten Masters erstellt; Originalprompt: `generation-prompt.md`. `pixel-sheet-source.png` ist die größere generierte Vorlage. Ihr Abstandsraster ist für direkte Engine-Nutzung zu ungenau.
 
-`node tools/prepare-pixel-sheet.mjs` extrahiert 25 zusammenhängende Figuren und packt sie reproduzierbar per Nearest Neighbor. Schwache Alpha-Artefakte werden bei der Figurensuche ignoriert; übernommene Motivpixel behalten ihre Alpha-Werte. Pro Bewegungsgruppe gilt eine gemeinsame Skalierung. Bodenposen enden auf Zeile 30. Das Skript zeichnet keine Posen; Frame 0 wird aus dem Master übernommen.
+`node tools/assets/prepare-pixel-sheet.mjs` extrahiert 25 zusammenhängende Figuren und packt sie reproduzierbar per Nearest Neighbor. Schwache Alpha-Artefakte werden bei der Figurensuche ignoriert; übernommene Motivpixel behalten ihre Alpha-Werte. Pro Bewegungsgruppe gilt eine gemeinsame Skalierung. Bodenposen enden auf Zeile 30. Das Skript zeichnet keine Posen; Frame 0 wird aus dem Master übernommen.
 
 Abspielreihenfolge und Geschwindigkeit: `game/play/actors/pixel-animations.ts`. Gameplay bestimmt die Animation; Frames steuern weder Kollisionen noch Schaden. Die Quelldaten bleiben 32×32. Die Grunddarstellung im Spiel ist ohne Glättung 2× groß (64×64); die horizontal zentrierte Kollisionsfläche skaliert von 26×26 Quellpixeln auf 52×52 Spielpixel. Der Produktionsbuild lädt nur das gepackte Sheet.
 
@@ -28,7 +28,7 @@ Ein separates sichtbares Sprite folgt dem festen Physikkörper am Pfotenanker. G
 
 ## App-Icons exportieren
 
-`node tools/prepare-app-icons.mjs` erzeugt die Icons reproduzierbar aus Pixels
+`node tools/assets/prepare-app-icons.mjs` erzeugt die Icons reproduzierbar aus Pixels
 bestätigtem Idle-Master. Der Ausschnitt zeigt seinen Kopf; das maskierbare Icon
 hält die Figur im sicheren zentralen Bereich. Die Dateien stehen unter
 `public/icons/` und werden lokal ausgeliefert.

@@ -7,9 +7,9 @@ import { join } from 'node:path';
 import { env, execPath } from 'node:process';
 import { log } from 'node:console';
 import { parse } from 'yaml';
-import { classifyPath, selectQa } from '../../tools/qa-selection.ts';
-import { browserJobs } from '../../tools/qa-profiles.ts';
-import { changedPaths, selectionFromEnvironment } from '../../tools/select-qa.mjs';
+import { classifyPath, selectQa } from '../../tools/qa/qa-selection.ts';
+import { browserJobs } from '../../tools/qa/qa-profiles.ts';
+import { changedPaths, selectionFromEnvironment } from '../../tools/qa/select-qa.mjs';
 
 const workflow = parse(
   readFileSync(new URL('../../.github/workflows/qa.yml', import.meta.url), 'utf8'),
@@ -30,7 +30,7 @@ assert.equal(
 );
 assert.equal(selectStep.env.QA_HEAD_SHA, '${{ github.sha }}');
 assert.equal(selectStep.env.QA_FULL_ROUND, '${{ inputs.full_round || false }}');
-assert.match(selectStep.run, /node --experimental-strip-types tools\/select-qa.mjs/);
+assert.match(selectStep.run, /node --experimental-strip-types tools\/qa\/select-qa.mjs/);
 assert.equal(
   workflow.jobs['e2e-shard'].steps
     .find((step) => step.name === 'Browser-Szenarien')
@@ -50,7 +50,7 @@ for (const [path, expected] of [
   ['game/dev/game-debug.ts', 'all'],
   ['vite.config.ts', 'all'],
   ['package-lock.json', 'all'],
-  ['tools/application-pages.ts', 'all'],
+  ['tools/build/application-pages.ts', 'all'],
   ['.github/workflows/qa.yml', 'all'],
   ['tests/e2e/landingpage/landing.spec.ts', 'landing'],
   ['tests/e2e/landingpage/help.spec.ts', 'landing'],
@@ -222,7 +222,7 @@ try {
       execPath,
       [
         '--experimental-strip-types',
-        fileURLToPath(new URL('../../tools/select-qa.mjs', import.meta.url)),
+        fileURLToPath(new URL('../../tools/qa/select-qa.mjs', import.meta.url)),
       ],
       {
         cwd: root,

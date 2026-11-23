@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { releaseUrl } from '../../tools/release-metadata.ts';
+import { releaseUrl } from '../../tools/build/release-metadata.ts';
 
 test('Entwicklung, E2E und normale Produktionsvorschau verlinken keinen Release', () => {
   for (const mode of ['development', 'e2e', 'preview'])

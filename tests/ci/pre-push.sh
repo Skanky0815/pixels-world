@@ -4,9 +4,9 @@ repo_root=$(cd "$(dirname "$0")/../.." && pwd)
 fixture_dir=$(mktemp -d)
 trap 'rm -rf "$fixture_dir"' EXIT
 export GIT_CONFIG_GLOBAL=/dev/null
-mkdir -p "$fixture_dir/repo/.githooks" "$fixture_dir/repo/tools" "$fixture_dir/bin"
+mkdir -p "$fixture_dir/repo/.githooks" "$fixture_dir/repo/tools/hooks" "$fixture_dir/bin"
 cp "$repo_root/.githooks/pre-push" "$fixture_dir/repo/.githooks/"
-cp "$repo_root/tools/install-hooks.sh" "$fixture_dir/repo/tools/"
+cp "$repo_root/tools/hooks/install-hooks.sh" "$fixture_dir/repo/tools/hooks/"
 cat > "$fixture_dir/bin/npm" <<'MOCK'
 #!/bin/sh
 printf '%s\n' "$*" >> "$NPM_LOG"
@@ -28,11 +28,11 @@ git commit -qm 'second fixture'
 head=$(git rev-parse HEAD)
 update="refs/heads/topic $head refs/heads/topic $first"
 printf '# existing hook\n' > .git/hooks/pre-push
-if sh tools/install-hooks.sh > /dev/null 2>&1; then exit 1; fi
+if sh tools/hooks/install-hooks.sh > /dev/null 2>&1; then exit 1; fi
 rm .git/hooks/pre-push
-sh tools/install-hooks.sh > /dev/null
+sh tools/hooks/install-hooks.sh > /dev/null
 test "$(git config --local --get core.hooksPath)" = .githooks
-sh tools/install-hooks.sh > /dev/null
+sh tools/hooks/install-hooks.sh > /dev/null
 printf '%s\n' "$update" | sh .githooks/pre-push
 test "$(cat "$NPM_LOG")" = 'run check:pr'
 : > "$NPM_LOG"
@@ -47,6 +47,6 @@ if printf 'refs/heads/other %s refs/heads/other %s\n' "$first" "$head" | sh .git
 printf 'refs/heads/deleted 0000000000000000000000000000000000000000 refs/heads/deleted %s\n' "$head" | sh .githooks/pre-push
 test ! -s "$NPM_LOG"
 git config --local core.hooksPath custom-hooks
-if sh tools/install-hooks.sh > /dev/null 2>&1; then exit 1; fi
+if sh tools/hooks/install-hooks.sh > /dev/null 2>&1; then exit 1; fi
 test "$(git config --local --get core.hooksPath)" = custom-hooks
 echo 'Hook-Tests: Installation, Wiederholung, Prüfbefehl, Fehler, dirty HEAD, anderer Commit, Löschung und Konfigurationsschutz bestanden.'

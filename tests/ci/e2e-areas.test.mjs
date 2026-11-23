@@ -4,7 +4,12 @@ import { execFileSync } from 'node:child_process';
 import { env, execPath } from 'node:process';
 import { URL, fileURLToPath } from 'node:url';
 import { log } from 'node:console';
-import { browserJobs, browserProfile, browserServers, specArea } from '../../tools/qa-profiles.ts';
+import {
+  browserJobs,
+  browserProfile,
+  browserServers,
+  specArea,
+} from '../../tools/qa/qa-profiles.ts';
 
 const root = new URL('../../', import.meta.url);
 function specs(dir, prefix = '') {

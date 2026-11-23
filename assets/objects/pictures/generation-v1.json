@@ -5,7 +5,7 @@
     "assets/environment/living-room/room-picture.png",
     "assets/team/pixel-portrait-v3.png"
   ],
-  "exporter": "node tools/prepare-picture-assets.mjs",
+  "exporter": "node tools/assets/prepare-picture-assets.mjs",
   "sampling": "Alpha-Bounds ab 192; Nearest-Neighbour, unveränderte RGBA-Samples, proportional in 54×56.",
   "motifs": [
     {

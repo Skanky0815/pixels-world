@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { FAST_ROUND_CONFIG, roundConfigForBuild } from '../../tools/e2e-timing.ts';
+import { FAST_ROUND_CONFIG, roundConfigForBuild } from '../../tools/qa/e2e-timing.ts';
 import { ROUND_CONFIG, RoundController } from '../../game/play/domain/round-controller.ts';
 
 test('Nur der kurze E2E-Build enthält die injizierbare Testkonfiguration', () => {

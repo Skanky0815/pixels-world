@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { parseConventionalCommits } from 'release-please/build/src/commit.js';
 import { DefaultChangelogNotes } from 'release-please/build/src/changelog-notes/default.js';
-import { releaseNote, generatedVersionPr } from '../../tools/release-note.mjs';
+import { releaseNote, generatedVersionPr } from '../../tools/release/release-note.mjs';
 
 const config = JSON.parse(
   readFileSync(new URL('../../release-please-config.json', import.meta.url)),

@@ -1,6 +1,6 @@
 # Futternapf – Quellprompt
 
-Die im Originalprompt genannten 36×18 Pixel sind das Entwurfsmaß. Maßgeblich für den aktuellen 36×16-Export sind [README](README.md) und [prepare-food-bowl.mjs](../../../tools/prepare-food-bowl.mjs).
+Die im Originalprompt genannten 36×18 Pixel sind das Entwurfsmaß. Maßgeblich für den aktuellen 36×16-Export sind [README](README.md) und [prepare-food-bowl.mjs](../../../tools/assets/prepare-food-bowl.mjs).
 
 Erzeugt mit dem integrierten Bildwerkzeug, transparenter Hintergrund. Quelle:
 `sources/food-bowl-source-v1.png`; keine Bildreferenzen. Unveränderte Quelle aufbewahren.

@@ -6,7 +6,7 @@ Ansatz, Hoodie und die beiden abstehenden Strähnen bestimmen Saras Identität.
 
 - `sara-idle-left-source-v4.png`: unveränderte Imagegen-Quelle.
 - `sara-idle-left-v4.png`: transparente 64×96-Zelle, sichtbare Figur 60 Pixel hoch;
-  Maßstabs- und Silhouettenvorlage für den Export mit [prepare-sara-sheet.mjs](../../../tools/prepare-sara-sheet.mjs).
+  Maßstabs- und Silhouettenvorlage für den Export mit [prepare-sara-sheet.mjs](../../../tools/assets/prepare-sara-sheet.mjs).
 - `sara-pixel-detail-v4.png` und `sara-pixel-room-scale-v4.png`: statische
   Größenvergleiche mit Pixel, keine Spielaufnahmen.
 - `metadata-v4.json`: Messwerte dieses Referenzexports.

@@ -28,7 +28,7 @@ Prompts stehen in `animation-v1/generation-prompts-v1.md`, Exportparameter in
 `animation-v1/metadata-v1.json`. `animation-v1/sara-sheet-preview-v1.png` ist vierfach
 per Nearest Neighbor vergrößert und wird nicht im Spiel geladen.
 
-`node tools/prepare-sara-sheet.mjs` exportiert das Sheet erneut. Alle erzeugten Posen
+`node tools/assets/prepare-sara-sheet.mjs` exportiert das Sheet erneut. Alle erzeugten Posen
 verwenden denselben einmal aus dem Source-Idle bestimmten Maßstab. Der gemeinsame
 horizontale Versatz richtet den Fußbereich am bestätigten Idle aus; es gibt keine
 individuelle Neuskalierung einzelner Posen. Jede Pose wird auf dieselbe Sohlenzeile
@@ -61,7 +61,7 @@ Die mit dem eingebauten Bildwerkzeug erzeugten Originale und die vollständigen
 Arm-Entwurf hebt die Hand für den sitzenden Pixel an; die niedrigere Hand bleibt
 für Pixels bestehende Rückenlage erhalten.
 
-`node tools/prepare-sara-endings.mjs` exportiert ein 576×288-Sheet mit 18 Zellen
+`node tools/assets/prepare-sara-endings.mjs` exportiert ein 576×288-Sheet mit 18 Zellen
 zu je 96×96 Pixeln: 0–5 Bauch, 6–11 Kopf, 12–15 sauer; 16–17 bleiben leer. Je Quellenblatt bestimmt
 nur der erste stehende Frame den gemeinsamen Maßstab; die Hocke wird nicht
 individuell vergrößert. Ein gemeinsamer horizontaler Fußanker je Blatt erhält

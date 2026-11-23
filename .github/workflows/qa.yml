@@ -77,7 +77,7 @@ jobs:
           QA_HEAD_SHA: ${{ github.sha }}
           QA_FULL_ROUND: ${{ inputs.full_round || false }}
           QA_REQUESTED_SCOPE: ${{ inputs.scope || '' }}
-        run: node --experimental-strip-types tools/select-qa.mjs
+        run: node --experimental-strip-types tools/qa/select-qa.mjs
 
   quality:
     needs: select

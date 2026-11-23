@@ -1,6 +1,6 @@
 # Mülleimer: Erzeugungsprompts
 
-Die Promptmaße beschreiben die ursprüngliche Erzeugung. Der aktuelle Export verwendet 48×60 und 132×46 Pixel; maßgeblich sind [README](README.md) und [prepare-trash-bin-assets.mjs](../../../tools/prepare-trash-bin-assets.mjs).
+Die Promptmaße beschreiben die ursprüngliche Erzeugung. Der aktuelle Export verwendet 48×60 und 132×46 Pixel; maßgeblich sind [README](README.md) und [prepare-trash-bin-assets.mjs](../../../tools/assets/prepare-trash-bin-assets.mjs).
 
 Modus: integriertes Bildwerkzeug (`image_gen`), echte Transparenz. Quellen unverändert unter `sources/`; die zweite Erzeugung nutzte das geschlossene Bild als Stilreferenz.
 

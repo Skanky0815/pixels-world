@@ -45,7 +45,7 @@ Eine `ObjectDefinition` ist eine diskriminierte Vorlage für die in [definitions
 - `placement.mode: 'surface'`: x-Position auf einer benannten Auflage. Unterstützt Boden, Raumplattformen und Sitzflächen anderer Sofas. Sofa-x bezeichnet die linke Sitzkante, Teppich-x die linke Kante, Pflanzen-/Vasen-x die Mitte. Die Auflagehöhe wird aus der Referenz berechnet; sie wird nicht nochmals in die Instanz eingetragen.
 - `placement.mode: 'area'`: linke obere Ecke eines Vorhangs oder Wandbildes. Breite und Höhe stammen aus der Vorlage beziehungsweise dem bekannten Bild-Asset.
 - Sofa-Geometrie enthält Breite, Sitzdicke und Sitzhöhe über der Auflage. Rendering, Collider und Nähe verwenden daraus dieselbe Sitzfläche.
-- `reading-books` (liegend) und `upright-books` (stehende Buchrücken) teilen Typ, Maße und Regeln. Beide sind zufällig platzierbare Dekoration für passende mittelgroße Slots auf Boden oder Regal. Die Raumdaten enthalten keine festen Bücherinstanzen. `objectSlots` gruppiert Slots über mehrere Auflagen hinweg: jede Gruppe hat eigene IDs und Dichten je Schwierigkeit; jeder Eintrag nennt seine `surfaceId` und einen lokalen x-Mittelpunkt. In den Wohnzimmern wählt eine Gruppe einen Bodenplatz, eine weitere einen Platz links auf dem unteren oder mittleren Regal. Die bestehende Pool-/Geometrie-/Kollisionsprüfung und derselbe Runden-RNG gelten für alle Gruppen. Neustart erhält dieselbe Auswahl. `warningMs`, `fallMs` und `points` steuern Wackeln und einmaligen Schaden. `supportY` und `floorY` trennen Auflage und Raumboden; Auflagenverlust zählt auch bei schon verstreuten Büchern nicht doppelt. Die Buchgrafiken liegen als transparente PNGs samt Imagegen-Quellen und vollständigen Prompts unter `assets/objects/books/`. `node tools/prepare-book-assets.mjs` exportiert liegende/stehende Bücher auf 48×36 und den Streuzustand auf 96×24 Pixel, per Alpha-Bounds und Nearest-Neighbour mit unveränderten RGBA-Samples. `BookArt` animiert diese Bilder; der kurze synthetische Aufprall bleibt in `game/play/assets/book-impact.ts`.
+- `reading-books` (liegend) und `upright-books` (stehende Buchrücken) teilen Typ, Maße und Regeln. Beide sind zufällig platzierbare Dekoration für passende mittelgroße Slots auf Boden oder Regal. Die Raumdaten enthalten keine festen Bücherinstanzen. `objectSlots` gruppiert Slots über mehrere Auflagen hinweg: jede Gruppe hat eigene IDs und Dichten je Schwierigkeit; jeder Eintrag nennt seine `surfaceId` und einen lokalen x-Mittelpunkt. In den Wohnzimmern wählt eine Gruppe einen Bodenplatz, eine weitere einen Platz links auf dem unteren oder mittleren Regal. Die bestehende Pool-/Geometrie-/Kollisionsprüfung und derselbe Runden-RNG gelten für alle Gruppen. Neustart erhält dieselbe Auswahl. `warningMs`, `fallMs` und `points` steuern Wackeln und einmaligen Schaden. `supportY` und `floorY` trennen Auflage und Raumboden; Auflagenverlust zählt auch bei schon verstreuten Büchern nicht doppelt. Die Buchgrafiken liegen als transparente PNGs samt Imagegen-Quellen und vollständigen Prompts unter `assets/objects/books/`. `node tools/assets/prepare-book-assets.mjs` exportiert liegende/stehende Bücher auf 48×36 und den Streuzustand auf 96×24 Pixel, per Alpha-Bounds und Nearest-Neighbour mit unveränderten RGBA-Samples. `BookArt` animiert diese Bilder; der kurze synthetische Aufprall bleibt in `game/play/assets/book-impact.ts`.
 - Der Spawn referenziert ebenfalls eine Auflage. Pixel muss mit der 52×52-Kollisionsfläche darauf Platz haben.
 
 `RoomDefinition` enthält logische Abmessungen, Boden, Spawn, Plattformen, Instanzen, HUD-Hinweisposition und statische Dekoration. Dekoration besteht aus Rechtecken, Texten und bekannten Bildmodulen (`kind: 'image'`, `asset`, `bounds`). Kleine TypeScript-Helfer im Beispiel erzeugen daraus wiederholte statische Daten; es werden keine Gameplay-Callbacks gespeichert.
@@ -306,7 +306,7 @@ davon. Die gemeinsame Preload-Funktion lädt dieselben Texturen im Spiel und
 im DEV-Playground; URLs werden für den Pages-Unterpfad von Vite aufgelöst.
 
 `assets/objects/vases/generation-v1.json` dokumentiert Quellen und Prompts.
-`node tools/prepare-vase-assets.mjs` erzeugt die kleinen Exporte reproduzierbar:
+`node tools/assets/prepare-vase-assets.mjs` erzeugt die kleinen Exporte reproduzierbar:
 Alpha-Bounds ab 192 bestimmen den Ausschnitt, Nearest Neighbor erhält die
 abgetasteten RGBA-Werte. Vasen stehen unten mittig in 18×28-Zellen, Scherben
 zentriert in 8×8-Zellen. Die ursprünglichen Generierungsbilder bleiben erhalten
@@ -320,7 +320,7 @@ Die gemeinsame Vorladung in Spiel und Playground lädt nur die kleinen PNGs aus
 `assets/objects/couch/`. Quellen und vollständige Imagegen-Prompts liegen dort
 in `sources/` und `generation-v1.json`.
 
-`node tools/prepare-couch-assets.mjs` exportiert die freigegebenen V3-Sofas in
+`node tools/assets/prepare-couch-assets.mjs` exportiert die freigegebenen V3-Sofas in
 136×80 und den transparenten Kratzpatch in 14×16 Pixel. Der Nearest-Neighbor-Export
 erhält die ausgewählten RGBA-Werte; seine zweigeteilte Höhenabbildung setzt die
 Sitzkante auf Quellzeile 30. Das Bild wird an den vorhandenen Sitz-/Bodenanker
@@ -340,7 +340,7 @@ suchen den nächsten freien Platz nahe Pixels tatsächlichem Kontakt. Die Patche
 bleiben vollständig im Stoff, liegen hinter Pixel und werden beim Reset entfernt.
 
 Quellen und Imagegen-Prompts liegen unter `assets/objects/curtain/`.
-`node tools/prepare-curtain-assets.mjs` exportiert die freigegebene Basis in
+`node tools/assets/prepare-curtain-assets.mjs` exportiert die freigegebene Basis in
 56×178 und den Risspatch in 12×20 Pixel. Die Alpha-Bounds ab 192 werden
 seitenverhältnistreu per Nearest Neighbor zentriert eingepasst; übernommene
 RGBA-Werte bleiben erhalten. Nur die Export-PNGs gelangen ins Laufzeitbundle.
@@ -355,7 +355,7 @@ Interaktionsbereich, Bodenanker, Punkte und Physik bleiben unabhängig vom Bild.
 Die 80×10-Erde erscheint hinter Pixel und verschwindet beim Reset.
 
 Quellen und vollständige Imagegen-Prompts liegen unter `assets/objects/catgrass/`.
-`node tools/prepare-catgrass-assets.mjs` exportiert per Nearest Neighbor und
+`node tools/assets/prepare-catgrass-assets.mjs` exportiert per Nearest Neighbor und
 bewahrt abgetastete RGBA-Werte. Beide Pflanzenzustände verwenden die Alpha-Bounds
 (ab 192) und Abbildung der intakten Quelle; Zeilen 39–59 des freigegebenen Topfs
 werden identisch übernommen. So bleiben Topf und Drehpunkt beim Biss stabil.
@@ -372,7 +372,7 @@ sind Ball und Marker ausgeblendet. Zielbereich, Aufenthaltszeit, Heimkehrtrigger
 Physik und friedliche Erreichbarkeit ändern sich durch die Grafik nicht.
 
 Quelle und Imagegen-Prompt liegen unter `assets/objects/favorite-ball/`.
-`node tools/prepare-favorite-ball-assets.mjs` passt die Alpha-Bounds ab 192
+`node tools/assets/prepare-favorite-ball-assets.mjs` passt die Alpha-Bounds ab 192
 seitenverhältnistreu in maximal 14×14 Pixel ein und zentriert sie in 16×16.
 Nearest Neighbor bewahrt die abgetasteten RGBA-Werte; nur das kleine Export-PNG
 wird im Spiel geladen.
@@ -401,7 +401,7 @@ Bücher bleiben dadurch beim Einsturz nicht in der Luft. Kettenreaktionen sind
 kein eigener Teil dieses Ablaufs.
 
 Spiel und Playground laden dieselben Regalmodule aus `assets/objects/shelves/`.
-`node tools/prepare-shelf-assets.mjs` exportiert zwei 8×8-Endstücke, eine wiederholte
+`node tools/assets/prepare-shelf-assets.mjs` exportiert zwei 8×8-Endstücke, eine wiederholte
 8×8-Mitte, einen 4×10-Träger und eine transparente 8×8-Bruchkante. Die Darstellung bei 2× hält Endstücke und Träger
 fest und wiederholt die Mitte auch für nicht durch 16 teilbare Brettbreiten.
 Die Brettoberkante und Colliderhöhe stammen weiterhin aus den Raumdaten.
@@ -455,7 +455,7 @@ einem Slot bei lokal x=62; Ball und obere feste Vase behalten ihre getrennten An
 Bücher werden weder in den Hintergrund noch als statische Dekoration eingebrannt.
 
 Quellen, vollständige Imagegen-Prompts und Rasterparameter stehen unter
-`assets/environment/living-room/`. `node tools/prepare-room-assets.mjs` exportiert
+`assets/environment/living-room/`. `node tools/assets/prepare-room-assets.mjs` exportiert
 Wand-/Bodenmodule und das Bild aus dem abgestimmten Quellenraster; Fenster, Tür und
 Teppich werden anhand ihrer Alpha-Bounds ab 192 eingepasst. Nearest Neighbor bewahrt
 abgetastete RGBA-Werte. Alle Laufzeitbilder verwenden den 2×-Maßstab; nur die kleinen
@@ -526,7 +526,7 @@ sichtbar und haben keine Collider. Reduzierte Bewegung unterdrückt das Wackeln;
 Zeit-, Treffer- und Punktevertrag bleiben gleich. Neustart setzt das Bild zurück.
 
 `assets/objects/pictures/generation-v1.json` enthält Imagegen-Prompts und Quellen.
-`node tools/prepare-picture-assets.mjs` exportiert 54×56-PNGs proportional mit
+`node tools/assets/prepare-picture-assets.mjs` exportiert 54×56-PNGs proportional mit
 Alpha-Bounds und Nearest-Neighbour unter Erhalt der ursprünglichen RGBA-Samples.
 Die drei hochauflösenden Quellen gehören nicht zum Laufzeitbundle.
 
@@ -566,7 +566,7 @@ Wiederbetreten verändert weder Position noch Punkte; Neustart entfernt die Spur
 Pause und Heimkehr verwenden die bestehenden Simulationsgrenzen.
 
 `assets/objects/carpet/generation-v1.json` hält Quelle und Imagegen-Prompt fest.
-`node tools/prepare-hairball-asset.mjs` exportiert das transparente 32×16-PNG
+`node tools/assets/prepare-hairball-asset.mjs` exportiert das transparente 32×16-PNG
 proportional per Nearest-Neighbour mit unveränderten RGBA-Samples. Der vorhandene
 Teppich-PNG wird wiederverwendet, die große Haarballenquelle nicht gebündelt.
 
@@ -654,7 +654,7 @@ aber mit ihren stabilen IDs in Entwicklungsvorschauen sammelbar.
 Das Album verwendet echte PNG-Papiertextur unter `assets/ui/album/paper.png`.
 Original, vollständiger Imagegen-Prompt und Herkunft sind in
 [`generation-v1.json`](../../../assets/ui/album/generation-v1.json) dokumentiert.
-`node tools/prepare-album-paper.mjs` exportiert die Originalquelle reproduzierbar
+`node tools/assets/prepare-album-paper.mjs` exportiert die Originalquelle reproduzierbar
 per Nearest-Neighbour auf 256×256; nur die kleine Textur wird im Spiel gebündelt.
 Raum-Icons bleiben schlanke SVG-Bediensymbole, die ausgefransten Stoff-Lesezeichen
 und der Bucheinband verwenden CSS. Raumfarben für noch nicht gestaltete Zimmer

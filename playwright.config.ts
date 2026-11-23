@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { browserProfile, browserServers } from './tools/qa-profiles';
+import { browserProfile, browserServers } from './tools/qa/qa-profiles';
 
 const scope = process.env.E2E_SCOPE || 'all';
 const servers = browserServers(scope);

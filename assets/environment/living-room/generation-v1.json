@@ -55,7 +55,7 @@
       15
     ]
   },
-  "reproduce": "node tools/prepare-room-assets.mjs",
+  "reproduce": "node tools/assets/prepare-room-assets.mjs",
   "doorState": "closed",
   "booksInScenery": false
 }
