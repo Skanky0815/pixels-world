@@ -28,7 +28,7 @@
     "test:e2e:landing": "E2E_SCOPE=landing playwright test",
     "test:e2e:play": "E2E_SCOPE=play playwright test",
     "test:e2e:integration": "E2E_SCOPE=integration playwright test",
-    "test:ci": "bash tests/ci/ensure-main-qa.sh && bash tests/ci/release-gates.sh && bash tests/ci/prepare-release.sh && bash tests/ci/pre-push.sh && node --experimental-strip-types tests/ci/qa-scope.test.mjs && node --experimental-strip-types tests/ci/e2e-areas.test.mjs && node --test tests/ci/import-boundaries.test.mjs && bash tests/ci/auto-publish.sh && node tests/ci/release-flow.test.mjs && bash tests/ci/release-qa-dispatch.sh && node --test tests/ci/release-notes.test.mjs tests/ci/release-preparation.test.mjs"
+    "test:ci": "bash tests/ci/ensure-main-qa.sh && bash tests/ci/release-gates.sh && bash tests/ci/pages-recovery.sh && bash tests/ci/prepare-release.sh && bash tests/ci/pre-push.sh && node --experimental-strip-types tests/ci/qa-scope.test.mjs && node --experimental-strip-types tests/ci/e2e-areas.test.mjs && node --test tests/ci/import-boundaries.test.mjs && bash tests/ci/auto-publish.sh && node tests/ci/release-flow.test.mjs && bash tests/ci/release-qa-dispatch.sh && node --test tests/ci/release-notes.test.mjs tests/ci/release-preparation.test.mjs"
   },
   "dependencies": {
     "phaser": "^3.90.0"

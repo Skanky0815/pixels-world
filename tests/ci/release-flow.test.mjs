@@ -104,6 +104,19 @@ assert.equal(rollout.jobs.build.needs, 'identity');
 assert.equal(rollout.jobs.deploy.needs, 'build');
 assert.equal(download(release).with.name, 'qa-pages-dist-${{ github.sha }}');
 assert.deepEqual(download(rollout.jobs.build).with, download(release).with);
+// Both packages must survive a partial rerun; an absent/expired build still fails
+// at download rather than producing a replacement or selecting another run.
+const testedBuild = read('qa').jobs['e2e-shard'].steps.find(
+  (step) => step.with?.name === 'qa-pages-dist-${{ github.sha }}',
+);
+const pagesPackage = rollout.jobs.build.steps.find((step) =>
+  step.uses?.startsWith('actions/upload-pages-artifact@'),
+);
+assert.equal(testedBuild.with['retention-days'], 14);
+assert.equal(pagesPackage.with['retention-days'], 14);
+for (const job of [release, rollout.jobs.build]) {
+  assert.equal(download(job)['continue-on-error'], undefined);
+}
 for (const job of Object.values(rollout.jobs)) {
   assert.equal(checkout(job).with.ref, '${{ inputs.release_sha }}');
   assert.ok(job.steps.some((step) => step.run === 'bash .github/scripts/verify-release.sh'));

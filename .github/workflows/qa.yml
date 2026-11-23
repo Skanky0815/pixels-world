@@ -184,7 +184,8 @@ jobs:
           name: qa-pages-dist-${{ github.sha }}
           path: dist
           if-no-files-found: error
-          retention-days: 1
+          # Keep the tested build for the same recovery window as the Pages package.
+          retention-days: 14
       - name: Browser-Testzusammenfassung
         id: browser-summary
         if: ${{ always() && hashFiles('test-reports/playwright.xml') != '' }}

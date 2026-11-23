@@ -432,15 +432,43 @@ für Nutzende erklärt die [zweisprachige Hilfe](game/landingpage/help.html#upda
 
 ### Fehler und Wiederanlauf
 
-| Befund in Actions                                             | Nächster Schritt                                                                                                                            |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Main-QA fehlt oder läuft                                      | Prepare startet fehlende QA bzw. wartet; Summary und verlinkten Lauf prüfen                                                                 |
-| QA fehlgeschlagen, abgebrochen oder überholt                  | Ursache beheben, danach auf aktuellem Main vorbereiten; Gates nicht umgehen                                                                 |
-| Kein aktueller Versions-Merge                                 | Versions-PR vorbereiten, prüfen und mergen; normale Merges sind kein Release-Kandidat                                                       |
-| Mehrere Kandidaten oder nur teilweise vorhandener Tag/Release | Identität untersuchen, keine Labels/Tags pauschal bereinigen                                                                                |
-| Vollprüfung fehlgeschlagen                                    | Bei unverändertem Kandidaten fehlgeschlagene Jobs desselben Laufs erneut starten; sonst neu vorbereiten                                     |
-| Veröffentlichung erfolgreich, Pages fehlgeschlagen            | Fehlgeschlagene Pages-Jobs desselben Laufs erneut starten; geprüfte Release-Identität erhalten                                              |
-| Geprüftes Buildartefakt fehlt oder ist abgelaufen             | Lauf stoppt; kein ungeprüfter Ersatzbuild. Wiederanlauf bleibt Gegenstand von [#346](https://github.com/Skanky0815/pixels-world/issues/346) |
+| Befund in Actions                                             | Nächster Schritt                                                                                                                        |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Main-QA fehlt oder läuft                                      | Prepare startet fehlende QA bzw. wartet; Summary und verlinkten Lauf prüfen                                                             |
+| QA fehlgeschlagen, abgebrochen oder überholt                  | Ursache beheben, danach auf aktuellem Main vorbereiten; Gates nicht umgehen                                                             |
+| Kein aktueller Versions-Merge                                 | Versions-PR vorbereiten, prüfen und mergen; normale Merges sind kein Release-Kandidat                                                   |
+| Mehrere Kandidaten oder nur teilweise vorhandener Tag/Release | Identität untersuchen, keine Labels/Tags pauschal bereinigen                                                                            |
+| Vollprüfung fehlgeschlagen                                    | Bei unverändertem Kandidaten fehlgeschlagene Jobs desselben Laufs erneut starten; sonst neu vorbereiten                                 |
+| Veröffentlichung erfolgreich, Pages fehlgeschlagen            | Innerhalb des Wiederanlauffensters nur fehlgeschlagene Pages-Jobs desselben Laufs erneut starten; Details unten                         |
+| Geprüftes Buildartefakt fehlt oder ist abgelaufen             | Wiederanlauf stoppt; nächste Version auf aktuellem Main vorbereiten, prüfen und veröffentlichen; keinen alten Tag oder Release ersetzen |
+
+#### Wiederanlauffenster für Pages
+
+QA-Produktionsbuild und Pages-Paket werden jeweils **14 Tage ab ihrem Upload**
+aufbewahrt (siehe `retention-days` in [QA](.github/workflows/qa.yml) und
+[Pages](.github/workflows/pages.yml)). Das ist das maximale Wiederanlauffenster;
+frühere Löschung oder eine kürzere wirksame Repository-/Organisationsgrenze kann
+es verkürzen. Beide Pakete belegen dafür länger Actions-Artefaktspeicher;
+Testreports behalten ihre bisherige Aufbewahrung.
+
+Nach erfolgreicher Veröffentlichung und fehlgeschlagenem Pages-Rollout:
+
+1. Den ursprünglichen **Spielrelease**-Lauf öffnen und Release-Tag, geprüften SHA
+   sowie Artefakte und deren Ablauf prüfen.
+2. **Re-run failed jobs** wählen, damit die erfolgreiche Releaseerzeugung und QA
+   erhalten bleiben. Nur das geprüfte Paket desselben Laufs und SHAs verwenden;
+   keinen neuen Release-Lauf und keine erneute Main-QA als Recovery starten.
+3. Nach erfolgreichem Rollout den veröffentlichten Stand wie oben prüfen.
+
+Vor jedem Pages-Abschnitt werden veröffentlichter Release, unveränderter Tag
+und aktueller Main-SHA geprüft. Bei weitergelaufenem Main, geändertem Tag oder
+fehlenden/abgelaufenen Artefakten endet die Recovery bewusst. Identität klären
+und die nächste Version über den regulären Ablauf auf aktuellem Main vorbereiten,
+prüfen und veröffentlichen; bestehende Tags/Releases nicht verschieben oder neu
+erzeugen. **Re-run all jobs** ist nach erfolgreicher Veröffentlichung kein
+Recoveryweg: Die Kandidatenprüfung verhindert eine zweite Releaseerzeugung.
+Die Fristverlängerung gilt nur für neu hochgeladene Artefakte, nicht rückwirkend
+für bereits abgelaufene frühere Releases.
 
 Kandidatenprüfung ohne Mutation (Repository und aktuellen Main-SHA einsetzen):
 
