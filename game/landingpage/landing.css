@@ -554,7 +554,7 @@ body.landing-page {
 }
 .emoji-previews {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   max-width: 720px;
   margin: 24px auto;

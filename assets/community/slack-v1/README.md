@@ -1,21 +1,22 @@
 # Pixel-Slack-Emojis
 
-![Approval-Pixel](pixel_approved.png) ![Chaos-Pixel](pixel_chaos.png) ![Unschulds-Pixel](pixel_war_nicht_ich.png) ![Herz-Pixel](pixel_love.png) ![Pixel bei der Arbeit](pixel_in_progress.png) ![Fragender Pixel](pixel_question.png) ![Pixel hat eine Idee](pixel_idee.png) ![Urlaubs-Pixel](pixel_urlaub.png)
+![Okay-Pixel](pixel_approved.png) ![Nein-Pixel](pixel_nein.png) ![Chaos-Pixel](pixel_chaos.png) ![Unschulds-Pixel](pixel_war_nicht_ich.png) ![Herz-Pixel](pixel_love.png) ![Pixel bei der Arbeit](pixel_in_progress.png) ![Fragender Pixel](pixel_question.png) ![Pixel hat eine Idee](pixel_idee.png) ![Urlaubs-Pixel](pixel_urlaub.png)
 
-Acht statische Reaktionen im Stil von Pixels freigegebenem Porträt und Idle-Master:
+Neun statische Reaktionen im Stil von Pixels freigegebenem Porträt und Idle-Master:
 
 | Datei | Slack-Name | Motiv |
 | --- | --- | --- |
-| `pixel_approved.png` | `:pixel_approved:` | Approval-Pfote mit grünem Haken |
+| `pixel_approved.png` | `:pixel_approved:` | Okay / Zustimmung: Approval-Pfote mit grünem Haken |
+| `pixel_nein.png` | `:pixel_nein:` | Nein: zurückgelegte Ohren, skeptischer Blick, abwehrende Katzenpfote und rotes Kreuz |
 | `pixel_chaos.png` | `:pixel_chaos:` | Zufriedener Pixel mit kaputter Vase |
 | `pixel_war_nicht_ich.png` | `:pixel_war_nicht_ich:` | Unschuldsblick mit Heiligenschein |
 | `pixel_love.png` | `:pixel_love:` | Pixel hält ein großes rotes Herz |
 | `pixel_in_progress.png` | `:pixel_in_progress:` | Konzentrierter Pixel mit Zahnrädern |
 | `pixel_urlaub.png` | `:pixel_urlaub:` | Entspannter Pixel mit Sonnenbrille |
 | `pixel_idee.png` | `:pixel_idee:` | Begeisterter Pixel mit Glühbirne |
-| `pixel_question.png` | `:pixel_question:` | Schiefes Köpfchen mit Fragezeichen |
+| `pixel_question.png` | `:pixel_question:` | Frage / Weiß nicht: schiefes Köpfchen mit Fragezeichen |
 
-`pixel-slack-emojis.zip` enthält die acht Upload-PNGs und `Namen.txt`.
+`pixel-slack-emojis.zip` enthält die neun Upload-PNGs und `Namen.txt`.
 Entpacken, in Slack das Emoji-Menü öffnen, „Emoji hinzufügen“ wählen und die PNGs
 mit den Namen aus der Tabelle einzeln hinzufügen. Die lokale `preview.html` zeigt
 128-, 32- und 22-Pixel-Proben auf hellen und dunklen Hintergründen.
@@ -43,9 +44,9 @@ Der Export prüft die Dateigröße und erzeugt Namensliste, Vorschau und ZIP ern
 
 ## Landingpage-Download
 
-Der Export kopiert die acht Vorschaubilder nach
+Der Export kopiert die neun Vorschaubilder nach
 `public/downloads/pixel-slack-emojis/` und das ZIP nach
 `public/downloads/pixel-slack-emojis.zip`. Die Landingpage zeigt die Motive auf
-Desktop in zwei Reihen, auf dem Handy in vier Reihen und bietet einen direkten
+Desktop als 3×3-Raster, auf dem Handy in zwei Spalten und bietet einen direkten
 Download ohne Anmeldung. Texte und Bildbeschreibungen sind DE/EN vorhanden.
 Die kleinen PNG-Vorschauen sind für die Offline-Landingpage im Workbox-Cache enthalten; das ZIP bleibt ausgeschlossen. Die großen Quellen bleiben ausschließlich hier im Asset-Verzeichnis.

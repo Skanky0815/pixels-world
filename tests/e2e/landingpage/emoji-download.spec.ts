@@ -6,11 +6,12 @@ import { PNG } from 'pngjs';
 
 const names = [
   'pixel_approved',
+  'pixel_nein',
+  'pixel_question',
   'pixel_chaos',
   'pixel_war_nicht_ich',
   'pixel_love',
   'pixel_in_progress',
-  'pixel_question',
   'pixel_idee',
   'pixel_urlaub',
 ];
@@ -28,6 +29,9 @@ test(
     await section.scrollIntoViewIfNeeded();
     await expect(section.locator('img')).toHaveCount(names.length);
     await expect(section.locator('h2')).toHaveText('Pixel für deinen Chat');
+
+    for (const label of ['Okay!', 'Nein!', 'Weiß nicht …'])
+      await expect(section.getByText(label, { exact: true })).toBeVisible();
     await expect
       .poll(() =>
         section
@@ -67,6 +71,15 @@ test(
       const alpha = png.data.filter((_, index) => index % 4 === 3);
 
       expect(alpha.includes(0) && alpha.includes(255)).toBe(true);
+      expect(alpha.every((value) => value === 0 || value === 255)).toBe(true);
+      expect(
+        alpha.every((value, index) => {
+          const x = index % 128;
+          const y = Math.floor(index / 128);
+
+          return x < 2 || x >= 126 || y < 2 || y >= 126 ? value === 0 : true;
+        }),
+      ).toBe(true);
       const preview = await request.get(base + 'downloads/pixel-slack-emojis/' + name + '.png');
 
       expect(preview.ok()).toBe(true);
@@ -76,6 +89,8 @@ test(
     await page.getByRole('button', { name: 'English', exact: true }).click();
     await expect(section.locator('h2')).toHaveText('Pixel for your chat');
     await expect(section.locator('.emoji-download')).toHaveText('Download emoji set ↓');
+    await expect(section.getByText('No!', { exact: true })).toBeVisible();
+    await expect(section.getByText('Not sure …', { exact: true })).toBeVisible();
     await expect(section.locator('img').last()).toHaveAccessibleName(
       'Pixel wears sunglasses and smiles contentedly.',
     );
@@ -85,7 +100,7 @@ test(
       await section
         .locator('.emoji-previews')
         .evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(' ').length),
-    ).toBe(4);
+    ).toBe(3);
     const sw = await request.get(base + 'sw.js');
 
     expect(sw.ok()).toBe(true);
