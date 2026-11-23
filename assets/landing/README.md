@@ -25,7 +25,7 @@ Bildinhalt werden nicht nachträglich verändert.
 
 ## Linkvorschau und Suchmaschinen
 
-`node tools/prepare-social-card.mjs` rendert die Linkkarte aus dem vorhandenen
+`node tools/assets/prepare-social-card.mjs` rendert die Linkkarte aus dem vorhandenen
 `assets/banner.png` und einer lokalen HTML-/CSS-Beschriftung mit Chromium.
 Voraussetzung ist die normale Playwright-Installation. Ausgabe:
 `public/social/pixels-world.png` (1200 × 630). Das vollständige Banner bleibt sichtbar;

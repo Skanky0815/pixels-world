@@ -5,7 +5,7 @@ des bestätigten `../pixel-idle-master.png` und des bestehenden Bewegungs-Sheets
 erzeugt. Die Originale bleiben unverändert. Vollständige Prompts, Quellen und
 Framezuordnung stehen in [generation-v1.json](generation-v1.json).
 
-`node tools/prepare-charm-sprites.mjs` extrahiert sechs zusammenhängende Figuren
+`node tools/assets/prepare-charm-sprites.mjs` extrahiert sechs zusammenhängende Figuren
 pro Quelle und packt sie reproduzierbar per Nearest Neighbor in `charm-sheet-v1.png`:
 288×96 Pixel, zwölf 48×48-Zellen, Fußbasis Zeile 46. Je Aktion gilt ein gemeinsamer
 Faktor mit höchstens 42 Pixel Breite und 30 Pixel Höhe. Der feste linke Einzug

@@ -12,7 +12,7 @@
     "displayScale": 2,
     "bounds": "alpha>=192",
     "sampling": "Aspect-preserving centered nearest-neighbor fit; sampled RGBA unchanged",
-    "command": "node tools/prepare-curtain-assets.mjs"
+    "command": "node tools/assets/prepare-curtain-assets.mjs"
   },
   "scope": "Basis und separate Risspatches; Kletterfläche112x356 und Mechanik unverändert.",
   "outputs": ["curtain-rust.png", "curtain-tear.png"]

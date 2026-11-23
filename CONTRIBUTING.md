@@ -48,8 +48,8 @@ Die Konventionen sind aus [The Sara Protocol](https://github.com/Skanky0815/the-
 ## Qualität prüfen
 
 Maßgeblich für Befehle und CI-Umfang sind [package.json](package.json),
-[qa.yml](.github/workflows/qa.yml), [Pfadklassifikation](tools/qa-selection.ts),
-[Testprofile](tools/qa-profiles.ts) und [Playwright-Konfiguration](playwright.config.ts).
+[qa.yml](.github/workflows/qa.yml), [Pfadklassifikation](tools/qa/qa-selection.ts),
+[Testprofile](tools/qa/qa-profiles.ts) und [Playwright-Konfiguration](playwright.config.ts).
 Eine zweite Liste der Fälle, Matrixgruppen, Worker oder Artefaktfristen wird hier
 nicht gepflegt. Workflowänderungen zusätzlich mit Actionlint prüfen.
 
@@ -203,7 +203,7 @@ Pushes lösen einen installierten Hook aus; diese Dokumentationsänderung änder
 Verhalten nicht. Die leichtgewichtige Dokumentationsprüfung gilt für den fachlich
 nötigen Prüfumfang, nicht als Anweisung zum Umgehen eines installierten Hooks.
 CI-Profile und Runnerumfang stehen im [QA-Workflow](.github/workflows/qa.yml)
-und der [gemeinsamen Profilauswahl](tools/qa-profiles.ts).
+und der [gemeinsamen Profilauswahl](tools/qa/qa-profiles.ts).
 
 Vor dem Start der QA entfernt der Hook die von Git geerbten lokalen
 Repositoryvariablen. So verwenden Git-Kommandos in isolierten Test-Repositories
@@ -388,7 +388,7 @@ veröffentlichte Tags und alte Changelog-Abschnitte nicht umschreiben.
 Nur vom GitHub-Actions-Bot im eigenen Repository erzeugte Release-Please-Versions-PRs
 mit `autorelease: pending` sind ausgenommen.
 Prüfvertrag und Ausnahmen: [Release-note-Workflow](.github/workflows/release-note.yml)
-und [Prüfskript](tools/check-release-note.mjs).
+und [Prüfskript](tools/release/check-release-note.mjs).
 
 ## Release bedienen
 

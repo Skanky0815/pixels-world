@@ -17,7 +17,7 @@
     }
   ],
   "export": {
-    "command": "node tools/prepare-charm-sprites.mjs",
+    "command": "node tools/assets/prepare-charm-sprites.mjs",
     "file": "charm-sheet-v1.png",
     "cell": 48,
     "columns": 6,

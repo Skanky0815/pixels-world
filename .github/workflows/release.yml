@@ -69,7 +69,7 @@ jobs:
         if: env.RELEASE_MODE == 'prepare' && steps.candidate.outputs.prepare_needed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node tools/prepare-release.mjs
+        run: node tools/release/prepare-release.mjs
       - name: Kurze QA für vorbereiteten Versions-PR starten
         if: env.RELEASE_MODE == 'prepare' && steps.release.outputs.pr != '' && steps.release.outputs.pr != 'null'
         env:

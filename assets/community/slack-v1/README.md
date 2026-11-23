@@ -32,7 +32,7 @@ Die unveränderten, mit dem integrierten Bildwerkzeug erzeugten Originale liegen
 der Referenzen. Grundlage sind `assets/team/pixel-portrait-v3.png` und
 `assets/pixel/pixel-idle-master.png` aus demselben Repository.
 
-`node tools/prepare-slack-emojis.mjs` exportiert das Set mit `pngjs` und dem
+`node tools/assets/prepare-slack-emojis.mjs` exportiert das Set mit `pngjs` und dem
 Systemwerkzeug `zip`. Die Motivgrenzen berücksichtigen Alpha ab 192. Ein
 62-Pixel-Motivbereich im logischen 64×64-Raster nutzt die Fläche proportional bis
 auf mindestens zwei transparente Exportpixel pro Seite aus; bei schmaleren oder

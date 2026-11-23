@@ -6,7 +6,7 @@
     "assets/objects/vases/sources/terracotta-source-v1.png"
   ],
   "export": {
-    "command": "node tools/prepare-book-assets.mjs",
+    "command": "node tools/assets/prepare-book-assets.mjs",
     "boundsAlphaThreshold": 192,
     "rgba": "preserve nearest-neighbour samples",
     "intactCell": [

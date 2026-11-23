@@ -2,7 +2,7 @@
   "generator": "OpenAI built-in image_gen",
   "purpose": "Team portraits for issue #169; separate from gameplay sprites",
   "export": {
-    "command": "node tools/prepare-team-portraits.mjs",
+    "command": "node tools/assets/prepare-team-portraits.mjs",
     "size": [
       128,
       128

@@ -90,7 +90,14 @@ Landingpage und Spiel importieren sich nicht gegenseitig. Shared importiert wede
 Szene noch Phaser. Die Landingpage lädt weder Phaser noch das Spielstylesheet.
 Konfiguration, `tools/`, Tests und Assetquellen bleiben außerhalb der Anwendung.
 
-[Importregeln](../../tools/import-boundaries.mjs) und die ergänzende Syntaxprüfung
+Unter `tools/` liegen Buildmodule in `build/`, Releasevorbereitung und
+Release-Note-Prüfung in `release/`, Assetexporte in `assets/`, Prüfwerkzeuge und
+Browserprofile in `qa/` sowie die lokale Hookinstallation in `hooks/`.
+Assetexporte lösen Quellen und Ausgaben relativ zu ihrer Datei auf; ihre
+familienbezogenen Anleitungen unterscheiden Originale, Laufzeitdateien,
+Vorschauen und veröffentlichte Downloads.
+
+[Importregeln](../../tools/qa/import-boundaries.mjs) und die ergänzende Syntaxprüfung
 lösen auch Typimporte, Re-Exports und Aliase auf. Quellbrücken über Tools oder Tests
 umgehen keine Bereichsgrenze. Unauflösbare Importe werden abgewiesen;
 `virtual:pwa-register` ist die freigegebene virtuelle Ausnahme.
@@ -122,8 +129,8 @@ Rundenuhr, Ziel und Heimkehr bleiben außerhalb dieses gemeinsamen Schritts.
 
 `shared/ui/page-shell.ts` erzeugt Header und Footer für Landingpage, Hilfe, Spiel
 und Rechtsseiten. Marke, Links, KI-Hinweis und Alterskennzeichnung haben dort bzw.
-im Sprachkatalog eine Quelle. `tools/html-shell.ts` setzt die Varianten ins HTML;
-`tools/page-information.ts` ergänzt Buildangabe und Altersmetadaten vor der
+im Sprachkatalog eine Quelle. `tools/build/html-shell.ts` setzt die Varianten ins HTML;
+`tools/build/page-information.ts` ergänzt Buildangabe und Altersmetadaten vor der
 Auslieferung. Rechtsseiten benötigen dafür kein JavaScript. `update.html` bleibt
 eine Weiterleitung zur Hilfe. Footer-Linkfarben und Fokuszustände sind gemeinsam.
 
@@ -241,7 +248,7 @@ Prüfverfahren: [CONTRIBUTING](../../CONTRIBUTING.md#updates-auf-echten-geräten
 
 ### Browser und öffentliche Einstiege
 
-[`application-pages.ts`](../../tools/application-pages.ts) ordnet HTML-Quellen ihren
+[`application-pages.ts`](../../tools/build/application-pages.ts) ordnet HTML-Quellen ihren
 öffentlichen URLs zu: `/`, `/play.html`, `/help.html`, `/impressum.html`,
 `/datenschutz.html` und `/update.html`. Vite verarbeitet dieselben Quellen im
 Dev-Server und beim Build; im Root werden keine zweiten HTML-Quellen gepflegt.
@@ -251,7 +258,7 @@ lokalen HTTP-Server; die Bedienung steht in [CONTRIBUTING](../../CONTRIBUTING.md
 
 Der Produktionsbuild enthält die Spielabhängigkeiten und kompakten Laufzeitassets.
 Quellbilder, Prompts und Exportanleitungen bleiben im Repository.
-Manifest, Workbox und Cachegrenzen sind in [pwa-config.ts](../../tools/pwa-config.ts)
+Manifest, Workbox und Cachegrenzen sind in [pwa-config.ts](../../tools/build/pwa-config.ts)
 festgelegt. Die Registrierung ist freiwillig; Hilfe und Update-Einstieg bleiben
 für Recovery online erreichbar. Es gibt keinen allgemeinen Navigations-Fallback,
 der fehlende DEV-Seiten durch Spiel-HTML ersetzen würde.
@@ -272,7 +279,7 @@ verwendet dieselbe veröffentlichte Identität und setzt einen unveränderten Ta
 sowie Main-SHA voraus. Die Artefaktaufbewahrung begrenzt das Wiederanlauffenster;
 nach dessen Ablauf erfolgt die Veröffentlichung über eine neue reguläre Version. Trigger, Rechte, Gates und Artefaktaufbewahrung werden direkt in den
 [Workflows](../../.github/workflows) und zugehörigen Skripten gepflegt. Bedienung
-und Fehlerhilfe stehen in [CONTRIBUTING](../../CONTRIBUTING.md#release-bedienen). Die CI-Auswahl steht im [QA-Workflow](../../.github/workflows/qa.yml) und [Profilauswahl](../../tools/qa-profiles.ts).
+und Fehlerhilfe stehen in [CONTRIBUTING](../../CONTRIBUTING.md#release-bedienen). Die CI-Auswahl steht im [QA-Workflow](../../.github/workflows/qa.yml) und [Profilauswahl](../../tools/qa/qa-profiles.ts).
 
 Der geplante `release_tag` wird für QA über `PIXELS_RELEASE_TAG` in den Build
 gegeben und mit der Paketversion abgeglichen. Der Footer-Link ist damit Teil
@@ -465,8 +472,8 @@ muss jede einzigartige Assertion einer verbleibenden Modell-/Browserprüfung
 zugeordnet sein. Die geplanten CI-Gruppen sollen alle nötigen Fälle ohne doppelte
 Ausführung abdecken; eine kleinere Fallzahl allein belegt keine gleiche Prüfdeckung.
 Matrix, Zuordnung und konservative Ausweichregeln stehen in
-[qa.yml](../../.github/workflows/qa.yml), [qa-selection.ts](../../tools/qa-selection.ts)
-und [qa-profiles.ts](../../tools/qa-profiles.ts).
+[qa.yml](../../.github/workflows/qa.yml), [qa-selection.ts](../../tools/qa/qa-selection.ts)
+und [qa-profiles.ts](../../tools/qa/qa-profiles.ts).
 
 Automatisierte Audiofälle verwenden Chromiums virtuellen Ausgabestream über
 `--disable-audio-output`; native WebAudio-Quellen, Uhr und Pegel bleiben aktiv.

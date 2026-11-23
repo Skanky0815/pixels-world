@@ -14,7 +14,7 @@ stehen in [draft-v1.json](draft-v1.json).
 
 `/portrait-preview.html` zeigt im Dev-Server den direkten Mastervergleich sowie
 Dialoglayouts für Desktop und Handy, mehrere Größen, DE/EN, längere Texte und
-den Fallback ohne Porträt. `node tools/prepare-dialogue-portraits.mjs` exportiert
+den Fallback ohne Porträt. `node tools/assets/prepare-dialogue-portraits.mjs` exportiert
 die drei Ausdrucksquellen mit derselben Nearest-Neighbor-Abtastung wie die
 Landingpage-Porträts auf 128×128 Pixel. Diese Exporte verwendet auch das Spiel;
 die großen Generatorquellen werden nicht ausgeliefert.

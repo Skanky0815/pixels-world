@@ -3,17 +3,17 @@ import { env } from 'node:process';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { pwaOptions } from './tools/pwa-config';
+import { pwaOptions } from './tools/build/pwa-config';
 import { OBJECTS } from './game/play/content/objects/catalog';
 import { ROOMS } from './game/play/content/rooms';
 import { populateSpawnSlots } from './game/play/content/spawn-slots';
 import { DIFFICULTIES, difficultyRoom } from './game/play/content/difficulty';
-import { releaseUrl } from './tools/release-metadata';
-import { roundConfigForBuild } from './tools/e2e-timing';
-import { pageInformation } from './tools/page-information';
-import { versionMetadata } from './tools/version-metadata';
-import { htmlShell } from './tools/html-shell';
-import { applicationPages, publishedPages } from './tools/application-pages';
+import { releaseUrl } from './tools/build/release-metadata';
+import { roundConfigForBuild } from './tools/qa/e2e-timing';
+import { pageInformation } from './tools/build/page-information';
+import { versionMetadata } from './tools/build/version-metadata';
+import { htmlShell } from './tools/build/html-shell';
+import { applicationPages, publishedPages } from './tools/build/application-pages';
 import { de } from './game/shared/i18n/de';
 
 // Fail before bundling/serving when any registered content is invalid.

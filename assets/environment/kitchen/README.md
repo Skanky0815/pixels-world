@@ -29,7 +29,7 @@ v3. Frühere Quellen bleiben als Eingaben der dokumentierten Farb- und Alpha-Edi
 erhalten; versehentliche Alpha-Löcher sind in den gewählten Fronten korrigiert.
 
 ```sh
-node tools/prepare-kitchen-assets.mjs
+node tools/assets/prepare-kitchen-assets.mjs
 ```
 
 Der Export verwendet `pngjs`. Möbel werden anhand der Alpha-Grenzen ab 192 auf die

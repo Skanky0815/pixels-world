@@ -1,6 +1,6 @@
 # Vorratsbehälter: vollständige Erzeugungsprompts
 
-Die ursprüngliche Dosen-Vorgabe im Prompt lautet 36×28; der aktuelle Export verwendet 32×28 Pixel. Maßgeblich sind [README](README.md) und [prepare-pantry-assets.mjs](../../../tools/prepare-pantry-assets.mjs).
+Die ursprüngliche Dosen-Vorgabe im Prompt lautet 36×28; der aktuelle Export verwendet 32×28 Pixel. Maßgeblich sind [README](README.md) und [prepare-pantry-assets.mjs](../../../tools/assets/prepare-pantry-assets.mjs).
 
 Modus: integriertes Bildwerkzeug (`image_gen`) mit transparentem Hintergrund. Intaktes Glas und Dose sowie der Glassplitter wurden neu erzeugt; die Endzustände verwenden das jeweilige intakte Objekt als Referenz. Die v2-Bearbeitung der offenen Dose dreht ausschließlich ihr aufgedrucktes Herz passend zur Lage.
 

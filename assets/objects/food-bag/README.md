@@ -14,7 +14,7 @@ aufbauenden Edits drehen sich Pfote und gedruckte Futterstücke mit der Verpacku
 Die außerhalb liegenden Futterstücke bleiben auf dem Boden.
 
 ```sh
-node tools/prepare-food-bag.mjs
+node tools/assets/prepare-food-bag.mjs
 ```
 
 Der Export mit `pngjs` schneidet auf Alpha-Grenzen ab 192 zu, sampelt mit

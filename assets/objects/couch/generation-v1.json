@@ -24,7 +24,7 @@
     }
   },
   "export": {
-    "command": "node tools/prepare-couch-assets.mjs",
+    "command": "node tools/assets/prepare-couch-assets.mjs",
     "baseCell": [136, 80],
     "patchCell": [14, 16],
     "seatAnchor": [4, 30],

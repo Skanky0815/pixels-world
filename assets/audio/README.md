@@ -35,7 +35,7 @@ stehen in [sources.json](reference-sources/sources.json).
 Reproduktion nur mit Python-Standardbibliothek:
 
 ```sh
-python3 tools/prepare-recorded-audio.py
+python3 tools/assets/prepare-recorded-audio.py
 ```
 
 ## Eigene Synthesen
@@ -44,7 +44,7 @@ python3 tools/prepare-recorded-audio.py
 sind eigene deterministische Synthesen ohne fremde Samples.
 Diese Dateien und die beiden Bearbeitungs-/Syntheseprogramme sind unter
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) freigegeben.
-Reproduktion: `python3 tools/prepare-object-audio.py`. Dieser Befehl überschreibt
+Reproduktion: `python3 tools/assets/prepare-object-audio.py`. Dieser Befehl überschreibt
 keine aus Aufnahmen bearbeiteten Dateien.
 
 ## Auslösung

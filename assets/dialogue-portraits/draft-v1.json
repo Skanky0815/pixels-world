@@ -28,7 +28,7 @@
     }
   ],
   "preview": "/portrait-preview.html",
-  "runtimeExport": "node tools/prepare-dialogue-portraits.mjs; 128x128 nearest-neighbour exports; original masters reused directly; Sara mirrored at display time",
+  "runtimeExport": "node tools/assets/prepare-dialogue-portraits.mjs; 128x128 nearest-neighbour exports; original masters reused directly; Sara mirrored at display time",
   "sourceFacts": {
     "assets/team/sara-portrait-v1.png": {
       "sha256": "dbe773a5722006d01fb3f07c974952aaf924d8750e7f734a8dfd81952f85f0e6",

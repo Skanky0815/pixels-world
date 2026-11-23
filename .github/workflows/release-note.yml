@@ -25,4 +25,4 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Eindeutige englische Release Note prüfen
-        run: node tools/check-release-note.mjs "$GITHUB_EVENT_PATH"
+        run: node tools/release/check-release-note.mjs "$GITHUB_EVENT_PATH"

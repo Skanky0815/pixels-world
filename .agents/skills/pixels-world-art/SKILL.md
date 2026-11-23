@@ -50,7 +50,7 @@ privaten Ausgabeordner eines Bildwerkzeugs liegen.
 
 ## Export und Sichtprüfung
 
-Bestehende `tools/prepare-*-assets.mjs` bevorzugen und den jeweiligen Exportvertrag
+Bestehende `tools/assets/prepare-*-assets.mjs` bevorzugen und den jeweiligen Exportvertrag
 beachten: Alpha-Grenzen, Nearest-Neighbour, binäres Alpha und gegebenenfalls
 2×2-Cluster sind pro Familie dokumentiert. Keine generelle Glättung oder neue
 Rasterregel über alle Quellen legen. Dünne Außenkonturen und Henkel nach dem

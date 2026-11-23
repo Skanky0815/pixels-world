@@ -7,7 +7,7 @@ zerstörbarer Chaosgegenstand. Dieselbe Grafik dient als Album-Bild.
 
 Erzeugt mit dem integrierten Bildwerkzeug. Unveränderte Quelle unter
 `sources/food-bowl-source-v1.png`; vollständiger [Prompt](generation-prompt.md).
-`node tools/prepare-food-bowl.mjs` schneidet auf Alpha-Grenzen ab 192 zu, sampelt per
+`node tools/assets/prepare-food-bowl.mjs` schneidet auf Alpha-Grenzen ab 192 zu, sampelt per
 Nearest-Neighbour auf 18×8 logische Pixel und schreibt unveränderte RGB-Werte als
 2×2-Cluster mit binärem Alpha. Kein Hintergrund wird nachträglich entfernt.
 

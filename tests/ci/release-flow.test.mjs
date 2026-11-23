@@ -20,9 +20,9 @@ const download = (job) =>
 
 // The preparation entry point uses Release Please's PR API only, never releases.
 const prepare = preflight.steps.find((step) => step.id === 'release');
-assert.equal(prepare.run, 'node tools/prepare-release.mjs');
+assert.equal(prepare.run, 'node tools/release/prepare-release.mjs');
 const prepareSource = readFileSync(
-  new URL('../../tools/prepare-release.mjs', import.meta.url),
+  new URL('../../tools/release/prepare-release.mjs', import.meta.url),
   'utf8',
 );
 assert.match(prepareSource, /manifest\.createPullRequests\(\)/);
