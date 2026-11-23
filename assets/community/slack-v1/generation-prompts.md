@@ -60,6 +60,17 @@ Quelle: `sources/pixel_idee.png`
 Use case: illustration-story. Asset type: ONE square Slack custom emoji, genuinely transparent background. Reference defines exact Pixel cat identity and chunky emoji pixel style. Same grey-brown tabby with forehead M and stripes, white muzzle/cheeks/chest, pink nose/ears, bright GREEN eyes, dark crisp pixel outlines. Create pixel_idee: excited 'I have an idea!' expression, eyes wide and cheerful little smile, one white cat paw raised. Beside upper-right cheek is ONE large golden LIGHTBULB with simple screw base and three short chunky rays, no glow gradient. Head-and-paw bust, three-quarter facing RIGHT, cat dominates about80 percent; lightbulb about25 percent. Readable at22px, coarse logical64x64 flat pixel clusters, restrained palette, all ears/paw/bulb inside square with transparent safe margin. No heart, no gears, no question mark, no lettering, no text, no sheet, no background, no shadows, no human hands; every outside pixel alpha0.
 ```
 
+## pixel_nein
+
+Quelle: `sources/pixel_nein.png`; erzeugt mit dem integrierten Bildwerkzeug und echter Transparenz.
+Referenz 1: `sources/pixel_love.png` für Identität, Pixelstil und Proportionen.
+Referenz 2: `assets/team/pixel-portrait-v3.png` für Pixels freigegebene Identität.
+Die Referenzen sind Stil-/Identitätsvorlagen, keine zu überschreibenden Bilder.
+
+```text
+Use case: illustration-story. Asset type: ONE standalone square custom Slack emoji with genuinely transparent background, matching the existing Pixel emoji set. Input image 1 is an identity, coarse pixel-art style and proportions reference (Pixel hugging a heart), NOT an edit target. Input image 2 is the approved Pixel portrait, additional identity reference. Create a new matching reaction, 'Nein / No': the SAME grey-brown TABBY cat with dark forehead M and stripes, white muzzle/cheeks/fluffy chest and white-tipped natural cat paws, pink nose and inner ears, GREEN eyes, thick dark pixel outlines. Compact head and small chest bust, cat dominates 80-90 percent of square. Cat turns its head slightly away with a clearly skeptical sideways look, narrowed green eyes, ears laid back, closed unimpressed mouth. One little white cat paw gently held forward in rejection, anatomically a CAT PAW, NO human hand or thumb. Include ONE bold simple diagonal RED CROSS rejection symbol beside the cheek, analogous to the existing approval checkmark, readable at 22px. Keep cat expression dominant and silhouette warm and cute, not frightening. Match the reference's crisp coarse logical64x64 pixel clusters, restrained flat game palette and square pixel edges; no smooth cartoon lines, no antialias blur or gradients. No heart, no halo, no question mark, no checkmark, no other props, no words or lettering, no frame, no sheet, no shadow, no glow, no floor, no background pixels. All ears, paw and red cross entirely inside a small transparent safe margin. Exactly one emoji, not a grid, not a mockup. Every pixel outside the silhouette must be true alpha0. Output square PNG with real transparency.
+```
+
 ## pixel_urlaub
 
 Quelle: `sources/pixel_urlaub.png`; Identitäts- und Stilreferenz: `pixel_love.png`.

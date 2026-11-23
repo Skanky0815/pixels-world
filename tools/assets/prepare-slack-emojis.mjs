@@ -7,11 +7,12 @@ import { PNG } from 'pngjs';
 const root = new URL('../../assets/community/slack-v1/', import.meta.url);
 const names = [
   'pixel_approved',
+  'pixel_nein',
+  'pixel_question',
   'pixel_chaos',
   'pixel_war_nicht_ich',
   'pixel_love',
   'pixel_in_progress',
-  'pixel_question',
   'pixel_idee',
   'pixel_urlaub',
 ];
