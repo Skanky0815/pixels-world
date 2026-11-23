@@ -166,6 +166,33 @@ Schritte. Die Startfreigabe bleibt bei einer neuen Runde erhalten; Reload zeigt
 die Einführung wieder. Raumwahl und Schwierigkeit werden beim Aufbau übernommen.
 Ein Wechsel der Schwierigkeit in einer laufenden Runde gilt erst für die nächste.
 
+### Rundenablauf im Überblick
+
+```mermaid
+flowchart TD
+  Start["Runde starten"] --> Runde["Aktive Runde"]
+  Runde -->|Hauptziel rechtzeitig erreicht| Ziel["Ballspiel / Fressen"]
+  Runde -->|Zeit abgelaufen| Heimkehr["Heimkehr"]
+  Ziel --> Heimkehr
+  Heimkehr --> Dialog["Dialog bestätigen"]
+  Dialog --> Friedlich{"Friedlicher Abschluss?"}
+  Friedlich -->|Ja| Erfolg["Erfolg"]
+  Friedlich -->|Nein| Charme["Versöhnung"]
+  Charme -->|Geschafft| Erfolg
+  Charme -->|Gescheitert| Scheitern["Gescheitert"]
+  Erfolg --> Abschluss["Abschlussauswertung"]
+  Scheitern --> Abschluss
+```
+
+Beim Rundenende wird die Wertung eingefroren. Ein friedlicher Abschluss setzt
+ein rechtzeitig erreichtes Hauptziel, Score null und keinen registrierten Schaden
+voraus; dann entfällt die Versöhnung. Erreichen Ziel und Deadline denselben Frame,
+zählt das Timerende. Pause und
+bestätigter Neustart sind phasenübergreifende Bedienaktionen; ein Neustart baut
+die Runde neu auf und erhält eine bereits erteilte Startfreigabe. Die Fachmodelle
+[RoundController](../../game/play/domain/round-controller.ts) und
+[Rundenergebnis](../../game/play/domain/round-result.ts) bestimmen die Übergänge.
+
 ### Aktiver Frame und Pause
 
 Die Reihenfolge lautet Input/Reset → Aktivitätsprüfung → Physik/Kollisionen →
@@ -219,6 +246,27 @@ startet die Bannerfolge: Funde in Fundreihenfolge, Erfolge in Katalogreihenfolge
 `renderResult` liest nur Abschlussdaten; Sprach-/Layoutwechsel bestätigen nichts
 und starten Banner oder Abschlussanimation nicht erneut. Nur aktive Zeit treibt
 sie weiter, Optionen, Album und unsichtbare Tabs halten sie an.
+
+```mermaid
+flowchart TD
+  Ereignisse["Relevante Interaktion"] --> Vormerken["Fund / Schadensziel vormerken"]
+  Vormerken -->|Runde erfolgreich| Bestaetigen["Fortschritt bestätigen"]
+  Vormerken -->|Scheitern oder Abbruch| Verwerfen["Vormerkungen verwerfen"]
+  Verwerfen --> Erhalten["Bestätigtes bleibt"]
+  Bestaetigen --> Speicherwahl{"Speichern gewählt<br/>und zulässig?"}
+  Speicherwahl -->|Ja| Speichern["Speichern versuchen"]
+  Speicherwahl -->|Nein| Banner["Neue Funde und Erfolge<br/>als Banner anzeigen"]
+  Speichern --> Banner
+```
+
+Abbruch umfasst hier auch bestätigten Neustart und Reload. Die Vormerkungen
+dürfen leer sein; bestätigt werden Sammlung und berechtigter Erfolgsfortschritt
+gemeinsam und einmalig. Die Banner zeigen neue Funde vor neuen Erfolgen.
+Ein friedlicher Abschluss bestätigt passende
+Funde und Raumziele, erhöht aber keinen Versöhnungszähler. Scheitert das Speichern,
+bleibt der bestätigte Fortschritt in der Sitzung erhalten und die Bannerfolge
+kann trotzdem erscheinen. Maßgeblich sind [RoundAlbum](../../game/play/album/round.ts)
+und die [Sammlung](../../game/play/album/collection.ts).
 
 ### Neustart und Abbau
 
@@ -438,7 +486,8 @@ Assetfamilien halten Quelle, vollständigen Prompt, Lizenz-/Herkunftsnachweis un
 reproduzierbaren Export zusammen. Laufzeitimporte verwenden nur kompakte Exporte
 und bekannte Katalogschlüssel; neue Grafiken ändern nicht stillschweigend Körper,
 Interaktionsflächen oder Punkte. Raster, Palette und Fußanker stehen in den jeweiligen
-Familienanleitungen. Gemeinsame Exportfunktionen sind noch Gegenstand von #348.
+Familienanleitungen. Gemeinsam genutzte Exportfunktionen und die weiterhin
+getrennten Familienprofile beschreibt die [Bausteinsicht](#anwendungsbereiche-und-importgrenzen).
 
 ### Browser-Prüfvertrag
 
@@ -515,19 +564,15 @@ bleiben zusätzlich zu den automatisierten Browserfällen nötig.
 
 ## 11. Risiken und technische Schulden
 
-| Offener Punkt                                                      | Auswirkung / zuständige Aufgabe                                                                                                                                                   |
-| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Eindeutige Run-/Commit-Zuordnung der Versions-PR-QA                | [#349](https://github.com/Skanky0815/pixels-world/issues/349); Voraussetzung für sichere verbindliche Checks                                                                      |
-| Wirksame Main-Regeln und Required Checks                           | [#342](https://github.com/Skanky0815/pixels-world/issues/342); aktuelle Schutzkonfiguration gesondert nachweisen                                                                  |
-| Gewachsene Toolordnung und doppelte Exportfunktionen               | [#347](https://github.com/Skanky0815/pixels-world/issues/347), [#348](https://github.com/Skanky0815/pixels-world/issues/348)                                                      |
-| Reproduzierbarer lokaler Einstieg und frühe Voraussetzungenprüfung | [#352](https://github.com/Skanky0815/pixels-world/issues/352)                                                                                                                     |
-| JSON-Contentimport / Generator                                     | [#43](https://github.com/Skanky0815/pixels-world/issues/43), [#29](https://github.com/Skanky0815/pixels-world/issues/29); noch keine allgemeine Import-/Generierungsschnittstelle |
+| Risiko / Grenze                                                             | Auswirkung / zuständige Aufgabe                                                                                                                                                               |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Main-Schutz ohne verpflichtende Statuschecks und allgemeine Review-Freigabe | Bewusst beibehaltene Grenze gemäß [#342](https://github.com/Skanky0815/pixels-world/issues/342); aktuelle Regeln im [Main-Ruleset](https://github.com/Skanky0815/pixels-world/rules/26400379) |
+| JSON-Contentimport / Generator                                              | [#43](https://github.com/Skanky0815/pixels-world/issues/43), [#29](https://github.com/Skanky0815/pixels-world/issues/29); noch keine allgemeine Import-/Generierungsschnittstelle             |
 
 Canvas-2D-Leistung und reale mobile Browserleisten/Safe Areas sind weiterhin auf
 Hardware zu beurteilen; Grenzen siehe ADR 0002. Die Tabelle beschreibt keine
 vollständige Produktplanung. Umsetzung und Status gehören in Issues/PRs,
-Live-Prüfergebnisse in Actions. Nach Abschluss des Refactoring-Meilensteins ist
-auch diese Dokumentation nochmals mit dem tatsächlich gemergten Stand abzugleichen.
+Live-Prüfergebnisse in Actions.
 
 ## 12. Glossar
 
