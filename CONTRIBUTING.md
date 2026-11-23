@@ -216,6 +216,30 @@ alle verfügbaren Skripte in [package.json](package.json). HTML-Quellen unter `g
 bearbeiten; Zuordnung, Importgrenzen und öffentliche URLs erklärt
 [arc42](docs/arc42/README.md#5-bausteinsicht). Keine zweiten HTML-Kopien im Root anlegen.
 
+### Frischer Checkout und Startprobleme
+
+Im Projektordner `npm ci` ausführen und anschließend `npm run dev` starten.
+Die Versionsbereiche in [`engines` in package.json](package.json) sind maßgeblich;
+[.npmrc](.npmrc) lässt npm ungeeignete Versionen bereits bei der Installation
+abweisen. Node.js mit passendem npm bewusst installieren bzw. im vorhandenen
+Versionsmanager auswählen und danach `npm ci` erneut ausführen. Die CI wählt
+ihre Laufzeit über die vorhandenen `setup-node`-Schritte in den Workflows.
+
+Der Start prüft nur, ob die lokale Vite-Installation vorhanden ist. Fehlende
+Entwicklungsabhängigkeiten nennt er mit dem nächsten Schritt. Browserpakete
+werden erst für die [Browserprüfungen](#lokal-prüfen) benötigt. Der normale Start
+installiert keine Werkzeuge, verändert keine globale Konfiguration und führt
+keine Tests aus.
+
+| Meldung / Befund                               | Nächster Schritt                                                                                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node` oder `npm` nicht gefunden               | Node.js mit npm installieren bzw. den vorhandenen Versionsmanager aktivieren; Versionen mit `node --version` und `npm --version` prüfen.                      |
+| `EBADENGINE` / nicht unterstützte Laufzeit     | Die angezeigten erforderlichen Versionen aus `package.json` mit den installierten Versionen abgleichen, passende Laufzeit auswählen und `npm ci` wiederholen. |
+| Entwicklungsabhängigkeiten fehlen              | Im Projektordner `npm ci --include=dev`, danach `npm run dev` ausführen; eine reine Produktionsinstallation enthält die Entwicklungswerkzeuge nicht.          |
+| Lockdatei und Paketdatei passen nicht zusammen | Den vollständigen, zusammengehörigen Checkout verwenden. Abhängigkeiten nur bewusst ändern und die Lockdatei mitpflegen; sie nicht als Reparatur löschen.     |
+| Browser-Executable beim Test fehlt             | Die unter [Lokal prüfen](#lokal-prüfen) beschriebene Playwright-Installation ausführen; für `npm run dev` ist sie nicht erforderlich.                         |
+| Port bereits belegt                            | Die von Vite angezeigte freie Adresse verwenden oder bewusst `--port` wählen; fremde Server nicht beenden.                                                    |
+
 Produktionsbuild lokal ansehen:
 
 ```sh

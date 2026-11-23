@@ -22,7 +22,8 @@ Die Einführung im Spiel erklärt Ziel und Bedienung.
 
 ## Lokal starten
 
-Voraussetzung: **Node.js 22.12+** oder eine unterstützte neuere LTS-Version und npm.
+Voraussetzung: **Node.js und npm** in den unter [`engines` in package.json](package.json)
+angegebenen Versionen. Verwende eine passende LTS-Version von Node.js mit npm.
 
 ```sh
 npm ci
