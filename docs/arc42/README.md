@@ -96,6 +96,11 @@ Browserprofile in `qa/` sowie die lokale Hookinstallation in `hooks/`.
 Assetexporte lösen Quellen und Ausgaben relativ zu ihrer Datei auf; ihre
 familienbezogenen Anleitungen unterscheiden Originale, Laufzeitdateien,
 Vorschauen und veröffentlichte Downloads.
+Napf, Vorräte, Mülleimer und Tischdecke teilen nur die reinen Alpha-Bounds- und
+2×2-Kopierfunktionen aus [pixel-export.mjs](../../tools/assets/pixel-export.mjs).
+Quellenversion, Zielmaße, Alpha-Schwelle und deckender bzw. zugeschnittener
+Export bleiben im jeweiligen Werkzeug festgelegt; andere Familien behalten
+ihre eigenen Abtast- und Ankerregeln.
 
 [Importregeln](../../tools/qa/import-boundaries.mjs) und die ergänzende Syntaxprüfung
 lösen auch Typimporte, Re-Exports und Aliase auf. Quellbrücken über Tools oder Tests
