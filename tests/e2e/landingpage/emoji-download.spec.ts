@@ -14,6 +14,12 @@ const names = [
   'pixel_in_progress',
   'pixel_idee',
   'pixel_urlaub',
+  'pixel_muede',
+  'pixel_bitte',
+  'pixel_essen',
+  'pixel_afk',
+  'pixel_danke',
+  'pixel_lol',
 ];
 
 test(
@@ -30,7 +36,17 @@ test(
     await expect(section.locator('img')).toHaveCount(names.length);
     await expect(section.locator('h2')).toHaveText('Pixel für deinen Chat');
 
-    for (const label of ['Okay!', 'Nein!', 'Weiß nicht …'])
+    for (const label of [
+      'Okay!',
+      'Nein!',
+      'Weiß nicht …',
+      'Müde …',
+      'Bitte …',
+      'Mittagspause',
+      'Bin kurz weg!',
+      'Danke dir!',
+      'LOL!',
+    ])
       await expect(section.getByText(label, { exact: true })).toBeVisible();
     await expect
       .poll(() =>
@@ -91,11 +107,49 @@ test(
     await expect(section.locator('.emoji-download')).toHaveText('Download emoji set ↓');
     await expect(section.getByText('No!', { exact: true })).toBeVisible();
     await expect(section.getByText('Not sure …', { exact: true })).toBeVisible();
-    await expect(section.locator('img').last()).toHaveAccessibleName(
+    await expect(section.locator('img[src$="pixel_urlaub.png"]')).toHaveAccessibleName(
       'Pixel wears sunglasses and smiles contentedly.',
     );
-    await page.setViewportSize({ width: 1280, height: 900 });
-    await section.scrollIntoViewIfNeeded();
+    await expect(section.getByText('Sleepy …', { exact: true })).toBeVisible();
+    await expect(section.getByText('Please …', { exact: true })).toBeVisible();
+    await expect(section.getByText('Lunch break', { exact: true })).toBeVisible();
+    await expect(section.getByText('Be right back!', { exact: true })).toBeVisible();
+    await expect(section.getByText('Thank you!', { exact: true })).toBeVisible();
+    await expect(section.getByText('LOL!', { exact: true })).toBeVisible();
+    await expect(section.locator('img[src$="pixel_lol.png"]')).toHaveAccessibleName(
+      'Pixel laughs with his eyes squeezed shut and his mouth open.',
+    );
+    await expect(section.locator('img[src$="pixel_danke.png"]')).toHaveAccessibleName(
+      'Pixel bows his head gratefully and rests one paw against his chest.',
+    );
+    await expect(section.locator('img[src$="pixel_essen.png"]')).toHaveAccessibleName(
+      'Pixel eats from a large bowl with his head lowered.',
+    );
+    await expect(section.locator('img[src$="pixel_afk.png"]')).toHaveAccessibleName(
+      'Pixel walks away from the viewer with his tail raised.',
+    );
+    await expect(section.locator('img[src$="pixel_bitte.png"]')).toHaveAccessibleName(
+      'Pixel pleads with large green eyes and both paws beneath his chin.',
+    );
+    await expect(section.locator('img[src$="pixel_muede.png"]')).toHaveAccessibleName(
+      'Pixel rests his head on his paws beneath golden sleep symbols.',
+    );
+
+    for (const width of [1024, 1280, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await section.scrollIntoViewIfNeeded();
+      const layout = await section.locator('.emoji-previews').evaluate((node) => ({
+        columns: getComputedStyle(node).gridTemplateColumns.split(' ').length,
+        rows: new Set(
+          Array.from(node.children).map((card) => Math.round(card.getBoundingClientRect().top)),
+        ).size,
+        overflow: document.documentElement.scrollWidth > window.innerWidth,
+      }));
+
+      expect(layout).toEqual({ columns: 5, rows: 3, overflow: false });
+    }
+
+    await page.setViewportSize({ width: 768, height: 1024 });
     expect(
       await section
         .locator('.emoji-previews')

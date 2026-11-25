@@ -554,9 +554,9 @@ body.landing-page {
 }
 .emoji-previews {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
-  max-width: 720px;
+  max-width: 980px;
   margin: 24px auto;
   padding: 0;
   list-style: none;
@@ -595,6 +595,12 @@ body.landing-page {
   font:
     13px/1.6 system-ui,
     sans-serif;
+}
+@media (max-width: 1000px) {
+  .emoji-previews {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 720px;
+  }
 }
 @media (max-width: 680px) {
   .landing-emojis {
