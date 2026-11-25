@@ -15,6 +15,12 @@ const names = [
   'pixel_in_progress',
   'pixel_idee',
   'pixel_urlaub',
+  'pixel_muede',
+  'pixel_bitte',
+  'pixel_essen',
+  'pixel_afk',
+  'pixel_danke',
+  'pixel_lol',
 ];
 const alphaThreshold = 192;
 
