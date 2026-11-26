@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.8.0](https://github.com/Skanky0815/pixels-world/compare/v0.7.0...v0.8.0) (2026-11-26)
+
+
+### Features
+
+* add arrow-key navigation to game menus and room selection ([265179b](https://github.com/Skanky0815/pixels-world/commit/265179b08842088dba219d78fc05839b9056b50f)), closes [#332](https://github.com/Skanky0815/pixels-world/issues/332)
+* add editable playground layouts and replace lab rooms ([5d003cf](https://github.com/Skanky0815/pixels-world/commit/5d003cf4a7880359f6e1813cd80d27e17d3f3055)), closes [#361](https://github.com/Skanky0815/pixels-world/issues/361)
+* **emoji:** add Pixel no reaction and clarify basic responses ([b006546](https://github.com/Skanky0815/pixels-world/commit/b0065464f905ded256881f129937dfaab3103e49)), closes [#370](https://github.com/Skanky0815/pixels-world/issues/370)
+* **emoji:** add six Pixel reactions and expand downloads ([74886e3](https://github.com/Skanky0815/pixels-world/commit/74886e3d03cf957d9e5000065f74718d11313228)), closes [#371](https://github.com/Skanky0815/pixels-world/issues/371)
+* **input:** add optional WASD controls alongside arrows and touch ([17b2a52](https://github.com/Skanky0815/pixels-world/commit/17b2a5257047bada780ef680c2f0bbe73cc18d3f)), closes [#339](https://github.com/Skanky0815/pixels-world/issues/339)
+* **ui:** coordinate overlays over fullscreen levels ([6262b99](https://github.com/Skanky0815/pixels-world/commit/6262b999e440e7090bf695200815c31bfe1d2192)), closes [#338](https://github.com/Skanky0815/pixels-world/issues/338) [#354](https://github.com/Skanky0815/pixels-world/issues/354)
+* **ui:** unify level-controlled dialogs and settings screens ([5ac29ab](https://github.com/Skanky0815/pixels-world/commit/5ac29abc3d557262400a48f831f658f99bd306f8)), closes [#334](https://github.com/Skanky0815/pixels-world/issues/334)
+
+
+### Bug Fixes
+
+* **ci:** bind release PR QA to dispatched run and commit ([e64e103](https://github.com/Skanky0815/pixels-world/commit/e64e10386e2ad374ba8900cca7f40633a81058e1)), closes [#349](https://github.com/Skanky0815/pixels-world/issues/349)
+* **dev:** declare prerequisites and guide fresh local starts ([485ef4b](https://github.com/Skanky0815/pixels-world/commit/485ef4b992ceda32451b11dd674b22559d19abec)), closes [#352](https://github.com/Skanky0815/pixels-world/issues/352)
+* keep action audio aligned with physics steps ([18ee557](https://github.com/Skanky0815/pixels-world/commit/18ee557b763c9d59b21cefe020b4796499c381f7)), closes [#324](https://github.com/Skanky0815/pixels-world/issues/324)
+* keep fridge doors closed on foreign impacts ([7b103fe](https://github.com/Skanky0815/pixels-world/commit/7b103feb9756dd3d4d2ffd33e62ad824878f0906)), closes [#333](https://github.com/Skanky0815/pixels-world/issues/333)
+* **pages:** align deployment recovery with artifact retention ([625c558](https://github.com/Skanky0815/pixels-world/commit/625c558bb2b4582c99a875523e3167a52f3e8e01)), closes [#346](https://github.com/Skanky0815/pixels-world/issues/346)
+* **release:** paginate preparation lookup lists ([5ab0de7](https://github.com/Skanky0815/pixels-world/commit/5ab0de7eaf65fa80bd6a48fd956fe12f66e70139)), closes [#344](https://github.com/Skanky0815/pixels-world/issues/344)
+* reserve spawn space from actual object dimensions ([453894c](https://github.com/Skanky0815/pixels-world/commit/453894c23b5821076e2d3d507ea5c2bb1a38fb68)), closes [#325](https://github.com/Skanky0815/pixels-world/issues/325)
+* respect reduced motion for shelf and debris effects ([aaf1193](https://github.com/Skanky0815/pixels-world/commit/aaf119354d428b0947e907581309324f50958726)), closes [#328](https://github.com/Skanky0815/pixels-world/issues/328)
+* unify climbing grips and directional feedback ([2a8e36a](https://github.com/Skanky0815/pixels-world/commit/2a8e36ae96320f0d8d699375d3a25949f1662337)), closes [#326](https://github.com/Skanky0815/pixels-world/issues/326)
+
+
+### Documentation
+
+* **assets:** align guides with current export profiles ([8388a9e](https://github.com/Skanky0815/pixels-world/commit/8388a9e1f3670c3caa29ad74837a313f40de1a9e)), closes [#340](https://github.com/Skanky0815/pixels-world/issues/340)
+* complete refactoring review and illustrate round lifecycle ([e002305](https://github.com/Skanky0815/pixels-world/commit/e002305130965b3e24181e20b3c8633991b72a0b)), closes [#340](https://github.com/Skanky0815/pixels-world/issues/340)
+* consolidate architecture and contributor guidance ([6858485](https://github.com/Skanky0815/pixels-world/commit/685848511fc0a7af84f8f807457cfc88636d8b8b)), closes [#340](https://github.com/Skanky0815/pixels-world/issues/340)
+* streamline agent workflow and validation guidance ([c1a40b3](https://github.com/Skanky0815/pixels-world/commit/c1a40b3b940f47bee4e1ac1565711ac5d2d739bc)), closes [#350](https://github.com/Skanky0815/pixels-world/issues/350)
+
 ## [0.7.0](https://github.com/Skanky0815/pixels-world/compare/v0.6.1...v0.7.0) (2026-11-15)
 
 
