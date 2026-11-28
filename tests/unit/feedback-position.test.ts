@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { feedbackPosition } from '../../game/play/ui/feedback-position.ts';
+import { feedbackPosition, feedbackOverlap } from '../../game/play/ui/feedback-position.ts';
 
 // eslint-disable-next-line max-lines-per-function -- Zwei Ankerpositionen vergleichen oberhalb und unterhalb derselben Figur.
 test('Pixelmeldung folgt dem Anker und weicht am oberen Rand unter die Figur aus', () => {
@@ -38,4 +38,27 @@ test('Lange Meldungen bleiben an allen Canvasrändern einschließlich Hub vollst
       }
     }
   }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Die Rechtecke bilden echte HUD-, Banner- und Touchregionen in einem flachen Fenster nach.
+test('Schadensstapel weicht dynamischen Bannern und Touchflächen aus', () => {
+  const canvas = { width: 568, height: 236 };
+  const message = { width: 180, height: 90 };
+  const obstacles = [
+    { left: 8, top: 140, width: 150, height: 88 },
+    { left: 472, top: 140, width: 88, height: 88 },
+    { left: 360, top: 70, width: 200, height: 60 },
+    { left: 390, top: 8, width: 170, height: 50 },
+  ];
+  const position = feedbackPosition(
+    { x: 500, top: 100, bottom: 160 },
+    message,
+    canvas,
+    8,
+    obstacles,
+  );
+
+  assert.equal(feedbackOverlap(position, message, obstacles, 8), 0);
+  assert.ok(position.left >= 8 && position.left + message.width <= canvas.width - 8);
+  assert.ok(position.top >= 16 && position.top + message.height <= canvas.height - 8);
 });

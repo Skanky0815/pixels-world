@@ -5,6 +5,8 @@ import {
   state,
   until,
   besideCouch,
+  firstVase,
+  holdUntil,
   reset,
   framesPass,
 } from '../support/support';
@@ -260,4 +262,121 @@ async function resizeFeedbackViewport(
     )
     .toBe(true);
   await framesPass(page, 1);
+}
+
+for (const viewport of [
+  { width: 1280, height: 900, touch: false },
+  { width: 390, height: 844, touch: true },
+  { width: 568, height: 320, touch: true },
+  { width: 320, height: 400, touch: true },
+]) {
+  // eslint-disable-next-line max-lines-per-function -- Dieselbe Schadenskette wird in vier echten Geräteansichten geprüft.
+  test.describe(`Schadensketten ${viewport.width}×${viewport.height}`, () => {
+    test.use({ viewport, hasTouch: viewport.touch, isMobile: viewport.touch });
+    test('Mehrere Schäden bleiben getrennt oder gebündelt lesbar und geben Touchflächen frei @smoke', async ({
+      page,
+      // eslint-disable-next-line max-lines-per-function -- Reale Schadenskette, Pause und Reset prüfen denselben begrenzten Anzeigestapel.
+    }) => {
+      await start(page, '/?room-seed=shelves-172');
+      await damageChain(page);
+      const scores = (await state(page)).feedback.scores;
+
+      expect(scores.length).toBeGreaterThan(1);
+      expect(scores.length).toBeLessThanOrEqual(3);
+      expect(scores.reduce((count, score) => count + score.count, 0)).toBeGreaterThanOrEqual(2);
+      await expectReadableStack(page);
+      await test.info().attach('schadenskette', {
+        body: await page.screenshot({
+          path: `/private/tmp/pixels402-chain-${viewport.width}.png`,
+        }),
+        contentType: 'image/png',
+      });
+      await openPause(page);
+      const paused = (await state(page)).feedback.scores;
+
+      await page.clock.runFor(5000);
+      expect((await state(page)).feedback.scores).toEqual(paused);
+      await page.locator('[data-language="en"]').click();
+      expect((await state(page)).feedback.scores).toEqual(paused);
+      await page.keyboard.press('Escape');
+      await framesPass(page, 1);
+      await expectReadableStack(page);
+      await until(page, (s) => s.feedback.scores.length === 0);
+      expect((await state(page)).feedback.scores).toEqual([]);
+      await reset(page);
+      expect((await state(page)).feedback.scores).toEqual([]);
+    });
+  });
+}
+
+// eslint-disable-next-line max-lines-per-function -- Drei echte Landungen lösen denselben begrenzten Regal-/Vasen-/Bücherkontakt wie im regulären Spiel aus.
+async function damageChain(page: import('@playwright/test').Page) {
+  await firstVase(page);
+  await until(page, (s) => s.vases[0].state === 'broken');
+  await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 560);
+
+  for (const landings of [2, 3]) {
+    await page.keyboard.down('Space');
+    await until(page, (s) => !s.pixel.grounded);
+    await page.keyboard.up('Space');
+    await until(page, (s) => s.shelves[0].landings === landings);
+  }
+
+  await until(page, (s) => s.pixel.grounded && s.pixel.bottom === 468);
+  await until(page, (s) =>
+    s.vases.filter((v) => v.id.startsWith('lower-shelf:')).every((v) => v.state === 'broken'),
+  );
+  await until(page, (s) =>
+    s.books
+      .filter((book) => book.supportY === 304)
+      .every((book) => book.state === 'fallen' && !book.dropping),
+  );
+}
+
+// eslint-disable-next-line max-lines-per-function -- Tatsächliche Text-, Canvas- und Overlayrechtecke prüfen lesbaren Umbruch statt abgeschnittener Meldungen.
+async function expectReadableStack(page: import('@playwright/test').Page) {
+  const score = page.locator('.game-feedback-score');
+
+  await expect(score).toBeVisible();
+  // eslint-disable-next-line max-lines-per-function -- Eine atomare DOM-Probe erfasst Text und sämtliche Overlaygrenzen im selben Renderstand.
+  const geometry = await score.evaluate((stack) => {
+    const canvas = document.querySelector('canvas')!.getBoundingClientRect();
+    const bounds = stack.getBoundingClientRect();
+    const rows = Array.from(stack.querySelectorAll<HTMLElement>('p:not([hidden])'));
+    const obstacles = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '.touch-directions, .touch-actions, .album-banner, .mobile-hud, .mobile-dialogue',
+      ),
+    )
+      .filter((node) => !node.closest('[hidden]') && getComputedStyle(node).display !== 'none')
+      .map((node) => node.getBoundingClientRect());
+    const intersects = (box: DOMRect) =>
+      bounds.left < box.right &&
+      bounds.right > box.left &&
+      bounds.top < box.bottom &&
+      bounds.bottom > box.top;
+
+    return {
+      contained:
+        bounds.left >= canvas.left &&
+        bounds.right <= canvas.right &&
+        bounds.top >= canvas.top &&
+        bounds.bottom <= canvas.bottom,
+      readable: rows.every(
+        (row) => row.scrollWidth <= row.clientWidth && row.scrollHeight <= row.clientHeight,
+      ),
+      overlaps: obstacles.filter(intersects).length,
+      rows: rows.map((row) => ({
+        top: row.getBoundingClientRect().top,
+        bottom: row.getBoundingClientRect().bottom,
+      })),
+    };
+  });
+
+  expect(geometry.contained).toBe(true);
+  expect(geometry.readable).toBe(true);
+  expect(geometry.overlaps).toBe(0);
+
+  for (let index = 1; index < geometry.rows.length; index++)
+    expect(geometry.rows[index].top).toBeGreaterThanOrEqual(geometry.rows[index - 1].bottom);
 }

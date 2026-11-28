@@ -21,8 +21,8 @@ function fixture() {
   return { round, charm, state, feedback: new FeedbackModel() };
 }
 
-// eslint-disable-next-line max-lines-per-function -- Derselbe Schaden darf auch nach Ablauf der Anzeige nicht erneut auftauchen; neue Stufen ersetzen die einzelne Punkteanzeige.
-test('Punktefeedback ist pro Ereignis einmalig und auf einen Kanal begrenzt', () => {
+// eslint-disable-next-line max-lines-per-function -- Derselbe Schaden darf auch nach Ablauf der Anzeige nicht erneut auftauchen; neue Stufen bleiben als begrenzte Gruppe sichtbar.
+test('Punktefeedback ist pro Ereignis einmalig und zählt neue Schadensstufen', () => {
   const { feedback, state } = fixture();
   const event = chaosEvent('sofa', 'scratch', 1, 3);
 
@@ -115,7 +115,7 @@ test('Zielaktion kündigt Sara erst nach ihrem Ende an', () => {
   }
 });
 
-// eslint-disable-next-line max-lines-per-function -- Die gemeinsame Ereignisart behält pro Objekt ihre passende Wortwahl und einen einzigen deduplizierten Punktekanal.
+// eslint-disable-next-line max-lines-per-function -- Die gemeinsame Ereignisart behält pro Objekt ihre passende Wortwahl und eine deduplizierte Ereigniskennung.
 test('Gemeinsame Ausleerereignisse unterscheiden Decke, Müll, Kekse und Futter', () => {
   for (const [kind, key] of [
     ['tablecloth', 'feedbackTablecloth'],
@@ -133,4 +133,57 @@ test('Gemeinsame Ausleerereignisse unterscheiden Decke, Müll, Kekse und Futter'
     assert.equal(feedback.snapshot().messages.score?.value, 12);
     assert.equal(feedback.snapshot().sequence, 1);
   }
+});
+
+// eslint-disable-next-line max-lines-per-function -- Eine schnelle Kette prüft Bündelung, begrenzte Gruppenanzahl und verlustfreie Ereigniszählung zusammen.
+test('Schadensketten bündeln gleiche Meldungen und fassen bei Überlauf ältere Gruppen zusammen', () => {
+  const { feedback } = fixture();
+
+  feedback.damage(chaosEvent('sofa', 'scratch', 1, 3));
+  feedback.damage(chaosEvent('sofa', 'scratch', 2, 3));
+  assert.deepEqual(
+    feedback.snapshot().scores.map(({ key, count, value }) => ({ key, count, value })),
+    [{ key: 'feedbackScratch', count: 2, value: 6 }],
+  );
+  feedback.damage(chaosEvent('plant', 'tip', 1, 6));
+  feedback.damage(chaosEvent('vase', 'break', 1, 25));
+  feedback.damage(chaosEvent('curtain', 'tear', 1, 4));
+  const groups = feedback.snapshot().scores;
+
+  assert.equal(groups.length, FEEDBACK.scoreGroups);
+  assert.equal(groups[0].key, 'feedbackDamageCombo');
+  assert.equal(groups[0].count, 3);
+  assert.equal(
+    groups.reduce((sum, group) => sum + group.count, 0),
+    5,
+  );
+  assert.equal(
+    groups.reduce((sum, group) => sum + group.value, 0),
+    41,
+  );
+  assert.equal(Object.isFrozen(groups), true);
+  assert.ok(groups.every(Object.isFrozen));
+});
+
+// eslint-disable-next-line max-lines-per-function -- Getrennte Ereigniszeiten prüfen unabhängigen Ablauf ohne verzögerte Anzeige oder wiederholte Schäden.
+test('Jede Schadensgruppe pausiert und endet mit ihrer aktiven Präsentationszeit', () => {
+  const { feedback, state } = fixture();
+
+  feedback.damage(chaosEvent('sofa', 'scratch', 1, 3));
+  feedback.advance(1000, state());
+  feedback.damage(chaosEvent('plant', 'tip', 1, 6));
+  const frozen = feedback.snapshot().scores;
+
+  feedback.advance(0, state());
+  feedback.advance(NaN, state());
+  feedback.advance(-10, state());
+  assert.deepEqual(feedback.snapshot().scores, frozen);
+  feedback.advance(800, state());
+  assert.deepEqual(
+    feedback.snapshot().scores.map((group) => group.key),
+    ['feedbackTip'],
+  );
+  feedback.advance(1000, state());
+  assert.deepEqual(feedback.snapshot().scores, []);
+  assert.equal(new FeedbackModel().snapshot().scores.length, 0);
 });

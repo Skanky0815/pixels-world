@@ -24,11 +24,22 @@
   overflow-wrap: anywhere;
 }
 .game-feedback-layer .game-feedback-score {
+  display: grid;
+  gap: 8px;
   position: absolute;
   width: max-content;
   max-width: min(280px, calc(100% - 16px));
   box-sizing: border-box;
   font-size: 14px;
+}
+.game-feedback-score > p {
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.game-feedback-score[hidden],
+.game-feedback-score > [hidden] {
+  display: none;
 }
 .game-feedback-layer [data-tone='positive'] {
   border-color: #b7d3a1;
@@ -48,4 +59,13 @@
   .game-feedback-layer > :not(.game-feedback-score) {
     display: none;
   }
+}
+
+.game-feedback-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

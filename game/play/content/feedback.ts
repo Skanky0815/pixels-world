@@ -5,6 +5,7 @@ import type { TextKey } from '../../shared/i18n/locale.ts';
 /** Presentation time only: no hit stop, camera movement or gameplay timing changes. */
 export const FEEDBACK = {
   scoreMs: 1800,
+  scoreGroups: 3,
   phaseMs: 1400,
   charmMs: 650,
   fadeMs: 150,
@@ -23,7 +24,7 @@ export const DAMAGE_FEEDBACK: Record<DamageKind, TextKey> = {
   'picture-fall': 'feedbackPicture',
   hairball: 'feedbackHairball',
 };
-/** Object-specific wording for shared event kinds; the same single score channel remains. */
+/** Object-specific wording for shared event kinds; visible damage groups retain this wording. */
 export const OBJECT_DAMAGE_FEEDBACK: Readonly<
   Record<string, Partial<Record<DamageKind, TextKey>>>
 > = {

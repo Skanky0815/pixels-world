@@ -484,12 +484,17 @@ Darstellungshinweise altern nur mit aktiver Zeit; Reset entsorgt ihre Ansichten.
 Schadensmeldungen folgen Pixel als Text in CSS-Pixeln oberhalb der Figur, bei
 fehlendem Platz unterhalb. Die fertig gerenderte Kamera liefert Scrolloffset und
 Zoom; die Meldung bleibt mit Randabstand innerhalb des sichtbaren Canvas, auch
-auf Touch-Geräten und nach Größenwechseln. Der einzelne Schadenskanal bleibt
-1,8 Sekunden aktiv, davon 1,65 Sekunden ohne Ausblenden; ein neuer Schaden ersetzt
-die bisherige Meldung und beginnt die Anzeigezeit neu. Schadensmeldungen werden
-nicht zusätzlich in der festen Statusanzeige ausgegeben; Phase und Versöhnung
-behalten diese Anzeige. Stapeln und Zusammenfassen mehrerer
-Schadensmeldungen bleibt die Folgeaufgabe #402.
+auf Touch-Geräten und nach Größenwechseln. Bis zu drei Schadensgruppen bleiben
+sichtbar: gleiche Meldungen bündeln ihre Ereignisanzahl, zusätzliche verschiedene
+Schäden fassen die ältesten Gruppen zu einer Chaoskette zusammen. Es werden keine
+Punkte im Meldungstext angezeigt. Jede Gruppe bleibt 1,8 Sekunden aktiv, davon
+1,65 Sekunden ohne Ausblenden; ein neuer gleichartiger Schaden beginnt die
+Anzeigezeit seiner Gruppe neu. Die Position berücksichtigt reale Grenzen von
+Touchflächen, Status-/Dialoganzeigen und Album-Bannern. Reicht der Platz nicht
+für den Stapel, erscheint eine gemeinsame Zeile mit der Ereignisanzahl; lange
+Texte dürfen umbrechen. Die Zeilen bewegen sich gemeinsam und blenden unabhängig
+aus. Eine eigene Live-Ansage folgt Inhaltsänderungen, nicht den Layoutwechseln. Schadensmeldungen werden nicht zusätzlich in der festen Statusanzeige
+ausgegeben; Phase und Versöhnung behalten diese Anzeige.
 
 Typisierte DE-/EN-Kataloge besitzen dieselben Platzhalter. `t` formatiert Ansichten,
 `copy` liefert kanonisches Deutsch; Übersetzung beeinflusst keine Domainentscheidung.

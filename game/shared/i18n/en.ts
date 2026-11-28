@@ -363,6 +363,7 @@ export const en: Record<keyof typeof de, string> = {
   landingPrototype: 'A playable prototype that keeps growing. Your feedback helps shape it.',
   landingReady: 'Ready for a little chaos?',
 
+  feedbackDamageCombo: 'A little chain of chaos',
   feedbackStart: 'Go on, Pixel!',
   feedbackEating: 'Enjoy your meal!',
   feedbackPlaying: 'Favourite ball found!',
