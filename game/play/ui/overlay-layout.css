@@ -394,12 +394,22 @@ html:not(.follow-camera) #game > .room-selection-return {
   }
 }
 
-/* Finished portrait rounds need their existing result actions, not movement inputs. */
+/* Finished rounds keep one readable primary action and no movement inputs. */
+.follow-camera body main:has(#play-area) #play-area:has(.mobile-result:not([hidden])) {
+  .touch-directions {
+    display: none;
+  }
+  .mobile-hud {
+    visibility: hidden;
+  }
+  .touch-actions {
+    width: min(160px, calc(100% - var(--overlay-left) - var(--overlay-right)));
+  }
+}
+
+/* Finished portrait rounds need their primary result action, not movement inputs. */
 @media (aspect-ratio < 1/1) {
   .follow-camera body main:has(#play-area) #play-area:has(.mobile-result:not([hidden])) {
-    .touch-directions {
-      display: none;
-    }
     .touch-actions {
       display: flex;
       left: var(--overlay-left);
@@ -423,7 +433,7 @@ html:not(.follow-camera) #game > .room-selection-return {
       top: var(--overlay-top);
       bottom: auto;
       left: calc(50% + var(--camera-pixel-half, 48px) + var(--overlay-gap));
-      right: calc(var(--overlay-right) + var(--overlay-actions-width, 0px) + var(--overlay-gap));
+      right: var(--overlay-right);
       width: auto;
       max-width: none;
       min-height: 0;
@@ -442,7 +452,37 @@ html:not(.follow-camera) #game > .room-selection-return {
     )
     #play-area
     .album-banner {
-    left: calc(var(--overlay-left) + var(--overlay-actions-width, 0px) + var(--overlay-gap));
+    left: var(--overlay-left);
     right: calc(50% + var(--camera-pixel-half, 48px) + var(--overlay-gap));
+  }
+}
+
+/* The finished narrow portrait card keeps a readable scroll area above its action. */
+@media (max-width: 380px) and (max-height: 550px) and (orientation: portrait) {
+  .follow-camera
+    body
+    main:has(#play-area)
+    #play-area
+    #game
+    > .mobile-dialogue:has(.mobile-result:not([hidden])) {
+    min-height: 72px;
+  }
+  .follow-camera
+    body
+    main:has(#play-area)
+    #play-area:has(.mobile-result:not([hidden]))
+    .album-banner {
+    min-height: 0;
+    padding: 6px;
+    gap: 6px;
+  }
+  .follow-camera
+    body
+    main:has(#play-area)
+    #play-area:has(.mobile-result:not([hidden]))
+    .album-banner
+    img {
+    width: 32px;
+    height: 32px;
   }
 }

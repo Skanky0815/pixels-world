@@ -160,10 +160,12 @@ begrenzt. Touchflächen und Spieloverlays bleiben am Spielhost. Im sehr flachen
 Querformat stehen Richtungstasten und Sprung neben dem scrollbar bleibenden
 Dialog; die Anordnung spiegelt dessen Raumanker links oder rechts. Die Kamera
 hält beide Figuren zwischen Inhalt und Touchflächen sichtbar; Touchzielgrößen
-bleiben erhalten. Im Hochformat stehen am Rundenende die vorhandenen Folgeaktionen
-nebeneinander; die dann nicht mehr benötigten Bewegungstasten sind ausgeblendet.
-Im kompakten Querformat erscheint der Albumhinweis über den Touchflächen auf der
-dem Dialog gegenüberliegenden Seite.
+bleiben erhalten. Am Rundenende gibt es genau eine primäre Folgeaktion;
+Bewegungstasten und der dann redundante HUD-Phasenhinweis sind in allen
+Orientierungen ausgeblendet. Die schmale Hochformatkarte behält einen lesbaren
+Scrollbereich für Ausgang und Ergebnisdetails. Im kompakten Querformat erscheint
+der Albumhinweis über der Ergebnisaktion auf der dem Dialog gegenüberliegenden
+Seite; im kleinen Hochformat hält eine kompaktere Darstellung beide Flächen frei.
 Der Hauptmenü-Button im gemeinsamen Header ist der einzige sichtbare Einstieg
 ins Hauptmenü; Levelauswahl und Menüunterseiten haben keine eigenen Rückbuttons
 dorthin. Der Headerwechsel aus Optionen oder Information stellt den gemerkten
@@ -217,7 +219,13 @@ ein rechtzeitig erreichtes Hauptziel, Score null und keinen registrierten Schade
 voraus; dann entfällt die Versöhnung. Erreichen Ziel und Deadline denselben Frame,
 zählt das Timerende. Pause und
 bestätigter Neustart sind phasenübergreifende Bedienaktionen; ein Neustart baut
-die Runde neu auf und erhält eine bereits erteilte Startfreigabe. Die Fachmodelle
+die Runde neu auf und erhält eine bereits erteilte Startfreigabe. Am Ergebnis
+startet die primäre Aktion nach einer Niederlage einen neuen Versuch im selben
+Raum mit frischen Rundenmodellen; nach Erfolg einschließlich friedlichem Abschluss
+öffnet sie die Levelauswahl. Bestätigte Albumfunde und Erfolge bleiben erhalten.
+Der vorhandene native Ergebnisbutton, Leertaste und Touch verwenden denselben
+Aktionspfad; eine gehaltene Bestätigung löst nach dem Wechsel keine zweite Aktion
+aus. Die Fachmodelle
 [RoundController](../../game/play/domain/round-controller.ts) und
 [Rundenergebnis](../../game/play/domain/round-result.ts) bestimmen die Übergänge.
 

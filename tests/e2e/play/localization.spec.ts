@@ -104,7 +104,7 @@ test.describe('Lokalisierte Touch-Runde', () => {
     await expect(page.locator('.mobile-dialogue')).not.toContainText(/Main goal|Difficulty/i);
     await expect(page.locator('.result-headline')).toHaveText('Friends again!');
     await expect(page.locator('.result-hearts')).toHaveAttribute('aria-label', '1 of 1 hearts');
-    await expect(page.locator('[data-control="reset"]')).toHaveText('New round');
+    await expect(page.locator('.room-selection-return')).toHaveText('Level selection');
     expect((await state(page)).reconciliation.failures).toBe(0);
     await test.info().attach('english-mobile-result', {
       body: await page.screenshot({ fullPage: true }),

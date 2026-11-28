@@ -127,7 +127,7 @@ function panelText(s: Readout) {
     return {
       message: t('roundResult'),
       quote: s.result.quoteText,
-      hint: t('newRoundStartsTheNextGame'),
+      hint: t(s.result.outcome === 'success' ? 'resultLevelsHint' : 'resultRetryHint'),
       key: '',
       portrait: s.result.portrait,
     };

@@ -101,7 +101,7 @@ export class RoundResultView {
       : this.left + 20;
 
     placeDialogueText(this.quote, textX, this.hint.x - textX - 4);
-    this.hint.setText(t('spaceNewRound'));
+    this.hint.setText(t(success ? 'spaceResultLevels' : 'spaceResultRetry'));
   }
 
   private renderDiscoveries(result: RoundResult) {

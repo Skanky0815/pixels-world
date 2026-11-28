@@ -212,7 +212,7 @@ test(
     expect(
       await page.locator('.mobile-result').evaluate((el) => el.scrollWidth <= el.clientWidth),
     ).toBe(true);
-    await expect(page.getByRole('button', { name: 'Neue Runde' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Levelauswahl', exact: true })).toBeVisible();
     await test.info().attach('mobiles-ergebnis', {
       body: await page.screenshot({ fullPage: true }),
       contentType: 'image/png',
@@ -229,8 +229,10 @@ test(
     const beforeReset = await state(page);
 
     expect(beforeReset.ending).toMatchObject({ kind: 'belly', complete: false });
-    await touch.tap('reset');
+    await page.locator('.room-selection-return').tap();
     await until(page, (s) => s.generation === beforeReset.generation + 1);
+    await expect(page.locator('.room-selection')).toBeVisible();
+    expect((await state(page)).started).toBe(false);
     expect((await state(page)).ending.kind).toBeNull();
     await expect(page.locator('[data-control="reset"]')).toBeHidden();
     await expect(page.locator('.touch-controls')).toHaveCount(1);
@@ -240,16 +242,22 @@ test(
   },
 );
 
+// eslint-disable-next-line max-lines-per-function -- Normale Dialoge reservieren Richtungen und Aktion; das Ergebnis reserviert allein seine primäre Aktion.
 async function expectClearTouchDialogue(page: import('@playwright/test').Page) {
   const dialogue = await page.locator('.mobile-dialogue').boundingBox();
   const directions = await page.locator('.touch-directions').boundingBox();
   const action = await page.locator('.touch-actions').boundingBox();
 
-  expect(dialogue && directions && action).toBeTruthy();
+  expect(dialogue && action).toBeTruthy();
 
-  if (!dialogue || !directions || !action) throw new Error('Dialog oder Touch-Fläche fehlt');
+  if (!dialogue || !action) throw new Error('Dialog oder primäre Touch-Fläche fehlt');
 
-  for (const control of [directions, action]) expect(separate(dialogue, control)).toBe(true);
+  if (await page.locator('.mobile-result').isVisible())
+    await expect(page.locator('.touch-directions')).toBeHidden();
+  else expect(directions).not.toBeNull();
+
+  for (const control of [directions, action])
+    if (control) expect(separate(dialogue, control)).toBe(true);
 }
 
 /** Side cards keep both result sections readable in one column on every viewport. */
