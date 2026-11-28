@@ -7,7 +7,7 @@
   --dialogue-font: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
-:is(.start-screen, .mobile-dialogue, .album-dialog).dialogue-box {
+:is(.start-screen, .mobile-dialogue).dialogue-box {
   background: var(--dialogue-background);
   color: var(--dialogue-text);
   border: 2px solid var(--dialogue-border);
@@ -26,7 +26,8 @@
 
 /* Navigation remains a screen, with its own content width and normal page scrolling. */
 .game-menu.game-screen,
-.room-selection.game-screen {
+.room-selection.game-screen,
+.album-screen.game-screen {
   background: #26212c;
   color: var(--dialogue-text);
   font-family: var(--dialogue-font);

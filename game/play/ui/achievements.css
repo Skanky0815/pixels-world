@@ -1,12 +1,12 @@
 /* Five fixed bookmarks retain their positions when changing chapters. */
-.album-dialog .album-tabs {
+.album-screen .album-tabs {
   display: flex;
   padding-inline: 0;
 }
-.album-dialog .album-tabs-coming {
+.album-screen .album-tabs-coming {
   gap: 2px;
 }
-.album-dialog .album-bookmark[data-room='achievements'] {
+.album-screen .album-bookmark[data-room='achievements'] {
   --room-marker: #dabc78;
   display: flex;
   align-items: center;
@@ -105,7 +105,7 @@
   flex: 1;
   min-height: 194px;
 }
-.album-dialog .achievement-tile {
+.album-screen .achievement-tile {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
   gap: 2px 8px;
@@ -117,7 +117,7 @@
   border: 1px solid #9a7c58;
   min-height: 44px;
 }
-.album-dialog .achievement-tile[aria-pressed='true'] {
+.album-screen .achievement-tile[aria-pressed='true'] {
   background: #e8c78b80;
   border: 2px solid #966a37;
   padding: 5px 7px;
@@ -132,7 +132,7 @@
   font-size: 12px;
   overflow-wrap: anywhere;
 }
-.album-dialog .achievement-tile small {
+.album-screen .achievement-tile small {
   font-size: 11px;
   color: #665337;
 }
@@ -151,10 +151,10 @@
     border: 0;
     background: none;
   }
-  .album-dialog[data-detail='true'] .achievement-story {
+  .album-screen[data-detail='true'] .achievement-story {
     display: flex;
   }
-  .album-dialog[data-detail='true'] .achievement-index {
+  .album-screen[data-detail='true'] .achievement-index {
     display: none;
   }
   .achievement-total-wide {
@@ -172,7 +172,7 @@
   }
 }
 @media (max-height: 550px) and (orientation: landscape) {
-  .album-dialog[data-chapter='achievements'][data-detail='true']
+  .album-screen[data-chapter='achievements'][data-detail='true']
     .album-bookmark[data-room='achievements'] {
     width: 96px;
     flex-basis: 96px;
@@ -198,16 +198,16 @@
   .achievement-index h3 {
     font-size: 14px;
   }
-  .album-dialog .achievement-tile {
+  .album-screen .achievement-tile {
     grid-template-columns: 16px minmax(0, 1fr);
     padding: 4px 6px;
     gap: 1px 5px;
   }
-  .album-dialog .achievement-tile[aria-pressed='true'] {
+  .album-screen .achievement-tile[aria-pressed='true'] {
     padding: 3px 5px;
   }
   .achievement-tile strong,
-  .album-dialog .achievement-tile small {
+  .album-screen .achievement-tile small {
     font-size: 11px;
     line-height: 1.2;
   }
@@ -264,7 +264,7 @@
   position: relative;
 }
 
-.album-dialog .achievement-tile:disabled {
+.album-screen .achievement-tile:disabled {
   background: #b18c5520;
   border-style: dashed;
   opacity: 1;

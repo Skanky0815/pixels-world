@@ -32,7 +32,7 @@ test.beforeEach(async ({ page }, info) => {
 async function openFromMenu(page: Page) {
   await openPause(page);
   await page.locator('.album-toggle').click();
-  await expect(page.locator('.album-dialog')).toBeVisible();
+  await expect(page.locator('.album-screen')).toBeVisible();
 }
 
 async function scratch(page: Page) {
@@ -54,7 +54,7 @@ for (const mobile of [false, true]) {
     }) => {
       await loadIntro(page);
       await (await introAction(page, 'album')).click();
-      const album = page.locator('.album-dialog');
+      const album = page.locator('.album-screen');
 
       await expect(album).toBeVisible();
       await expect(album.locator('.album-overall')).toHaveText(
@@ -144,7 +144,7 @@ for (const mobile of [false, true]) {
         await expect(page.locator('.album-overall')).toHaveText(
           `Insgesamt: 1 von ${albumEntries(true).length}`,
         );
-        await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
+        await expect(page.locator('.album-screen')).not.toContainText('Das gemütliche Sofa');
         await page.reload();
         await waitForGame(page);
         await (await introAction(page, 'album')).click();
@@ -164,7 +164,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await until(page, (s) => s.plant.damage === 1);
   await holdUntil(page, ['ArrowLeft'], (s) => s.pixel.x <= 45);
   await openFromMenu(page);
-  const album = page.locator('.album-dialog');
+  const album = page.locator('.album-screen');
 
   await expect(album.locator('.album-overall')).toHaveText(
     `Insgesamt: 0 von ${albumEntries(true).length}`,
@@ -245,7 +245,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await openFromMenu(page);
   await page.clock.runFor(4000);
   await expect(banner).toHaveAttribute('data-entry', 'plant.catgrass');
-  await page.locator('.album-dialog [data-action="close"]').click();
+  await page.locator('.album-screen [data-action="close"]').click();
   await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await page.clock.runFor(3300);
@@ -308,7 +308,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await expect(page.locator('.album-overall')).toHaveText(
     `Overall: 2 of ${albumEntries(true).length}`,
   );
-  await page.locator('.album-dialog [data-action="close"]').click();
+  await page.locator('.album-screen [data-action="close"]').click();
   await openPause(page);
   await page.locator('.pause-menu [data-album-reset="ask"]').click();
   await page.locator('.pause-menu [data-album-reset="cancel"]').click();
@@ -330,14 +330,14 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
     completedRooms: [],
     unlocked: [],
   });
-  await expect(page.locator('.album-dialog img')).toHaveCount(0);
+  await expect(page.locator('.album-screen img')).toHaveCount(0);
   await page.reload();
   await waitForGame(page);
   await (await introAction(page, 'album')).click();
   await expect(page.locator('.album-overall')).toHaveText(
     `Overall: 0 of ${albumEntries(true).length}`,
   );
-  await expect(page.locator('.album-dialog')).toHaveCount(1);
+  await expect(page.locator('.album-screen')).toHaveCount(1);
 });
 
 test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async ({ page }) => {
@@ -359,10 +359,10 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
   await expect(page.locator('.album-overall')).toHaveText(
     `Insgesamt: 1 von ${albumEntries(true).length}`,
   );
-  await expect(page.locator('.album-dialog footer [role="status"]')).toContainText(
+  await expect(page.locator('.album-screen footer [role="status"]')).toContainText(
     'Speichern ist nicht verfügbar',
   );
-  await page.locator('.album-dialog [data-action="close"]').click();
+  await page.locator('.album-screen [data-action="close"]').click();
   await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await reset(page);
@@ -398,7 +398,7 @@ test('Neustart und Reload verwerfen Vormerkungen und behalten vorhandene Album-E
   await expect(page.locator('.album-overall')).toHaveText(
     `Insgesamt: 1 von ${albumEntries(true).length}`,
   );
-  await expect(page.locator('.album-dialog')).not.toContainText('Das gemütliche Sofa');
+  await expect(page.locator('.album-screen')).not.toContainText('Das gemütliche Sofa');
 });
 
 test('Korrupte Album-Daten blockieren weder Einführung noch Sammlung', async ({ page }) => {
@@ -408,7 +408,7 @@ test('Korrupte Album-Daten blockieren weder Einführung noch Sammlung', async ({
   await expect(page.locator('.album-overall')).toHaveText(
     `Insgesamt: 0 von ${albumEntries(true).length}`,
   );
-  await expect(page.locator('.album-dialog footer [role="status"]')).toContainText('ungültig');
+  await expect(page.locator('.album-screen footer [role="status"]')).toContainText('ungültig');
 });
 
 test('Veröffentlichtes Album zählt keine unerreichbare DEV-Variante', async ({ page }) => {
@@ -425,7 +425,7 @@ test('Veröffentlichtes Album zählt keine unerreichbare DEV-Variante', async ({
     `Insgesamt: 0 von ${albumEntries(false).length}`,
   );
   await expect(page.locator('.album-tile:disabled')).toHaveCount(9);
-  await expect(page.locator('.album-dialog img')).toHaveCount(0);
+  await expect(page.locator('.album-screen img')).toHaveCount(0);
 });
 
 test.describe('Mobile Buchseiten', () => {
@@ -441,7 +441,7 @@ test.describe('Mobile Buchseiten', () => {
     );
     await start(page);
     await page.locator('.album-toggle').click();
-    const album = page.locator('.album-dialog');
+    const album = page.locator('.album-screen');
 
     await expect(page.locator('.pause-menu')).toBeHidden();
     const paused = await state(page);

@@ -251,7 +251,7 @@ export const en: Record<keyof typeof de, string> = {
   albumOverview: 'Back to collection',
   albumTitle: 'Album of mischief',
   albumOpen: 'Open album',
-  albumClose: 'Close album',
+  albumBack: '← Back',
   albumRooms: 'Rooms',
   albumLivingRoom: 'Living room',
   albumKitchen: 'Kitchen',

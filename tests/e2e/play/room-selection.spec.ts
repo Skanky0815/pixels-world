@@ -69,8 +69,8 @@ test(
     await page.keyboard.up('ArrowRight');
     await page.keyboard.up('Space');
     await page.locator('main > header .album-toggle').click();
-    await expect(page.locator('.album-dialog')).toBeVisible();
-    await page.locator('.album-dialog [data-action="close"]').click();
+    await expect(page.locator('.album-screen')).toBeVisible();
+    await page.locator('.album-screen [data-action="close"]').click();
     await page.locator('main > header .pause-toggle').click();
     await page.locator('[data-menu-settings]').click();
     await page.locator('[data-language="en"]').click();

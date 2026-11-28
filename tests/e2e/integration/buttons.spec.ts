@@ -72,13 +72,13 @@ test('Sprachwahl, Iconbuttons und Albumaktionen behalten Namen, Fokus und gesper
     'false',
   );
   await page.locator('.album-toggle').click();
-  const close = page.locator('.album-dialog [data-popup-close]');
+  const close = page.locator('.album-screen [data-action="close"]');
 
-  await expect(close).toHaveAccessibleName('Close album');
+  await expect(close).toHaveAccessibleName('← Back');
   await tabTo(page, close);
   await expect(close).toHaveCSS('outline-style', 'solid');
   await expectTarget(close);
-  const previous = page.locator('.album-dialog [data-action="page-previous"]');
+  const previous = page.locator('.album-screen [data-action="page-previous"]');
 
   await expect(previous).toBeDisabled();
   await expect(previous).toHaveCSS('cursor', 'default');
@@ -92,7 +92,7 @@ test('Sprachwahl, Iconbuttons und Albumaktionen behalten Namen, Fokus und gesper
   await expect(page.locator('.achievement-tile:disabled').first()).toHaveCSS('cursor', 'default');
   await expect(page.locator('.achievement-tile:disabled').first()).toHaveCSS('opacity', '1');
   await page.keyboard.press('Escape');
-  await expect(page.locator('.album-dialog')).toBeHidden();
+  await expect(page.locator('.album-screen')).toBeHidden();
 });
 
 test.describe('Gemeinsame Grundlage mit Touch', () => {

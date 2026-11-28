@@ -156,7 +156,8 @@ export class PauseMenu {
     if (document.querySelector('dialog[open]')) return;
     event.preventDefault();
 
-    if (this.opened) this.close();
+    if (this.album.opened) this.album.close();
+    else if (this.opened) this.close();
     else this.open();
   };
 
@@ -183,7 +184,9 @@ export class PauseMenu {
 
   // eslint-disable-next-line max-lines-per-function -- Neuer Menüeintritt setzt seinen Fokuskontext zurück; Unteransichten merken ihn danach innerhalb derselben Pause.
   open(initial = false) {
-    if (this.album.opened || document.querySelector('dialog[open]')) return;
+    if (document.querySelector('dialog[open]')) return;
+
+    if (this.album.opened) this.album.close();
 
     if (this.root.hidden) {
       this.returnable = !initial;
@@ -198,6 +201,7 @@ export class PauseMenu {
   }
 
   openAlbum() {
+    if (this.album.opened) return;
     this.albumReturnFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.actions.pause(true);

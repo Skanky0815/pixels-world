@@ -34,7 +34,7 @@ export function menuMarkup() {
     <nav class="pause-actions" aria-label="${t('mainMenu')}">
       <button type="button" class="ui-button ui-button--primary menu-primary" data-menu-play data-menu-text="menuPlay"></button>
       <button type="button" class="ui-button ui-button--primary menu-primary" data-pause-resume data-menu-text="menuResume"></button>
-      <button type="button" class="ui-button" data-pause-album aria-haspopup="dialog"></button>
+      <button type="button" class="ui-button" data-pause-album aria-controls="album-screen"></button>
       <button type="button" class="ui-button" data-menu-settings data-menu-text="gameOptions"></button>
       <a class="ui-button" href="./help.html" target="_blank" rel="noopener noreferrer" data-menu-text="menuHelp"></a>
       <button type="button" class="ui-button" data-menu-information data-menu-text="gameInformation"></button>

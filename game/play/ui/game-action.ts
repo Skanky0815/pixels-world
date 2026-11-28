@@ -13,15 +13,13 @@ function icon(action: GameAction) {
 export function configureAction(button: HTMLButtonElement, action: GameAction) {
   configureButton(button, { label: t(LABELS[action]), icon: icon(action) });
 
-  if (action === 'album') button.setAttribute('aria-haspopup', 'dialog');
-  else button.removeAttribute('aria-haspopup');
+  button.removeAttribute('aria-haspopup');
+
+  if (action === 'album') button.setAttribute('aria-controls', 'album-screen');
 }
 
 export function actionButton(action: GameAction, hook: string) {
-  return buttonMarkup(
-    { label: t(LABELS[action]), icon: icon(action) },
-    `${hook} aria-haspopup="dialog"`,
-  );
+  return buttonMarkup({ label: t(LABELS[action]), icon: icon(action) }, hook);
 }
 
 function optionsIcon() {

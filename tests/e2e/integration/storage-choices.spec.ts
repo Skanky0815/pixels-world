@@ -23,11 +23,11 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
   expect(await page.evaluate(() => caches.keys())).toEqual([]);
   await page.locator('.album-toggle').click();
   await expect(page.locator('.album-overall')).toContainText('0 von');
-  await page.locator('.album-dialog [data-action="close"]').click();
+  await page.locator('.album-screen [data-action="close"]').click();
   await page.locator('[data-remember-album]').check();
   await page.locator('.album-toggle').click();
   await expect(page.locator('.album-overall')).toContainText('1 von');
-  await page.locator('.album-dialog [data-action="close"]').click();
+  await page.locator('.album-screen [data-action="close"]').click();
   const migrated = await page.evaluate(() => localStorage.getItem('pixels-world.album'));
 
   expect(JSON.parse(migrated!)).toEqual({
@@ -49,16 +49,16 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
   await page.locator('.album-toggle').click();
   expect(
     await page
-      .locator('.album-dialog')
+      .locator('.album-screen')
       .evaluate(
         (node) =>
           node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1,
       ),
   ).toBe(true);
-  await expect(page.locator('.album-dialog .album-overall')).toContainText(
+  await expect(page.locator('.album-screen .album-overall')).toContainText(
     'Album nur für diesen Besuch.',
   );
-  await page.locator('.album-dialog [data-action="close"]').click();
+  await page.locator('.album-screen [data-action="close"]').click();
   await page.locator('.pause-toggle').click();
   await page.locator('[data-menu-settings]').click();
   await expect(page.locator('[data-remember-album]')).not.toBeChecked();

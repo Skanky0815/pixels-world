@@ -105,8 +105,8 @@ test(
     await expect(page.locator('.album-overall')).toHaveText(
       `Overall: 0 of ${albumEntries(true).length}`,
     );
-    await expect(page.locator('.album-dialog img')).toHaveCount(0);
-    await expect(page.locator('.album-dialog [data-album-reset]')).toHaveCount(0);
+    await expect(page.locator('.album-screen img')).toHaveCount(0);
+    await expect(page.locator('.album-screen [data-album-reset]')).toHaveCount(0);
     await page.reload();
     await waitForGame(page);
     await (await introAction(page, 'album')).click();

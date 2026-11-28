@@ -1,5 +1,5 @@
 /* eslint-disable max-lines-per-function -- Zusammenhängende Bedienwege prüfen Geometrie, echte Touch-Aktionen und erhaltene Auswahl gemeinsam. */
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { ALBUM_ROOMS } from '../../../game/play/ui/album-markup';
 import { albumEntries } from '../../../game/play/content/album/index';
 import { changeLanguage, openPause, returnToMenu } from '../support/pause-support';
@@ -24,7 +24,7 @@ async function openSavedAlbum(page: Page) {
 }
 
 async function expectBoundedAlbum(page: Page) {
-  const album = page.locator('.album-dialog');
+  const album = page.locator('.album-screen');
   const box = (await album.boundingBox())!;
   const viewport = page.viewportSize()!;
 
@@ -33,10 +33,16 @@ async function expectBoundedAlbum(page: Page) {
   expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
   expect(box.y + box.height).toBeLessThanOrEqual(viewport.height);
   expect(await album.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  const header = (await page.locator('main > header').boundingBox())!;
+  const footer = (await page.locator('main > footer').boundingBox())!;
+
+  expect(box.y).toBeGreaterThanOrEqual(header.y + header.height);
+  expect(box.y + box.height).toBeLessThanOrEqual(footer.y + 1);
+  expect(await page.evaluate(() => scrollY)).toBe(0);
 }
 
 async function expectSeparateNavigation(page: Page) {
-  const album = page.locator('.album-dialog');
+  const album = page.locator('.album-screen');
   const tile = (await album.locator('.album-tile').last().boundingBox())!;
   const navigation = (await album.locator('.album-pagination').boundingBox())!;
 
@@ -46,27 +52,29 @@ async function expectSeparateNavigation(page: Page) {
 }
 
 async function expectDetailFits(page: Page) {
-  const album = page.locator('.album-dialog');
-  const story = album.locator('.album-story');
+  const story = page.locator('.album-screen .album-story');
   const picture = (await story.locator('figure').boundingBox())!;
   const copy = (await story.locator('.album-story-copy').boundingBox())!;
-  const bounds = (await story.boundingBox())!;
-  const image = (await story.locator('img').boundingBox())!;
-  const back = (await story.locator('[data-action="overview"]').boundingBox())!;
+  const back = story.locator('[data-action="overview"]');
 
   expect(picture.x + picture.width).toBeLessThanOrEqual(copy.x);
-  expect(copy.y).toBeGreaterThanOrEqual(bounds.y);
-  expect(copy.y + copy.height).toBeLessThanOrEqual(bounds.y + bounds.height);
-  expect(copy.y + copy.height).toBeLessThanOrEqual(back.y);
-  expect(back.x + back.width).toBeCloseTo(bounds.x + bounds.width - 8, 0);
-  expect(back.y + back.height).toBeCloseTo(bounds.y + bounds.height - 8, 0);
-  expect(image.height).toBeGreaterThanOrEqual(24);
-  expect(await story.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
-  expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+  expect((await story.locator('img').boundingBox())!.height).toBeGreaterThanOrEqual(24);
+  expect(await story.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+
+  // Persistent shell chrome leaves less room than the former modal; all text stays scrollable.
+  for (const text of await story.locator('.album-story-copy > p, blockquote').all()) {
+    await text.scrollIntoViewIfNeeded();
+    await expectReadable(text);
+  }
+
+  await back.scrollIntoViewIfNeeded();
+  await expectReadable(back);
+  expect((await back.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await expectBoundedAlbum(page);
 }
 
 async function checkChapterDetails(page: Page) {
-  const album = page.locator('.album-dialog');
+  const album = page.locator('.album-screen');
   const seen = new Set<string>();
 
   for (let index = 0; index < savedEntries.length; index++) {
@@ -95,7 +103,7 @@ async function checkChapterDetails(page: Page) {
 }
 
 async function checkEveryDetail(page: Page) {
-  const album = page.locator('.album-dialog');
+  const album = page.locator('.album-screen');
   const seen = new Set<string>();
 
   for (const room of ALBUM_ROOMS.filter((id) =>
@@ -122,18 +130,18 @@ test.describe('Album im Smartphone-Querformat', () => {
     { width: 568, height: 320 },
     { width: 740, height: 300 },
   ]) {
-    test(`${viewport.width}×${viewport.height}: Sechs Kacheln, Seiten und Kapitel passen ohne Scrollen`, async ({
+    test(`${viewport.width}×${viewport.height}: Sechs Kacheln, Seiten und Kapitel bleiben in der Shell erreichbar`, async ({
       page,
     }) => {
       await page.setViewportSize(viewport);
       await openSavedAlbum(page);
-      const album = page.locator('.album-dialog');
+      const album = page.locator('.album-screen');
 
       await expectBoundedAlbum(page);
       await expectSeparateNavigation(page);
       await expect(album.locator('.album-tile')).toHaveCount(6);
       await checkEveryDetail(page);
-      expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+      await expectBoundedAlbum(page);
       expect(
         await album
           .locator('.album-index')
@@ -178,7 +186,7 @@ test.describe('Album im Smartphone-Querformat', () => {
         await options.locator('[data-pause-resume]').tap();
         await (await introAction(page, 'album')).tap();
         await expect(album.locator('.album-tile:disabled')).toHaveCount(6);
-        expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+        await expectBoundedAlbum(page);
         expect(
           await album
             .locator('.album-index')
@@ -198,11 +206,11 @@ test.describe('Album im Smartphone-Querformat', () => {
     }) => {
       await page.setViewportSize(viewport);
       await openSavedAlbum(page);
-      await page.locator('.album-dialog [data-action="close"]').tap();
+      await page.locator('.album-screen [data-action="close"]').tap();
       await changeLanguage(page, 'en');
       await (await introAction(page, 'album')).tap();
       await checkEveryDetail(page);
-      await page.locator('.album-dialog [data-action="close"]').tap();
+      await page.locator('.album-screen [data-action="close"]').tap();
     });
   }
 
@@ -217,7 +225,7 @@ test.describe('Album im Smartphone-Querformat', () => {
         insets: { top: 44, left: 0, right: 0, bottom: 34 },
       });
       await openSavedAlbum(page);
-      const album = page.locator('.album-dialog');
+      const album = page.locator('.album-screen');
 
       await album.getByRole('button', { name: 'Nächste Seite', exact: true }).tap();
       await album.getByRole('button', { name: 'Die blaue Vase', exact: true }).tap();
@@ -270,16 +278,38 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await openSavedAlbum(page);
-    const album = page.locator('.album-dialog');
+    const album = page.locator('.album-screen');
 
     await expectBoundedAlbum(page);
     await expectSeparateNavigation(page);
     await expect(album.locator('.album-story')).toBeVisible();
     await expect(album.locator('.album-index')).toBeVisible();
-    expect(await album.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+    await expectBoundedAlbum(page);
     await album.getByRole('button', { name: 'Nächste Seite', exact: true }).click();
     await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 2');
     await album.locator('[data-action="close"]').click();
     await expect(album).toBeHidden();
   });
+}
+
+async function expectReadable(target: Locator) {
+  await expect(target).toBeInViewport({ ratio: 0.95 });
+  const clipped = await target.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    let top = box.top;
+    let bottom = box.bottom;
+
+    for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+      if (!/auto|scroll|hidden|clip/.test(getComputedStyle(parent).overflowY)) continue;
+      const clip = parent.getBoundingClientRect();
+
+      top = Math.max(top, clip.top + parent.clientTop);
+      bottom = Math.min(bottom, clip.top + parent.clientTop + parent.clientHeight);
+    }
+
+    return Math.max(top - box.top, box.bottom - bottom);
+  });
+
+  // Nested native scrolling rounds offsets; at most one CSS pixel may be clipped.
+  expect(clipped).toBeLessThanOrEqual(1);
 }
