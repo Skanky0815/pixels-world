@@ -272,3 +272,37 @@
 .achievement-empty .album-mystery {
   min-height: 100px;
 }
+
+.achievement-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.album-screen .achievement-filters .ui-button {
+  min-height: 44px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 12px;
+  white-space: normal;
+}
+.achievement-filter-empty {
+  padding: 16px 0;
+}
+@media (max-height: 550px) and (orientation: landscape) {
+  .achievement-index {
+    grid-template-rows: 44px auto minmax(94px, 1fr);
+  }
+  .achievement-filters {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .achievement-list,
+  .achievement-filter-empty {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+.achievements-spread:has(.achievement-filter-empty) {
+  grid-template-columns: minmax(0, 1fr);
+}

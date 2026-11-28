@@ -12,6 +12,12 @@ import { currentLanguage, t } from '../../shared/i18n/locale.ts';
 import { escape, albumPagination } from './album-markup.ts';
 import { achievementPresentation } from './unlock-presentation.ts';
 
+import {
+  ACHIEVEMENT_FILTERS,
+  filteredAchievements,
+  type AchievementFilter,
+} from './achievement-filter.ts';
+
 export const ACHIEVEMENT_PAGE_SIZE = 4;
 
 export function achievementCount(entry: AchievementDefinition, data: AchievementData) {
@@ -23,19 +29,32 @@ export function achievementOverall(data: AchievementData) {
 }
 
 // eslint-disable-next-line max-lines-per-function -- Auswahl nur freigespielter Erfolge und begrenzte Buchseiten bilden eine gemeinsame Ansicht.
-export function achievementsMarkup(data: AchievementData, selected: string, page = 0) {
-  const unlocked = ACHIEVEMENTS.filter((entry) => data.unlocked.includes(entry.id));
-  const visible = ACHIEVEMENTS.slice(
-    page * ACHIEVEMENT_PAGE_SIZE,
-    (page + 1) * ACHIEVEMENT_PAGE_SIZE,
-  );
+export function achievementsMarkup(
+  data: AchievementData,
+  selected: string,
+  page = 0,
+  filter: AchievementFilter = 'all',
+) {
+  const entries = filteredAchievements(data, filter);
+  const unlocked = entries.filter((entry) => data.unlocked.includes(entry.id));
+  const visible = entries.slice(page * ACHIEVEMENT_PAGE_SIZE, (page + 1) * ACHIEVEMENT_PAGE_SIZE);
   const entry = unlocked.find((entry) => entry.id === selected) ?? unlocked[0];
 
   return `<div class="album-spread achievements-spread">
-    ${entry ? achievementStory(entry, data) : achievementPlaceholder()}
+    ${entries.length ? (entry ? achievementStory(entry, data) : achievementPlaceholder()) : ''}
     <section class="achievement-index"><div class="album-index-header"><h3>${t('albumAchievements')}</h3><p class="album-progress" aria-label="${escape(achievementOverall(data))}"><span class="achievement-total-wide">${achievementOverall(data)}</span><span class="achievement-total-compact" aria-hidden="true">${data.unlocked.length} / ${ACHIEVEMENTS.length}</span></p></div>
-    <div class="achievement-list">${visible.map((item) => achievementTile(item, data, entry?.id)).join('')}</div>
-    ${albumPagination(page, Math.ceil(ACHIEVEMENTS.length / ACHIEVEMENT_PAGE_SIZE))}</section></div>`;
+    ${achievementFilters(filter)}
+    ${entries.length ? `<div class="achievement-list">${visible.map((item) => achievementTile(item, data, entry?.id)).join('')}</div>${albumPagination(page, Math.ceil(entries.length / ACHIEVEMENT_PAGE_SIZE))}` : `<p class="achievement-filter-empty" role="status">${t(filter === 'completed' ? 'achievementNoCompleted' : 'achievementNoOpen')}</p>`}</section></div>`;
+}
+
+function achievementFilters(selected: AchievementFilter) {
+  const labels = {
+    all: 'achievementFilterAll',
+    open: 'achievementFilterOpen',
+    completed: 'achievementFilterCompleted',
+  } as const;
+
+  return `<div class="achievement-filters" role="group" aria-label="${t('achievementFilterLabel')}">${ACHIEVEMENT_FILTERS.map((filter) => `<button type="button" class="ui-button" aria-pressed="${selected === filter}" data-achievement-filter="${filter}" data-focus="filter-${filter}">${t(labels[filter])}</button>`).join('')}</div>`;
 }
 
 function progress(entry: AchievementDefinition, data: AchievementData) {

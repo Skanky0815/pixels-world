@@ -478,6 +478,11 @@ Hinweisarten auf. Unbekannte IDs bzw. fehlende Bilder erzeugen keine defekten Ba
 Sammlung, Queue und Speicherung ändern sich durch diese Auflösung nicht.
 Gesperrte Albumplätze verraten weder Namen noch Bilder oder Beschreibungen;
 DEV-Vorschauobjekte erweitern keine veröffentlichten Album-/Erfolgsziele.
+Das Erfolgskapitel filtert seine bestehende Liste nach Alle, Offen oder Abgeschlossen;
+der globale Fortschritt bleibt sichtbar. Filterwechsel setzen die Seite auf den Anfang
+und verlassen die mobile Detailansicht. Ein leerer Filter zeigt einen Status statt
+ungültiger Seitennavigation. Die Filterwahl bleibt innerhalb derselben Albuminstanz
+erhalten und verändert weder Speicherung noch Freischaltungen.
 Die Albumansicht erhält bei Größenwechseln ihren ausgewählten Inhalt und kann
 bei längeren Texten scrollen; ihr Layout ist keine eigene Fortschrittsquelle.
 
