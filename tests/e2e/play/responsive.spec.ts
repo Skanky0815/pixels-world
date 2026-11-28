@@ -213,9 +213,9 @@ for (const viewport of [
     const before = await mobileGeometry(page);
 
     await until(page, (s) => s.couch.damage === 1);
-    await expect(page.locator('.mobile-hud')).toContainText('Kratzen');
+    await expect(page.locator('.game-feedback-score')).toContainText('Kratzen');
     expect(await mobileGeometry(page)).toEqual(before);
-    await until(page, (s) => !s.feedback.text);
+    await until(page, (s) => !s.feedback.messages.score);
     expect(await mobileGeometry(page)).toEqual(before);
   });
 }

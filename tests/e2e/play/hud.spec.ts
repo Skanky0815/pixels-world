@@ -13,7 +13,8 @@ test('Während der Runde bleiben Punktzahlen verborgen; Schäden und Reset werde
     expect((await state(page)).chaos.score).toBe(3);
     await expect(page.locator('.mobile-hud')).not.toContainText(/CHAOS:|\+\d/);
     await expect(page.locator('.game-feedback-layer')).not.toContainText(/\+\d/);
-    await expect(page.locator('.mobile-hud .mobile-notice')).toContainText('Kratzen');
+    await expect(page.locator('.game-feedback-score')).toContainText('Kratzen');
+    await expect(page.locator('.mobile-hud .mobile-notice')).not.toContainText('Kratzen');
     await reset(page);
     expect((await state(page)).chaos.score).toBe(0);
   }
