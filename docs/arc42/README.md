@@ -381,8 +381,12 @@ bleiben für die Versöhnung mehrdeutig. Native Wiederholung ist keine neue Akti
 Die standardmäßig ausgeschaltete WASD-Präferenz ergänzt Pfeile und Touch.
 Optionen-/Fokuswechsel sperren alte gehaltene Tasten bis zum eigenen Loslassen;
 Cancel, Pointer-Capture-Verlust, Sichtbarkeit und Resize räumen Eingaben auf.
-Native Felder behalten ihre Bedienung; Fokus außerhalb des Spiels löst keine
-Spielaktion aus. Menü/Levelwahl verwenden dieselben Richtungsbindungen, überspringen
+Während einer gestarteten Runde bleiben Tastaturaktionen auch nach einem Klick
+auf nicht-interaktive Bereiche der Spielseite verfügbar. Der Spielhost muss dafür
+nicht erneut fokussiert werden. Einführung und Spielwiese behalten ihre bisherige
+Fokusgrenze; Menüs, Album, Levelwahl und native Bedienelemente bleiben gesperrt.
+Fenster-/Tab-Fokusverlust und Optionenwechsel verwerfen gehaltene Eingaben weiterhin
+bis zum Loslassen. Native Felder behalten ihre Bedienung. Menü/Levelwahl verwenden dieselben Richtungsbindungen, überspringen
 gesperrte Ziele und laufen am Rand nicht um. Enter/Leertaste aktivieren nur die
 vorhandene fokussierte Aktion. Bedienung: [README](../../README.md#steuerung).
 

@@ -22,8 +22,7 @@ export const en: Record<keyof typeof de, string> = {
   settingsAutoApply: 'Changes are applied immediately.',
   settingsApplied: '✓ Settings applied.',
   settingsAppliedNextRound: '✓ Applied. The difficulty takes effect next round.',
-  pixelRoomWasd:
-    'Pixel’s room. Use arrows or A/D to move and W/S to climb, Space to jump. Click the room to focus.',
+  pixelRoomWasd: 'Pixel’s room. Use arrows or A/D to move and W/S to climb, Space to jump.',
   keyboardSettings: 'Keyboard',
   wasdEnable: 'Also use WASD',
   wasdHelp:
@@ -569,8 +568,7 @@ export const en: Record<keyof typeof de, string> = {
   jumpLabel: 'Jump',
   climbCurtain: 'Climb',
   restart: 'Restart',
-  pixelSLivingRoomUseArrow:
-    "Pixel's room. Use arrow keys to move and climb, Space to jump. Click the room to focus.",
+  pixelSLivingRoomUseArrow: "Pixel's room. Use arrow keys to move and climb, Space to jump.",
   saraInnocentLook: 'There you are. You’ve certainly practised that innocent look.',
   saraYourVersion: 'I’ll sit down first. Then you can tell me your side of the story.',
   saraLittleHousemate: 'Hello, little housemate. Was it terribly boring without me?',
