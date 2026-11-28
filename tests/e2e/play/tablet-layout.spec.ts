@@ -49,6 +49,7 @@ async function waitForCanvasFit(page: Page) {
 async function tabletGeometry(page: Page, landscape: boolean) {
   await waitForCanvasFit(page);
   const room = await bounds(page, '#game');
+  const content = await bounds(page, '#game-content');
   const left = await bounds(page, '.touch-directions');
   const right = await bounds(page, '.touch-actions');
   const canvas = await bounds(page, 'canvas');
@@ -58,17 +59,20 @@ async function tabletGeometry(page: Page, landscape: boolean) {
   expect(direction.width).toBeGreaterThanOrEqual(56);
   expect(direction.height).toBeGreaterThanOrEqual(56);
   expect(jump.height).toBeGreaterThanOrEqual(56);
-  expect(canvas.width / canvas.height).toBeCloseTo(
-    page.viewportSize()!.width / page.viewportSize()!.height,
-    2,
-  );
+  expect(canvas.width / canvas.height).toBeCloseTo(content.width / content.height, 2);
   expect(canvas.width).toBeLessThanOrEqual(room.width + 4);
   expect(canvas.x).toBeGreaterThanOrEqual(room.x - 4);
   expect(canvas.x + canvas.width).toBeLessThanOrEqual(room.x + room.width + 4);
   expect(canvas.y).toBeGreaterThanOrEqual(room.y - 4);
   expect(canvas.y + canvas.height).toBeLessThanOrEqual(room.y + room.height + 4);
   expect((await state(page)).camera.zoom).toBe(landscape ? 1.35 : 1);
-  expect(room).toEqual({ x: 0, y: 0, ...page.viewportSize()! });
+  expect(room).toEqual(content);
+  const header = await bounds(page, 'main > header');
+  const footer = await bounds(page, 'main > footer');
+
+  expect(header.y + header.height).toBeLessThanOrEqual(content.y);
+  expect(content.y + content.height).toBeLessThanOrEqual(footer.y);
+  expect(footer.y + footer.height).toBeLessThanOrEqual(page.viewportSize()!.height + 1);
   expect(await page.locator('canvas').evaluate((n) => getComputedStyle(n).imageRendering)).toBe(
     'pixelated',
   );
@@ -77,8 +81,8 @@ async function tabletGeometry(page: Page, landscape: boolean) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 
   expect(left.x + left.width + 8).toBeLessThanOrEqual(right.x);
-  expect(left.y).toBeGreaterThan(room.height / 2);
-  expect(right.y).toBeGreaterThan(room.height / 2);
+  expect(left.y).toBeGreaterThan(room.y + room.height / 2);
+  expect(right.y).toBeGreaterThan(room.y + room.height / 2);
 
   for (const rect of [room, left, right]) {
     expect(rect.x).toBeGreaterThanOrEqual(0);

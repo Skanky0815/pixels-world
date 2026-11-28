@@ -132,10 +132,8 @@ html body main:has(#play-area) .start-age {
     text-align: right;
     font-size: 9px;
   }
-  .application-shell > .game-footer :is(.feedback-link, .age-rating) {
-    font-size: 9px;
-  }
   .application-shell > .game-footer .feedback-link {
+    font-size: 9px;
     gap: 8px;
   }
   html:not(.follow-camera) .game-content {

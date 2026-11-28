@@ -30,11 +30,11 @@ for (const viewport of [
       await expect(loading).toBeInViewport({ ratio: 1 });
       await waitForLoadingScreen(page);
       await enterSelectedRoom(page);
-      const intro = page.locator('.start-age .age-rating');
+      // The shared footer remains visible beside the introduction; no duplicate copy is needed.
+      const intro = page.locator('main > footer .age-rating');
 
       await expect(intro).toContainText('Cartoon property damage');
-      await intro.scrollIntoViewIfNeeded();
-      // Chromium can round the final scroll offset while all text remains readable.
+      // Fractional viewport edges may differ slightly while all text remains readable.
       await expect(intro).toBeInViewport({ ratio: 0.99 });
       const bounds = (await intro.boundingBox())!;
 

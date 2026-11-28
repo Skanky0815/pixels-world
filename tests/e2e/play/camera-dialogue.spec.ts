@@ -29,9 +29,11 @@ test('Kameradialog links: Figuren, lange Texte und Touch-Eingaben bleiben sichtb
     { width: 568, height: 320 },
   ]) {
     await page.setViewportSize(viewport);
+    const content = (await page.locator('#game-content').boundingBox())!;
+
     await until(
       page,
-      (s) => Math.abs(s.camera.width / s.camera.height - viewport.width / viewport.height) < 0.01,
+      (s) => Math.abs(s.camera.width / s.camera.height - content.width / content.height) < 0.01,
     );
     await clearDialogue(page);
     await test.info().attach(`Dialog ${viewport.width}×${viewport.height}`, {
