@@ -43,7 +43,7 @@ html body .application-shell > .game-header {
   gap: 8px 20px;
   margin: 0;
 }
-html body .application-shell > .game-footer {
+html body main.application-shell:has(#play-area) > .game-footer {
   display: flex;
   grid-column: 1;
   grid-row: 3;
@@ -107,7 +107,7 @@ html body main:has(#play-area) .start-age {
     padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
       max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
   }
-  html body .application-shell > .game-footer {
+  html body main.application-shell:has(#play-area) > .game-footer {
     gap: 4px;
     line-height: 1.4;
   }
@@ -136,13 +136,15 @@ html body main:has(#play-area) .start-age {
     font-size: 9px;
     gap: 8px;
   }
-  html:not(.follow-camera) .game-content {
-    container-type: size;
-    height: auto;
-  }
-  html:not(.follow-camera) body main:has(#play-area) .game-content #play-area #game {
-    width: min(100%, calc(100cqh * var(--room-ratio, 1.777778)));
-  }
+}
+/* The complete-room comparison also fits between chrome on wide, short windows. */
+html:not(.follow-camera) .game-content {
+  container-type: size;
+  height: auto;
+}
+html:not(.follow-camera) body main:has(#play-area) .game-content #play-area #game {
+  width: min(100%, calc(100cqh * var(--room-ratio, 1.777778)));
+  max-height: 100%;
 }
 html.follow-camera body main:has(#play-area) .start-age {
   display: none;

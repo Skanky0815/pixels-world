@@ -128,3 +128,21 @@ async function shellFrame(page: Page) {
   expect(top!.y).toBeGreaterThanOrEqual(0);
   expect(bottom!.y + bottom!.height).toBeLessThanOrEqual(page.viewportSize()!.height + 1);
 }
+
+// eslint-disable-next-line max-lines-per-function -- Breites flaches Vergleichsfenster muss Rahmen und vollständigen Raum gleichzeitig zeigen.
+test('Klassische Ansicht bleibt bei1920×600 innerhalb der Shell @smoke', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 600 });
+  await page.goto('/play.html?camera=room');
+  await waitForGame(page);
+  await page.keyboard.down('Space');
+  await until(page, (state) => state.started);
+  await page.keyboard.up('Space');
+  await shellFrame(page);
+  const content = (await page.locator('#game-content').boundingBox())!;
+  const canvas = (await page.locator('canvas').boundingBox())!;
+
+  expect(canvas.y).toBeGreaterThanOrEqual(content.y);
+  expect(canvas.y + canvas.height).toBeLessThanOrEqual(content.y + content.height + 1);
+  expect(canvas.width / canvas.height).toBeCloseTo(16 / 9, 2);
+  await page.screenshot({ path: 'test-results/shell-1920-classic.png' });
+});

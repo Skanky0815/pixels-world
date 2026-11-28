@@ -29,15 +29,55 @@ export function backdropPadding(width: number) {
 function controlMargins(scene: Phaser.Scene) {
   const canvas = scene.game.canvas.getBoundingClientRect();
   const scale = (canvas.width / scene.scale.width) * scene.cameras.main.zoom;
-  const directions = document.querySelector<HTMLElement>('.touch-directions');
-  const actions = document.querySelector<HTMLElement>('.touch-actions');
-  const left = directions?.offsetWidth ? directions.getBoundingClientRect().right : canvas.left;
-  const right = actions?.offsetWidth ? actions.getBoundingClientRect().left : canvas.right;
+  const side = compactDialogueSide();
+  const dialogue = side ? ', .mobile-dialogue:not([hidden])' : '';
+  const controls = Array.from(
+    document.querySelectorAll<HTMLElement>(`.touch-directions, .touch-actions${dialogue}`),
+  )
+    .filter((element) => element.offsetWidth)
+    .map((element) => element.getBoundingClientRect());
+  const middle = canvas.left + canvas.width / 2;
+  const left = Math.max(
+    canvas.left,
+    ...controls.filter((box) => box.left + box.width / 2 < middle).map((box) => box.right),
+  );
+  const right = Math.min(
+    canvas.right,
+    ...controls.filter((box) => box.left + box.width / 2 >= middle).map((box) => box.left),
+  );
 
   return {
     left: (left - canvas.left + 4) / scale + 6,
     right: (canvas.right - right + 4) / scale + 6,
+    offsetX: dialogueOffset(side, left, right, middle, scale),
   };
+}
+
+function compactDialogueSide() {
+  const panel = document.querySelector<HTMLElement>('.mobile-dialogue:not([hidden])');
+
+  return panel && matchMedia('(orientation: landscape) and (max-height: 380px)').matches
+    ? panel.dataset.dialogueSide === 'right'
+      ? 'right'
+      : 'left'
+    : null;
+}
+
+// eslint-disable-next-line max-lines-per-function -- Gespiegelte Inhaltsränder und derselbe Figurenmaßstab bestimmen einen gemeinsamen Kameraoffset.
+function dialogueOffset(
+  side: 'left' | 'right' | null,
+  left: number,
+  right: number,
+  middle: number,
+  scale: number,
+) {
+  const actorReserve = SARA_SPRITE.frameHeight * SARA_SPRITE.scale * 0.75;
+
+  if (side === 'left') return Math.min(0, (right - middle - 8) / scale - actorReserve);
+
+  if (side === 'right') return Math.max(0, (left - middle + 8) / scale + actorReserve);
+
+  return 0;
 }
 
 // eslint-disable-next-line max-lines-per-function -- Zoom, Bildränder und Folgepunkt werden gemeinsam anhand des aktuellen Layouts gesetzt.
@@ -45,9 +85,8 @@ function refreshCamera(scene: Phaser.Scene, target: Phaser.Physics.Arcade.Sprite
   const camera = scene.cameras.main;
 
   const room = scene.physics.world.bounds;
-  const portrait = scene.scale.height > scene.scale.width;
   const short = matchMedia('(min-aspect-ratio: 1/1) and (max-height: 550px)').matches;
-  const zoom = portrait ? 1 : short ? Math.max(2, Math.ceil(scene.scale.width / room.width)) : 1.35;
+  const zoom = cameraZoom(scene, room.width);
 
   camera.setSize(scene.scale.width, scene.scale.height).setZoom(followsPixel() ? zoom : 1);
   scene.game.canvas.parentElement?.style.setProperty(
@@ -71,15 +110,26 @@ function refreshCamera(scene: Phaser.Scene, target: Phaser.Physics.Arcade.Sprite
   camera.setDeadzone();
 
   if (followsPixel()) {
-    camera.startFollow(target, true, 1, 1);
+    camera.startFollow(target, true, 1, 1, padding.offsetX, 0);
 
     // Small standing corrections must not drag the entire phone view along.
     if (short) camera.setDeadzone(4, 4);
   } else camera.stopFollow().setScroll(0, 0);
 }
 
+function cameraZoom(scene: Phaser.Scene, roomWidth: number) {
+  if (scene.scale.height > scene.scale.width) return 1;
+
+  if (matchMedia('(max-height: 300px)').matches || compactDialogueSide()) return 2;
+
+  if (matchMedia('(min-aspect-ratio: 1/1) and (max-height: 550px)').matches)
+    return Math.max(2, Math.ceil(scene.scale.width / roomWidth));
+
+  return 1.35;
+}
+
 function cameraMargins(scene: Phaser.Scene) {
-  return followsPixel() ? controlMargins(scene) : { left: 0, right: 0 };
+  return followsPixel() ? controlMargins(scene) : { left: 0, right: 0, offsetX: 0 };
 }
 
 /** Keep the floor actors above portrait announcements without reducing the viewport. */

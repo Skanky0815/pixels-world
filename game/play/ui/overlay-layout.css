@@ -304,3 +304,56 @@ html:not(.follow-camera) #game > .room-selection-return {
 .follow-camera #play-area:has(.start-screen:not([hidden])) .touch-directions {
   display: none;
 }
+
+/* Very short play keeps the full-size input row inside the content region. */
+@media (orientation: landscape) and (max-height: 300px) {
+  .follow-camera body main:has(#play-area):not(:has(.mobile-dialogue:not([hidden]))) {
+    #play-area:not(:has(.start-screen:not([hidden]))) .touch-directions {
+      display: flex;
+      left: auto;
+      right: calc(var(--overlay-right) + var(--touch-target) + 2px);
+      gap: var(--touch-gap);
+    }
+    #play-area .touch-directions button {
+      width: var(--touch-target);
+    }
+    #play-area .touch-actions {
+      width: var(--touch-target);
+    }
+  }
+}
+
+/* Compact dialogues and full-size inputs use opposite sides, mirroring room anchors. */
+@media (orientation: landscape) and (max-height: 380px) {
+  .follow-camera body main:has(#play-area):has(.mobile-dialogue:not([hidden])) {
+    #play-area .touch-directions {
+      display: flex;
+      left: auto;
+      right: calc(var(--overlay-right) + var(--touch-target) + 2px);
+      gap: var(--touch-gap);
+    }
+    #play-area .touch-directions button {
+      width: var(--touch-target);
+    }
+    #play-area .touch-actions {
+      width: var(--touch-target);
+    }
+    #play-area #game > .mobile-dialogue:not([hidden]) {
+      width: min(480px, calc(50% - var(--camera-actor-height, 192px) - 2 * var(--overlay-gap)));
+      max-height: calc(100% - var(--overlay-top) - var(--overlay-bottom));
+      padding: 8px;
+    }
+  }
+  .follow-camera
+    body
+    main:has(#play-area):has(.mobile-dialogue[data-dialogue-side='right']:not([hidden])) {
+    #play-area .touch-directions {
+      right: auto;
+      left: calc(var(--overlay-left) + var(--touch-target) + 2px);
+    }
+    #play-area .touch-actions {
+      right: auto;
+      left: var(--overlay-left);
+    }
+  }
+}

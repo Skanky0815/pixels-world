@@ -147,7 +147,12 @@ Kinder von `main` und sind auch während einer Runde sichtbar. Die Hülle füllt
 verfügbare Viewporthöhe; die violette Inhaltsfläche sowie Menü und Levelauswahl
 füllen die Resthöhe zwischen Header und Footer. Bei längeren Menüseiten scrollt
 nur deren Inhalt, der gemeinsame Rahmen bleibt stehen. Die Folgekamera füllt
-dieselbe Inhaltsfläche. Touchflächen und Spieloverlays bleiben am Spielhost.
+dieselbe Inhaltsfläche; auch die klassische Raumübersicht bleibt durch deren Höhe
+begrenzt. Touchflächen und Spieloverlays bleiben am Spielhost. Im sehr flachen
+Querformat stehen Richtungstasten und Sprung neben dem scrollbar bleibenden
+Dialog; die Anordnung spiegelt dessen Raumanker links oder rechts. Die Kamera
+hält beide Figuren zwischen Inhalt und Touchflächen sichtbar; Touchzielgrößen
+bleiben erhalten.
 Die Informationsansicht kopiert den bereits übersetzten Footer mit aktuellen
 Tastaturhinweisen und entfernt Dokument-IDs.
 

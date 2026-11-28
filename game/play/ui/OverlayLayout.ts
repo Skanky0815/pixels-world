@@ -21,7 +21,7 @@ export class OverlayLayout {
   // eslint-disable-next-line max-lines-per-function -- Neue Szenenknoten aufnehmen und entfernte Knoten gemeinsam abmelden.
   private observe() {
     const elements = document.querySelectorAll(
-      '#game, .game-menu-actions, .touch-directions, .touch-actions, .album-banner, .room-selection-return',
+      '#game, .game-menu-actions, .touch-directions, .touch-actions, .album-banner, .room-selection-return, .mobile-dialogue',
     );
 
     for (const element of this.observed) {
@@ -61,6 +61,7 @@ export class OverlayLayout {
 
 const REGIONS = [
   ['menu-height', '.game-menu-actions', 'height'],
+  ['dialogue-width', '.mobile-dialogue:not([hidden])', 'width'],
   ['directions-height', '.touch-directions', 'height'],
   ['directions-width', '.touch-directions', 'width'],
   ['actions-height', '.touch-actions', 'height'],
