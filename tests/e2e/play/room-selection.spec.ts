@@ -16,7 +16,7 @@ test(
     await expect(page.locator('[data-menu-play]')).toBeFocused();
     await page.locator('[data-menu-settings]').click();
     await expect(page.locator('[data-menu-view="settings"]')).toBeVisible();
-    await page.locator('[data-menu-back]').click();
+    await page.locator('main > header .pause-toggle').click();
     const popup = page.waitForEvent('popup');
 
     await mainMenu.locator('a[href="./help.html"]').click();
@@ -29,6 +29,8 @@ test(
     const rooms = page.locator('.room-selection');
 
     await expect(rooms).toBeVisible();
+    await expect(rooms.locator('[data-rooms-menu]')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Hauptmenü', exact: true })).toHaveCount(1);
     await expect(page.locator('main > header')).toHaveCount(1);
     await expect(page.locator('main > footer')).toHaveCount(1);
     await expect(rooms.locator('.room-choice')).toHaveCount(4);
@@ -109,7 +111,8 @@ test(
     await page.locator('.pause-toggle').click();
     await page.locator('[data-pause-rooms]').click();
     await expect(page.locator('[data-menu-view="confirm"]')).toBeVisible();
-    await page.locator('[data-menu-cancel]').click();
+    await page.locator('main > header .pause-toggle').click();
+    await expect(page.locator('[data-menu-view="confirm"]')).toBeHidden();
     expect((await state(page)).generation).toBe(played.generation);
     expect((await state(page)).chaos.score).toBe(played.chaos.score);
     await page.locator('[data-pause-rooms]').click();

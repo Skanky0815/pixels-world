@@ -20,15 +20,13 @@ for (const viewport of [
     await expect(menu).toHaveAttribute('aria-label', 'Optionen');
     await expect(page.locator('#play-area')).toBeHidden();
     await expect(menu.locator('.pause-actions')).toBeHidden();
-    await expect(menu.locator('[data-menu-back]')).toBeFocused();
-    const back = menu.locator('[data-menu-back]');
-    const backBounds = (await back.boundingBox())!;
-    const headingBounds = (await menu.locator('.menu-heading').boundingBox())!;
+    const back = page.locator('main > header .pause-toggle');
+    const headerBounds = await page.locator('main > header').boundingBox();
 
-    await expect(back).toHaveAccessibleName('Zurück zum Hauptmenü');
-    await expect(back).toHaveText('×');
-    expect(backBounds.x + backBounds.width).toBeCloseTo(headingBounds.x + headingBounds.width, 0);
-    expect(backBounds.y).toBeCloseTo(headingBounds.y, 0);
+    await expect(back).toBeFocused();
+    await expect(back).toHaveAccessibleName('Hauptmenü');
+    await expect(back).toBeInViewport({ ratio: 1 });
+    await expect(menu.locator('[data-menu-back]')).toHaveCount(0);
     await expect(menu.locator('[data-menu-settings]')).toBeHidden();
     await expect(menu.locator('[data-menu-view="settings"]')).toBeVisible();
     expect(
@@ -48,10 +46,6 @@ for (const viewport of [
     });
     await page.locator('.album-toggle').click();
     await expect(page.locator('.album-dialog')).toBeVisible();
-    const albumClose = (await page.locator('.album-dialog [data-popup-close]').boundingBox())!;
-
-    expect(backBounds.width).toBe(albumClose.width);
-    expect(backBounds.height).toBe(albumClose.height);
     await page.locator('.album-dialog [data-action="close"]').click();
     await expect(page.locator('.album-toggle')).toBeFocused();
     await expect(menu.locator('[data-menu-view="settings"]')).toBeVisible();
@@ -59,9 +53,9 @@ for (const viewport of [
     await page.clock.runFor(500);
     expect((await state(page)).round.elapsedMs).toBe(before.round.elapsedMs);
     await expect(menu).toHaveAttribute('aria-label', 'Options');
-    await expect(back).toHaveAccessibleName('Back to main menu');
-    await expect(back).toHaveText('×');
-    await page.locator('[data-menu-back]').click();
+    await expect(back).toHaveAccessibleName('Main menu');
+    expect(await page.locator('main > header').boundingBox()).toEqual(headerBounds);
+    await page.locator('main > header .pause-toggle').click();
     await expect(page.locator('[data-menu-settings]')).toBeFocused();
     await expect(menu.locator('.pause-actions')).toBeVisible();
     await page.keyboard.press('Escape');
@@ -115,7 +109,7 @@ for (const blocked of [false, true])
     await expect(feedback).toHaveText('✓ Settings applied.');
     await page.locator('[data-difficulty]').selectOption('easy');
     await expect(feedback).toHaveText('✓ Applied. The difficulty takes effect next round.');
-    await page.locator('[data-menu-back]').click();
+    await page.locator('main > header .pause-toggle').click();
     await expect(feedback).toBeHidden();
     await page.locator('[data-menu-settings]').click();
     await expect(feedback).toHaveText('Changes are applied immediately.');

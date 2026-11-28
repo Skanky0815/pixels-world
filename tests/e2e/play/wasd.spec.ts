@@ -52,7 +52,7 @@ test('WASD ist wählbar, lokalisiert und gespeichert; Menü, Raumraster und nati
   await waitForGame(page, false);
   await page.locator('[data-menu-settings]').click();
   await expect(wasd).toBeChecked();
-  await page.locator('[data-menu-back]').click();
+  await page.locator('main > header .pause-toggle').click();
   await play.focus();
   await page.keyboard.down('s');
   await expect(page.locator('[data-pause-album]')).toBeFocused();

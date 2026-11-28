@@ -592,7 +592,6 @@ export class LivingRoomScene extends Phaser.Scene {
       this.choosingRoom,
       (id) => this.chooseRoom(id),
       () => this.returnToRooms(),
-      () => this.menu.open(),
     );
     this.syncActivity();
 

@@ -1,9 +1,8 @@
 import { t } from '../../shared/i18n/locale';
-import { closeButtonMarkup } from '../../shared/ui/button';
 
 // eslint-disable-next-line max-lines-per-function -- Statische Menüseiten und vorhandene Einstellungen bilden einen gemeinsamen deklarativen Aufbau.
 export function menuMarkup() {
-  return `<header class="menu-heading popup-heading">${closeButtonMarkup(t('menuClose'), 'data-menu-back')}<h2 data-menu-heading></h2></header>
+  return `<header class="menu-heading popup-heading"><h2 data-menu-heading></h2></header>
     <div class="menu-welcome" data-menu-view="home"><img src="${import.meta.env.BASE_URL}icons/pixel-192.png" width="192" height="192" alt="Pixel"><p data-menu-text="menuWelcome"></p></div>
     <div class="menu-settings" data-menu-view="settings" hidden>
     <section data-pause-updates></section>

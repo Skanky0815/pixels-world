@@ -19,7 +19,6 @@ export const de = {
   feedbackLaundry: 'Frisch gefaltet war gestern!',
   peacefulGoalRest: 'Schlaf gut, Pixel. Die Wäsche kann warten.',
 
-  menuClose: 'Zurück zum Hauptmenü',
   settingsAutoApply: 'Änderungen werden direkt übernommen.',
   settingsApplied: '✓ Einstellungen übernommen.',
   settingsAppliedNextRound: '✓ Übernommen. Der Schwierigkeitsgrad gilt ab der nächsten Runde.',
@@ -89,7 +88,6 @@ export const de = {
   menuWelcome: 'Ein Zimmer. Eine Katze. Dein Chaos.',
   menuPlay: 'Spielen →',
   menuResume: 'Fortsetzen →',
-  menuBack: '← Hauptmenü',
   menuHelp: 'Hilfe ↗',
   menuConfirmTitle: 'Die laufende Runde beenden?',
   menuConfirmBody:

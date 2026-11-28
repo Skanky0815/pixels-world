@@ -19,7 +19,6 @@ export const en: Record<keyof typeof de, string> = {
   feedbackLaundry: 'So much for freshly folded!',
   peacefulGoalRest: 'Sleep well, Pixel. The laundry can wait.',
 
-  menuClose: 'Back to main menu',
   settingsAutoApply: 'Changes are applied immediately.',
   settingsApplied: '✓ Settings applied.',
   settingsAppliedNextRound: '✓ Applied. The difficulty takes effect next round.',
@@ -88,7 +87,6 @@ export const en: Record<keyof typeof de, string> = {
   menuWelcome: 'One room. One cat. Your chaos.',
   menuPlay: 'Play →',
   menuResume: 'Continue →',
-  menuBack: '← Main menu',
   menuHelp: 'Help ↗',
   menuConfirmTitle: 'End the current round?',
   menuConfirmBody:
