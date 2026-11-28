@@ -15,12 +15,22 @@ import { seedRoundRandom, useIdleFrames, advanceRoundTo } from '../support/round
 import { DIRECTIONS } from '../../../game/play/content/reconciliation';
 import { OBJECTS } from '../../../game/play/content/objects/catalog';
 
+// eslint-disable-next-line max-lines-per-function -- Das terminale Ergebnis ersetzt den sichtbaren HUD-Hinweis, der unveränderliche Modellhinweis bleibt prüfbar.
 async function expectFeedback(
   page: import('@playwright/test').Page,
   channel: 'score' | 'phase' | 'charm',
   key: string,
 ) {
-  expect((await state(page)).feedback.messages[channel]).toMatchObject({ key });
+  const current = await state(page);
+
+  expect(current.feedback.messages[channel]).toMatchObject({ key });
+
+  if (current.result) {
+    await expect(page.locator('.mobile-notice')).toBeHidden();
+
+    return;
+  }
+
   await expect(page.locator('.mobile-notice')).toBeVisible();
   await expect(page.locator('.mobile-notice')).toHaveText((await state(page)).feedback.text);
 }

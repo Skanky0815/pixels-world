@@ -128,6 +128,12 @@ test(
     await continueCharm(page);
     await until(page, (s) => s.generation > complete.generation);
     expect((await state(page)).reconciliation.stage).toBe('waiting');
+    await expect(page.locator('.room-selection')).toBeVisible();
+    expect((await state(page)).started).toBe(false);
+    await page.locator('[data-room-start]').click();
+    await page.keyboard.down('Space');
+    await until(page, (s) => s.started);
+    await page.keyboard.up('Space');
     await expectFreshRound(page);
     expect((await state(page)).ending.kind).toBeNull();
   },
@@ -271,7 +277,10 @@ async function expectResult(page: Page, outcome: 'success' | 'failed') {
   });
   expect(result.summaryText).toContain(`Chaospunkte: ${current.chaos.score}`);
   expect(result.summaryText).toContain(outcome === 'success' ? 'Gelungen' : 'Gescheitert');
-  expect(result.hint).toBe('␣: Neue Runde starten');
+  expect(result.hint).toBe(outcome === 'success' ? '␣: Levelauswahl' : '␣: Neuer Versuch');
+  await expect(page.locator('.room-selection-return')).toHaveText(
+    outcome === 'success' ? 'Levelauswahl' : 'Neuer Versuch',
+  );
   expect(result.goalReached).toBe(current.round.endReason === 'goal');
   expect(result.summaryText).not.toMatch(/Hauptziel|Schwierigkeitsgrad/);
   expect(result.headlineText).toBe(outcome === 'success' ? 'Wieder vertragen!' : 'Nicht versöhnt');

@@ -23,21 +23,22 @@ const previews = {
 export class RoomSelection {
   private selected = 'living-room';
   private focusIndex = -1;
+  private outcome: 'success' | 'failed' | null = null;
   private readonly root = document.createElement('section');
   private readonly back = document.createElement('button');
   private readonly touch = matchMedia('(any-pointer: coarse)');
   private readonly abort = new AbortController();
   private readonly unsubscribe: () => void;
   // eslint-disable-next-line max-lines-per-function -- Auswahl und Rückkehr teilen eine szenengebundene DOM-Lebensdauer und dieselben vorhandenen Menübuttons.
-  constructor(visible: boolean, choose: (id: string) => void, returnToRooms: () => void) {
+  constructor(visible: boolean, choose: (id: string) => void, continueResult: () => void) {
     this.root.className = 'room-selection game-screen';
     this.root.inert = true;
-    this.back.className = 'ui-button room-selection-return';
+    this.back.className = 'ui-button ui-button--primary room-selection-return';
     this.back.type = 'button';
     this.back.hidden = true;
     const options = { signal: this.abort.signal };
 
-    this.back.addEventListener('click', returnToRooms, options);
+    this.back.addEventListener('click', continueResult, options);
     this.back.addEventListener('keydown', this.key, options);
     this.back.addEventListener('keyup', this.key, options);
     this.root.addEventListener('keydown', this.key, options);
@@ -98,8 +99,11 @@ export class RoomSelection {
     document.documentElement.classList.toggle('room-selecting', visible);
   }
 
-  showReturn(visible: boolean) {
-    this.back.hidden = !visible || this.opened;
+  showResult(outcome: typeof this.outcome) {
+    this.outcome = outcome;
+    this.back.hidden = !outcome || this.opened;
+    this.back.textContent = t(outcome === 'failed' ? 'resultRetry' : 'resultLevels');
+    this.back.dataset.resultAction = outcome === 'failed' ? 'retry' : 'levels';
 
     if (this.back.hidden) return;
     const parent = document.querySelector(this.touch.matches ? '.touch-actions' : '#game');
@@ -112,7 +116,7 @@ export class RoomSelection {
     preserveFocus(this.root, () => {
       this.root.innerHTML = markup(this.selected);
     });
-    this.back.textContent = t('roomsBack');
+    this.back.textContent = t(this.outcome === 'failed' ? 'resultRetry' : 'resultLevels');
   }
 
   private select(id: string) {

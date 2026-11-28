@@ -591,7 +591,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.roomSelection = new RoomSelection(
       this.choosingRoom,
       (id) => this.chooseRoom(id),
-      () => this.returnToRooms(),
+      () => this.continueResult(),
     );
     this.syncActivity();
 
@@ -724,6 +724,16 @@ export class LivingRoomScene extends Phaser.Scene {
     this.renderMobile();
   }
 
+  private continueResult() {
+    const result = this.resultView.snapshot();
+
+    if (!result) return;
+    this.controls.release();
+
+    if (result.outcome === 'success') this.returnToRooms();
+    else this.scene.restart({ started: true, chooseRoom: false, menuHome: false });
+  }
+
   private returnToRooms() {
     this.scene.restart({ started: false, chooseRoom: true, menuHome: false });
   }
@@ -801,7 +811,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.choosingRoom = false;
     this.roomSelection.setVisible(false);
     this.startScreen.hide();
-    this.roomSelection.showReturn(false);
+    this.roomSelection.showResult(null);
     this.goalView.render(this.goal.snapshot(), true);
     this.syncActivity();
   }
@@ -837,7 +847,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (elapsed <= 0) return this.deferInput(input);
 
-    if (input.confirmPressed && this.resultView.snapshot()) return this.scene.restart({});
+    if (input.confirmPressed && this.resultView.snapshot()) return this.continueResult();
 
     if (this.ballPlay.snapshot().active) this.advanceBallPlay(elapsed);
     else if (this.foodEating.snapshot().active) this.advanceFoodEating(elapsed);
@@ -1213,8 +1223,8 @@ export class LivingRoomScene extends Phaser.Scene {
     this.presentEnding();
     this.resultView.render(result, this.newDiscoveries);
     this.albumBanners.render();
-    this.controls.showRestart(result !== null);
-    this.roomSelection.showReturn(result !== null);
+    this.controls.showResult(result !== null);
+    this.roomSelection.showResult(result?.outcome ?? null);
   }
 
   private presentEnding() {

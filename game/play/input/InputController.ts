@@ -173,8 +173,8 @@ export class InputController {
     this.touch.setActionLabel(label);
   }
 
-  showRestart(available: boolean) {
-    this.touch.showRestart(available);
+  showResult(available: boolean) {
+    this.touch.showResult(available);
   }
 
   release() {

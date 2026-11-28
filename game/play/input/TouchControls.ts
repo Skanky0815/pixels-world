@@ -57,7 +57,6 @@ export class TouchControls {
     this.host.focus({ preventScroll: true });
     const action = button.dataset.control as ControlAction;
 
-    if (action === 'reset') return this.restart();
     this.actions.press(
       event.pointerId,
       action,
@@ -97,19 +96,12 @@ export class TouchControls {
     this.host.focus({ preventScroll: true });
   }
 
-  private restart() {
-    this.clear();
-
-    this.pulse('reset');
-  }
-
   private readonly virtualClick = (event: MouseEvent) => {
     const action = this.button(event.target)?.dataset.control as ControlAction | undefined;
 
     if (!action || event.detail !== 0) return;
 
-    if (action === 'reset') this.restart();
-    else this.pulse(action);
+    this.pulse(action);
   };
 
   private readonly keyDown = (event: KeyboardEvent) => {
@@ -121,8 +113,7 @@ export class TouchControls {
 
     if (event.repeat) return;
 
-    if (action === 'reset') this.restart();
-    else this.actions.press(-1, action, this.sources.press('touch:-1', action));
+    this.actions.press(-1, action, this.sources.press('touch:-1', action));
     this.render();
   };
 
@@ -163,10 +154,7 @@ export class TouchControls {
     }
   }
 
-  showRestart(available: boolean) {
-    const button = this.root.querySelector<HTMLButtonElement>('[data-control="reset"]');
-
-    if (button) button.hidden = !available;
+  showResult(available: boolean) {
     const action = this.root.querySelector<HTMLButtonElement>('[data-control="jump"]');
 
     if (action) action.hidden = available;
@@ -198,7 +186,6 @@ function inside(rect: DOMRect, x: number, y: number) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
-// eslint-disable-next-line max-lines-per-function -- Die sechs beschrifteten Touch-Ziele bleiben als deklarativer zugänglicher Aufbau gemeinsam lesbar.
 function markup() {
   return `<div class="touch-directions">
     <button type="button" class="ui-control" data-control="up" aria-label="${t('up')}" aria-pressed="false">↑</button>
@@ -207,6 +194,5 @@ function markup() {
     <button type="button" class="ui-control" data-control="right" aria-label="${t('right')}" aria-pressed="false">→</button>
   </div><div class="touch-actions">
     <button type="button" class="ui-control" data-control="jump" aria-pressed="false">${t('continueLabel')}</button>
-    <button type="button" class="ui-control" data-control="reset" aria-pressed="false" hidden>${t('newRoundLabel')}</button>
   </div>`;
 }

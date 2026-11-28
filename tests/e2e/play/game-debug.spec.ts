@@ -233,7 +233,9 @@ for (const [mobile, hasTouch] of [
       });
       await page.keyboard.press('F2');
 
-      if (hasTouch) await expect(page.locator('[data-control="reset"]')).toBeVisible();
+      await expect(page.locator('.room-selection-return')).toHaveText('Levelauswahl');
+
+      if (hasTouch) await expect(page.locator('.room-selection-return')).toBeVisible();
       else await expect(page.locator('.touch-controls')).toBeHidden();
 
       if (mobile) {
