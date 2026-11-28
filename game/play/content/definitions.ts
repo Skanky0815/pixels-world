@@ -1,3 +1,6 @@
+import type { BreakableConfig } from '../objects/Breakable';
+import type { LaundryConfig } from '../objects/Laundry';
+import type { LaundryAppearance } from '../interactions/laundry';
 import type { TableclothConfig } from '../objects/Tablecloth';
 import type { TableclothRules } from '../interactions/tablecloth-pulling';
 import type { PantryAppearance } from '../assets/pantry-appearance';
@@ -37,13 +40,26 @@ import type { BookRules } from '../interactions/book-toppling.ts';
 import type { BookAppearance } from '../objects/book-art.ts';
 
 export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
-export type FurnitureAppearance = 'stool' | 'table' | 'counter' | 'fridge';
+export type FurnitureAppearance =
+  'stool' | 'table' | 'counter' | 'fridge' | 'bed' | 'nightstand' | 'wardrobe';
 interface Base {
   readonly album?: DamageAlbumEntry;
   readonly spawn: SpawnProfile;
   readonly capabilities: readonly Capability[];
 }
 export type ObjectDefinition =
+  | (Base & {
+      readonly kind: 'lamp';
+      readonly asset: 'bedside-lamp';
+      readonly points: number;
+      readonly color: number;
+    })
+  | (Base & {
+      readonly kind: 'laundry';
+      readonly asset: 'laundry';
+      readonly appearance: LaundryAppearance;
+      readonly rules: TopplingRules;
+    })
   | (Base & {
       readonly kind: 'tablecloth';
       readonly asset: 'tablecloth';
@@ -76,6 +92,7 @@ export type ObjectDefinition =
     })
   | (Base & {
       readonly kind: 'carpet';
+      readonly appearance?: 'runner';
       readonly asset: 'carpet-default';
       readonly geometry: { readonly width: number; readonly height: number };
       readonly rules: CarpetRules;
@@ -106,6 +123,7 @@ export type ObjectDefinition =
     })
   | (Base & {
       readonly kind: 'curtain';
+      readonly appearance?: CurtainConfig['appearance'];
       readonly asset: 'curtain-default';
       readonly geometry: { readonly width: number; readonly height: number };
       readonly rules: TearConfig;
@@ -160,7 +178,7 @@ export interface RoomDefinition {
   }[];
   readonly homecomingSide?: HomecomingSide;
   readonly dialogue?: DialoguePlacement;
-  readonly environment?: 'cozy-room' | 'kitchen-preview';
+  readonly environment?: 'cozy-room' | 'kitchen-preview' | 'bedroom';
   readonly difficultyObjects?: {
     readonly easyOmit: readonly string[];
     readonly hardAdd: readonly ObjectInstance[];
@@ -203,6 +221,8 @@ interface ResolvedBase {
   readonly asset: AssetKey;
 }
 export type ResolvedObject =
+  | (ResolvedBase & { readonly kind: 'lamp'; readonly config: BreakableConfig })
+  | (ResolvedBase & { readonly kind: 'laundry'; readonly config: LaundryConfig })
   | (ResolvedBase & { readonly kind: 'tablecloth'; readonly config: TableclothConfig })
   | (ResolvedBase & { readonly kind: 'pantry'; readonly config: PantryConfig })
   | (ResolvedBase & { readonly kind: 'dish'; readonly config: DishConfig })

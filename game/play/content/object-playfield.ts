@@ -135,6 +135,7 @@ export function advanceObjectInteractions(
     ...objects.tablecloths,
     ...objects.breakables,
     ...objects.books,
+    ...objects.laundry,
     ...objects.topplingContainers,
     ...objects.plants,
   ];
@@ -165,6 +166,8 @@ export function advanceObjectInteractions(
   objects.pictures.forEach((picture) => damage(picture.update(context, true).event));
   objects.books.forEach((books) => damage(books.update(context, true).event));
   objects.topplingContainers.forEach((bag) => damage(bag.update(context, true).event));
+
+  objects.laundry.forEach((laundry) => damage(laundry.update(context, true).event));
 
   advanceCloths(objects, context, damage, grip);
   const interaction = updateGroundInteractions([...fridges, ...objects.ground], context);

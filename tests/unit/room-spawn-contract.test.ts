@@ -19,6 +19,25 @@ import type { WallSlots } from '../../game/play/content/wall-slots.ts';
 
 // Test oracle only: production authorization stays in the authored room pools.
 const EXPECTED = {
+  bedroom: {
+    random: [
+      'small-vase',
+      'blue-vase',
+      'heirloom-vase',
+      'mellow-vase',
+      'reading-books',
+      'upright-books',
+      'bedroom-spiderplant',
+    ],
+    fixed: [
+      'folded-laundry',
+      'laundry-basket',
+      'bedside-lamp',
+      'bedroom-runner',
+      'short-khaki-curtain',
+    ],
+    goal: 'rest',
+  },
   'living-room': {
     random: [
       'catgrass',
@@ -51,6 +70,7 @@ const EXPECTED = {
 
 type Family = keyof typeof EXPECTED;
 const FAMILIES = {
+  bedroom: 'bedroom',
   'living-room': 'living-room',
   'cozy-remix': 'living-room',
   kitchen: 'kitchen',
@@ -113,7 +133,7 @@ test('Alle Raumfamilien prüfen feste Objekte, Ziele und sämtliche Pools je Sch
   assert.deepEqual(CONTENT_ROOMS.map((room) => room.id).sort(), Object.keys(FAMILIES).sort());
   assert.deepEqual(
     ROOM_CHOICES.filter((choice) => choice.definition).map((choice) => choice.id),
-    ['living-room', 'kitchen'],
+    ['living-room', 'kitchen', 'bedroom'],
   );
 
   for (const room of CONTENT_ROOMS)
@@ -159,6 +179,16 @@ test('Geometrisch passende Kräuter im Wohnzimmer und Katzengras in der Küche s
 
   for (const room of CONTENT_ROOMS) {
     const family = FAMILIES[room.id as keyof typeof FAMILIES];
+
+    if (family === 'bedroom') {
+      for (const variant of ['catgrass', 'kitchen-basil'])
+        assert.throws(
+          () => assertRoomPools(withPlantPool(room, variant), family),
+          /unexpected variant/,
+        );
+      continue;
+    }
+
     const allowed = family === 'kitchen' ? 'kitchen-basil' : 'catgrass';
     const forbidden = family === 'kitchen' ? 'catgrass' : 'kitchen-basil';
 

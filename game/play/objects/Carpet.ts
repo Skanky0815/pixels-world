@@ -10,6 +10,7 @@ import {
   type Destructible,
 } from '../interactions/contracts';
 export interface CarpetConfig {
+  readonly appearance?: 'runner';
   readonly id: string;
   readonly area: Bounds;
   readonly floorY: number;
@@ -32,14 +33,22 @@ export class Carpet implements Interactable, Destructible {
     const a = config.area;
 
     this.art = scene.add
-      .image(a.x + a.width / 2, a.y + a.height / 2, 'room-rug')
+      .image(
+        a.x + a.width / 2,
+        a.y + a.height / 2 + this.visualOffset,
+        config.appearance === 'runner' ? 'bedroom-runner' : 'room-rug',
+      )
       .setDisplaySize(a.width, a.height)
       .setDepth(0.1);
     this.hairball = scene.add
-      .image(a.x + a.width / 2, config.floorY + 18, 'hairball')
+      .image(a.x + a.width / 2, config.floorY + 18 + this.visualOffset, 'hairball')
       .setOrigin(0.5, 1)
       .setDepth(0.6)
       .setVisible(false);
+  }
+
+  private get visualOffset() {
+    return this.config.appearance === 'runner' ? 16 : 0;
   }
 
   eligible(context: InteractionContext) {
@@ -122,7 +131,10 @@ export class Carpet implements Interactable, Destructible {
     this.model.reset();
     this.history.reset();
     this.hairball
-      .setPosition(this.config.area.x + this.config.area.width / 2, this.config.floorY + 18)
+      .setPosition(
+        this.config.area.x + this.config.area.width / 2,
+        this.config.floorY + 18 + this.visualOffset,
+      )
       .setVisible(false);
   }
 

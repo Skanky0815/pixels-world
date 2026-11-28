@@ -75,6 +75,8 @@ test('Alle versionierten Ziele verlangen den endgültigen Zustand, nicht irgende
       'trash-bin',
       'tablecloth',
       'fridge',
+      'laundry',
+      'lamp',
     ],
   );
   assert.equal(DESTRUCTION_TARGETS[1].stage, COUCH_SCRATCH.maxDamage);
@@ -367,7 +369,7 @@ test('Jede feste Kategorie hat erreichbare veröffentlichte Varianten und schalt
   const { albumEntries } = await import('../../game/play/content/album/index.ts');
   const published = new Set(albumEntries(false).map((entry) => entry.id));
 
-  assert.equal(DESTRUCTION_VARIANTS.length, 25);
+  assert.equal(DESTRUCTION_VARIANTS.length, 30);
   assert.ok(!DESTRUCTION_VARIANTS.includes('couch.worn'));
   assert.ok(!DESTRUCTION_VARIANTS.includes('shelf.stable'));
 
@@ -517,7 +519,12 @@ test('Meisterwerk zählt alle anderen Erfolge, schaltet im letzten Batch frei un
   });
   assert.ok(!progress.snapshot().unlocked.includes('achievement.masterpiece-v1'));
   assert.deepEqual(
-    progress.confirm(false, [], [], ['hard-peaceful/living-room', 'hard-peaceful/kitchen']),
+    progress.confirm(
+      false,
+      [],
+      [],
+      ['hard-peaceful/living-room', 'hard-peaceful/kitchen', 'hard-peaceful/bedroom'],
+    ),
     [
       'achievement.peaceful-living-room-v1',
       'achievement.masterpiece-v1',
@@ -528,6 +535,8 @@ test('Meisterwerk zählt alle anderen Erfolge, schaltet im letzten Batch frei un
       'achievement.masterpiece-v5',
       'achievement.masterpiece-v6',
       'achievement.masterpiece-v7',
+      'achievement.peaceful-bedroom-v1',
+      'achievement.masterpiece-v8',
     ],
   );
   assert.equal(progress.snapshot().unlocked.length, ACHIEVEMENTS.length);

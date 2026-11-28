@@ -18,6 +18,7 @@ test('Nur Grundaufbauten und Objektvarianten sind über Spielwiesen-URLs auswäh
     'living-room',
     'cozy-remix',
     'kitchen-preview',
+    'bedroom',
   ]);
 
   for (const [mode, catalog] of [
@@ -30,6 +31,7 @@ test('Nur Grundaufbauten und Objektvarianten sind über Spielwiesen-URLs auswäh
         id,
       });
   assert.equal(selectedPlaygroundRoom({ mode: 'scenario', id: 'empty' }).objects.length, 0);
+  assert.equal(selectedPlaygroundRoom({ mode: 'scenario', id: 'bedroom' }).goal.kind, 'rest');
 });
 
 test('Laborräume und geerbte Schlüssel sind keine auswählbaren Räume mehr', () => {
@@ -44,6 +46,10 @@ test('Laborräume und geerbte Schlüssel sind keine auswählbaren Räume mehr', 
 });
 
 test('Nur vollständige Runden-Fixtures erhalten einen Spiel-Link mit demselben Seed', () => {
+  assert.equal(
+    playgroundGameLink({ mode: 'scenario', id: 'bedroom' }, 'sleep-1'),
+    '/play.html?scenario=bedroom&camera=room&room-seed=sleep-1',
+  );
   assert.equal(playgroundGameLink({ mode: 'scenario', id: 'impact-vases' }), undefined);
   assert.equal(playgroundGameLink({ mode: 'object', id: 'cozy-couch' }), undefined);
   assert.equal(

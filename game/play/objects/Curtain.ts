@@ -14,6 +14,7 @@ import type {
 
 export interface CurtainConfig {
   readonly id: string;
+  readonly appearance?: 'rust' | 'khaki';
   readonly area: Bounds;
   readonly rules: TearConfig;
 }
@@ -26,6 +27,8 @@ export class Curtain implements Climbable, Destructible {
   private readonly history = new DamageHistory();
   private readonly graphic: Phaser.GameObjects.Image;
   private readonly marks: Phaser.GameObjects.Container;
+  private readonly maximumMarks: number;
+  private readonly tearTexture: string;
   private previousY: number | null = null;
   private previousSpeed = 0;
   private nudgeUntil = 0;
@@ -33,13 +36,15 @@ export class Curtain implements Climbable, Destructible {
   // eslint-disable-next-line max-lines-per-function -- Modell, unveränderliche Kletterfläche und ihre zwei Grafiklayer werden gemeinsam initialisiert.
   constructor(scene: Phaser.Scene, config: CurtainConfig) {
     this.id = config.id;
+    this.maximumMarks = config.rules.maxDamage;
+    this.tearTexture = config.appearance === 'khaki' ? 'bedroom-curtain-tear' : 'curtain-tear';
     this.model = new CurtainSliding(config.rules, this.id);
     this.climbArea = Object.freeze({ ...config.area });
     this.maximumScore = config.rules.maxDamage * config.rules.damageValue;
     const a = this.climbArea;
 
     this.graphic = scene.add
-      .image(a.x, a.y, 'curtain-rust')
+      .image(a.x, a.y, config.appearance === 'khaki' ? 'bedroom-curtain' : 'curtain-rust')
       .setOrigin(0, 0)
       .setDisplaySize(a.width, a.height);
     this.marks = scene.add.container().setDepth(0.5);
@@ -92,19 +97,26 @@ export class Curtain implements Climbable, Destructible {
     return movementMs;
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Kontakt und zur Stoffgröße passende Rissposition werden gemeinsam gewählt.
   private drawDamage(context: InteractionContext) {
     const p = context.pixel;
-    const position = curtainTearPosition(this.climbArea, p.x, p.y, this.markPositions());
+    const position = curtainTearPosition(
+      this.climbArea,
+      p.x,
+      p.y,
+      this.markPositions(),
+      this.maximumMarks,
+    );
 
     if (position) this.addMark(position.x, position.y);
   }
 
   private addMark(x: number, y: number) {
-    const size = curtainTearSize(this.climbArea);
+    const size = curtainTearSize(this.climbArea, this.maximumMarks);
 
     this.marks.add(
       this.graphic.scene.add
-        .image(x, y, 'curtain-tear')
+        .image(x, y, this.tearTexture)
         .setOrigin(0.5, 0)
         .setDisplaySize(size.width, size.height),
     );

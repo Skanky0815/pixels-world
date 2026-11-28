@@ -291,7 +291,7 @@ Assetquellen und Exporte: [Pixel](assets/pixel/README.md), [Sara](assets/sara/RE
 Der Spiel-Footer zeigt ausschließlich im Dev-Modus **DEV · Playground**.
 Auf der DEV-Seite führt ebenfalls **Playground** zu `/interactable-playground.html`.
 **Testart** wechselt zwischen Einzelobjekt und eigenem Aufbau. Als Grundaufbauten
-stehen ein leeres Zimmer, Wohnzimmer, Wohnzimmervariante und Küchenvorschau bereit.
+stehen ein leeres Zimmer, Wohnzimmer, Wohnzimmervariante, Küchenvorschau und Schlafzimmer bereit.
 Auf breiten Bildschirmen steht die Diagnose neben der höchstens 800 Pixel breiten
 Szene; auf schmalen Geräten darunter. Weltmaße und Physik bleiben unverändert.
 `?object=cozy-couch` oder `?scenario=empty` wählen den Einstieg. Die ehemaligen
@@ -310,7 +310,8 @@ Aufbau, frischem Pixel und zurückgesetzten Schäden/Punkten.
 lädt sie wieder. Import und manuelle Aktionen verwenden denselben validierten
 Spawnpfad in `playground-layout.ts`; es gibt keine Testsetter. Die automatisierten
 Kontaktaufbauten liegen ausschließlich in den Testdaten und werden über diese
-öffentliche Bedienung geladen. Eigenen Aufbau vor einem Grundaufbauwechsel bei
+öffentliche Bedienung geladen. Beim Schlafzimmer bleiben beim Export und Import Umgebung, weißer Eingang, Möbel und Schlafziel erhalten; die materialisierte Slot-Belegung wird mitkopiert. Katzenbett, Lampe, Läufer, Grünlilie und beide Wäschevarianten nutzen dieselben finalen Grafiken wie das Spiel. Der Rundenlink übernimmt den Seed des unveränderten Grundaufbaus; eigene Änderungen erhalten keinen irreführenden Link.
+Eigenen Aufbau vor einem Grundaufbauwechsel bei
 Bedarf kopieren; es gibt keine automatische Speicherung.
 
 Pixel lässt sich ohne Rundenstart normal steuern; Sofa/Pflanze reagieren nach
@@ -327,7 +328,7 @@ und setzen Pixel, Schaden und Punkte zurück; dasselbe gilt für Szenariowechsel
 Fokusverlust pausiert die Szene.
 Es gibt keine Heimkehr, Rundenuhr oder gespeicherten Ergebnisse.
 **Mit vollständiger Runde im Spiel testen** erscheint nur für die expliziten
-Runden-Fixtures `kitchen-preview`, `fridge-visit` und `fridge-incoming`. Der Link erscheint nur für deren unveränderten Aufbau und
+Runden-Fixtures `bedroom`, `kitchen-preview`, `fridge-visit` und `fridge-incoming`. Der Link erscheint nur für deren unveränderten Aufbau und
 öffnet `/play.html?scenario=…` im DEV-/E2E-Betrieb. Andere Kontaktszenarien haben
 keinen Zugang zum Rundenablauf; Produktionsbuilds ignorieren diesen Parameter.
 Reine Objekt- und Kontakttests laufen über die Spielwiese, während die getrennten

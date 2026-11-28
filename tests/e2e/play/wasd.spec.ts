@@ -75,6 +75,8 @@ test('WASD ist wählbar, lokalisiert und gespeichert; Menü, Raumraster und nati
   await page.keyboard.press('Space');
   await expect(kitchen).toHaveAttribute('aria-pressed', 'true');
   await page.keyboard.press('Tab');
+  await expect(page.locator('[data-room-choice="bedroom"]')).toBeFocused();
+  await page.keyboard.press('Tab');
   await expect(page.locator('[data-room-start]')).toBeFocused();
   await page.keyboard.press('Enter');
   await page.clock.runFor(100);

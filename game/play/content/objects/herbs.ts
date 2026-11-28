@@ -3,7 +3,7 @@ import { PLANT_NIBBLE } from '../../interactions/plant-nibbling.ts';
 import type { PlantAppearance } from '../../assets/plant-appearance.ts';
 import type { ObjectDefinition } from '../definitions.ts';
 
-type Herb = Exclude<PlantAppearance, 'catgrass'>;
+type Herb = Extract<PlantAppearance, 'basil' | 'parsley' | 'mint'>;
 const names = {
   basil: { de: 'Basilikum', en: 'Basil' },
   parsley: { de: 'Petersilie', en: 'Parsley' },

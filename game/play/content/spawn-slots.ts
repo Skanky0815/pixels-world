@@ -360,7 +360,10 @@ function slotArea(
 function blocked(area: Bounds, definition: ObjectDefinition, room: RoomDefinition) {
   if (!definition.capabilities.some((c) => c === 'platform' || c === 'push')) return false;
   const fixed = room.decorations.flatMap((d) =>
-    d.kind === 'image' && ['room-door', 'room-window'].includes(d.asset) ? [d.bounds] : [],
+    d.kind === 'image' &&
+    ['room-door', 'room-window', 'bedroom-door', 'bedroom-window'].includes(d.asset)
+      ? [d.bounds]
+      : [],
   );
 
   return [...fixed, ...(room.navigationClearances ?? [])].some((b) => overlaps(area, b));

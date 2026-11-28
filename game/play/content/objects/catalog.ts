@@ -1,3 +1,5 @@
+import { BEDROOM_OBJECTS } from './bedroom.ts';
+import { LAUNDRY } from './laundry.ts';
 import { TABLECLOTHS } from './tablecloth.ts';
 import { TRASH_BINS } from './trash-bin.ts';
 import { PANTRY } from './pantry.ts';
@@ -31,6 +33,8 @@ const picture = {
 } as const;
 
 export const OBJECTS = {
+  ...BEDROOM_OBJECTS,
+  ...LAUNDRY,
   ...TABLECLOTHS,
   ...PANTRY,
   ...TRASH_BINS,
@@ -134,7 +138,7 @@ export const OBJECTS = {
     album: {
       id: 'picture.pixel',
       name: { de: 'Pixels Porträt', en: 'Pixel’s portrait' },
-      rooms: ['living-room', 'kitchen'],
+      rooms: ['living-room', 'kitchen', 'bedroom'],
       asset: 'picture-pixel',
       condition: { kind: 'picture-fall', stage: 1 },
       fluff: { de: 'Kunstkritik mit Pfoteneinsatz.', en: 'Art criticism, paws first.' },
@@ -150,7 +154,7 @@ export const OBJECTS = {
     album: {
       id: 'picture.berlin',
       name: { de: 'Berliner Fernsehturm', en: 'Berlin TV tower' },
-      rooms: ['living-room', 'kitchen'],
+      rooms: ['living-room', 'kitchen', 'bedroom'],
       asset: 'picture-berlin',
       condition: { kind: 'picture-fall', stage: 1 },
       fluff: {
@@ -169,7 +173,7 @@ export const OBJECTS = {
     album: {
       id: 'picture.cozy',
       name: { de: 'Gemütliche Ecke', en: 'Cozy nook' },
-      rooms: ['living-room', 'kitchen'],
+      rooms: ['living-room', 'kitchen', 'bedroom'],
       asset: 'picture-cozy',
       condition: { kind: 'picture-fall', stage: 1 },
       fluff: {
@@ -272,7 +276,7 @@ export const OBJECTS = {
     album: {
       id: 'vase.terracotta',
       asset: 'vase-terracotta',
-      rooms: ['living-room'],
+      rooms: ['living-room', 'bedroom'],
       name: { de: 'Die Terrakottavase', en: 'The terracotta vase' },
       condition: { kind: 'break', stage: 1 },
       fluff: {
@@ -296,7 +300,7 @@ export const OBJECTS = {
     album: {
       id: 'vase.blue',
       asset: 'vase-blue',
-      rooms: ['living-room'],
+      rooms: ['living-room', 'bedroom'],
       name: { de: 'Die blaue Vase', en: 'The blue vase' },
       condition: { kind: 'break', stage: 1 },
       fluff: {
@@ -317,7 +321,7 @@ export const OBJECTS = {
     album: {
       id: 'vase.gold',
       asset: 'vase-gold',
-      rooms: ['living-room'],
+      rooms: ['living-room', 'bedroom'],
       name: { de: 'Das goldene Erbstück', en: 'The golden heirloom' },
       condition: { kind: 'break', stage: 1 },
       fluff: {
@@ -341,7 +345,7 @@ export const OBJECTS = {
     album: {
       id: 'vase.mellow',
       asset: 'vase-mellow',
-      rooms: ['living-room'],
+      rooms: ['living-room', 'bedroom'],
       name: { de: 'Die kleine Bauchige', en: 'The little round vase' },
       condition: { kind: 'break', stage: 1 },
       fluff: {
@@ -360,7 +364,7 @@ export const OBJECTS = {
     album: {
       id: 'books.stacked',
       asset: 'books-stacked',
-      rooms: ['living-room'],
+      rooms: ['living-room', 'bedroom'],
       name: { de: 'Der Lesestapel', en: 'The reading pile' },
       condition: { kind: 'topple', stage: 1 },
       fluff: {
@@ -383,7 +387,7 @@ export const OBJECTS = {
     album: {
       id: 'books.upright',
       asset: 'books-upright',
-      rooms: ['living-room'],
+      rooms: ['living-room', 'bedroom'],
       name: { de: 'Die standhaften Bücher', en: 'The steadfast books' },
       condition: { kind: 'topple', stage: 1 },
       fluff: { de: 'Die Buchrücken haben nachgegeben.', en: 'Their spines finally gave in.' },

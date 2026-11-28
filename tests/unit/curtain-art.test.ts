@@ -68,3 +68,24 @@ test('Kleine eigene Vorhänge begrenzen die Grafik auf ihre bestehenden Bounds',
   assert.deepEqual(mark, { x: 8, y: 0 });
   assert.equal(curtainTearPosition(area, 0, 0, [mark]), undefined);
 });
+
+// eslint-disable-next-line max-lines-per-function -- Beide kurzen Stoffflächen behalten acht getrennte Risse vollständig innerhalb ihrer Bounds.
+test('Acht Risse passen auch in beide kurzen Schlafzimmer-Vorhänge ohne Überlappung', () => {
+  for (const x of [186, 326]) {
+    const area = { x, y: 100, width: 40, height: 120 };
+    const marks: TearMark[] = [];
+
+    assert.deepEqual(curtainTearSize(area, 8), { width: 18, height: 26 });
+
+    for (let i = 0; i < 8; i++) {
+      const mark = curtainTearPosition(area, x + 20, 150, marks, 8);
+
+      assert.ok(mark);
+      assert.ok(mark.x >= x + 9 && mark.x <= x + 31);
+      assert.ok(mark.y >= 100 && mark.y + 26 <= 220);
+      marks.push(mark);
+    }
+
+    assert.equal(new Set(marks.map((m) => `${m.x}/${m.y}`)).size, 8);
+  }
+});

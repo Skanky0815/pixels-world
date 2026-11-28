@@ -32,8 +32,8 @@ test(
     await expect(page.locator('main > header')).toHaveCount(1);
     await expect(page.locator('main > footer')).toHaveCount(1);
     await expect(rooms.locator('.room-choice')).toHaveCount(4);
-    await expect(rooms.locator('.room-choice:disabled')).toHaveCount(2);
-    await expect(rooms.locator('img')).toHaveCount(2);
+    await expect(rooms.locator('.room-choice:disabled')).toHaveCount(1);
+    await expect(rooms.locator('img')).toHaveCount(3);
     await expect
       .poll(() =>
         rooms
@@ -50,6 +50,10 @@ test(
     await expect(rooms.locator('[data-room-choice="kitchen"] img')).toHaveAttribute(
       'alt',
       'Küche mit Pixel, Tisch, Kühlschrank und Futternapf',
+    );
+    await expect(rooms.locator('[data-room-choice="bedroom"] img')).toHaveAttribute(
+      'alt',
+      'Schlafzimmer mit Pixel, weißer Tür, Bett, Katzenbett und Kleiderschrank',
     );
     const waiting = await state(page);
 
@@ -76,7 +80,13 @@ test(
       'alt',
       'Kitchen with Pixel, table, fridge and food bowl',
     );
+    await expect(rooms.locator('[data-room-choice="bedroom"] img')).toHaveAttribute(
+      'alt',
+      'Bedroom with Pixel, white door, bed, cat bed and wardrobe',
+    );
     await rooms.locator('[data-room-choice="kitchen"]').focus();
+    await page.keyboard.press('Tab');
+    await expect(rooms.locator('[data-room-choice="bedroom"]')).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(rooms.locator('[data-room-start]')).toBeFocused();
     await page.keyboard.press('Enter');

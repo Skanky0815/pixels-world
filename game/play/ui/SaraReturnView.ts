@@ -21,6 +21,7 @@ export class SaraReturnView {
   private readonly removeCompactListener: () => void;
   private readonly root: Phaser.GameObjects.Container;
   private readonly actor: Phaser.GameObjects.Sprite;
+  private readonly door: readonly Phaser.GameObjects.Shape[];
   private caption = '';
   private readonly quote: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
@@ -51,6 +52,7 @@ export class SaraReturnView {
       ? []
       : fallbackDoor(scene, layout.width, layout.floorY, layout.entrySide);
 
+    this.door = door;
     this.actor = this.buildActor();
     this.message = scene.add.text(left + 20, 140, '', {
       ...dialogueTextStyle(16),
@@ -180,6 +182,8 @@ export class SaraReturnView {
   snapshot() {
     return {
       visible: this.root.visible,
+      fallbackDoorVisible:
+        this.root.visible && this.door.some((part) => part.visible && part.alpha > 0),
       animationKey: this.key,
       x: this.actor.x,
       flipX: this.actor.flipX,

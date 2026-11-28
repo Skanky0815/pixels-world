@@ -1,3 +1,7 @@
+import type { Curtain } from './objects/Curtain';
+import type { Lamp } from './objects/Lamp';
+import type { Laundry } from './objects/Laundry';
+import type { GoalRest } from './domain/goal-rest';
 import type { Pantry } from './objects/Pantry';
 import type { Plant } from './objects/Plant';
 import type { EndingAnimation } from './actors/sara-endings';
@@ -29,6 +33,10 @@ import type { ImpactWorld } from './domain/impact-world';
 
 /** Immutable observation contract; never exposes Phaser objects or state setters. */
 export interface GameTestState {
+  readonly curtains: readonly ReturnType<Curtain['snapshot']>[];
+  readonly lamps: readonly ReturnType<Lamp['snapshot']>[];
+  readonly laundry: readonly ReturnType<Laundry['snapshot']>[];
+  readonly goalRest: ReturnType<GoalRest['snapshot']>;
   readonly carpets: readonly ReturnType<Carpet['snapshot']>[];
   readonly pictures: readonly ReturnType<WallPicture['snapshot']>[];
   readonly albumDiscovery: AlbumDiscovery | null;
@@ -66,6 +74,7 @@ export interface GameTestState {
   readonly sara: {
     readonly flipX: boolean;
     readonly visible: boolean;
+    readonly fallbackDoorVisible: boolean;
     readonly animationKey: SaraAnimation | EndingAnimation;
     readonly x: number;
     readonly soleY: number;

@@ -34,7 +34,7 @@ function assertRooms(rooms: readonly string[]) {
 test('Jede reale Objektvariante besitzt genau eine stabile, lokalisierte Album-ID und echte Erfolgsregel', () => {
   assert.deepEqual(
     Object.keys(INTERACTABLE_ALBUM)
-      .filter((key) => !['food-bowl', 'cream-fridge'].includes(key))
+      .filter((key) => !['food-bowl', 'sleep-pad', 'cream-fridge'].includes(key))
       .sort(),
     Object.keys(OBJECTS).sort(),
   );
@@ -158,8 +158,8 @@ test('Blockierter Lese-/Schreibzugriff verliert keine sitzungsweite Entdeckung',
 });
 
 test('Veröffentlichte Sammlung enthält keine nur im DEV-Raum erreichbare Variante', () => {
-  assert.equal(albumEntries(false).length, 25);
-  assert.equal(albumEntries(true).length, 26);
+  assert.equal(albumEntries(false).length, 32);
+  assert.equal(albumEntries(true).length, 33);
   assert.equal(
     albumEntries(false).some((entry) => entry.id === 'couch.worn'),
     false,

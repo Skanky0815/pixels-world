@@ -16,8 +16,16 @@ export class GoalView {
     private readonly goal: ResolvedGoal,
     private readonly difficulty: Difficulty,
   ) {
-    this.root = scene.add.container(0, 0).setDepth(9).setVisible(false);
-    const texture = goal.kind === 'food' ? FOOD_BOWL_TEXTURE : FAVORITE_BALL_TEXTURE;
+    this.root = scene.add
+      .container(0, 0)
+      .setDepth(goal.kind === 'rest' ? 0.5 : 9)
+      .setVisible(false);
+    const texture =
+      goal.kind === 'rest'
+        ? 'sleep-pad'
+        : goal.kind === 'food'
+          ? FOOD_BOWL_TEXTURE
+          : FAVORITE_BALL_TEXTURE;
 
     this.image = scene.add.image(goal.x, goal.surfaceY, texture).setOrigin(0.5, 1);
     this.baseX = goal.x;

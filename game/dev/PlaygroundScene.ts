@@ -23,6 +23,7 @@ import { preloadCatgrassArt } from '../play/assets/catgrass-art';
 import { preloadCurtainArt } from '../play/assets/curtain-art';
 import { preloadCouchArt } from '../play/assets/couch-art';
 import { preloadDishArt } from '../play/assets/dish-art';
+import { preloadBedroomArt } from '../play/assets/bedroom-art';
 import { preloadVaseArt } from '../play/assets/vase-art';
 import Phaser from 'phaser';
 import { ASSETS } from '../play/assets/definitions';
@@ -45,6 +46,7 @@ import type { ResolvedRoom, RoomDefinition } from '../play/content/definitions';
 export class PlaygroundScene extends Phaser.Scene {
   private audio!: GameAudio;
   private shelves: Shelf[] = [];
+  private restPlace?: Phaser.GameObjects.Image;
   private room!: ResolvedRoom;
   private layout?: RoomDefinition;
   private built!: ReturnType<typeof buildObjects>;
@@ -79,6 +81,7 @@ export class PlaygroundScene extends Phaser.Scene {
   preload() {
     preloadObjectAudio(this);
     preloadVaseArt(this);
+    preloadBedroomArt(this);
     preloadDishArt(this);
     preloadPantryArt(this);
     preloadTrashBinArt(this);
@@ -114,6 +117,13 @@ export class PlaygroundScene extends Phaser.Scene {
     const { platforms, floor, shelves } = createRoomPhysics(this, room.definition);
 
     this.shelves = shelves;
+    this.restPlace =
+      room.goal.kind === 'rest'
+        ? this.add
+            .image(room.goal.x, room.goal.surfaceY, 'sleep-pad')
+            .setOrigin(0.5, 1)
+            .setDepth(0.5)
+        : undefined;
 
     this.physics.disableUpdate();
     this.built = buildObjects(this, room);
@@ -201,6 +211,8 @@ export class PlaygroundScene extends Phaser.Scene {
       },
       discoveries: this.discoveries().map((discovery) => discovery.entryId),
       albumDiscovery: this.discoveries().at(-1) ?? null,
+      restPlaceTexture: this.restPlace?.texture.key ?? null,
+      customLayout: this.layout,
       layout: this.room.definition,
       generation: this.generation,
       variant: this.selection.id,

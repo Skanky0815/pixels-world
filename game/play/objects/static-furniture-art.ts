@@ -1,3 +1,4 @@
+import { drawBedroomFurniture, isBedroomFurniture } from './bedroom-furniture-art';
 import type Phaser from 'phaser';
 import type { Bounds } from '../interactions/contracts';
 import type { FurnitureAppearance } from '../content/definitions';
@@ -16,6 +17,13 @@ export class StaticFurnitureArt {
     this.boardHeight = b.height;
     this.debrisBoardHeight = b.height;
     this.debrisBottom = floorY - b.y;
+
+    if (isBedroomFurniture(appearance)) {
+      this.root.add(drawBedroomFurniture(scene, b, floorY, appearance).setX(-b.width / 2));
+
+      return;
+    }
+
     this.root.add(
       scene.add
         .image(0, 0, `kitchen-${appearance}`)

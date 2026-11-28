@@ -1,3 +1,4 @@
+import { BEDROOM } from './bedroom.ts';
 import recipes from '../round-recipes.json' with { type: 'json' };
 import { buildPlaygroundRecipe, type PlaygroundRecipe } from '../playground-layout.ts';
 import { KITCHEN_PREVIEW } from './kitchen-preview.ts';
@@ -6,6 +7,7 @@ export const ROUND_RECIPES = recipes as Readonly<
   Record<'fridge-visit' | 'fridge-incoming', PlaygroundRecipe>
 >;
 export const ROUND_SCENARIOS = {
+  bedroom: BEDROOM,
   'kitchen-preview': KITCHEN_PREVIEW,
   'fridge-visit': buildPlaygroundRecipe(ROUND_RECIPES['fridge-visit']),
   'fridge-incoming': buildPlaygroundRecipe(ROUND_RECIPES['fridge-incoming']),

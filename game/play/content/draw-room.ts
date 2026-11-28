@@ -12,6 +12,7 @@ export function drawRoom(scene: Phaser.Scene, room: RoomDefinition) {
     drawRoomEnvironment(scene, room, backdropPadding(room.width));
   else if (room.environment === 'kitchen-preview')
     drawKitchenPreview(scene, room, backdropPadding(room.width));
+  else if (room.environment === 'bedroom') drawBedroomBackground(scene, room);
   else drawLegacyBackground(scene, room);
 
   for (const decoration of room.decorations) drawDecoration(scene, decoration);
@@ -57,4 +58,21 @@ function drawDecoration(scene: Phaser.Scene, decoration: RoomDefinition['decorat
 
     scene.events.once('shutdown', unsubscribe);
   }
+}
+
+/** The bedroom tiles follow world coordinates through the camera padding. */
+// eslint-disable-next-line max-lines-per-function -- Wand und Boden teilen Raumgrenzen und weltfesten Musterursprung.
+function drawBedroomBackground(scene: Phaser.Scene, room: RoomDefinition) {
+  const padding = backdropPadding(room.width);
+  const x = -padding;
+  const width = room.width + padding * 2;
+
+  scene.add
+    .tileSprite(x, 0, width, room.floor.y, 'bedroom-plaster')
+    .setOrigin(0)
+    .setTilePosition(x, 0);
+  scene.add
+    .tileSprite(x, room.floor.y, width, room.height - room.floor.y + padding, 'bedroom-floor')
+    .setOrigin(0)
+    .setTilePosition(x, 0);
 }
