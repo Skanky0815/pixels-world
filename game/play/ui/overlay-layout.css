@@ -15,37 +15,14 @@ main:has(#play-area) {
   --overlay-banner-bottom: calc(
     var(--overlay-bottom) + var(--overlay-controls-height) + var(--overlay-gap)
   );
-  --overlay-dialogue-top: calc(
-    var(--overlay-top) + var(--overlay-menu-height, 44px) + var(--overlay-gap)
-  );
+  --overlay-dialogue-top: var(--overlay-top);
   --overlay-dialogue-bottom: calc(
     var(--overlay-banner-bottom) + var(--overlay-banner-height, 0px) + var(--overlay-gap)
   );
 }
 
-.follow-camera:not(.menu-open):not(.room-selecting) body:has(#play-area) {
-  display: block;
-  height: 100dvh;
-  min-height: 0;
-  padding: 0;
-  overflow: hidden;
-
-  main:has(#play-area) {
-    display: block;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-  }
-
-  main > header {
-    display: contents;
-  }
-
-  main > footer {
-    display: none;
-  }
-
+/* The camera fills the shared content region; chrome no longer becomes overlays. */
+.follow-camera:not(.menu-open):not(.room-selecting) body main:has(#play-area) .game-content {
   #play-area {
     display: block;
     position: absolute;
@@ -60,41 +37,6 @@ main:has(#play-area) {
     aspect-ratio: auto !important;
     border: 0;
     box-shadow: none;
-  }
-
-  main > header > div:first-child,
-  main > header > .game-menu-actions {
-    position: absolute;
-    top: var(--overlay-top);
-    z-index: 5;
-    margin: 0;
-  }
-
-  main > header > div:first-child {
-    left: var(--overlay-left);
-    text-shadow: 0 1px 3px #241f29;
-  }
-
-  main > header > div:first-child :is(.eyebrow, h1 span),
-  main > header > .badge {
-    display: none;
-  }
-
-  main > header h1 {
-    font-size: 20px;
-    letter-spacing: 0;
-  }
-
-  main > header > .game-menu-actions {
-    right: var(--overlay-right);
-    width: auto;
-    flex-direction: row;
-    gap: var(--overlay-gap);
-    align-self: auto;
-  }
-
-  main:has(.mobile-dialogue:not([hidden])) > header > div:first-child {
-    visibility: hidden;
   }
 }
 
@@ -356,4 +298,9 @@ html:not(.follow-camera) #game > .mobile-dialogue:not([hidden]) {
 }
 html:not(.follow-camera) #game > .room-selection-return {
   bottom: calc(var(--overlay-edge) + var(--overlay-banner-height, 0px) + var(--overlay-gap));
+}
+
+/* Before play only the start action is needed; keep room for readable introduction copy. */
+.follow-camera #play-area:has(.start-screen:not([hidden])) .touch-directions {
+  display: none;
 }

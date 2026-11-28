@@ -69,7 +69,7 @@ export class RoomSelection {
       },
       options,
     );
-    document.getElementById('play-area')?.before(this.root);
+    document.getElementById('game-content')?.append(this.root);
     document.getElementById('game')?.append(this.back);
     this.unsubscribe = onLanguageChange(() => this.refresh());
     this.refresh();

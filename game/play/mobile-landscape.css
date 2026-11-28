@@ -12,7 +12,7 @@
     padding: max(2px, env(safe-area-inset-top)) max(2px, env(safe-area-inset-right))
       max(2px, env(safe-area-inset-bottom)) max(2px, env(safe-area-inset-left));
 
-    main:has(#play-area) {
+    .game-content {
       position: relative;
       grid-template-columns: var(--touch-directions-width) minmax(0, 1fr) var(
           --touch-directions-width
@@ -22,28 +22,6 @@
       gap: 2px;
       margin-inline: auto;
       width: 100%;
-    }
-
-    main > header {
-      display: contents;
-    }
-
-    main > header > div:first-child {
-      grid-column: 1;
-      grid-row: 1;
-      align-self: start;
-    }
-
-    main > header > .game-menu-actions {
-      grid-column: 3;
-      grid-row: 1;
-      flex-direction: column;
-      align-items: end;
-      gap: 2px;
-      align-self: end;
-      justify-self: end;
-      width: 100%;
-      z-index: 1;
     }
 
     #play-area .mobile-hud {
@@ -101,10 +79,6 @@
     .touch-actions button {
       padding-inline: 2px;
       font-size: 13px;
-    }
-
-    main > footer {
-      display: none;
     }
 
     .start-prompt > .game-menu-actions {

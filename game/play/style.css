@@ -270,9 +270,6 @@ canvas {
       max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
     align-items: center;
   }
-  main:has(#play-area) header {
-    margin-bottom: 4px;
-  }
   main:has(#play-area) .eyebrow,
   main:has(#play-area) h1 span,
   main:has(#play-area) .badge,
@@ -386,17 +383,11 @@ canvas {
 
 /* Landscape sidebars leave the room free of a full-width status box. */
 @media (any-pointer: coarse) and (orientation: landscape) {
-  main:has(#play-area) {
+  .game-content {
     display: grid;
     grid-template-columns: var(--touch-directions-width) minmax(0, 1fr) 148px;
     gap: 12px 16px;
     align-items: center;
-  }
-  main:has(#play-area) header {
-    grid-column: 1;
-    grid-row: 1;
-    margin: 0;
-    align-self: end;
   }
   main:has(#play-area) h1 {
     font-size: 18px;
@@ -422,10 +413,6 @@ canvas {
   .mobile-hud p {
     margin: 0;
   }
-  main:has(#play-area) footer {
-    grid-column: 1 / -1;
-    grid-row: 3;
-  }
 }
 
 @media (any-pointer: coarse) {
@@ -449,13 +436,6 @@ canvas {
   main:has(#play-area) .build-info {
     font-size: 10px;
     color: #a08f83;
-  }
-}
-@media (any-pointer: coarse) and (orientation: landscape) {
-  main:has(#play-area) header {
-    flex-direction: column;
-    align-items: start;
-    gap: 4px;
   }
 }
 
@@ -561,15 +541,11 @@ canvas {
     body:has(#play-area) {
       padding: 8px 12px;
     }
-    main:has(#play-area) {
+    .game-content {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 160px;
       gap: 8px;
       align-items: center;
-    }
-    main:has(#play-area) > header {
-      grid-column: 1 / -1;
-      margin: 0;
     }
     main:has(#play-area) .eyebrow,
     main:has(#play-area) h1 span,
@@ -601,7 +577,6 @@ canvas {
       font-size: 12px;
     }
     main:has(#play-area) footer {
-      grid-column: 1 / -1;
       margin: 0;
       font-size: 11px;
       gap: 4px;

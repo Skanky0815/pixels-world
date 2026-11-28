@@ -78,7 +78,7 @@ export class PauseMenu {
     this.toggle.className = 'pause-toggle';
     configureAction(this.toggle, 'menu');
 
-    document.getElementById('play-area')?.before(this.root);
+    document.getElementById('game-content')?.append(this.root);
     this.removeLanguage = createLanguageSetting(this.element('[data-pause-language]'));
     const options = { signal: this.abort.signal };
 

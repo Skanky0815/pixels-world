@@ -26,6 +26,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await cameraStart(page, viewport.room);
+    await framesPass(page);
     const before = (await state(page)).camera;
     const touch = await TouchDriver.create(page);
 
@@ -35,7 +36,8 @@ for (const viewport of [
     await framesPass(page);
     const after = await state(page);
 
-    expect(after.camera.zoom).toBe(2);
+    expect(after.camera.zoom).toBeGreaterThanOrEqual(2);
+    expect(after.camera.zoom).toBe(before.zoom);
     expect(after.camera.x).toBeGreaterThan(before.x + 50);
     expect(after.pixel.x - after.camera.x).toBeCloseTo(after.camera.width / 2, -1);
     await fillsViewport(page);
@@ -66,14 +68,18 @@ test('Kameraversuch: Vorhang und Rotation behalten Runde und Raumgrenzen', async
   expect(top).toBeGreaterThanOrEqual(-1);
   expect(top + camera.height / camera.zoom).toBeLessThanOrEqual(541);
   await page.setViewportSize({ width: 390, height: 844 });
+  const content = (await page.locator('#game-content').boundingBox())!;
+
   await until(
     page,
-    (s) => s.camera.zoom === 1 && Math.abs(s.camera.width / s.camera.height - 390 / 844) < 0.01,
+    (s) =>
+      s.camera.zoom === 1 &&
+      Math.abs(s.camera.width / s.camera.height - content.width / content.height) < 0.01,
   );
   await fillsViewport(page);
   expect((await state(page)).started).toBe(true);
   await page.setViewportSize({ width: 844, height: 330 });
-  await until(page, (s) => s.camera.zoom === 2);
+  await until(page, (s) => s.camera.zoom === camera.zoom);
   await fillsViewport(page);
 });
 
@@ -84,7 +90,7 @@ async function cameraStart(page: Page, room = 'living-room') {
 }
 
 async function fillsViewport(page: Page) {
-  const main = (await page.locator('main').boundingBox())!;
+  const main = (await page.locator('#game-content').boundingBox())!;
   const canvas = (await page.locator('canvas').boundingBox())!;
 
   expect(Math.abs(canvas.width - main.width)).toBeLessThan(2);
@@ -95,7 +101,7 @@ async function fillsViewport(page: Page) {
 }
 
 async function bottomControls(page: Page) {
-  const main = (await page.locator('main').boundingBox())!;
+  const main = (await page.locator('#game-content').boundingBox())!;
 
   for (const selector of ['.touch-directions', '.touch-actions']) {
     const buttons = (await page.locator(selector).boundingBox())!;

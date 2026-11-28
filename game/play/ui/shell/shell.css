@@ -1,27 +1,168 @@
-/* The header and footer remain the same nodes in selection, introduction and play. */
-html:is(.room-selecting, .menu-open) body main:has(#play-area) {
+/* Every screen owns content inside the same three-row application shell. */
+html body:has(#play-area) {
   display: block;
-  height: auto;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
 }
-html:is(.room-selecting, .menu-open) body main:has(#play-area) > header {
+.application-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  margin-inline: auto;
+  height: 100%;
+  min-height: 0;
+}
+.game-content {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  background: #26212c;
+}
+.game-content > :is(.game-menu, .room-selection) {
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+/* Extra space extends the purple panel, without spreading the menu rows. */
+.game-content > .game-menu {
+  align-content: start;
+}
+html body .application-shell > .game-header {
   display: flex;
   position: static;
+  grid-column: 1;
+  grid-row: 1;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
 }
-html:is(.room-selecting, .menu-open) body main:has(#play-area) > header > div:first-child,
-html:is(.room-selecting, .menu-open) body main:has(#play-area) > header > .game-menu-actions {
+html body .application-shell > .game-footer {
+  display: flex;
+  grid-column: 1;
+  grid-row: 3;
+  margin: 0;
+}
+html body .application-shell > .game-header > :is(div:first-child, .game-menu-actions) {
   position: static;
   width: auto;
   flex-direction: row;
   align-self: center;
 }
-html:is(.room-selecting, .menu-open) body #play-area {
+html:is(.room-selecting, .menu-open) #play-area {
+  display: none;
+}
+html:is(.room-selecting, .menu-open) .game-content {
+  display: block;
+  height: auto;
+}
+html.menu-open .room-selection {
   display: none;
 }
 
-html.menu-open .room-selection {
+/* Every view fits between the persistent chrome rows; content owns overflow. */
+html:not(.menu-open):not(.room-selecting) body:has(#play-area) {
+  height: 100dvh;
+}
+html:not(.menu-open):not(.room-selecting) body .application-shell {
+  height: 100%;
+  min-height: 0;
+}
+.follow-camera:not(.menu-open):not(.room-selecting) body:has(#play-area) {
+  min-height: 0;
+  padding: 12px 24px;
+  overflow: hidden;
+}
+.follow-camera:not(.menu-open):not(.room-selecting) body .application-shell {
+  width: 100%;
+  gap: 8px;
+}
+.follow-camera:not(.menu-open):not(.room-selecting) .game-content {
+  display: block;
+  height: auto;
+  grid-column: 1;
+  grid-row: 2;
+}
+.follow-camera .application-shell > .game-header h1 {
+  font-size: 20px;
+  letter-spacing: 0;
+}
+.follow-camera .application-shell > .game-header :is(.eyebrow, h1 span),
+.follow-camera .application-shell > .game-footer > :is(.keyboard-help, .hint) {
   display: none;
+}
+/* Age information already stays visible in the shared footer. */
+html body main:has(#play-area) .start-age {
+  display: none;
+}
+
+@media (any-pointer: coarse), (max-width: 640px) {
+  .follow-camera:not(.menu-open):not(.room-selecting) body:has(#play-area) {
+    padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+      max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  }
+  html body .application-shell > .game-footer {
+    gap: 4px;
+    line-height: 1.4;
+  }
+  .application-shell > .game-footer .footer-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .application-shell > .game-footer .build-info {
+    text-align: left;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 550px) {
+  .application-shell > .game-footer .footer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .application-shell > .game-footer .footer-meta > p {
+    flex-basis: auto;
+  }
+  .application-shell > .game-footer .build-info {
+    text-align: right;
+    font-size: 9px;
+  }
+  .application-shell > .game-footer :is(.feedback-link, .age-rating) {
+    font-size: 9px;
+  }
+  .application-shell > .game-footer .feedback-link {
+    gap: 8px;
+  }
+  html:not(.follow-camera) .game-content {
+    container-type: size;
+    height: auto;
+  }
+  html:not(.follow-camera) body main:has(#play-area) .game-content #play-area #game {
+    width: min(100%, calc(100cqh * var(--room-ratio, 1.777778)));
+  }
+}
+html.follow-camera body main:has(#play-area) .start-age {
+  display: none;
+}
+html.follow-camera body main:has(#play-area) .start-copy {
+  flex: 1 1 0;
+  margin-block: 0;
+}
+@media (any-pointer: coarse) {
+  /* The start action sits beside the prompt instead of consuming a second row. */
+  html.follow-camera body main:has(#play-area) #play-area #game > .start-screen:not([hidden]) {
+    bottom: var(--overlay-bottom);
+  }
+  html.follow-camera body main:has(#play-area) .start-prompt .touch-prompt {
+    display: none;
+  }
+  html.follow-camera body main:has(#play-area) .start-prompt {
+    padding-right: 100px;
+    min-height: 48px;
+  }
 }

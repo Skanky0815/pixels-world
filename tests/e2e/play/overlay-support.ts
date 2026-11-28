@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import { state } from '../support/support';
 
-/** Wait for the actual canvas after both browser resize and the next game frame. */
+/** Wait for the actual content-sized canvas after both browser resize and the next game frame. */
 export async function fullViewport(page: Page) {
   await expect.poll(() => fitsViewport(page), { intervals: [0] }).toBe(true);
 }
@@ -10,12 +10,12 @@ export async function fullViewport(page: Page) {
 async function fitsViewport(page: Page) {
   await page.clock.runFor(100);
   const box = (await page.locator('canvas').boundingBox())!;
-  const viewport = page.viewportSize()!;
+  const viewport = (await page.locator('#game-content').boundingBox())!;
 
   return (
     Math.max(
-      Math.abs(box.x),
-      Math.abs(box.y),
+      Math.abs(box.x - viewport.x),
+      Math.abs(box.y - viewport.y),
       Math.abs(box.width - viewport.width),
       Math.abs(box.height - viewport.height),
     ) < 1

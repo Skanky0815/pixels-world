@@ -140,9 +140,16 @@ Auslieferung. Rechtsseiten benötigen dafür kein JavaScript. `update.html` blei
 eine Weiterleitung zur Hilfe. Footer-Linkfarben und Fokuszustände sind gemeinsam.
 
 Das Spiel ergänzt Titel und Steuerhinweise aus `play/ui/shell/`; Album/Menü bleiben
-Spielaktionen. Header und Footer bleiben direkte Kinder von `main`, damit das
-Vollbildlayout sie steuern kann. Die Informationsansicht kopiert den bereits
-übersetzten Footer mit aktuellen Tastaturhinweisen und entfernt Dokument-IDs.
+Spielaktionen. Eine gemeinsame `application-shell` enthält Header, `#game-content`
+und Footer. Menü, Levelauswahl, Spiel und der weiterhin native Albumdialog werden
+in denselben Content-Host eingehängt. Header und Footer bleiben dieselben direkten
+Kinder von `main` und sind auch während einer Runde sichtbar. Die Hülle füllt die
+verfügbare Viewporthöhe; die violette Inhaltsfläche sowie Menü und Levelauswahl
+füllen die Resthöhe zwischen Header und Footer. Bei längeren Menüseiten scrollt
+nur deren Inhalt, der gemeinsame Rahmen bleibt stehen. Die Folgekamera füllt
+dieselbe Inhaltsfläche. Touchflächen und Spieloverlays bleiben am Spielhost.
+Die Informationsansicht kopiert den bereits übersetzten Footer mit aktuellen
+Tastaturhinweisen und entfernt Dokument-IDs.
 
 `shared/base.css` und `shared/ui/button.*` teilen Typografie, Farben, Fokus sowie
 Hover-, Druck- und Disabledzustände. Navigation ist ein Link, Aktion ein nativer
@@ -397,8 +404,9 @@ festgehalten. Werte, Profile und Bearbeitungsschritte stehen bei
 
 ### Dialoge, Kamera und Overlays
 
-Die Standardkamera folgt Pixel im gesamten dynamischen Viewport. HUD, Menüaktionen,
-Dialoge, Banner und Touchflächen liegen darüber, ohne den Levelbereich zu verkleinern.
+Die Standardkamera folgt Pixel im Contentbereich zwischen gemeinsamem Header und
+Footer. HUD, Dialoge, Banner und Touchflächen liegen über diesem Spielbereich;
+Menüaktionen bleiben im Header.
 `?camera=room` bleibt die ausdrückliche Vergleichsansicht des vollständigen Raums.
 Quadratische Fenster zählen als Querformat. Resize und Rotation erhalten die Szene
 und lösen Eingaben; ein spielweiter `ResizeObserver` aktualisiert Phasers Skalierung.
