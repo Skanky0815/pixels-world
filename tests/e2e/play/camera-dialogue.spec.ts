@@ -91,7 +91,7 @@ async function clearDialogue(page: Page) {
     (await page.locator('.mobile-dialogue').getAttribute('data-dialogue-side')) === 'right';
   const panel = (await page.locator('.mobile-dialogue').boundingBox())!;
   const canvas = (await page.locator('canvas').boundingBox())!;
-  const controls = (await page.locator('.touch-directions').boundingBox())!;
+  const { inputs, below } = await dialogueControlBounds(page, s.result !== null);
   const viewLeft = s.camera.x + (s.camera.width - s.camera.width / s.camera.zoom) / 2;
   const actorLeft = Math.min(
     s.pixel.visualX - s.pixel.displayWidth / 2,
@@ -110,7 +110,6 @@ async function clearDialogue(page: Page) {
   else expect(panel.x - canvas.x).toBeCloseTo(8, 0);
 
   if (page.viewportSize()!.height <= 380) {
-    const actions = (await page.locator('.touch-actions').boundingBox())!;
     const actorRight = Math.max(
       s.pixel.visualX + s.pixel.displayWidth / 2,
       s.sara.x + s.sara.displayHeight / 3,
@@ -119,23 +118,22 @@ async function clearDialogue(page: Page) {
       canvas.x + ((actorRight - viewLeft) * s.camera.zoom * canvas.width) / s.camera.width;
 
     if (rightSide) {
-      expect(
-        Math.max(controls.x + controls.width, actions.x + actions.width) + 4,
-      ).toBeLessThanOrEqual(screenLeft);
-      expect(
-        Math.max(controls.x + controls.width, actions.x + actions.width) + 7,
-      ).toBeLessThanOrEqual(panel.x);
+      expect(Math.max(...inputs.map((box) => box.x + box.width)) + 4).toBeLessThanOrEqual(
+        screenLeft,
+      );
+      expect(Math.max(...inputs.map((box) => box.x + box.width)) + 7).toBeLessThanOrEqual(panel.x);
     } else {
-      expect(screenRight + 4).toBeLessThanOrEqual(Math.min(controls.x, actions.x));
-      expect(panel.x + panel.width + 7).toBeLessThanOrEqual(controls.x);
+      expect(screenRight + 4).toBeLessThanOrEqual(Math.min(...inputs.map((box) => box.x)));
+      expect(panel.x + panel.width + 7).toBeLessThanOrEqual(
+        Math.min(...inputs.map((box) => box.x)),
+      );
     }
 
-    expect(controls.y).toBeGreaterThanOrEqual(canvas.y);
-    expect(controls.y + controls.height).toBeLessThanOrEqual(canvas.y + canvas.height);
-    expect(
-      (await page.locator('[data-control="left"]').boundingBox())!.height,
-    ).toBeGreaterThanOrEqual(48);
-  } else expect(panel.y + panel.height + 7).toBeLessThanOrEqual(controls.y);
+    for (const box of inputs) {
+      expect(box.y).toBeGreaterThanOrEqual(canvas.y);
+      expect(box.y + box.height).toBeLessThanOrEqual(canvas.y + canvas.height);
+    }
+  } else expect(panel.y + panel.height + 7).toBeLessThanOrEqual(below.y);
 
   if (rightSide) {
     const actorRight = Math.max(
@@ -151,6 +149,23 @@ async function clearDialogue(page: Page) {
     await page.locator('.mobile-dialogue').evaluate((n) => n.scrollWidth <= n.clientWidth),
   ).toBe(true);
   await expect(page.locator('.mobile-dialogue')).toBeInViewport({ ratio: 1 });
+}
+
+// eslint-disable-next-line max-lines-per-function -- Laufende Dialoge und fertige Ergebnisse prüfen jeweils ihre real sichtbaren nativen Touchziele.
+async function dialogueControlBounds(page: Page, result: boolean) {
+  const controls = await page.locator('.touch-directions').boundingBox();
+  const actions = (await page
+    .locator(result ? '.room-selection-return' : '.touch-actions')
+    .boundingBox())!;
+
+  if (result) await expect(page.locator('.touch-directions')).toBeHidden();
+  else expect(controls).not.toBeNull();
+  expect(actions).not.toBeNull();
+  const target = page.locator(result ? '.room-selection-return' : '[data-control="left"]');
+
+  expect((await target.boundingBox())!.height).toBeGreaterThanOrEqual(48);
+
+  return { inputs: controls ? [controls, actions] : [actions], below: controls ?? actions };
 }
 
 test('Kameradialog rechts: kompakte Touchflächen spiegeln sich im Schlafzimmer', async ({
