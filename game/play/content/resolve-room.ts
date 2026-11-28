@@ -87,6 +87,13 @@ function validateObject(value: ObjectDefinition, path: string) {
 
 // eslint-disable-next-line complexity, max-lines-per-function -- Die vollständige Auswahl aller registrierten Objekttypen bleibt explizit.
 function validateObjectRules(value: ObjectDefinition, path: string) {
+  if (value.kind === 'lamp') {
+    integer(value.points, `${path}.points`);
+    color(value.color, `${path}.color`);
+
+    return;
+  }
+
   if (value.kind === 'vase') return validateVase(value, path);
 
   if (value.kind === 'dish') return validateDish(value, path);
@@ -95,6 +102,13 @@ function validateObjectRules(value: ObjectDefinition, path: string) {
 
   if (value.kind === 'tablecloth') return validateCloth(value, path);
   record(value.rules, `${path}.rules`);
+
+  if (value.kind === 'laundry') {
+    if (!['pile', 'basket'].includes(value.appearance))
+      fail(`${path}.appearance`, 'unknown laundry appearance');
+
+    return validateToppling(value.rules, path);
+  }
 
   if (value.kind === 'food-bag' || value.kind === 'trash-bin')
     return validateToppling(value.rules, path);
@@ -126,6 +140,9 @@ function validateCarpet(value: Extract<ObjectDefinition, { kind: 'carpet' }>, pa
   record(value.geometry, `${path}.geometry`);
   number(value.geometry.width, `${path}.geometry.width`, 80);
   number(value.geometry.height, `${path}.geometry.height`, 24);
+
+  if (value.appearance !== undefined && value.appearance !== 'runner')
+    fail(`${path}.appearance`, 'unknown carpet appearance');
   validateCarpetRules(value.rules);
 }
 
@@ -210,6 +227,12 @@ function validateGeometry(
   value: Extract<ObjectDefinition, { kind: 'couch' | 'curtain' }>,
   path: string,
 ) {
+  if (
+    value.kind === 'curtain' &&
+    value.appearance !== undefined &&
+    !['rust', 'khaki'].includes(value.appearance)
+  )
+    fail(`${path}.appearance`, 'unknown curtain appearance');
   record(value.geometry, `${path}.geometry`);
   number(value.geometry.width, `${path}.geometry.width`, value.kind === 'couch' ? 100 : 16);
   number(
@@ -246,10 +269,15 @@ function validateFridgeBody(
     fail(path, 'fridge body or open door outside room');
 }
 
+// eslint-disable-next-line max-lines-per-function -- Registrierte Möbelansichten müssen dieselbe feste Auflage behalten.
 function validatePlatformAppearance(platform: RoomDefinition['platforms'][number], path: string) {
   if (platform.appearance === undefined) return;
 
-  if (!['stool', 'table', 'counter', 'fridge'].includes(platform.appearance))
+  if (
+    !['stool', 'table', 'counter', 'fridge', 'bed', 'nightstand', 'wardrobe'].includes(
+      platform.appearance,
+    )
+  )
     fail(path, 'unknown furniture appearance');
 
   if ((platform.durability?.stability ?? 'stable') !== 'stable')
@@ -270,7 +298,7 @@ function validateRoom(room: RoomDefinition) {
 
   if (
     room.environment !== undefined &&
-    !['cozy-room', 'kitchen-preview'].includes(room.environment)
+    !['cozy-room', 'kitchen-preview', 'bedroom'].includes(room.environment)
   )
     fail(`${root}.environment`, 'unknown environment');
 
@@ -490,8 +518,12 @@ class RoomResolver {
 
     if (d.kind === 'pantry') return this.resolvePantry(instance, d, path, support);
 
+    if (d.kind === 'lamp') return this.resolveLamp(instance, d, path, support);
+
     if (d.kind === 'food-bag' || d.kind === 'trash-bin')
       return this.resolveTopplingContainer(instance, d, path, support);
+
+    if (d.kind === 'laundry') return this.resolveLaundry(instance, d, path, support);
 
     if (d.kind === 'books') return this.resolveBooks(instance, d, path, support);
 
@@ -559,7 +591,13 @@ class RoomResolver {
       variant: instance.variant,
       asset: d.asset,
       kind: 'carpet',
-      config: { id: instance.id, area, floorY: support.y, rules: d.rules },
+      config: {
+        id: instance.id,
+        area,
+        floorY: support.y,
+        rules: d.rules,
+        appearance: d.appearance,
+      },
     };
   }
 
@@ -618,7 +656,11 @@ class RoomResolver {
 
     if (area.y + area.height > room.floor.y) fail(`${path}.area`, 'curtain extends below floor');
 
-    return { ...base, kind: 'curtain', config: { id: instance.id, area, rules: d.rules } };
+    return {
+      ...base,
+      kind: 'curtain',
+      config: { id: instance.id, area, rules: d.rules, appearance: d.appearance },
+    };
   }
 
   // eslint-disable-next-line max-lines-per-function -- Sitzfläche, umgebende Bounds und zurückgegebene Konfiguration beschreiben dieselbe deklarative Geometrie.
@@ -729,6 +771,41 @@ class RoomResolver {
         points: d.points,
         color: d.color,
         appearance: d.appearance,
+        floorY: room.floor.y,
+        roomWidth: room.width,
+      },
+    };
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Asset-Bounds, Auflagenprüfung und der vollständige Lampen-Konfigurationsvertrag bleiben gemeinsam sichtbar.
+  private resolveLamp(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'lamp' }>,
+    path: string,
+    support: Bounds,
+  ): ResolvedObject {
+    const { room } = this;
+    const p = instance.placement;
+    const base = { id: instance.id, variant: instance.variant, asset: d.asset };
+    const a = ASSETS['bedside-lamp'];
+
+    bounds(
+      { x: p.x - a.width / 2, y: support.y - a.height, width: a.width, height: a.height },
+      room,
+      `${path}.geometry`,
+    );
+    supportFits(p.x - a.width / 2, a.width, support, `${path}.placement`);
+
+    return {
+      ...base,
+      kind: 'lamp',
+      config: {
+        id: instance.id,
+        x: p.x,
+        shelfY: support.y,
+        support,
+        points: d.points,
+        color: d.color,
         floorY: room.floor.y,
         roomWidth: room.width,
       },
@@ -908,18 +985,23 @@ class RoomResolver {
 
     for (const object of objects) {
       maximum +=
-        object.kind === 'tablecloth' ||
-        object.kind === 'food-bag' ||
-        object.kind === 'trash-bin' ||
-        object.kind === 'books' ||
-        object.kind === 'picture' ||
-        object.kind === 'carpet'
-          ? object.config.rules.points
-          : object.kind === 'vase' || object.kind === 'dish' || object.kind === 'pantry'
-            ? object.config.points
-            : object.kind === 'plant'
-              ? object.config.rules.nibbleValue + object.config.rules.tipValue
-              : object.config.rules.maxDamage * object.config.rules.damageValue;
+        object.kind === 'laundry'
+          ? object.config.rules.points * 2
+          : object.kind === 'tablecloth' ||
+              object.kind === 'food-bag' ||
+              object.kind === 'trash-bin' ||
+              object.kind === 'books' ||
+              object.kind === 'picture' ||
+              object.kind === 'carpet'
+            ? object.config.rules.points
+            : object.kind === 'vase' ||
+                object.kind === 'lamp' ||
+                object.kind === 'dish' ||
+                object.kind === 'pantry'
+              ? object.config.points
+              : object.kind === 'plant'
+                ? object.config.rules.nibbleValue + object.config.rules.tipValue
+                : object.config.rules.maxDamage * object.config.rules.damageValue;
 
       if (!Number.isSafeInteger(maximum))
         fail(`${root}.objects`, 'maximum score exceeds safe integer range');
@@ -945,7 +1027,7 @@ class RoomResolver {
     if (platform?.durability && platform.durability.stability !== 'stable')
       fail(`${path}.surfaceId`, 'goal shelf must remain stable');
 
-    const width = goal.kind === 'food' ? 36 : 20;
+    const width = goal.kind === 'rest' ? 80 : goal.kind === 'food' ? 36 : 20;
 
     supportFits(goal.x - width / 2, width, surface, path);
     const area = { x: goal.x - width / 2, y: surface.y - 20, width, height: 20 };
@@ -953,6 +1035,60 @@ class RoomResolver {
     bounds(area, this.room, `${path}.area`);
 
     return { ...goal, area, surfaceY: surface.y };
+  }
+
+  // eslint-disable-next-line max-lines-per-function -- Auflage, Streufläche und Korb-Bodenkontakt werden vor der Objekterzeugung gemeinsam validiert.
+  private resolveLaundry(
+    instance: ObjectInstance,
+    d: Extract<ObjectDefinition, { kind: 'laundry' }>,
+    path: string,
+    support: Bounds,
+  ): ResolvedObject {
+    const x = instance.placement.x;
+
+    if (d.appearance === 'basket' && support.y !== this.room.floor.y)
+      fail(path, 'basket requires floor support');
+    supportFits(x - 48, 96, support, path);
+    bounds({ x: x - 80, y: support.y - 48, width: 160, height: 48 }, this.room, path);
+
+    return {
+      id: instance.id,
+      variant: instance.variant,
+      asset: d.asset,
+      kind: 'laundry',
+      config: {
+        id: instance.id,
+        x,
+        supportY: support.y,
+        floorY: this.room.floor.y,
+        roomWidth: this.room.width,
+        travelLeft: Math.max(
+          80,
+          ...this.room.platforms
+            .filter(
+              (p) =>
+                p.bounds.x + p.bounds.width < x &&
+                p.bounds.y + p.bounds.height === this.room.floor.y &&
+                p.bounds.height > 52,
+            )
+            .map((p) => p.bounds.x + p.bounds.width + 48),
+        ),
+        travelRight: Math.min(
+          this.room.width - 80,
+          ...this.room.platforms
+            .filter(
+              (p) =>
+                p.bounds.x > x &&
+                p.bounds.y + p.bounds.height === this.room.floor.y &&
+                p.bounds.height > 52,
+            )
+            .map((p) => p.bounds.x - 48),
+        ),
+        spillX: Math.min(this.room.width - 80, support.x + support.width + 48),
+        appearance: d.appearance,
+        rules: d.rules,
+      },
+    };
   }
 
   private resolveSpawn() {
@@ -988,7 +1124,7 @@ function validateShelfDecoration(
 
 // eslint-disable-next-line max-lines-per-function -- Zieltyp, geschützte Belegung und zugehöriger Albumfund bilden einen gemeinsamen Inhaltsvertrag.
 function validateGoalProfile(goal: GoalDefinition, path: string) {
-  if (goal.kind !== 'toy' && goal.kind !== 'food') fail(`${path}.kind`, 'unknown goal kind');
+  if (!['toy', 'food', 'rest'].includes(goal.kind)) fail(`${path}.kind`, 'unknown goal kind');
   validateGoalSpawn(goal.spawn, `${path}.spawn`);
 
   if (goal.spawn.category !== goal.kind)
@@ -996,7 +1132,10 @@ function validateGoalProfile(goal: GoalDefinition, path: string) {
 
   if (
     goal.albumVariant !== undefined &&
-    (goal.kind !== 'food' || !Object.hasOwn(GOAL_ALBUM, goal.albumVariant))
+    (!Object.hasOwn(GOAL_ALBUM, goal.albumVariant) ||
+      (goal.kind === 'rest'
+        ? goal.albumVariant !== 'sleep-pad'
+        : goal.kind !== 'food' || goal.albumVariant !== 'food-bowl'))
   )
     fail(`${path}.albumVariant`, 'unknown goal album variant');
 }

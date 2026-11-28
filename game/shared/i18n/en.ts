@@ -1,5 +1,21 @@
 import type { de } from './de';
 export const en: Record<keyof typeof de, string> = {
+  feedbackRestResult: 'Well rested. Everything in one piece. ♥',
+  saraBedroomCalm: 'A bed, a pillow and one very happy cat.',
+  saraBedroomAnnoyed: 'You certainly made yourself comfortable, Pixel.',
+  saraBedroomAngry: 'The bedroom was meant for resting.',
+  saraLaundryCalm: 'The laundry looks suspiciously paw-made.',
+  saraLaundryAnnoyed: 'Pixel, I had only just folded that.',
+  saraLaundryAngry: 'We are both folding that again.',
+  peacefulRestClosing: 'Your cat bed, a little nap, then a cuddle. That sounds perfect.',
+  bedroomTitle: 'The bedroom',
+  cozySleepPlace: 'cozy sleeping spot',
+  pixelWantsToRest:
+    'Pixel is sleepy. Find your cat bed underneath the big bed and rest there for a moment.',
+  feedbackResting: 'Time to curl up.',
+  feedbackLaundry: 'So much for freshly folded!',
+  peacefulGoalRest: 'Sleep well, Pixel. The laundry can wait.',
+
   menuClose: 'Back to main menu',
   settingsAutoApply: 'Changes are applied immediately.',
   settingsApplied: '✓ Settings applied.',
@@ -147,6 +163,7 @@ export const en: Record<keyof typeof de, string> = {
   roomsEnter: 'Enter room →',
   roomsBack: 'Choose a room',
   roomsPreview: 'Living room with Pixel, sofa and curtain',
+  roomsBedroomPreview: 'Bedroom with Pixel, white door, bed, cat bed and wardrobe',
   roomsKitchenPreview: 'Kitchen with Pixel, table, fridge and food bowl',
 
   storageTitle: 'On this device',

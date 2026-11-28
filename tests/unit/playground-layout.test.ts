@@ -59,3 +59,20 @@ test('Jede Katalogvariante kann über denselben Spawnpfad aufgebaut werden', asy
     assert.equal(layout.objects[0].variant, id);
   }
 });
+
+// eslint-disable-next-line max-lines-per-function -- Export und Import müssen Umgebung, Ziel und materialisierte Slots gemeinsam erhalten.
+test('Schlafzimmer kopieren und laden erhält Umgebung, Schlafziel, Möbel und editierte Objekte', async () => {
+  const { BEDROOM } = await import('../../game/play/content/rooms/bedroom.ts');
+  const { populateSpawnSlots } = await import('../../game/play/content/spawn-slots.ts');
+  const { OBJECTS } = await import('../../game/play/content/objects/catalog.ts');
+  const layout = populateSpawnSlots(BEDROOM, OBJECTS, 'normal', () => 0.5);
+  const recipe = recipeForPlayground(layout);
+  const loaded = buildPlaygroundRecipe(recipe);
+
+  assert.equal(recipe.base, 'bedroom');
+  assert.equal(loaded.environment, 'bedroom');
+  assert.deepEqual(loaded.goal, BEDROOM.goal);
+  assert.deepEqual(loaded.platforms, layout.platforms);
+  assert.deepEqual(loaded.objects, layout.objects);
+  assert.deepEqual(loaded.decorations, layout.decorations);
+});

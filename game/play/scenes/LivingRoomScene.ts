@@ -10,8 +10,9 @@ import { installFollowCamera } from '../follow-camera-preview';
 import { loadingScreen } from '../loading-screen';
 import { preloadObjectAudio } from '../assets/object-audio';
 import { preloadDialoguePortraits, DIALOGUE_PORTRAITS } from '../assets/dialogue-portraits';
+import { GoalRest } from '../domain/goal-rest';
 import { FoodEating, foodEatingPose, foodEatingPlacement } from '../domain/food-eating';
-import { PEACEFUL_FOOD_LINES } from '../content/peaceful-goal';
+import { PEACEFUL_FOOD_LINES, PEACEFUL_REST_LINES } from '../content/peaceful-goal';
 import { preloadFoodBowlArt } from '../assets/food-bowl-art';
 import { BallPlay, ballPlayPose, ballPlayPlacement } from '../domain/ball-play';
 import { motionPreferences } from '../settings/motion';
@@ -34,6 +35,7 @@ import { preloadCatgrassArt } from '../assets/catgrass-art';
 import { preloadCurtainArt } from '../assets/curtain-art';
 import { preloadCouchArt } from '../assets/couch-art';
 import { preloadDishArt } from '../assets/dish-art';
+import { preloadBedroomArt } from '../assets/bedroom-art';
 import { preloadVaseArt } from '../assets/vase-art';
 import { difficultyPreferences } from '../settings/difficulty';
 import { difficultyRoom, difficultyTimer, type Difficulty } from '../content/difficulty';
@@ -98,6 +100,7 @@ export class LivingRoomScene extends Phaser.Scene {
   private goalView!: GoalView;
   private ballPlay = new BallPlay();
   private foodEating = new FoodEating();
+  private goalRest = new GoalRest();
   private foodEatingLayout!: ReturnType<typeof foodEatingPlacement>;
   private foodEatingOrigin = 0;
   private foodEatingVisualX = 0;
@@ -167,6 +170,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadSaraEndingArt(this);
     preloadDialoguePortraits(this);
     preloadVaseArt(this);
+    preloadBedroomArt(this);
     preloadDishArt(this);
     preloadPantryArt(this);
     preloadTrashBinArt(this);
@@ -439,6 +443,7 @@ export class LivingRoomScene extends Phaser.Scene {
             goal: this.goal.snapshot(),
             ballPlay: this.ballPlay.snapshot(),
             foodEating: this.foodEating.snapshot(),
+            goalRest: this.goalRest.snapshot(),
             goalView: this.goalView.snapshot(),
             round: this.round.snapshot(),
             homecoming: this.homecoming.snapshot(),
@@ -533,6 +538,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.ballPlay = new BallPlay();
     this.foodEating = new FoodEating();
+    this.goalRest = new GoalRest();
     this.mobile = new MobileReadout(this.room.dialogue);
     this.feedback = new GameFeedback(this);
     this.controls = new InputController(this);
@@ -544,7 +550,9 @@ export class LivingRoomScene extends Phaser.Scene {
       floorY: room.floor.y,
       entrySide: room.homecomingSide,
       dialogue: this.room.dialogue,
-      backgroundDoor: room.decorations.some((d) => d.kind === 'image' && d.asset === 'room-door'),
+      backgroundDoor: room.decorations.some(
+        (d) => d.kind === 'image' && ['room-door', 'bedroom-door'].includes(d.asset),
+      ),
     });
     this.charmView = new ReconciliationView(
       this,
@@ -593,6 +601,8 @@ export class LivingRoomScene extends Phaser.Scene {
       if (this.ballPlay.snapshot().active) this.renderBallPlay();
 
       if (this.foodEating.snapshot().active) this.renderFoodEating();
+
+      if (this.goalRest.snapshot().active || this.restingForSara()) this.renderGoalRest();
 
       if (this.round.snapshot().phase === 'reconciliation') this.renderCharmMotion();
       this.presentEnding();
@@ -820,6 +830,7 @@ export class LivingRoomScene extends Phaser.Scene {
     else this.tweens.pauseAll();
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Spiel, Zielaktionen und Heimkehr teilen dieselbe pausierbare Framezeit.
   private updateRound(input: InputState, delta: number) {
     const elapsed = this.activity.delta(delta);
 
@@ -829,6 +840,7 @@ export class LivingRoomScene extends Phaser.Scene {
 
     if (this.ballPlay.snapshot().active) this.advanceBallPlay(elapsed);
     else if (this.foodEating.snapshot().active) this.advanceFoodEating(elapsed);
+    else if (this.goalRest.snapshot().active) this.advanceGoalRest(elapsed);
     else if (this.canPlay()) this.playFrame(input, elapsed);
     else this.advanceHomecoming(input, elapsed);
     this.presentFeedback(elapsed);
@@ -838,6 +850,7 @@ export class LivingRoomScene extends Phaser.Scene {
     if (this.activity.active) this.controls.defer(input);
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Zielart und gemeinsame Phasenmeldung bilden einen vollständigen Beobachterwert.
   private presentFeedback(elapsed: number) {
     this.feedback.advance(elapsed, {
       started: this.started,
@@ -845,6 +858,7 @@ export class LivingRoomScene extends Phaser.Scene {
       charm: this.charm.snapshot(),
       outcome: this.resultView.snapshot()?.outcome ?? null,
       peaceful: this.resultView.snapshot()?.peaceful,
+      goalKind: this.room.goal.kind,
       goalAction: this.goalActionActive() ? this.room.goal.kind : undefined,
     });
   }
@@ -889,7 +903,11 @@ export class LivingRoomScene extends Phaser.Scene {
         this.chaos.count,
         this.random,
         this.previousPeaceful.get(key),
-        this.room.goal.kind === 'food' ? PEACEFUL_FOOD_LINES : undefined,
+        this.room.goal.kind === 'rest'
+          ? PEACEFUL_REST_LINES
+          : this.room.goal.kind === 'food'
+            ? PEACEFUL_FOOD_LINES
+            : undefined,
       )
     )
       return;
@@ -907,9 +925,14 @@ export class LivingRoomScene extends Phaser.Scene {
   }
 
   private goalActionActive() {
-    return this.ballPlay.snapshot().active || this.foodEating.snapshot().active;
+    return (
+      this.ballPlay.snapshot().active ||
+      this.foodEating.snapshot().active ||
+      this.goalRest.snapshot().active
+    );
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Zielaktion und friedlicher Fund werden einmalig aus demselben bestätigten Hauptziel gestartet.
   private beginGoalAction() {
     const discovery = discoverGoalAlbum(this.room.goal);
 
@@ -919,8 +942,37 @@ export class LivingRoomScene extends Phaser.Scene {
       this.events.emit('album-discovered', discovery);
     }
 
-    if (this.room.goal.kind === 'food') this.beginFoodEating();
+    if (this.room.goal.kind === 'rest') this.beginGoalRest();
+    else if (this.room.goal.kind === 'food') this.beginFoodEating();
     else this.beginBallPlay();
+  }
+
+  private beginGoalRest() {
+    this.goalRest.start();
+    this.syncActivity();
+    this.renderGoalRest();
+  }
+
+  private renderGoalRest() {
+    this.pixel.presentRest(this.goalRest.pose(motionPreferences.snapshot().reduced));
+  }
+
+  private restingForSara() {
+    return (
+      this.room.goal.kind === 'rest' &&
+      this.goal.snapshot().status === 'reached' &&
+      this.homecoming.snapshot().stage === 'entering'
+    );
+  }
+
+  private advanceGoalRest(elapsed: number) {
+    const finished = this.goalRest.advance(elapsed);
+
+    this.renderGoalRest();
+
+    if (!finished) return;
+    this.pixel.finishGoalAction(this.pixel.x);
+    this.startHomecoming();
   }
 
   // eslint-disable-next-line max-lines-per-function -- Die reale Auflage und Pixels Anfangsposition verankern gemeinsam die Fressanimation.
@@ -1067,7 +1119,11 @@ export class LivingRoomScene extends Phaser.Scene {
 
     this.homecoming.advance(elapsed);
     this.returnTime += elapsed;
-    this.returnPixel(elapsed);
+
+    if (this.restingForSara()) {
+      this.goalRest.advance(elapsed);
+      this.renderGoalRest();
+    } else this.returnPixel(elapsed);
 
     if (input.confirmPressed && this.returning.snapshot().stage === 'seated')
       this.homecoming.confirm();
@@ -1118,6 +1174,7 @@ export class LivingRoomScene extends Phaser.Scene {
       this.homecoming.snapshot(),
       this.charm.snapshot(),
       this.difficulty,
+      this.room.goal.kind,
     );
   }
 

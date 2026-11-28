@@ -1,3 +1,4 @@
+import { BEDROOM } from './bedroom.ts';
 import { KITCHEN } from './kitchen.ts';
 import { LIVING_ROOM } from './living-room.ts';
 import type { RoomDefinition } from '../definitions.ts';
@@ -14,7 +15,7 @@ interface RoomChoice {
 export const ROOM_CHOICES: readonly RoomChoice[] = [
   { id: LIVING_ROOM.id, name: copy('albumLivingRoom'), definition: LIVING_ROOM },
   { id: 'kitchen', name: copy('albumKitchen'), definition: KITCHEN },
-  { id: 'bedroom', name: copy('albumBedroom') },
+  { id: 'bedroom', name: copy('albumBedroom'), definition: BEDROOM },
   { id: 'study', name: copy('albumStudy') },
 ];
 

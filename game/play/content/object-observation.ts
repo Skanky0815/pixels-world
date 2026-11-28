@@ -3,9 +3,12 @@ import type { buildObjects } from './build-objects';
 // eslint-disable-next-line max-lines-per-function -- Alle realen Adapter liefern zusammen einen losgelösten, typisierten Objektbefund.
 export function observeObjects(built: ReturnType<typeof buildObjects>) {
   return {
+    curtains: built.curtains.map((curtain) => curtain.snapshot()),
+    lamps: built.lamps.map((lamp) => lamp.snapshot()),
     carpets: built.carpets.map((carpet) => carpet.snapshot()),
     pictures: built.pictures.map((picture) => picture.snapshot()),
     books: built.books.map((books) => books.snapshot()),
+    laundry: built.laundry.map((laundry) => laundry.snapshot()),
     tablecloths: built.tablecloths.map((cloth) => cloth.snapshot()),
     trashBins: built.trashBins.map((bin) => bin.snapshot()),
     foodBags: built.foodBags.map((bag) => bag.snapshot()),

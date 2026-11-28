@@ -85,3 +85,56 @@ test.describe('Editor auf dem Handy', () => {
     );
   });
 });
+
+test('Schlafzimmer-Spielwiese: Raum, Slots, neue Objekte und kopierter Aufbau bleiben vollständig', async ({
+  page,
+}) => {
+  await loadScenario(page, 'bedroom');
+  const initial = await snapshot(page);
+
+  expect(initial.layout.environment).toBe('bedroom');
+  expect(initial.layout.goal).toMatchObject({ kind: 'rest', x: 470, surfaceId: 'floor' });
+  expect(initial.restPlaceTexture).toBe('sleep-pad');
+  expect(initial.targets.map((item) => item.kind)).toEqual(
+    expect.arrayContaining(['lamp', 'laundry', 'carpet', 'plant', 'books', 'picture']),
+  );
+  await expect(
+    page.getByRole('link', { name: 'Mit vollständiger Runde im Spiel testen' }),
+  ).toHaveAttribute('href', '/play.html?scenario=bedroom&camera=room&room-seed=playground');
+  await page.getByText('Objekte platzieren / bearbeiten', { exact: true }).click();
+  await page.getByText('Aufbau laden / kopieren', { exact: true }).click();
+  await page.getByRole('button', { name: 'Aufbau in Textfeld kopieren' }).click();
+  const exported = await page.getByLabel('Aufbaudaten').inputValue();
+
+  expect(JSON.parse(exported).base).toBe('bedroom');
+  await page.getByRole('button', { name: 'Aufbau laden', exact: true }).click();
+  await untilPlayground(page, (s) => s.generation > initial.generation && s.pixel.grounded);
+  const loaded = await snapshot(page);
+
+  expect(loaded.layout.environment).toBe('bedroom');
+  expect(loaded.layout.goal).toEqual(initial.layout.goal);
+  expect(loaded.layout.objects).toEqual(initial.layout.objects);
+  expect(loaded.restPlaceTexture).toBe('sleep-pad');
+  await page.getByRole('button', { name: 'Szene zurücksetzen' }).click();
+  await untilPlayground(page, (s) => s.generation > loaded.generation && s.pixel.grounded);
+  expect((await snapshot(page)).resources).toEqual(loaded.resources);
+  await page
+    .locator('#game')
+    .screenshot({ path: test.info().outputPath('pixels-58-bedroom-playground.png') });
+  await page.getByLabel('Testart').selectOption('object');
+  await untilPlayground(page, (s) => s.mode === 'object');
+
+  for (const variant of [
+    'short-khaki-curtain',
+    'bedside-lamp',
+    'bedroom-runner',
+    'bedroom-spiderplant',
+    'folded-laundry',
+    'laundry-basket',
+  ]) {
+    await page.getByLabel('Objekt / Variante aus dem Spielkatalog').selectOption(variant);
+    await untilPlayground(page, (s) => s.variant === variant && s.pixel.grounded);
+    expect((await snapshot(page)).targets).toHaveLength(1);
+    expect((await snapshot(page)).targets[0].variant).toBe(variant);
+  }
+});

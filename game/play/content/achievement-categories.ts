@@ -72,6 +72,57 @@ export const ACHIEVEMENT_CATEGORIES_V6 = [
 export const ACHIEVEMENT_CATEGORIES_V7 = [
   { id: 'fridges', name: { de: 'Kühl geblieben', en: 'Keeping cool' }, targets: ['fridge.cream'] },
 ] as const;
+export const ACHIEVEMENT_CATEGORIES_V8 = [
+  {
+    id: 'curtains',
+    name: { de: 'Alle Vorhänge II', en: 'All curtains II' },
+    targets: ['curtain.warm', 'curtain.khaki'],
+    description: {
+      de: 'Die Vorhänge aus Wohnzimmer und Schlafzimmer vollständig zerreißen.',
+      en: 'Fully tear the living room and bedroom curtains across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Das Fenster war vorher auch schon sichtbar, Pixel.',
+      en: 'The window was already visible, Pixel.',
+    },
+  },
+  {
+    id: 'laundry',
+    name: { de: 'Alles durcheinander', en: 'Laundry day, undone' },
+    targets: ['laundry.pile', 'laundry.basket'],
+    description: {
+      de: 'Wäscheberg und Wäschekorb vollständig verteilen, über erfolgreich versöhnte Runden.',
+      en: 'Fully scatter the pile and basket across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Jetzt darfst du beim Falten helfen, Pixel.',
+      en: 'You can help me fold it now, Pixel.',
+    },
+  },
+  {
+    id: 'lamps',
+    name: { de: 'Licht aus!', en: 'Lights out!' },
+    targets: ['lamp.bedside'],
+    description: {
+      de: 'Die Nachttischlampe zerbrechen und die Runde erfolgreich versöhnen.',
+      en: 'Break the bedside lamp and reconcile successfully.',
+    },
+    quote: { de: 'Der Schalter hätte gereicht, Pixel.', en: 'The switch would have done, Pixel.' },
+  },
+  {
+    id: 'plants',
+    name: { de: 'Alle Pflanzen III', en: 'All plants III' },
+    targets: [...ACHIEVEMENT_CATEGORIES_V3[0].targets, 'plant.spiderplant'],
+    description: {
+      de: 'Katzengras, Küchenkräuter und Grünlilie vollständig umkippen, über erfolgreich versöhnte Runden.',
+      en: 'Fully tip over cat grass, kitchen herbs and the spider plant across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Dein grüner Daumen hat Pfoten, Pixel.',
+      en: 'Your green fingers have paws, Pixel.',
+    },
+  },
+] as const;
 export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
   ...new Set(
     [
@@ -82,6 +133,7 @@ export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
       ...ACHIEVEMENT_CATEGORIES_V5,
       ...ACHIEVEMENT_CATEGORIES_V6,
       ...ACHIEVEMENT_CATEGORIES_V7,
+      ...ACHIEVEMENT_CATEGORIES_V8,
     ].flatMap((category) => [...category.targets]),
   ),
 ]);

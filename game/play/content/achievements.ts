@@ -6,8 +6,13 @@ import {
   ACHIEVEMENT_CATEGORIES_V5,
   ACHIEVEMENT_CATEGORIES_V6,
   ACHIEVEMENT_CATEGORIES_V7,
+  ACHIEVEMENT_CATEGORIES_V8,
 } from './achievement-categories.ts';
-import { ROOM_ACHIEVEMENTS_V1, ROOM_ACHIEVEMENTS_V2 } from './achievement-rooms.ts';
+import {
+  ROOM_ACHIEVEMENTS_V1,
+  ROOM_ACHIEVEMENTS_V2,
+  ROOM_ACHIEVEMENTS_V3,
+} from './achievement-rooms.ts';
 import type { ChaosEvent } from '../domain/chaos-event.ts';
 
 type Localized = { readonly de: string; readonly en: string };
@@ -123,7 +128,7 @@ export const DESTRUCTION_TARGETS_V5 = [
     name: { de: 'Tischdecke abgezogen', en: 'Tablecloth pulled off' },
   },
 ] as const;
-export const DESTRUCTION_TARGETS = [
+const DESTRUCTION_TARGETS_V6 = [
   ...DESTRUCTION_TARGETS_V5,
   {
     id: 'fridge',
@@ -131,6 +136,24 @@ export const DESTRUCTION_TARGETS = [
     event: 'spill',
     stage: 1,
     name: { de: 'Kühlschrank ausgeräumt', en: 'Fridge rummaged' },
+  },
+] as const;
+
+export const DESTRUCTION_TARGETS = [
+  ...DESTRUCTION_TARGETS_V6,
+  {
+    id: 'laundry',
+    object: 'laundry',
+    event: 'spill',
+    stage: 2,
+    name: { de: 'Wäsche vollständig verteilt', en: 'Laundry fully scattered' },
+  },
+  {
+    id: 'lamp',
+    object: 'lamp',
+    event: 'break',
+    stage: 1,
+    name: { de: 'Lampe zerbrochen', en: 'Lamp broken' },
   },
 ] as const;
 export type DestructionTarget = (typeof DESTRUCTION_TARGETS)[number]['id'];
@@ -551,13 +574,13 @@ const FRIDGE_OBJECTIVES: readonly AchievementDefinition[] = [
       en: 'Now you have really reached the major appliances.',
     },
     metric: 'destruction',
-    targets: DESTRUCTION_TARGETS.map((target) => target.id),
-    threshold: DESTRUCTION_TARGETS.length,
+    targets: DESTRUCTION_TARGETS_V6.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS_V6.length,
     art: 'chaos',
   },
 ];
 
-export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+const ACHIEVEMENTS_V7: readonly AchievementDefinition[] = [
   ...FRIDGE_OBJECTIVES,
   {
     id: 'achievement.masterpiece-v7',
@@ -573,6 +596,58 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     metric: 'all',
     targets: FRIDGE_OBJECTIVES.map((entry) => entry.id),
     threshold: FRIDGE_OBJECTIVES.length,
+    art: 'love',
+  },
+];
+
+const BEDROOM_OBJECTIVES: readonly AchievementDefinition[] = [
+  ...ACHIEVEMENTS_V7,
+
+  ...ACHIEVEMENT_CATEGORIES_V8.map((category): AchievementDefinition => ({
+    id: `achievement.category-${category.id}-v8`,
+    name: category.name,
+    description: category.description,
+    quote: category.quote,
+    metric: 'variants',
+    targets: category.targets,
+    threshold: category.targets.length,
+    art: 'chaos',
+  })),
+  ...ROOM_ACHIEVEMENTS_V3.map((entry): AchievementDefinition => ({
+    ...entry,
+    quote: { de: 'Gut geschlafen, Pixel?', en: 'Sleep well, Pixel?' },
+    metric: 'rooms',
+    threshold: entry.targets.length,
+    art: 'love',
+  })),
+  {
+    id: 'achievement.destruction-v8',
+    name: { de: 'Meister der Zerstörung VII', en: 'Master of destruction VII' },
+    description: {
+      de: 'Alle fünfzehn Objektarten über erfolgreich versöhnte Runden vollständig ruinieren.',
+      en: 'Fully ruin all fifteen object types across successfully reconciled rounds.',
+    },
+    quote: { de: 'Sogar die frische Wäsche, Pixel.', en: 'Even the fresh laundry, Pixel.' },
+    metric: 'destruction',
+    targets: DESTRUCTION_TARGETS.map((target) => target.id),
+    threshold: DESTRUCTION_TARGETS.length,
+    art: 'chaos',
+  },
+];
+
+export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+  ...BEDROOM_OBJECTIVES,
+  {
+    id: 'achievement.masterpiece-v8',
+    name: { de: 'Pixels Meisterwerk VIII', en: 'Pixel’s masterpiece VIII' },
+    description: {
+      de: 'Alle anderen Erfolge der Sammlung mit Schlafzimmer freischalten.',
+      en: 'Unlock every other achievement in the bedroom collection.',
+    },
+    quote: { de: 'Ein Meisterwerk. Und jetzt eine Pause.', en: 'A masterpiece. Time for a nap.' },
+    metric: 'all',
+    targets: BEDROOM_OBJECTIVES.map((entry) => entry.id),
+    threshold: BEDROOM_OBJECTIVES.length,
     art: 'love',
   },
 ];

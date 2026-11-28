@@ -36,7 +36,58 @@ frisst Pixel kurz, bevor die gemeinsame Heimkehr beginnt. Der optionale Futterbe
 steht darunter im vorhandenen Boden-Slot als eigener Chaosgegenstand. Die Vorschau verwendet eine eigene Raum-ID,
 zählt nicht für Küchen-/Raumerfolge. Die öffentliche Definition `kitchen` ist in der Raumauswahl freigeschaltet und zählt für die neuen Raumziele. Produktions-URLs ignorieren die DEV-Raumauswahl weiterhin.
 
-[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Wohnzimmer und Küche sind auswählbar; Schlafzimmer und Arbeitszimmer bleiben bis zu ihrer Umsetzung deaktiviert. Die gewählte Karte und der Startknopf beziehen sich auf dieselbe Raum-ID. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ im Hauptmenü, in der Einführung und im Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
+[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Wohnzimmer, Küche und die erste Schlafzimmerfassung sind auswählbar; das Arbeitszimmer bleibt bis zu seiner Umsetzung deaktiviert. Die gewählte Karte und der Startknopf beziehen sich auf dieselbe Raum-ID. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ im Hauptmenü, in der Einführung und im Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
+
+## Schlafzimmer
+
+[rooms/bedroom.ts](rooms/bedroom.ts) enthält die handgebaute Aufteilung aus #58:
+Einstieg links, niedriger Nachttisch mit zerstörbarer Lampe, Bett mit Schlafplatz und Wäscheberg, Korb am Boden
+und standfester Kleiderschrank rechts. Die Möbel verwenden dieselbe feste
+Plattformlogik wie Küchenmöbel. Zwischen Nachttisch und Bett bleibt ein geschützter
+64-Pixel-Freiraum, damit Pixel vom Boden aus zu Sara zurückspringen kann. Das einzige Hauptziel `rest` liegt im Katzenbett auf dem Boden unter dem großen Bett;
+Stillstand im Katzenbett startet die vorhandene Hinlege-/Rückenanimation. Pixel bleibt dort in einer pausierbaren, ruhig atmenden Rückenlage bis zum Ende von Saras Eintritt; erst dann läuft er zu ihr. Die Physikmaße bleiben unverändert. Reines Ruhen erzeugt keinen Schaden. Die [finalen Rastergrafiken](../../../assets/environment/bedroom/README.md) verwenden die abgestimmten Auflagen; Tür und Fenster sind weiß. Saras Heimkehr erkennt auch die Schlafzimmer-Türgrafik als vorhandene Raumtür und zeichnet keine zusätzliche Platzhaltertür darüber. [Objektzustände](../../../assets/objects/bedroom/README.md) behalten ihre Bodenanker und bestehenden Interaktionen.
+
+Der Objekttyp `laundry` hat die Varianten `pile` und `basket`. Bewegung auf dem
+Wäscheberg zerwühlt und verteilt ihn in zwei einmaligen Schadensstufen. Verteilte
+Wäsche rutscht über die Bettkante auf den Boden und nimmt als weicher Kontaktpartner
+an der bestehenden `ImpactWorld` teil. Beim Korb besetzt nur Pixels echte Landung
+den Innenraum; Laufen bewegt ihn, Springen bleibt frei. Nach dem Kippen rollt er
+kurz weiter und leert sich. Der Korb ist kein zusätzlicher Collider und kann Pixel
+nicht einsperren. Raumgrenzen und bodentiefe Möbel begrenzen seine Bewegung.
+Fremdtreffer können Wäsche/Korb bewegen, besetzen den Korb aber nicht und lösen
+kein Hauptziel aus. Bett, Nachttisch und Schrank widerstehen als feste Auflagen. Die Lampe verwendet die bestehende `Breakable`-Physik der Vasen, einschließlich Fremdstößen, Fall, einmaligem Bruch und Reset. Der Läufer verwendet die bestehende `Carpet`-Aktion; nur Pixel kann durch Stillstehen einen Haarballen auslösen. Der Teppichstart liegt zeitlich hinter dem Schlafziel, damit Ruhen im Katzenbett friedlich bleibt.
+
+Beide Wäschevarianten liefern `spill`-Stufen 1 und 2 über den gemeinsamen
+Schadensvertrag; nur Stufe 2 erfüllt den vollständigen Zerstörungszustand.
+Funde bleiben bis zum erfolgreichen Rundenabschluss vorläufig. Raumziele III,
+Wäschekategorie und Meisterwerk VIII ergänzen eingefrorene Erfolgsfassungen;
+bisherige Ziele und Freischaltungen bleiben erhalten. Pause hält aktive Zeit,
+Bewegung und Schadensfortschritt an; Reset/Szenenwechsel erzeugen frische Adapter.
+
+Zwei kurze Vorhänge in hellem Khaki stehen links und rechts am Fenster (40×120, Welt-y=100 bis 220). Sie verwenden dieselben Kletter-, Rutsch-, Stoß- und acht Reißstufen wie der Wohnzimmer-Vorhang; kleinere Risspatches halten alle acht Stellen getrennt im Stoff. Der rechte ist vom Bett erreichbar, von oben erreicht Pixel auch den linken per Absprung. Nachttischsprung, Zielroute und Boden bleiben frei. Beide Instanzen teilen einen Albumfund; „Alle Vorhänge II“ ergänzt die neue Schlafzimmer-Erfolgsfassung, die veröffentlichte erste Vorhangkategorie bleibt unverändert.
+
+### Schlafzimmer-Slots und zusätzliche Bilder
+
+Die beiden festen Regale und der Schrank verwenden
+[bedroom-slots.ts](rooms/bedroom-slots.ts): Vasen belegen dieselben kleinen
+Push-/Damage-Slots wie im Wohnzimmer, die Büchergruppe reserviert die linke Seite
+des oberen Regals, und der Schrank hat einen eigenen Pflanzen-Slot mit der Grünlilie.
+Dichten variieren mit Leicht/Normal/Schwer. Kein Gegenstand wird separat außerhalb
+der gemeinsamen `populateSpawnSlots`-Pipeline zufällig platziert.
+
+Wandbilder belegen zwei geschützte Wandbereiche über `wallSlots`.
+[picture-wall-variants.ts](picture-wall-variants.ts) leitet den Bilderpool aus dem
+Objektkatalog und dessen Album-Raumzuordnung ab. Für ein späteres Motiv die reguläre
+Bildgrafik, Erscheinung und den Album-Eintrag registrieren und `bedroom` zu dessen
+`rooms` ergänzen; die Schlafzimmer-Slots übernehmen die Variante automatisch.
+Andere Räume behalten ihre ausdrücklich kuratierten Pools. Maße, Kapazität,
+Kollisionen und Freiräume werden weiterhin vom bestehenden Slotvertrag geprüft.
+
+Die Grünlilie verwendet den gemeinsamen Pflanzenadapter mit Knabbern, Kippen,
+Fremdstößen, fallender Auflage und Reset. Ihre vorläufigen 40×60-PNGs zeigen intakte
+und angeknabberte Blätter. Ihr Fund und das neue Pflanzenziel III ergänzen den
+unveränderten alten Pflanzenkatalog; das Schlafzimmer-Meisterwerk berücksichtigt
+auch die neue Kategorie.
 
 ## Vorlagen und Instanzen
 
@@ -344,6 +395,8 @@ Quellen und Imagegen-Prompts liegen unter `assets/objects/curtain/`.
 56×178 und den Risspatch in 12×20 Pixel. Die Alpha-Bounds ab 192 werden
 seitenverhältnistreu per Nearest Neighbor zentriert eingepasst; übernommene
 RGBA-Werte bleiben erhalten. Nur die Export-PNGs gelangen ins Laufzeitbundle.
+
+Die kurze Schlafzimmer-Variante `appearance: 'khaki'` lädt ihre Basis und den passenden Riss aus `assets/objects/bedroom/`. Ohne Angabe bleibt der rostrote Vorhang unverändert. Die Darstellung verkleinert Risse nur, wenn sonst nicht alle konfigurierten Schadensstufen getrennt in die Stofffläche passen.
 
 ### Katzengras-Grafik
 

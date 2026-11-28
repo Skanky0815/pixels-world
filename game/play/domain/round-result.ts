@@ -1,3 +1,4 @@
+import type { GoalDefinition } from './main-goal.ts';
 import { ROUND_ENDINGS } from '../content/round-endings.ts';
 import { angerFor } from './chaos.ts';
 import type { RoundSnapshot } from './round-controller.ts';
@@ -15,6 +16,7 @@ export function roundResult(
   home: HomecomingSnapshot,
   charm: ReconciliationSnapshot,
   difficulty: Difficulty = 'normal',
+  goalKind?: GoalDefinition['kind'],
 ) {
   if (round.finalChaosScore === null || home.stage !== 'complete' || !home.selection) return null;
 
@@ -30,7 +32,7 @@ export function roundResult(
     return Object.freeze({
       ...base,
       difficulty,
-      closingLine: copy('peacefulClosing'),
+      closingLine: peacefulClosing(goalKind),
       outcome: 'success' as const,
       hearts: 0,
       required: 0,
@@ -55,4 +57,8 @@ function charmOutcome(charm: ReconciliationSnapshot) {
   if (charm.stage === 'complete') return 'success' as const;
 
   return charm.stage === 'failed' ? ('failed' as const) : null;
+}
+
+function peacefulClosing(kind: GoalDefinition['kind'] = 'toy') {
+  return copy(kind === 'rest' ? 'peacefulRestClosing' : 'peacefulClosing');
 }

@@ -14,5 +14,12 @@ export const PEACEFUL_FOOD_LINES = [
   'peacefulGoalHeart',
   'peacefulGoalTogether',
 ] as const satisfies readonly TextKey[];
+export const PEACEFUL_REST_LINES = [
+  'peacefulGoalRest',
+  'peacefulGoalProud',
+  'peacefulGoalHeart',
+] as const satisfies readonly TextKey[];
 export type PeacefulGoalLine =
-  (typeof PEACEFUL_GOAL_LINES)[number] | (typeof PEACEFUL_FOOD_LINES)[number];
+  | (typeof PEACEFUL_REST_LINES)[number]
+  | (typeof PEACEFUL_GOAL_LINES)[number]
+  | (typeof PEACEFUL_FOOD_LINES)[number];

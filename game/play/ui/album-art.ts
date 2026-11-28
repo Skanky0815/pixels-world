@@ -1,5 +1,24 @@
 /** Reuse bundled game PNGs; undiscovered entries never render an image element. */
 export const ALBUM_ART: Readonly<Record<string, string>> = {
+  'bedroom-curtain': new URL('../../../assets/objects/bedroom/bedroom-curtain.png', import.meta.url)
+    .href,
+  'bedroom-spiderplant': new URL(
+    '../../../assets/objects/bedroom/bedroom-spiderplant-intact.png',
+    import.meta.url,
+  ).href,
+  'bedroom-lamp': new URL('../../../assets/objects/bedroom/bedroom-lamp.png', import.meta.url).href,
+  'bedroom-runner': new URL('../../../assets/objects/bedroom/bedroom-runner.png', import.meta.url)
+    .href,
+  'sleep-pad': new URL('../../../assets/objects/bedroom/bedroom-catbed.png', import.meta.url).href,
+  'laundry-pile': new URL(
+    '../../../assets/objects/bedroom/bedroom-laundry-folded.png',
+    import.meta.url,
+  ).href,
+  'laundry-basket': new URL(
+    '../../../assets/objects/bedroom/bedroom-basket-upright.png',
+    import.meta.url,
+  ).href,
+
   'fridge-open': new URL('../../../assets/objects/fridge/open.png', import.meta.url).href,
   'tablecloth-pile': new URL('../../../assets/objects/tablecloth/pile.png', import.meta.url).href,
   'trash-bin-intact': new URL('../../../assets/objects/trash-bin/intact.png', import.meta.url).href,

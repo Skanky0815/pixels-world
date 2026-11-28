@@ -1,8 +1,10 @@
+import { BEDROOM } from './bedroom.ts';
 import { KITCHEN } from './kitchen.ts';
 import { LIVING_ROOM } from './living-room.ts';
 import { COZY_REMIX } from './cozy-remix.ts';
 
 export const ROOMS = {
+  bedroom: BEDROOM,
   kitchen: KITCHEN,
   'living-room': LIVING_ROOM,
   'cozy-remix': COZY_REMIX,

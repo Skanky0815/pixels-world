@@ -5,7 +5,7 @@ import type { RoundEndReason } from './round-controller.ts';
 export interface GoalDefinition {
   readonly spawn: FixedGoalSpawnProfile;
   readonly id: string;
-  readonly kind: 'toy' | 'food';
+  readonly kind: 'toy' | 'food' | 'rest';
   readonly albumVariant?: string;
   readonly label: string;
   readonly motivation: string;

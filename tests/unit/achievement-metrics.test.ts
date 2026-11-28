@@ -65,7 +65,7 @@ test('Historische Zielmengen bleiben fest; Zähler ohne Zielmenge liefern den un
   const data = { ...EMPTY_ACHIEVEMENTS, ruined: DESTRUCTION_TARGETS.map((target) => target.id) };
 
   assert.equal(achievementValue(entry, data), 7);
-  assert.equal(achievementValue({ ...entry, targets: undefined }, data), 13);
+  assert.equal(achievementValue({ ...entry, targets: undefined }, data), 15);
   assert.equal(achievementCount({ ...entry, targets: undefined }, data), 7);
   assert.equal(achievementCount(entry, data), 7);
   assert.equal(achievementValue({ ...entry, targets: ['vase', 'couch'] }, data), 2);

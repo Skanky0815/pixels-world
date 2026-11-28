@@ -16,6 +16,7 @@ const families: [string, string][] = [
   ['living-room', 'Wohnzimmer'],
   ['cozy-remix', 'Wohnzimmer-Variante'],
   ['kitchen-preview', 'Küchenvorschau'],
+  ['bedroom', 'Schlafzimmer'],
   ['fridge', 'Kühlschrank'],
   ['food-bag', 'Futterbeutel'],
   ['dish', 'Geschirr'],

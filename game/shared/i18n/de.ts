@@ -1,4 +1,21 @@
 export const de = {
+  feedbackRestResult: 'Ausgeschlafen. Alles heil. ♥',
+  saraBedroomCalm: 'Ein Bett, ein Kissen und eine sehr zufriedene Katze.',
+  saraBedroomAnnoyed: 'Du hast es dir wohl gemütlich gemacht, Pixel.',
+  saraBedroomAngry: 'Das Schlafzimmer war eigentlich zum Ausruhen gedacht.',
+  saraLaundryCalm: 'Die Wäsche sieht verdächtig nach Katzenarbeit aus.',
+  saraLaundryAnnoyed: 'Pixel, ich hatte das gerade erst gefaltet.',
+  saraLaundryAngry: 'Wir beide falten das jetzt noch einmal.',
+  peacefulRestClosing:
+    'Dein Katzenbett, ein kleines Nickerchen und danach kuscheln. So mag ich das.',
+  bedroomTitle: 'Das Schlafzimmer',
+  cozySleepPlace: 'gemütlichen Schlafplatz',
+  pixelWantsToRest:
+    'Pixel ist müde. Finde dein Katzenbett unter dem großen Bett und bleib kurz liegen.',
+  feedbackResting: 'Endlich einkuscheln.',
+  feedbackLaundry: 'Frisch gefaltet war gestern!',
+  peacefulGoalRest: 'Schlaf gut, Pixel. Die Wäsche kann warten.',
+
   menuClose: 'Zurück zum Hauptmenü',
   settingsAutoApply: 'Änderungen werden direkt übernommen.',
   settingsApplied: '✓ Einstellungen übernommen.',
@@ -149,6 +166,7 @@ export const de = {
   roomsEnter: 'Zimmer betreten →',
   roomsBack: 'Zimmer wechseln',
   roomsPreview: 'Wohnzimmer mit Pixel, Sofa und Vorhang',
+  roomsBedroomPreview: 'Schlafzimmer mit Pixel, weißer Tür, Bett, Katzenbett und Kleiderschrank',
   roomsKitchenPreview: 'Küche mit Pixel, Tisch, Kühlschrank und Futternapf',
 
   storageTitle: 'Auf diesem Gerät',

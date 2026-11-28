@@ -150,6 +150,13 @@ export class Pixel {
       .setPosition(body.center.x + offset, body.bottom - 16 * scale);
   }
 
+  /** The shared belly frames rest at the cat bed without moving the real body. */
+  presentRest(pose: CharmPose) {
+    this.visual.stop();
+    this.presentCharm(pose);
+    this.visual.setDepth(1);
+  }
+
   /** Hand the visible final shelf position back to normal movement without a visual jump. */
   finishGoalAction(x: number) {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;

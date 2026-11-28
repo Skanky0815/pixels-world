@@ -1,5 +1,7 @@
 /** Known assets only; content never supplies executable class names or raw URLs. */
 export const ASSETS = {
+  'bedside-lamp': { kind: 'lamp', capabilities: ['push', 'damage'], width: 28, height: 38 },
+  laundry: { kind: 'laundry', capabilities: ['automatic', 'damage'], width: 96, height: 48 },
   tablecloth: { kind: 'tablecloth', capabilities: ['automatic', 'damage'] },
   'trash-bin': { kind: 'trash-bin', capabilities: ['automatic', 'damage'], width: 48, height: 60 },
   pantry: { kind: 'pantry', capabilities: ['push', 'damage'] },
@@ -20,6 +22,8 @@ export const ASSETS = {
   'room-floor': { kind: 'tile' },
   'room-ceiling': { kind: 'tile' },
   'kitchen-wall-cabinet': { kind: 'decoration' },
+  'bedroom-door': { kind: 'decoration' },
+  'bedroom-window': { kind: 'decoration' },
   'room-window': { kind: 'decoration' },
   'room-picture': { kind: 'decoration' },
   'room-door': { kind: 'decoration' },

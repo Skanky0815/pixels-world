@@ -149,7 +149,11 @@ test.describe('Album im Smartphone-Querformat', () => {
       await expect(album.locator('.album-story')).toHaveAttribute('aria-label', selected);
       await expect(album.locator('.album-story')).toBeVisible();
       await album.getByRole('button', { name: 'Zur Übersicht', exact: true }).tap();
-      await album.getByRole('tab', { name: 'Schlafzimmer später', exact: true }).tap();
+      await album.getByRole('tab', { name: 'Schlafzimmer', exact: true }).tap();
+      await expect(album.locator('.album-tile')).toHaveCount(6);
+      await expect(album.locator('.album-tile img')).toHaveCount(6);
+      await expectBoundedAlbum(page);
+      await album.getByRole('tab', { name: 'Arbeitszimmer später', exact: true }).tap();
       await expect(album.locator('.album-empty')).toContainText(
         'Dieser Raum hat noch keine Album-Einträge.',
       );

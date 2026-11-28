@@ -1,3 +1,4 @@
+import { BEDROOM } from './rooms/bedroom.ts';
 import { OBJECTS } from './objects/catalog.ts';
 import { LIVING_ROOM } from './rooms/living-room.ts';
 import { COZY_REMIX } from './rooms/cozy-remix.ts';
@@ -21,6 +22,7 @@ export const PLAYGROUND_BASES = {
   'living-room': LIVING_ROOM,
   'cozy-remix': COZY_REMIX,
   'kitchen-preview': KITCHEN_PREVIEW,
+  bedroom: BEDROOM,
 } as const;
 export interface PlaygroundRecipe {
   readonly base: keyof typeof PLAYGROUND_BASES;
@@ -96,7 +98,12 @@ export function buildPlaygroundRecipe(recipe: PlaygroundRecipe): RoomDefinition 
 // eslint-disable-next-line max-lines-per-function -- Exportiert ausschließlich reproduzierbare Aufbaudaten ohne Simulationszustand.
 export function recipeForPlayground(layout: RoomDefinition): PlaygroundRecipe {
   return {
-    base: layout.environment === 'kitchen-preview' ? 'kitchen-preview' : 'living-room',
+    base:
+      layout.environment === 'bedroom'
+        ? 'bedroom'
+        : layout.environment === 'kitchen-preview'
+          ? 'kitchen-preview'
+          : 'living-room',
     id: layout.id,
     width: layout.width,
     spawn: layout.spawn,
@@ -123,8 +130,10 @@ function recipeShell(recipe: PlaygroundRecipe): RoomDefinition {
     objectSlots: [],
     wallSlots: undefined,
     difficultyObjects: undefined,
-    goal: platforms.some((entry) => entry.id === base.goal.surfaceId)
-      ? base.goal
-      : { ...base.goal, surfaceId: 'floor', x: Math.min(700, width - 60) },
+    goal:
+      base.goal.surfaceId === base.floor.id ||
+      platforms.some((entry) => entry.id === base.goal.surfaceId)
+        ? base.goal
+        : { ...base.goal, surfaceId: 'floor', x: Math.min(700, width - 60) },
   };
 }

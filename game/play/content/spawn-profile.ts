@@ -3,7 +3,14 @@ import { ASSETS } from '../assets/definitions.ts';
 import type { Capability, ObjectCatalog, ObjectDefinition } from './definitions.ts';
 
 export const SPAWN_SIZES = ['small', 'medium', 'large'] as const;
-export const SPAWN_CATEGORIES = ['decoration', 'plant', 'furniture', 'toy', 'food'] as const;
+export const SPAWN_CATEGORIES = [
+  'decoration',
+  'plant',
+  'furniture',
+  'toy',
+  'food',
+  'rest',
+] as const;
 export type SpawnSize = (typeof SPAWN_SIZES)[number];
 export type SpawnCategory = (typeof SPAWN_CATEGORIES)[number];
 export type SpawnProfile = {
@@ -14,8 +21,8 @@ export type SpawnProfile = {
   | { readonly random: false; readonly reason: 'room-fixture' | 'main-goal' }
 );
 export interface FixedGoalSpawnProfile {
-  readonly size: 'small';
-  readonly category: 'toy' | 'food';
+  readonly size: 'small' | 'medium';
+  readonly category: 'toy' | 'food' | 'rest';
   readonly random: false;
   readonly reason: 'main-goal';
 }
@@ -26,6 +33,8 @@ export interface SpawnSlotFilter {
   readonly requiredCapabilities?: readonly Capability[];
 }
 const CATEGORIES = {
+  lamp: 'decoration',
+  laundry: 'furniture',
   tablecloth: 'furniture',
   vase: 'decoration',
   dish: 'decoration',
@@ -123,8 +132,8 @@ export function validateGoalSpawn(value: unknown, path: string) {
   if (
     value.random ||
     value.reason !== 'main-goal' ||
-    !['toy', 'food'].includes(value.category as string) ||
-    value.size !== 'small'
+    !['toy', 'food', 'rest'].includes(value.category as string) ||
+    value.size !== (value.category === 'rest' ? 'medium' : 'small')
   )
     fail(path, 'main goal must stay protected from random placement');
 }

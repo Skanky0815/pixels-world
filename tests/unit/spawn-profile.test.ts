@@ -70,7 +70,7 @@ test('Größenklassen passen monoton in gleich große oder größere Slots', () 
 });
 
 // eslint-disable-next-line max-lines-per-function -- Auflage, Größe, Kategorie und mehrere Fähigkeiten werden gemeinsam als Auswahlvertrag geprüft.
-test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsam', () => {
+test('Pflanzen beachten ihre Auflagen; mehrere benötigte Fähigkeiten gelten gemeinsam', () => {
   const floor: SpawnSlotFilter = {
     capacity: 'medium',
     categories: ['plant', 'decoration'],
@@ -78,6 +78,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), [
+    'bedroom-spiderplant',
     ...PANTRY_VARIANTS,
     ...HERB_VARIANTS,
     ...dishes,
@@ -87,6 +88,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
     ...books,
   ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, support: 'raised' }), [
+    'bedroom-spiderplant',
     ...PANTRY_VARIANTS,
     ...HERB_VARIANTS,
     ...dishes,
@@ -101,7 +103,7 @@ test('Pflanzen bleiben am Boden; mehrere benötigte Fähigkeiten gelten gemeinsa
   ]);
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['automatic', 'damage'] }),
-    [...HERB_VARIANTS, 'dry-food-bag', 'catgrass', ...books],
+    ['bedroom-spiderplant', ...HERB_VARIANTS, 'dry-food-bag', 'catgrass', ...books],
   );
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['push', 'damage'] }),
@@ -126,6 +128,7 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, all), [
+    'bedroom-spiderplant',
     ...PANTRY_VARIANTS,
     'cream-trash-bin',
     ...HERB_VARIANTS,

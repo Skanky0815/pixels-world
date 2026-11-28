@@ -70,7 +70,11 @@ for (const mobile of [false, true]) {
       await album.getByRole('button', { name: 'Vorige Seite', exact: true }).click();
       await expect(album.locator('img')).toHaveCount(0);
       await expect(album).not.toContainText(/Vase|Sofa|Vorhang|Katzengras|Bücher/);
-      await album.getByRole('tab', { name: 'Schlafzimmer später' }).click();
+      await album.getByRole('tab', { name: 'Schlafzimmer', exact: true }).click();
+      await expect(album.locator('.album-tile:disabled')).toHaveCount(9);
+      await expect(album.locator('img')).toHaveCount(0);
+      await expect(album).not.toContainText('Dieser Raum hat noch keine Album-Einträge.');
+      await album.getByRole('tab', { name: 'Arbeitszimmer später' }).click();
       await expect(album).toContainText('Dieser Raum hat noch keine Album-Einträge.');
       await expect(album.locator('.album-overall')).toHaveText(
         `Insgesamt: 0 von ${albumEntries(true).length}`,
@@ -415,7 +419,9 @@ test('Veröffentlichtes Album zählt keine unerreichbare DEV-Variante', async ({
   await page.goto('http://127.0.0.1:4175/pixels-world/play.html');
   await waitForLoadingScreen(page);
   await (await introAction(page, 'album')).click();
-  await expect(page.locator('.album-overall')).toHaveText('Insgesamt: 0 von 25');
+  await expect(page.locator('.album-overall')).toHaveText(
+    `Insgesamt: 0 von ${albumEntries(false).length}`,
+  );
   await expect(page.locator('.album-tile:disabled')).toHaveCount(9);
   await expect(page.locator('.album-dialog img')).toHaveCount(0);
 });

@@ -15,6 +15,8 @@ Album-Dialog aufnehmen; der Screenshot wird unverändert eingebunden.
 
 `kitchen.png` ist das echte Küchenbild für die Levelauswahl. Im frischen Produktionsbuild bei 1280×800 über das Menü die Küche wählen (`?camera=room`, Normal), die Runde starten und mit einem Sprung nach rechts auf den Hocker gelangen. Nach dem Landen und Ausblenden des Startbanners nur `#game` aufnehmen; Tisch, Kühlschrank und Napf bleiben sichtbar. Die Produktionsbelegung bleibt zufällig; im Bild verwendete Varianten dürfen daher wechseln. Das Bild wird unverändert eingebunden, die Bildbeschreibung ist auf Deutsch und Englisch verfügbar.
 
+`bedroom.png` zeigt das gestartete Schlafzimmer des Produktionsbuilds bei 1280×800 mit Raumkamera (`?camera=room`, Normal). Über das Menü Schlafzimmer wählen, die Runde starten, das Startbanner ausblenden lassen und nur `#game` aufnehmen. Pixel bleibt am Einstieg vor der weißen Tür; Bett, Katzenbett, Nachttischlampe, Regale und Kleiderschrank bleiben sichtbar. Das Bild wird unverändert in der Zimmerauswahl verwendet, mit deutscher und englischer Bildbeschreibung. Die Slot-Belegung bleibt zufällig.
+
 `pixel-and-sara.png` zeigt den Produktionsbuild nach Sofa-Kratzen und Saras
 Heimkehr, mit ihrem gespiegelten Dialogporträt und Pixel neben ihr. Für eine neue
 Aufnahme bei 1280×800 die Runde starten, kurz nach rechts zum Sofa laufen und

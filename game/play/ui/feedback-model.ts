@@ -16,7 +16,8 @@ export interface FeedbackState {
   readonly charm: ReconciliationSnapshot;
   readonly outcome: 'success' | 'failed' | null;
   readonly peaceful?: boolean;
-  readonly goalAction?: 'food' | 'toy';
+  readonly goalKind?: 'food' | 'toy' | 'rest';
+  readonly goalAction?: 'food' | 'toy' | 'rest';
 }
 export interface FeedbackMessage {
   readonly id: number;
@@ -57,6 +58,7 @@ export class FeedbackModel {
     else this.messages.set(channel, Object.freeze({ ...message, elapsedMs }));
   }
 
+  // eslint-disable-next-line max-lines-per-function -- Eine neue Phase wählt genau eine Meldung mit passender Zielart.
   private observePhase(state: FeedbackState) {
     const phase = state.started ? feedbackPhase(state) : 'intro';
     const tone = phaseTone(phase);
@@ -64,7 +66,13 @@ export class FeedbackModel {
     if (phase === this.phase) return;
     this.phase = phase;
 
-    if (phase !== 'intro') this.show('phase', PHASE_FEEDBACK[phase], tone, FEEDBACK.phaseMs);
+    if (phase === 'intro') return;
+    const key =
+      phase === 'peaceful' && state.goalKind === 'rest'
+        ? 'feedbackRestResult'
+        : PHASE_FEEDBACK[phase];
+
+    this.show('phase', key, tone, FEEDBACK.phaseMs);
   }
 
   private observeCharm(current: ReconciliationSnapshot) {
@@ -108,7 +116,12 @@ function phaseTone(phase: string) {
 }
 
 function feedbackPhase(state: FeedbackState) {
-  if (state.goalAction) return state.goalAction === 'food' ? 'eating' : 'playing';
+  if (state.goalAction)
+    return state.goalAction === 'rest'
+      ? 'resting'
+      : state.goalAction === 'food'
+        ? 'eating'
+        : 'playing';
 
   if (state.peaceful && state.outcome) return 'peaceful';
 

@@ -182,8 +182,8 @@ function renderView(snapshot: PlaygroundSnapshot) {
   fitStage(snapshot);
   const link = playgroundGameLink(
     { mode: 'scenario', id: snapshot.room.id },
-    scenarioSeed(),
-    snapshot.layout,
+    scenarioSeed() ?? (snapshot.customLayout ? undefined : 'playground'),
+    snapshot.customLayout,
   );
 
   round.hidden = !link;

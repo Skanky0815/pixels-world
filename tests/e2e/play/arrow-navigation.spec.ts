@@ -67,6 +67,7 @@ test('Pfeile bedienen Menü, Unteransichten und Raumraster; native Felder und Fo
   const enter = page.locator('[data-room-start]');
   const kitchen = page.locator('[data-room-choice="kitchen"]');
   const living = page.locator('[data-room-choice="living-room"]');
+  const bedroom = page.locator('[data-room-choice="bedroom"]');
 
   await expect(enter).toBeFocused();
   await page.keyboard.press('ArrowUp');
@@ -97,7 +98,11 @@ test('Pfeile bedienen Menü, Unteransichten und Raumraster; native Felder und Fo
   await page.keyboard.press('ArrowDown');
   await expect(enter).toBeFocused();
   await page.keyboard.press('Shift+Tab');
+  await expect(bedroom).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
   await expect(kitchen).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(bedroom).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(enter).toBeFocused();
   await page.keyboard.press('Enter');
