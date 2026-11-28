@@ -141,12 +141,17 @@ eine Weiterleitung zur Hilfe. Footer-Linkfarben und Fokuszustände sind gemeinsa
 
 Das Spiel ergänzt Titel und Steuerhinweise aus `play/ui/shell/`; Album/Menü bleiben
 Spielaktionen. Eine gemeinsame `application-shell` enthält Header, `#game-content`
-und Footer. Menü, Levelauswahl, Spiel und der weiterhin native Albumdialog werden
+und Footer. Menü, Levelauswahl, Spiel und die reguläre Albumansicht werden
 in denselben Content-Host eingehängt. Header und Footer bleiben dieselben direkten
 Kinder von `main` und sind auch während einer Runde sichtbar. Die Hülle füllt die
 verfügbare Viewporthöhe; die violette Inhaltsfläche sowie Menü und Levelauswahl
 füllen die Resthöhe zwischen Header und Footer. Bei längeren Menüseiten scrollt
-nur deren Inhalt, der gemeinsame Rahmen bleibt stehen. Die Folgekamera füllt
+nur deren Inhalt, der gemeinsame Rahmen bleibt stehen. Das Album verwendet eine
+benannte Region statt eines modalen Dialogs und füllt dieselbe Inhaltsfläche.
+Währenddessen sind die anderen Inhalte ausgeblendet und die Runde pausiert; der
+Header bleibt bedienbar und ist wie bei den Optionen der sichtbare Weg zurück
+ins Hauptmenü; das Album hat keinen eigenen Zurück-Button. Escape stellt die
+vorherige Ansicht und ihren Fokus wieder her. Die Folgekamera füllt
 dieselbe Inhaltsfläche; auch die klassische Raumübersicht bleibt durch deren Höhe
 begrenzt. Touchflächen und Spieloverlays bleiben am Spielhost. Im sehr flachen
 Querformat stehen Richtungstasten und Sprung neben dem scrollbar bleibenden
@@ -473,8 +478,8 @@ Hinweisarten auf. Unbekannte IDs bzw. fehlende Bilder erzeugen keine defekten Ba
 Sammlung, Queue und Speicherung ändern sich durch diese Auflösung nicht.
 Gesperrte Albumplätze verraten weder Namen noch Bilder oder Beschreibungen;
 DEV-Vorschauobjekte erweitern keine veröffentlichten Album-/Erfolgsziele.
-Der Albumdialog erhält bei Größenwechseln seinen ausgewählten Inhalt und kann
-bei längeren Texten scrollen; sein Layout ist keine eigene Fortschrittsquelle.
+Die Albumansicht erhält bei Größenwechseln ihren ausgewählten Inhalt und kann
+bei längeren Texten scrollen; ihr Layout ist keine eigene Fortschrittsquelle.
 
 ### Sprache, Audio und reduzierte Bewegung
 

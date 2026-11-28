@@ -30,9 +30,24 @@ for (const viewport of [
       await panelFillsContent(page, '.room-selection');
       await page.screenshot({ path: `test-results/shell-${viewport.width}-rooms.png` });
       await page.locator('.album-toggle').click();
-      await expect(page.locator('#game-content > .album-dialog')).toBeVisible();
+      const album = page.locator('#game-content > .album-screen');
+
+      await expect(album).toBeVisible();
+      await expect(album).toHaveAttribute('role', 'region');
+      await expect(album.locator('[data-action="close"]')).toHaveCount(0);
+      await expect(page.locator('dialog[open]')).toHaveCount(0);
+      await shellFrame(page);
+      await panelFillsContent(page, '.album-screen');
+      await expect(page.locator('.room-selection')).toBeHidden();
+      await scrollAlbum(page);
+      await page.locator('main > header .pause-toggle').click();
+      await expect(album).toBeHidden();
+      await expect(page.locator('.game-menu')).toBeVisible();
+      await page.locator('[data-pause-resume]').click();
+      await expect(page.locator('.room-selection')).toBeVisible();
+      await page.locator('.album-toggle').click();
       await page.screenshot({ path: `test-results/shell-${viewport.width}-album.png` });
-      await page.locator('.album-dialog [data-action="close"]').click();
+      await page.keyboard.press('Escape');
       await page.locator('[data-room-start]').click();
       await page.locator('#game').focus();
       await page.keyboard.down('Space');
@@ -146,3 +161,24 @@ test('Klassische Ansicht bleibt bei1920×600 innerhalb der Shell @smoke', async 
   expect(canvas.width / canvas.height).toBeCloseTo(16 / 9, 2);
   await page.screenshot({ path: 'test-results/shell-1920-classic.png' });
 });
+
+// eslint-disable-next-line max-lines-per-function -- Echte Scroll-Eingabe und unveränderte Rahmengeometrie bilden gemeinsam den Ansichtsvertrag.
+async function scrollAlbum(page: Page) {
+  const album = page.locator('.album-screen');
+  const chrome = await frameBounds(page);
+
+  if (await album.evaluate((node) => node.scrollHeight > node.clientHeight + 1)) {
+    await album.hover();
+    await page.mouse.wheel(0, 2000);
+    await expect
+      .poll(async () => {
+        await page.clock.runFor(32);
+
+        return album.evaluate((node) => node.scrollTop);
+      })
+      .toBeGreaterThan(0);
+  }
+
+  expect(await frameBounds(page)).toEqual(chrome);
+  expect(await page.evaluate(() => scrollY)).toBe(0);
+}

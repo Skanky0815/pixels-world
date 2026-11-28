@@ -45,8 +45,8 @@ for (const viewport of [
       contentType: 'image/png',
     });
     await page.locator('.album-toggle').click();
-    await expect(page.locator('.album-dialog')).toBeVisible();
-    await page.locator('.album-dialog [data-action="close"]').click();
+    await expect(page.locator('.album-screen')).toBeVisible();
+    await page.keyboard.press('Escape');
     await expect(page.locator('.album-toggle')).toBeFocused();
     await expect(menu.locator('[data-menu-view="settings"]')).toBeVisible();
     await page.locator('[data-language="en"]').click();

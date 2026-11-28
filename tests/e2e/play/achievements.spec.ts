@@ -142,7 +142,7 @@ for (const mobile of [false, true])
       await loadIntro(page);
       await (await introAction(page, 'album')).click();
       await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
-      const album = page.locator('.album-dialog');
+      const album = page.locator('.album-screen');
 
       await expect(album.locator('.achievement-tile')).toHaveCount(4);
       await expect(album.locator('.album-progress')).toHaveAttribute(
@@ -249,7 +249,12 @@ async function assertFits(album: ReturnType<Page['locator']>) {
     const bounds = story.getBoundingClientRect();
 
     return {
-      dialogScroll: el.scrollHeight - el.clientHeight,
+      top: el.getBoundingClientRect().top,
+      bottom: el.getBoundingClientRect().bottom,
+      contentTop: el.parentElement!.getBoundingClientRect().top,
+      contentBottom: el.parentElement!.getBoundingClientRect().bottom,
+      documentScroll: scrollY,
+      indexScroll: getComputedStyle(active).overflowY,
       width: el.scrollWidth - el.clientWidth,
       panelHeight: panel.clientHeight,
       indexOverflow:
@@ -271,10 +276,11 @@ async function assertFits(album: ReturnType<Page['locator']>) {
   });
 
   expect(geometry.width).toBeLessThanOrEqual(1);
-  expect(geometry.dialogScroll).toBeLessThanOrEqual(1);
-  expect(geometry.indexOverflow).toBeLessThanOrEqual(1);
-
-  if (geometry.landscape) expect(geometry.storyOverflow).toBeLessThanOrEqual(1);
+  expect(geometry.top).toBeGreaterThanOrEqual(geometry.contentTop);
+  expect(geometry.bottom).toBeLessThanOrEqual(geometry.contentBottom + 1);
+  expect(geometry.documentScroll).toBe(0);
+  // The shell now reserves space for header/footer; long chapters scroll internally.
+  expect(geometry.indexScroll).toBe('auto');
 
   if (geometry.compactDetail) {
     expect(geometry.button!.height).toBeGreaterThanOrEqual(44);
@@ -394,8 +400,7 @@ test('Meisterwerk erscheint direkt hinter dem letzten noch fehlenden Erfolg', as
       await page.locator('.achievement-targets li').last().scrollIntoViewIfNeeded();
       await expect(page.locator('.achievement-targets li').last()).toBeInViewport();
     }).toPass({ timeout: 5000 });
-    expect(
-      await page.locator('.album-dialog').evaluate((el) => el.scrollHeight - el.clientHeight),
-    ).toBeLessThanOrEqual(1);
+    expect(await page.evaluate(() => scrollY)).toBe(0);
+    await expect(page.locator('main > header .pause-toggle')).toBeInViewport({ ratio: 1 });
   }
 });

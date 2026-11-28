@@ -257,7 +257,6 @@ export const de = {
   albumOverview: 'Zur Übersicht',
   albumTitle: 'Album der Schandtaten',
   albumOpen: 'Album öffnen',
-  albumClose: 'Album schließen',
   albumRooms: 'Räume',
   albumLivingRoom: 'Wohnzimmer',
   albumKitchen: 'Küche',

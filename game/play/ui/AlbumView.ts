@@ -1,6 +1,5 @@
 import { ACHIEVEMENTS } from '../content/achievements';
 import { achievementsMarkup, ACHIEVEMENT_PAGE_SIZE } from './achievement-markup';
-import { closeButtonMarkup } from '../../shared/ui/button';
 import { albumEntries } from '../content/album';
 import type { AlbumEntry } from '../content/album/discovery';
 import { albumCollection } from '../settings/album';
@@ -20,7 +19,7 @@ import './album.css';
 import './achievements.css';
 
 export class AlbumView {
-  private readonly root = document.createElement('dialog');
+  private readonly root = document.createElement('section');
   private readonly abort = new AbortController();
   private readonly compact = window.matchMedia('(max-height: 550px) and (orientation: landscape)');
   private pageSize = this.compact.matches ? 6 : ALBUM_PAGE_SIZE;
@@ -36,22 +35,17 @@ export class AlbumView {
   private page = 0;
   private detail = false;
 
-  // eslint-disable-next-line max-lines-per-function -- Dialog, Fokusgrenze und sämtliche Ressourcen teilen eine szenengebundene Lebensdauer.
+  // eslint-disable-next-line max-lines-per-function -- Albumansicht, Fokus und sämtliche Ressourcen teilen eine szenengebundene Lebensdauer.
   constructor(private readonly onClose: () => void) {
-    this.root.className = 'album-dialog dialogue-box';
+    this.root.className = 'album-screen game-screen';
+    this.root.id = 'album-screen';
+    this.root.hidden = true;
+    this.root.setAttribute('role', 'region');
     document.getElementById('game-content')?.append(this.root);
     const options = { signal: this.abort.signal };
 
     this.compact.addEventListener('change', () => this.resizePages(), options);
     this.root.addEventListener('click', (event) => this.click(event), options);
-    this.root.addEventListener(
-      'cancel',
-      (event) => {
-        event.preventDefault();
-        this.close();
-      },
-      options,
-    );
     this.root.addEventListener('keydown', (event) => this.key(event), options);
     this.root.addEventListener('keyup', (event) => event.stopPropagation(), options);
     this.unsubscribe = albumCollection.subscribe(() => this.refresh());
@@ -59,17 +53,21 @@ export class AlbumView {
   }
 
   get opened() {
-    return this.root.open;
+    return !this.root.hidden;
   }
 
   open() {
     if (this.opened) return;
     this.render();
-    this.root.showModal();
+    this.root.hidden = false;
+    document.documentElement.classList.add('album-open');
+    this.root.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.focus();
   }
 
   close() {
-    this.root.close();
+    if (!this.opened) return;
+    this.root.hidden = true;
+    document.documentElement.classList.remove('album-open');
     this.onClose();
   }
 
@@ -120,7 +118,7 @@ export class AlbumView {
     this.root.dataset.chapter = this.room;
     const message = this.storageMessage(snapshot.storage);
 
-    this.root.innerHTML = `<header class="popup-heading">${closeButtonMarkup(t('albumClose'), 'data-action="close" data-focus="close"')}<div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${this.overall(found.size)}${this.sessionHint(snapshot.storage)}</p></div></header>
+    this.root.innerHTML = `<header class="album-heading"><div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${this.overall(found.size)}${this.sessionHint(snapshot.storage)}</p></div></header>
       ${this.bookmarks()}
       <div id="album-room" role="tabpanel" aria-labelledby="album-tab-${this.room}">${this.chapterMarkup(entries, found, selected)}</div>
       ${message ? `<footer>${message}</footer>` : ''}`;
@@ -236,14 +234,7 @@ export class AlbumView {
     this.detail = true;
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Dialogschluss, Übersicht und Seitenwechsel teilen denselben Aktionspfad.
   private action(action: string) {
-    if (action === 'close') {
-      this.close();
-
-      return;
-    }
-
     if (action === 'overview') {
       this.overview();
 
@@ -319,7 +310,7 @@ export class AlbumView {
     this.abort.abort();
     this.unsubscribe();
     this.language();
-    this.root.close();
+    document.documentElement.classList.remove('album-open');
     this.root.remove();
   }
 }
