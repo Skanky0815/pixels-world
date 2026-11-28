@@ -130,7 +130,7 @@ main:has(#play-area) {
     overflow: auto;
     pointer-events: auto;
   }
-  .game-feedback-layer {
+  .game-feedback-layer > :not(.game-feedback-score) {
     display: none;
   }
 

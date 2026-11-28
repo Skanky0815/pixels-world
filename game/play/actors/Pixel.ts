@@ -89,6 +89,13 @@ export class Pixel {
     return this.progress;
   }
 
+  /** Detached presentation bounds follow the current sprite pose and scale. */
+  get visualBounds() {
+    const bounds = this.visual.getBounds();
+
+    return Object.freeze({ x: bounds.centerX, top: bounds.top, bottom: bounds.bottom });
+  }
+
   /** Detached read-only contact data for interaction models. */
   // eslint-disable-next-line max-lines-per-function -- Der vollständige losgelöste Kontaktvertrag bleibt zusammen; er enthält keine Engine-Referenzen.
   get contact() {

@@ -23,6 +23,13 @@
     sans-serif;
   overflow-wrap: anywhere;
 }
+.game-feedback-layer .game-feedback-score {
+  position: absolute;
+  width: max-content;
+  max-width: min(280px, calc(100% - 16px));
+  box-sizing: border-box;
+  font-size: 14px;
+}
 .game-feedback-layer [data-tone='positive'] {
   border-color: #b7d3a1;
   color: #d7ecc7;
@@ -38,7 +45,7 @@
   color: #ffd5ce;
 }
 @media (any-pointer: coarse) {
-  .game-feedback-layer {
+  .game-feedback-layer > :not(.game-feedback-score) {
     display: none;
   }
 }

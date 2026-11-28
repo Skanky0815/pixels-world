@@ -4,7 +4,7 @@ import type { TextKey } from '../../shared/i18n/locale.ts';
 
 /** Presentation time only: no hit stop, camera movement or gameplay timing changes. */
 export const FEEDBACK = {
-  scoreMs: 900,
+  scoreMs: 1800,
   phaseMs: 1400,
   charmMs: 650,
   fadeMs: 150,

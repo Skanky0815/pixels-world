@@ -25,8 +25,9 @@ test('Schadensfeedback bleibt ohne Punktzahlen lesbar, pausiert und startet nach
   const before = await state(page);
 
   expect(before.feedback.messages.score?.value).toBe(OBJECTS['cozy-couch'].rules.damageValue);
-  await expect(page.locator('.mobile-notice')).toContainText('Kratzen');
-  await expectFeedbackCorner(page);
+  await expect(page.locator('.game-feedback-score')).toContainText('Kratzen');
+  await expect(page.locator('.mobile-notice')).not.toContainText('Kratzen');
+  await expectPixelFeedback(page);
   await testInfo.attach('desktop-score-feedback', {
     body: await page.screenshot(),
     contentType: 'image/png',
@@ -151,8 +152,9 @@ test.describe('Feedback im Handheld mit reduzierter Bewegung', () => {
     await besideCouch(page);
     await until(page, (s) => s.couch.damage === 1);
     expect((await state(page)).feedback.reduced).toBe(true);
-    await expect(page.locator('.mobile-hud')).toContainText('Kratzen');
-    await expect(page.locator('.game-feedback-layer')).not.toBeVisible();
+    await expect(page.locator('.game-feedback-score')).toContainText('Kratzen');
+    await expect(page.locator('.mobile-hud')).not.toContainText('Kratzen');
+    await expectPixelFeedback(page);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
@@ -163,11 +165,58 @@ test.describe('Feedback im Handheld mit reduzierter Bewegung', () => {
   });
 });
 
-async function expectFeedbackCorner(page: import('@playwright/test').Page) {
-  const score = await page.locator('.mobile-hud').boundingBox();
-  const layer = await page.locator('#game').boundingBox();
+// eslint-disable-next-line max-lines-per-function -- Der sichtbare DOM-Text wird gegen Canvas und projizierte Pixelposition geprüft.
+async function expectPixelFeedback(page: import('@playwright/test').Page) {
+  const notice = page.locator('.game-feedback-score');
 
-  if (!score || !layer) throw new Error('Feedback fehlt');
-  expect(score.y).toBeLessThan(layer.y + layer.height * 0.2);
-  expect(score.x + score.width).toBeGreaterThan(layer.x + layer.width * 0.8);
+  await expect(notice).toBeVisible();
+  const score = await notice.boundingBox();
+  const canvas = await page.locator('canvas').boundingBox();
+  const s = await state(page);
+
+  if (!score || !canvas) throw new Error('Feedback fehlt');
+  const viewLeft = s.camera.x + (s.camera.width - s.camera.width / s.camera.zoom) / 2;
+  const pixelX =
+    canvas.x + ((s.pixel.x - viewLeft) * s.camera.zoom * canvas.width) / s.camera.width;
+
+  expect(score.x).toBeGreaterThanOrEqual(canvas.x);
+  expect(score.x + score.width).toBeLessThanOrEqual(canvas.x + canvas.width);
+  expect(score.y).toBeGreaterThanOrEqual(canvas.y);
+  expect(score.y + score.height).toBeLessThanOrEqual(canvas.y + canvas.height);
+  expect(Math.abs(score.x + score.width / 2 - pixelX)).toBeLessThanOrEqual(score.width / 2 + 8);
+}
+
+for (const view of [
+  { width: 1280, height: 900, path: '/?camera=room' },
+  { width: 960, height: 720, path: '/' },
+  { width: 390, height: 844, path: '/' },
+]) {
+  test(`Pixelmeldung folgt der Figur bis zum Rand und bleibt lesbar (${view.width})`, async ({
+    page,
+    // eslint-disable-next-line max-lines-per-function -- Reale Bewegung prüft Folgen, Canvasrand, Mindestdauer und Größenwechsel im selben Ereignis.
+  }) => {
+    await page.setViewportSize(view);
+    await start(page, view.path);
+    await besideCouch(page);
+    await until(page, (s) => s.couch.damage === 1);
+    const score = page.locator('.game-feedback-score');
+    const before = await score.boundingBox();
+
+    await page.keyboard.down('ArrowLeft');
+    await until(page, (s) => s.pixel.x < 35);
+    await page.keyboard.up('ArrowLeft');
+    await expectPixelFeedback(page);
+    const after = await score.boundingBox();
+
+    expect(after?.x).toBeLessThan(before?.x ?? 0);
+    const message = (await state(page)).feedback.messages.score;
+
+    if (!message) throw new Error('Meldung vor Ablauf verschwunden');
+    await page.clock.runFor(Math.max(0, 1500 - message.elapsedMs));
+    await expect(score).toBeVisible();
+    await expect(score).toHaveCSS('opacity', '1');
+    await page.setViewportSize({ width: view.height, height: view.width });
+    await page.clock.runFor(32);
+    await expectPixelFeedback(page);
+  });
 }
