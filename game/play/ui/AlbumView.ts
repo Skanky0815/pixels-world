@@ -118,7 +118,7 @@ export class AlbumView {
     this.root.dataset.chapter = this.room;
     const message = this.storageMessage(snapshot.storage);
 
-    this.root.innerHTML = `<header class="album-heading"><button type="button" class="ui-button album-back" data-action="close" data-focus="close">${t('albumBack')}</button><div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${this.overall(found.size)}${this.sessionHint(snapshot.storage)}</p></div></header>
+    this.root.innerHTML = `<header class="album-heading"><div><span class="album-eyebrow">PIXEL’S WORLD</span><h2>${t('albumTitle')}</h2><p class="album-overall">${this.overall(found.size)}${this.sessionHint(snapshot.storage)}</p></div></header>
       ${this.bookmarks()}
       <div id="album-room" role="tabpanel" aria-labelledby="album-tab-${this.room}">${this.chapterMarkup(entries, found, selected)}</div>
       ${message ? `<footer>${message}</footer>` : ''}`;
@@ -234,14 +234,7 @@ export class AlbumView {
     this.detail = true;
   }
 
-  // eslint-disable-next-line max-lines-per-function -- Rückkehr, Übersicht und Seitenwechsel teilen denselben Aktionspfad.
   private action(action: string) {
-    if (action === 'close') {
-      this.close();
-
-      return;
-    }
-
     if (action === 'overview') {
       this.overview();
 

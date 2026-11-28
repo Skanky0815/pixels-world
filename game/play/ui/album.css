@@ -598,7 +598,7 @@
 @media (max-height: 550px) and (orientation: landscape) {
   .album-screen:not([hidden]) {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto 34px minmax(156px, 1fr);
     gap: 4px 6px;
     padding: 6px 6px 14px;
@@ -608,10 +608,6 @@
   }
   .album-screen header > div {
     grid-column: 1;
-    grid-row: 1;
-  }
-  .album-screen header > button {
-    grid-column: 2;
     grid-row: 1;
   }
   .album-screen h2 {
@@ -758,7 +754,7 @@ html.album-open #game-content > :not(.album-screen) {
 }
 .album-screen .album-heading {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   align-items: flex-start;
 }
@@ -769,13 +765,7 @@ html.album-open #game-content > :not(.album-screen) {
   order: -1;
   min-width: 0;
 }
-.album-screen .album-back {
-  flex-shrink: 0;
-}
 @media (max-height: 550px) and (orientation: landscape) {
-  .album-screen:not([hidden]) {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
   .album-screen .album-heading {
     display: contents;
   }

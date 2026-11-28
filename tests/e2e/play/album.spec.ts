@@ -178,7 +178,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
 
   await page.clock.runFor(2000);
   expect((await state(page)).round).toEqual(before.round);
-  await album.locator('[data-action="close"]').click();
+  await page.keyboard.press('Escape');
   await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await useIdleFrames(page);
@@ -245,7 +245,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await openFromMenu(page);
   await page.clock.runFor(4000);
   await expect(banner).toHaveAttribute('data-entry', 'plant.catgrass');
-  await page.locator('.album-screen [data-action="close"]').click();
+  await page.keyboard.press('Escape');
   await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await page.clock.runFor(3300);
@@ -295,7 +295,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.locator('.album-toggle').click();
   await expect(album.locator('.album-story')).toContainText('The cozy couch');
   await expect(album).toHaveAttribute('aria-label', 'Album of mischief');
-  await album.locator('[data-action="close"]').click();
+  await page.keyboard.press('Escape');
   await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await reset(page);
@@ -308,7 +308,7 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await expect(page.locator('.album-overall')).toHaveText(
     `Overall: 2 of ${albumEntries(true).length}`,
   );
-  await page.locator('.album-screen [data-action="close"]').click();
+  await page.keyboard.press('Escape');
   await openPause(page);
   await page.locator('.pause-menu [data-album-reset="ask"]').click();
   await page.locator('.pause-menu [data-album-reset="cancel"]').click();
@@ -362,7 +362,7 @@ test('Blockierter Speicher behält echte Entdeckungen bis zum Seitenende', async
   await expect(page.locator('.album-screen footer [role="status"]')).toContainText(
     'Speichern ist nicht verfügbar',
   );
-  await page.locator('.album-screen [data-action="close"]').click();
+  await page.keyboard.press('Escape');
   await returnToMenu(page);
   await page.locator('[data-pause-resume]').click();
   await reset(page);
@@ -466,7 +466,7 @@ test.describe('Mobile Buchseiten', () => {
     expect(box!.y + box!.height).toBeLessThanOrEqual(390);
     await album.getByRole('button', { name: 'Nächste Seite', exact: true }).click();
     await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 3');
-    await album.locator('[data-action="close"]').click();
+    await page.keyboard.press('Escape');
     await expect(album).toBeHidden();
     await expect(page.locator('.pause-menu')).toBeHidden();
     expect((await state(page)).active).toBe(true);

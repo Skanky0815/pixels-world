@@ -172,7 +172,7 @@ test.describe('Album im Smartphone-Querformat', () => {
       await test
         .info()
         .attach('album-querformat', { body: await page.screenshot(), contentType: 'image/png' });
-      await album.locator('[data-action="close"]').tap();
+      await page.keyboard.press('Escape');
       await expect(album).toBeHidden();
       await expect(page.locator('.start-screen')).toBeVisible();
 
@@ -192,7 +192,7 @@ test.describe('Album im Smartphone-Querformat', () => {
             .locator('.album-index')
             .evaluate((el) => el.scrollHeight <= el.clientHeight + 1),
         ).toBe(true);
-        await album.locator('[data-action="close"]').tap();
+        await page.keyboard.press('Escape');
       }
     });
   }
@@ -206,11 +206,11 @@ test.describe('Album im Smartphone-Querformat', () => {
     }) => {
       await page.setViewportSize(viewport);
       await openSavedAlbum(page);
-      await page.locator('.album-screen [data-action="close"]').tap();
+      await page.keyboard.press('Escape');
       await changeLanguage(page, 'en');
       await (await introAction(page, 'album')).tap();
       await checkEveryDetail(page);
-      await page.locator('.album-screen [data-action="close"]').tap();
+      await page.keyboard.press('Escape');
     });
   }
 
@@ -263,7 +263,7 @@ test.describe('Album im Smartphone-Querformat', () => {
       await expect(album.locator('.album-story')).toHaveAttribute('aria-label', selected);
       await album.getByRole('button', { name: 'Zur Übersicht', exact: true }).tap();
       await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 2');
-      await album.locator('[data-action="close"]').tap();
+      await page.keyboard.press('Escape');
       await expect(album).toBeHidden();
     },
   );
@@ -287,7 +287,7 @@ for (const viewport of [
     await expectBoundedAlbum(page);
     await album.getByRole('button', { name: 'Nächste Seite', exact: true }).click();
     await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 2');
-    await album.locator('[data-action="close"]').click();
+    await page.keyboard.press('Escape');
     await expect(album).toBeHidden();
   });
 }

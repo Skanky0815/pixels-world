@@ -149,8 +149,9 @@ füllen die Resthöhe zwischen Header und Footer. Bei längeren Menüseiten scro
 nur deren Inhalt, der gemeinsame Rahmen bleibt stehen. Das Album verwendet eine
 benannte Region statt eines modalen Dialogs und füllt dieselbe Inhaltsfläche.
 Währenddessen sind die anderen Inhalte ausgeblendet und die Runde pausiert; der
-Header bleibt bedienbar. Zurück/Escape stellt die vorherige Ansicht und ihren Fokus
-wieder her, der Hauptmenü-Button im Header öffnet das Hauptmenü. Die Folgekamera füllt
+Header bleibt bedienbar und ist wie bei den Optionen der sichtbare Weg zurück
+ins Hauptmenü; das Album hat keinen eigenen Zurück-Button. Escape stellt die
+vorherige Ansicht und ihren Fokus wieder her. Die Folgekamera füllt
 dieselbe Inhaltsfläche; auch die klassische Raumübersicht bleibt durch deren Höhe
 begrenzt. Touchflächen und Spieloverlays bleiben am Spielhost. Im sehr flachen
 Querformat stehen Richtungstasten und Sprung neben dem scrollbar bleibenden

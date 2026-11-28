@@ -70,7 +70,7 @@ test(
     await page.keyboard.up('Space');
     await page.locator('main > header .album-toggle').click();
     await expect(page.locator('.album-screen')).toBeVisible();
-    await page.locator('.album-screen [data-action="close"]').click();
+    await page.keyboard.press('Escape');
     await page.locator('main > header .pause-toggle').click();
     await page.locator('[data-menu-settings]').click();
     await page.locator('[data-language="en"]').click();

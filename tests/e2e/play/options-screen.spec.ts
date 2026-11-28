@@ -46,7 +46,7 @@ for (const viewport of [
     });
     await page.locator('.album-toggle').click();
     await expect(page.locator('.album-screen')).toBeVisible();
-    await page.locator('.album-screen [data-action="close"]').click();
+    await page.keyboard.press('Escape');
     await expect(page.locator('.album-toggle')).toBeFocused();
     await expect(menu.locator('[data-menu-view="settings"]')).toBeVisible();
     await page.locator('[data-language="en"]').click();

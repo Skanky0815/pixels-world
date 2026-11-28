@@ -34,6 +34,7 @@ for (const viewport of [
 
       await expect(album).toBeVisible();
       await expect(album).toHaveAttribute('role', 'region');
+      await expect(album.locator('[data-action="close"]')).toHaveCount(0);
       await expect(page.locator('dialog[open]')).toHaveCount(0);
       await shellFrame(page);
       await panelFillsContent(page, '.album-screen');
@@ -46,7 +47,7 @@ for (const viewport of [
       await expect(page.locator('.room-selection')).toBeVisible();
       await page.locator('.album-toggle').click();
       await page.screenshot({ path: `test-results/shell-${viewport.width}-album.png` });
-      await page.locator('.album-screen [data-action="close"]').click();
+      await page.keyboard.press('Escape');
       await page.locator('[data-room-start]').click();
       await page.locator('#game').focus();
       await page.keyboard.down('Space');

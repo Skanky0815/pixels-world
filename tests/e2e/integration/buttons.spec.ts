@@ -72,12 +72,12 @@ test('Sprachwahl, Iconbuttons und Albumaktionen behalten Namen, Fokus und gesper
     'false',
   );
   await page.locator('.album-toggle').click();
-  const close = page.locator('.album-screen [data-action="close"]');
+  const menu = page.locator('main > header .pause-toggle');
 
-  await expect(close).toHaveAccessibleName('← Back');
-  await tabTo(page, close);
-  await expect(close).toHaveCSS('outline-style', 'solid');
-  await expectTarget(close);
+  await expect(menu).toHaveAccessibleName('Main menu');
+  await tabTo(page, menu);
+  await expect(menu).toHaveCSS('outline-style', 'solid');
+  await expectTarget(menu);
   const previous = page.locator('.album-screen [data-action="page-previous"]');
 
   await expect(previous).toBeDisabled();

@@ -233,7 +233,7 @@ test(
       `Insgesamt: 1 von ${albumEntries(true).length}`,
     );
     await expect(page.locator('.album-screen')).not.toContainText('Das gemütliche Sofa');
-    await page.locator('.album-screen [data-action="close"]').click();
+    await page.keyboard.press('Escape');
     await test.info().attach('versoehnung-gescheitert', {
       body: await page.screenshot(),
       contentType: 'image/png',
