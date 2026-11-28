@@ -15,7 +15,7 @@ test('Pfeile bedienen Menü, Unteransichten und Raumraster; native Felder und Fo
   await expect(play).toBeFocused();
   await arrowTo(page, page.locator('[data-menu-settings]'), 'ArrowDown');
   await page.keyboard.press('Enter');
-  const back = page.locator('[data-menu-back]');
+  const back = page.locator('main > header .pause-toggle');
 
   await expect(back).toBeFocused();
   const difficulty = page.locator('[data-difficulty]');
@@ -56,9 +56,8 @@ test('Pfeile bedienen Menü, Unteransichten und Raumraster; native Felder und Fo
   await arrowTo(page, page.locator('[data-menu-information]'), 'ArrowDown');
   await page.keyboard.press('Space');
   await expect(back).toBeFocused();
-  await page.keyboard.press('ArrowDown');
-  await expect(page.locator('[data-game-information] a').first()).toBeFocused();
-  await page.keyboard.press('ArrowUp');
+  await tabTo(page, page.locator('[data-game-information] a').first());
+  await tabTo(page, back);
   await expect(back).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.locator('[data-menu-information]')).toBeFocused();

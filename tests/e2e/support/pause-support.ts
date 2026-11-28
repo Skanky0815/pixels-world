@@ -15,9 +15,11 @@ export async function changeLanguage(page: Page, language: 'de' | 'en') {
   await expect(page.locator('.pause-menu')).not.toBeVisible();
 }
 
-/** Follow the explicit back action before using main-menu navigation. */
+/** Return from a menu subview through the shared header. */
 export async function returnToMenu(page: Page) {
-  const back = page.locator('[data-menu-back]');
-
-  if (await back.isVisible()) await back.click();
+  if (
+    (await page.locator('.game-menu').isVisible()) &&
+    (await page.locator('.game-menu .pause-actions').isHidden())
+  )
+    await page.locator('main > header .pause-toggle').click();
 }

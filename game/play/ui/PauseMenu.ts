@@ -1,5 +1,4 @@
 import { keyboardPreferences } from '../../shared/input/keyboard-preferences';
-import { configureCloseButton } from '../../shared/ui/button';
 import { canFocus, installFocusNavigation, preserveFocus } from '../../shared/ui/focus-navigation';
 import { StoragePanel } from './StoragePanel';
 import { SettingsFeedback } from './SettingsFeedback';
@@ -172,7 +171,6 @@ export class PauseMenu {
     for (const [hook, action] of Object.entries({
       'data-menu-settings': () => this.show('settings'),
       'data-menu-information': () => this.show('information'),
-      'data-menu-back': () => this.show('home'),
       'data-menu-play': () => {
         this.leave();
         this.actions.play();
@@ -241,7 +239,6 @@ export class PauseMenu {
 
     for (const panel of Array.from(this.root.querySelectorAll<HTMLElement>('[data-menu-view]')))
       panel.hidden = panel.dataset.menuView !== view;
-    this.element('[data-menu-back]').hidden = view === 'home' || view === 'confirm';
     this.element('.pause-actions').hidden = view !== 'home';
     this.settingsFeedback.show(view === 'settings');
 
@@ -251,16 +248,16 @@ export class PauseMenu {
 
   // eslint-disable-next-line max-lines-per-function -- Gemerkter Fokus und sichere ansichtsspezifische Einstiegsziele bilden dieselbe Wiederherstellungsregel.
   private focusView() {
-    const hooks = {
-      confirm: '[data-menu-cancel]',
-      settings: '[data-menu-back]',
-      information: '[data-menu-back]',
-      home: this.returnable ? '[data-pause-resume]' : '[data-menu-play]',
+    const targets = {
+      confirm: this.element('[data-menu-cancel]'),
+      settings: this.toggle,
+      information: this.toggle,
+      home: this.element(this.returnable ? '[data-pause-resume]' : '[data-menu-play]'),
     };
 
     const remembered = this.rememberedFocus.get(this.view);
     const target =
-      remembered?.isConnected && canFocus(remembered) ? remembered : this.element(hooks[this.view]);
+      remembered?.isConnected && canFocus(remembered) ? remembered : targets[this.view];
 
     target.focus({ preventScroll: true });
   }
@@ -325,7 +322,6 @@ export class PauseMenu {
   }
 
   private refreshToggle() {
-    configureCloseButton(this.element('[data-menu-back]') as HTMLButtonElement, t('menuClose'));
     configureAction(this.toggle, 'menu');
     configureAction(this.albumToggle, 'album');
     this.element('[data-pause-album]').setAttribute('aria-label', t('albumOpen'));

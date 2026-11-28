@@ -156,6 +156,11 @@ bleiben erhalten. Im Hochformat stehen am Rundenende die vorhandenen Folgeaktion
 nebeneinander; die dann nicht mehr benötigten Bewegungstasten sind ausgeblendet.
 Im kompakten Querformat erscheint der Albumhinweis über den Touchflächen auf der
 dem Dialog gegenüberliegenden Seite.
+Der Hauptmenü-Button im gemeinsamen Header ist der einzige sichtbare Einstieg
+ins Hauptmenü; Levelauswahl und Menüunterseiten haben keine eigenen Rückbuttons
+dorthin. Der Headerwechsel aus Optionen oder Information stellt den gemerkten
+Menüfokus wieder her. Eine pausierte Runde wird nur durch Fortsetzen beziehungsweise
+Escape wieder aufgenommen; Raumwechsel und Neustart behalten ihre Bestätigung.
 Die Informationsansicht kopiert den bereits übersetzten Footer mit aktuellen
 Tastaturhinweisen und entfernt Dokument-IDs.
 
