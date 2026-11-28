@@ -17,6 +17,8 @@ Album-Dialog aufnehmen; der Screenshot wird unverändert eingebunden.
 
 `bedroom.png` zeigt das gestartete Schlafzimmer des Produktionsbuilds bei 1280×800 mit Raumkamera (`?camera=room`, Normal). Über das Menü Schlafzimmer wählen, die Runde starten, das Startbanner ausblenden lassen und nur `#game` aufnehmen. Pixel bleibt am Einstieg vor der weißen Tür; Bett, Katzenbett, Nachttischlampe, Regale und Kleiderschrank bleiben sichtbar. Das Bild wird unverändert in der Zimmerauswahl verwendet, mit deutscher und englischer Bildbeschreibung. Die Slot-Belegung bleibt zufällig.
 
+`study.png` zeigt das gestartete Arbeitszimmer des Produktionsbuilds bei 1280×800 mit Raumkamera (`?camera=room`, Normal). Über das Menü Arbeitszimmer wählen, die Runde starten und das Startbanner ausblenden lassen; nur `#game` aufnehmen. Pixel bleibt rechts vor der weißen Tür. Gamingstuhl, abgesenkter Schreibtisch, Regal und Fensterbankziel sind sichtbar. Zufällige Bücher- und Posterbelegung wird unverändert aufgenommen. Die Zimmerauswahl verwendet das Bild mit DE/EN-Bildbeschreibung.
+
 `pixel-and-sara.png` zeigt den Produktionsbuild nach Sofa-Kratzen und Saras
 Heimkehr, mit ihrem gespiegelten Dialogporträt und Pixel neben ihr. Für eine neue
 Aufnahme bei 1280×800 die Runde starten, kurz nach rechts zum Sofa laufen und

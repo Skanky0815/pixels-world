@@ -153,10 +153,10 @@ test.describe('Album im Smartphone-Querformat', () => {
       await expect(album.locator('.album-tile')).toHaveCount(6);
       await expect(album.locator('.album-tile img')).toHaveCount(6);
       await expectBoundedAlbum(page);
-      await album.getByRole('tab', { name: 'Arbeitszimmer später', exact: true }).tap();
-      await expect(album.locator('.album-empty')).toContainText(
-        'Dieser Raum hat noch keine Album-Einträge.',
-      );
+      await album.getByRole('tab', { name: 'Arbeitszimmer', exact: true }).tap();
+      await expect(album.locator('.album-tile')).toHaveCount(6);
+      await expect(album.locator('.album-tile img')).toHaveCount(6);
+      await expectBoundedAlbum(page);
       await album.getByRole('tab', { name: 'Wohnzimmer', exact: true }).tap();
       await expect(
         album.getByRole('button', { name: 'Album zurücksetzen', exact: true }),

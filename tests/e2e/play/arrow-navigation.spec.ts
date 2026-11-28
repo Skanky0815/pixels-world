@@ -68,8 +68,11 @@ test('Pfeile bedienen Menü, Unteransichten und Raumraster; native Felder und Fo
   const kitchen = page.locator('[data-room-choice="kitchen"]');
   const living = page.locator('[data-room-choice="living-room"]');
   const bedroom = page.locator('[data-room-choice="bedroom"]');
+  const study = page.locator('[data-room-choice="study"]');
 
   await expect(enter).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await expect(study).toBeFocused();
   await page.keyboard.press('ArrowUp');
   await expect(kitchen).toBeFocused();
   await page.keyboard.press('ArrowLeft');
@@ -94,15 +97,21 @@ test('Pfeile bedienen Menü, Unteransichten und Raumraster; native Felder und Fo
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(kitchen).toBeFocused();
   await page.keyboard.press('ArrowDown');
+  await expect(study).toBeFocused();
+  await page.keyboard.press('ArrowDown');
   await expect(enter).toBeFocused();
   await page.keyboard.press('ArrowDown');
   await expect(enter).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(study).toBeFocused();
   await page.keyboard.press('Shift+Tab');
   await expect(bedroom).toBeFocused();
   await page.keyboard.press('Shift+Tab');
   await expect(kitchen).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(bedroom).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(study).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(enter).toBeFocused();
   await page.keyboard.press('Enter');

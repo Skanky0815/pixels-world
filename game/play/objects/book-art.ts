@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import type { BookToppling } from '../interactions/book-toppling';
 import { motionPreferences } from '../settings/motion';
-export type BookAppearance = 'stacked' | 'upright';
+export type BookAppearance = 'stacked' | 'upright' | 'paper';
 
 /** Generated PNGs own the artwork; code only positions and animates them. */
 export class BookArt {
@@ -12,8 +12,11 @@ export class BookArt {
 
   constructor(scene: Phaser.Scene, appearance: BookAppearance = 'stacked') {
     this.tilt = appearance === 'upright' ? Math.PI / 2 : 0.35;
-    this.intact = scene.add.image(0, 0, `books-${appearance}`).setOrigin(0.5, 1);
-    this.fallen = scene.add.image(0, 0, 'books-fallen').setOrigin(0.5, 1).setVisible(false);
+    this.intact = scene.add.image(0, 0, intactTexture(appearance)).setOrigin(0.5, 1);
+    this.fallen = scene.add
+      .image(0, 0, appearance === 'paper' ? 'study-paper-fallen' : 'books-fallen')
+      .setOrigin(0.5, 1)
+      .setVisible(false);
     this.root = scene.add.container(0, 0, [this.intact, this.fallen]);
   }
 
@@ -45,4 +48,8 @@ export class BookArt {
       fallenVisible: this.fallen.visible,
     };
   }
+}
+
+function intactTexture(appearance: BookAppearance) {
+  return appearance === 'paper' ? 'study-paper' : `books-${appearance}`;
 }

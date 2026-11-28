@@ -41,7 +41,17 @@ import type { BookAppearance } from '../objects/book-art.ts';
 
 export type Capability = 'automatic' | 'damage' | 'platform' | 'climb' | 'push';
 export type FurnitureAppearance =
-  'stool' | 'table' | 'counter' | 'fridge' | 'bed' | 'nightstand' | 'wardrobe';
+  | 'stool'
+  | 'table'
+  | 'counter'
+  | 'fridge'
+  | 'bed'
+  | 'nightstand'
+  | 'wardrobe'
+  | 'study-desk'
+  | 'study-chair'
+  | 'study-bookcase'
+  | 'study-bookcase-board';
 interface Base {
   readonly album?: DamageAlbumEntry;
   readonly spawn: SpawnProfile;

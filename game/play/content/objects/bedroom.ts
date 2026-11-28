@@ -33,7 +33,7 @@ export const BEDROOM_OBJECTS = {
     album: {
       id: 'plant.spiderplant',
       asset: 'bedroom-spiderplant',
-      rooms: ['bedroom'],
+      rooms: ['bedroom', 'study'],
       name: { de: 'Die Grünlilie', en: 'The spider plant' },
       condition: { kind: 'nibble', stage: 1 },
       also: [{ kind: 'tip', stage: 2 }],

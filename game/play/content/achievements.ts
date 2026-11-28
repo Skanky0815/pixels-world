@@ -7,11 +7,13 @@ import {
   ACHIEVEMENT_CATEGORIES_V6,
   ACHIEVEMENT_CATEGORIES_V7,
   ACHIEVEMENT_CATEGORIES_V8,
+  ACHIEVEMENT_CATEGORIES_V9,
 } from './achievement-categories.ts';
 import {
   ROOM_ACHIEVEMENTS_V1,
   ROOM_ACHIEVEMENTS_V2,
   ROOM_ACHIEVEMENTS_V3,
+  ROOM_ACHIEVEMENTS_V4,
 } from './achievement-rooms.ts';
 import type { ChaosEvent } from '../domain/chaos-event.ts';
 
@@ -635,7 +637,7 @@ const BEDROOM_OBJECTIVES: readonly AchievementDefinition[] = [
   },
 ];
 
-export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+const ACHIEVEMENTS_V8: readonly AchievementDefinition[] = [
   ...BEDROOM_OBJECTIVES,
   {
     id: 'achievement.masterpiece-v8',
@@ -648,6 +650,47 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
     metric: 'all',
     targets: BEDROOM_OBJECTIVES.map((entry) => entry.id),
     threshold: BEDROOM_OBJECTIVES.length,
+    art: 'love',
+  },
+];
+
+const STUDY_OBJECTIVES: readonly AchievementDefinition[] = [
+  ...ACHIEVEMENTS_V8,
+  ...ACHIEVEMENT_CATEGORIES_V9.map((category) => ({
+    id: `achievement.category-${category.id}-v9`,
+    name: category.name,
+    description: category.description,
+    quote: category.quote,
+    metric: 'variants' as const,
+    targets: category.targets,
+    threshold: category.targets.length,
+    art: 'chaos' as const,
+  })),
+  ...ROOM_ACHIEVEMENTS_V4.map((entry) => ({
+    ...entry,
+    quote: { de: 'Schön gespielt, Pixel.', en: 'Well played, Pixel.' },
+    metric: 'rooms' as const,
+    threshold: entry.targets.length,
+    art: 'love' as const,
+  })),
+];
+
+export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
+  ...STUDY_OBJECTIVES,
+  {
+    id: 'achievement.masterpiece-v9',
+    name: { de: 'Pixels Meisterwerk IX', en: 'Pixel’s masterpiece IX' },
+    description: {
+      de: 'Alle anderen Erfolge der Sammlung mit Arbeitszimmer freischalten.',
+      en: 'Unlock every other achievement in the study collection.',
+    },
+    quote: {
+      de: 'Das war dein letzter Arbeitsplatz, Pixel.',
+      en: 'That was your last workspace, Pixel.',
+    },
+    metric: 'all',
+    targets: STUDY_OBJECTIVES.map((e) => e.id),
+    threshold: STUDY_OBJECTIVES.length,
     art: 'love',
   },
 ];

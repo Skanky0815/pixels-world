@@ -1,3 +1,4 @@
+import { preloadStudyArt } from '../assets/study-art';
 import { observeObjects } from '../content/object-observation';
 import { preloadTableclothArt, tableclothArtReady } from '../assets/tablecloth-art';
 import { preloadTrashBinArt, trashBinArtReady } from '../assets/trash-bin-art';
@@ -171,6 +172,7 @@ export class LivingRoomScene extends Phaser.Scene {
     preloadDialoguePortraits(this);
     preloadVaseArt(this);
     preloadBedroomArt(this);
+    preloadStudyArt(this);
     preloadDishArt(this);
     preloadPantryArt(this);
     preloadTrashBinArt(this);

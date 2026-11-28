@@ -8,6 +8,9 @@ export const de = {
   saraLaundryAngry: 'Wir beide falten das jetzt noch einmal.',
   peacefulRestClosing:
     'Dein Katzenbett, ein kleines Nickerchen und danach kuscheln. So mag ich das.',
+  studyToyLabel: 'Lieblingsspielzeug auf der Fensterbank',
+  studyTitle: 'Das Arbeitszimmer',
+  studyWantsToy: 'Pixel möchte sein Lieblingsspielzeug am Fenster erreichen.',
   bedroomTitle: 'Das Schlafzimmer',
   cozySleepPlace: 'gemütlichen Schlafplatz',
   pixelWantsToRest:
@@ -166,6 +169,8 @@ export const de = {
   roomsEnter: 'Zimmer betreten →',
   roomsBack: 'Zimmer wechseln',
   roomsPreview: 'Wohnzimmer mit Pixel, Sofa und Vorhang',
+  roomsStudyPreview:
+    'Arbeitszimmer mit Pixel, Gamingstuhl, niedrigem Schreibtisch, Bücherregal und Postern',
   roomsBedroomPreview: 'Schlafzimmer mit Pixel, weißer Tür, Bett, Katzenbett und Kleiderschrank',
   roomsKitchenPreview: 'Küche mit Pixel, Tisch, Kühlschrank und Futternapf',
 

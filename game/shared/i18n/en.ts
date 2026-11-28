@@ -8,6 +8,9 @@ export const en: Record<keyof typeof de, string> = {
   saraLaundryAnnoyed: 'Pixel, I had only just folded that.',
   saraLaundryAngry: 'We are both folding that again.',
   peacefulRestClosing: 'Your cat bed, a little nap, then a cuddle. That sounds perfect.',
+  studyToyLabel: 'favorite toy on the windowsill',
+  studyTitle: 'The study',
+  studyWantsToy: 'Pixel wants to reach the favorite toy by the window.',
   bedroomTitle: 'The bedroom',
   cozySleepPlace: 'cozy sleeping spot',
   pixelWantsToRest:
@@ -163,6 +166,7 @@ export const en: Record<keyof typeof de, string> = {
   roomsEnter: 'Enter room →',
   roomsBack: 'Choose a room',
   roomsPreview: 'Living room with Pixel, sofa and curtain',
+  roomsStudyPreview: 'Study with Pixel, gaming chair, low desk, bookcase and posters',
   roomsBedroomPreview: 'Bedroom with Pixel, white door, bed, cat bed and wardrobe',
   roomsKitchenPreview: 'Kitchen with Pixel, table, fridge and food bowl',
 

@@ -45,10 +45,8 @@ for (const width of [320, 1280]) {
     );
     await page.keyboard.press('Enter');
     await expect(page.locator('.room-selection')).toBeVisible();
-    const locked = page.locator('.room-choice:disabled').first();
-
-    await expect(locked).toBeDisabled();
-    await expect(locked).toHaveCSS('cursor', 'default');
+    await expect(page.locator('.room-choice:disabled')).toHaveCount(0);
+    await expect(page.locator('[data-room-choice="study"]')).toBeEnabled();
     await tabTo(page, page.locator('[data-room-start]'));
     await expect(page.locator('[data-room-start]')).toHaveCSS('outline-style', 'solid');
     await page.keyboard.press('Space');

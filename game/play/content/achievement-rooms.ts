@@ -52,7 +52,7 @@ export const ROOM_ACHIEVEMENTS_V2 = [
     targets: ['hard-peaceful/kitchen'],
   },
 ];
-export const ACHIEVEMENT_ROOMS = [
+export const ACHIEVEMENT_ROOMS_V3 = [
   ...ACHIEVEMENT_ROOMS_V2,
   { id: 'bedroom', name: { de: 'Schlafzimmer', en: 'Bedroom' } },
 ] as const;
@@ -64,7 +64,7 @@ export const ROOM_ACHIEVEMENTS_V3 = [
       de: `Wohnzimmer, Küche und Schlafzimmer auf ${level.de} erfolgreich abschließen.`,
       en: `Reach the goal and finish the living room, kitchen and bedroom on ${level.en}.`,
     },
-    targets: ACHIEVEMENT_ROOMS.map((room) => `${level.id}/${room.id}`),
+    targets: ACHIEVEMENT_ROOMS_V3.map((room) => `${level.id}/${room.id}`),
   })),
   {
     id: 'achievement.peaceful-bedroom-v1',
@@ -76,9 +76,34 @@ export const ROOM_ACHIEVEMENTS_V3 = [
     targets: ['hard-peaceful/bedroom'],
   },
 ];
+export const ACHIEVEMENT_ROOMS = [
+  ...ACHIEVEMENT_ROOMS_V3,
+  { id: 'study', name: { de: 'Arbeitszimmer', en: 'Study' } },
+] as const;
+export const ROOM_ACHIEVEMENTS_V4 = [
+  ...levels.map((level) => ({
+    id: `achievement.rooms-${level.id}-v4`,
+    name: { de: `Alle Räume IV – ${level.de}`, en: `All rooms IV – ${level.en}` },
+    description: {
+      de: `Alle vier Räume auf ${level.de} mit erreichtem Hauptziel abschließen.`,
+      en: `Reach the goal and complete all four rooms on ${level.en}.`,
+    },
+    targets: ACHIEVEMENT_ROOMS.map((room) => `${level.id}/${room.id}`),
+  })),
+  {
+    id: 'achievement.peaceful-study-v1',
+    name: { de: 'Sanfte Pfoten – Arbeitszimmer', en: 'Gentle paws – Study' },
+    description: {
+      de: 'Das Arbeitszimmer auf Schwer ohne Beschädigung schaffen.',
+      en: 'Complete the study on Hard without damaging anything.',
+    },
+    targets: ['hard-peaceful/study'],
+  },
+];
 export const ROOM_ACHIEVEMENTS = [
   ...ROOM_ACHIEVEMENTS_V1,
   ...ROOM_ACHIEVEMENTS_V2,
   ...ROOM_ACHIEVEMENTS_V3,
+  ...ROOM_ACHIEVEMENTS_V4,
 ];
 export const ROOM_COMPLETIONS = ROOM_ACHIEVEMENTS.flatMap((entry) => entry.targets);

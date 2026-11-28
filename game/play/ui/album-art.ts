@@ -1,5 +1,20 @@
 /** Reuse bundled game PNGs; undiscovered entries never render an image element. */
 export const ALBUM_ART: Readonly<Record<string, string>> = {
+  'picture-poster-space': new URL(
+    '../../../assets/objects/study/study-poster-space.png',
+    import.meta.url,
+  ).href,
+  'picture-poster-arcade': new URL(
+    '../../../assets/objects/study/study-poster-arcade.png',
+    import.meta.url,
+  ).href,
+  'study-paper': new URL('../../../assets/objects/study/study-paper-stacked.png', import.meta.url)
+    .href,
+  'study-pen-cup': new URL('../../../assets/objects/study/study-pen-cup.png', import.meta.url).href,
+  'favorite-ball': new URL(
+    '../../../assets/objects/favorite-ball/favorite-ball.png',
+    import.meta.url,
+  ).href,
   'bedroom-curtain': new URL('../../../assets/objects/bedroom/bedroom-curtain.png', import.meta.url)
     .href,
   'bedroom-spiderplant': new URL(
