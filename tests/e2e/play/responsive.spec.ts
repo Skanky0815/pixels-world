@@ -103,7 +103,7 @@ async function layoutGeometry(
   const footer = (await page.locator('main > footer').boundingBox())!;
 
   await expect(page.locator('.pause-toggle')).toBeInViewport({ ratio: 1 });
-  await expect(page.locator('.album-toggle')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.album-toggle')).toHaveCount(0);
   await expect(page.locator('main > footer')).toBeVisible();
   expect(title.y).toBeGreaterThanOrEqual(0);
   expect(title.y + title.height).toBeLessThanOrEqual(content.y);

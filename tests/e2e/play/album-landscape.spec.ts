@@ -174,6 +174,8 @@ test.describe('Album im Smartphone-Querformat', () => {
         .attach('album-querformat', { body: await page.screenshot(), contentType: 'image/png' });
       await page.keyboard.press('Escape');
       await expect(album).toBeHidden();
+      await expect(page.locator('.pause-menu')).toBeVisible();
+      await page.locator('[data-pause-resume]').tap();
       await expect(page.locator('.start-screen')).toBeVisible();
 
       if (viewport.height === 320) {

@@ -150,8 +150,11 @@ nur deren Inhalt, der gemeinsame Rahmen bleibt stehen. Das Album verwendet eine
 benannte Region statt eines modalen Dialogs und füllt dieselbe Inhaltsfläche.
 Währenddessen sind die anderen Inhalte ausgeblendet und die Runde pausiert; der
 Header bleibt bedienbar und ist wie bei den Optionen der sichtbare Weg zurück
-ins Hauptmenü; das Album hat keinen eigenen Zurück-Button. Escape stellt die
-vorherige Ansicht und ihren Fokus wieder her. Die Folgekamera füllt
+ins Hauptmenü; das Album hat keinen eigenen Zurück-Button. Sein einziger Einstieg
+ist die Albumaktion im Hauptmenü. Der Header enthält nur den Hauptmenü-Button;
+Einführung, Levelwahl, Optionen, Runde und Ergebnis besitzen keinen direkten
+Albumzugang. Escape kehrt zum Hauptmenü zurück und fokussiert dort die Albumaktion.
+Die Runde bleibt bis zum ausdrücklichen Fortsetzen pausiert. Die Folgekamera füllt
 dieselbe Inhaltsfläche; auch die klassische Raumübersicht bleibt durch deren Höhe
 begrenzt. Touchflächen und Spieloverlays bleiben am Spielhost. Im sehr flachen
 Querformat stehen Richtungstasten und Sprung neben dem scrollbar bleibenden
@@ -441,8 +444,8 @@ nach Sprachwechsel. Priorität: Safe Areas und Bedienung, Banner, dann scrollbar
 begrenzter Dialog. Querformat setzt das Banner zwischen die unteren Touchgruppen,
 Hochformat darüber; die Dialogkarte hält die Kameramitte frei. Banner übernehmen
 keinen Fokus und sperren keine Eingaben. Hauptmenü, Optionen, Information,
-Bestätigung und Levelwahl bleiben eigene Screens; Album bleibt ein Buchdialog mit
-Fokusgrenze. Einstellungsfeedback verändert den Fokus nicht und behauptet keine
+Bestätigung, Levelwahl und Album bleiben eigene Screens innerhalb der gemeinsamen
+Seitenhülle. Einstellungsfeedback verändert den Fokus nicht und behauptet keine
 garantierte Speicherung.
 
 Dialogauswahl verwendet kanonische Inhalte und injizierbaren Zufall. Tatsächlich

@@ -1,3 +1,4 @@
+import { openAlbum } from '../support/pause-support';
 /* eslint-disable max-lines-per-function -- Optionsseite, Tastaturfokus und Rückkehr werden mit echten Eingaben in derselben Runde geprüft. */
 import { test, expect, start, state } from '../support/support';
 
@@ -44,10 +45,12 @@ for (const viewport of [
       body: await page.screenshot({ fullPage: true }),
       contentType: 'image/png',
     });
-    await page.locator('.album-toggle').click();
+    await openAlbum(page);
     await expect(page.locator('.album-screen')).toBeVisible();
     await page.keyboard.press('Escape');
-    await expect(page.locator('.album-toggle')).toBeFocused();
+    await expect(page.locator('[data-pause-album]')).toBeFocused();
+    await expect(menu.locator('.pause-actions')).toBeVisible();
+    await page.locator('[data-menu-settings]').click();
     await expect(menu.locator('[data-menu-view="settings"]')).toBeVisible();
     await page.locator('[data-language="en"]').click();
     await page.clock.runFor(500);

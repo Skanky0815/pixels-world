@@ -1,4 +1,4 @@
-import { returnToMenu } from '../support/pause-support';
+import { returnToMenu, openAlbum } from '../support/pause-support';
 import { albumEntries } from '../../../game/play/content/album/index.ts';
 import {
   introAction,
@@ -228,12 +228,13 @@ test(
     expect(
       await page.evaluate(() => JSON.parse(localStorage.getItem('pixels-world.album')!).discovered),
     ).toEqual(['vase.blue']);
-    await page.locator('.album-toggle').click();
+    await openAlbum(page);
     await expect(page.locator('.album-overall')).toHaveText(
       `Insgesamt: 1 von ${albumEntries(true).length}`,
     );
     await expect(page.locator('.album-screen')).not.toContainText('Das gemütliche Sofa');
     await page.keyboard.press('Escape');
+    await page.locator('[data-pause-resume]').click();
     await test.info().attach('versoehnung-gescheitert', {
       body: await page.screenshot(),
       contentType: 'image/png',

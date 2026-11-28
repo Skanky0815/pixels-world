@@ -1,4 +1,4 @@
-import { returnToMenu } from '../support/pause-support';
+import { returnToMenu, openAlbum } from '../support/pause-support';
 /* eslint-disable max-lines-per-function -- Echte Auswahl, Modal-Dialoge und Rundenreset bilden die Integrationsgrenze des neuen Einstiegs. */
 import { test, expect, state, until, besideCouch, waitForGame } from '../support/support';
 
@@ -68,7 +68,7 @@ test(
     expect((await state(page)).pixel.x).toBe(waiting.pixel.x);
     await page.keyboard.up('ArrowRight');
     await page.keyboard.up('Space');
-    await page.locator('main > header .album-toggle').click();
+    await openAlbum(page);
     await expect(page.locator('.album-screen')).toBeVisible();
     await page.keyboard.press('Escape');
     await page.locator('main > header .pause-toggle').click();
@@ -147,7 +147,7 @@ for (const viewport of [
 
         expect(await rooms.evaluate((root) => root.scrollWidth <= root.clientWidth)).toBe(true);
         await expect(page.locator('main > header .pause-toggle')).toBeInViewport({ ratio: 1 });
-        await expect(page.locator('main > header .album-toggle')).toBeInViewport({ ratio: 1 });
+        await expect(page.locator('main > header .album-toggle')).toHaveCount(0);
         const header = await page.locator('main > header').boundingBox();
         const footer = await page.locator('main > footer').boundingBox();
 

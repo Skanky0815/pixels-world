@@ -10,7 +10,7 @@ import {
   besideCouch,
   waitForGame,
 } from '../support/support';
-import { openPause, returnToMenu } from '../support/pause-support';
+import { openPause, returnToMenu, openAlbum } from '../support/pause-support';
 
 // Existing persistence/layout contracts start with a returning player's saved choice.
 test.beforeEach(async ({ page }) => {
@@ -101,7 +101,7 @@ test(
     });
     await returnToMenu(page);
     await options.locator('[data-pause-resume]').click();
-    await page.locator('.album-toggle').click();
+    await openAlbum(page);
     await expect(page.locator('.album-overall')).toHaveText(
       `Overall: 0 of ${albumEntries(true).length}`,
     );
