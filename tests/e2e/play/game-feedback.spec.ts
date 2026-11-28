@@ -1,4 +1,13 @@
-import { test, expect, start, state, until, besideCouch, reset } from '../support/support';
+import {
+  test,
+  expect,
+  start,
+  state,
+  until,
+  besideCouch,
+  reset,
+  framesPass,
+} from '../support/support';
 import { openPause } from '../support/pause-support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from '../support/round-clock';
 import { DIRECTIONS } from '../../../game/play/content/reconciliation';
@@ -209,14 +218,46 @@ for (const view of [
     const after = await score.boundingBox();
 
     expect(after?.x).toBeLessThan(before?.x ?? 0);
+    await resizeFeedbackViewport(page, { width: view.height, height: view.width });
+    await expectPixelFeedback(page);
     const message = (await state(page)).feedback.messages.score;
 
     if (!message) throw new Error('Meldung vor Ablauf verschwunden');
     await page.clock.runFor(Math.max(0, 1500 - message.elapsedMs));
     await expect(score).toBeVisible();
     await expect(score).toHaveCSS('opacity', '1');
-    await page.setViewportSize({ width: view.height, height: view.width });
-    await page.clock.runFor(32);
-    await expectPixelFeedback(page);
   });
+}
+
+// eslint-disable-next-line max-lines-per-function -- Größenwechsel, angepasste Kamera und der folgende Renderframe bilden eine gemeinsame Bereitschaftsgrenze.
+async function resizeFeedbackViewport(
+  page: import('@playwright/test').Page,
+  viewport: { width: number; height: number },
+) {
+  const previous = await page.locator('canvas').boundingBox();
+
+  if (!previous) throw new Error('Canvas fehlt vor dem Größenwechsel');
+  await page.setViewportSize(viewport);
+  await expect
+    .poll(
+      // eslint-disable-next-line max-lines-per-function -- Aktive Testzeit und atomare Canvas-/Kameraprobe gehören in denselben Pollschritt.
+      async () => {
+        await page.clock.runFor(16);
+
+        return page.locator('canvas').evaluate((canvas, before) => {
+          const bounds = canvas.getBoundingClientRect();
+          const camera = window.__pixelTest?.camera;
+          const resized = bounds.width !== before.width || bounds.height !== before.height;
+
+          return (
+            !!camera &&
+            resized &&
+            Math.abs(camera.width / camera.height - bounds.width / bounds.height) < 0.01
+          );
+        }, previous);
+      },
+      { intervals: [0] },
+    )
+    .toBe(true);
+  await framesPass(page, 1);
 }
