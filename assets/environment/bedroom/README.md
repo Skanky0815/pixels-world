@@ -8,4 +8,4 @@ Export: `node tools/assets/prepare-bedroom-assets.mjs`. PNG, Nearest-Neighbour v
 
 Bett 264×128, Nachttisch 72×64, Schrank 120×278, Tür 112×216, Fenster 112×184, Putz 256×256, Boden 512×128. Möbeloberkante und Bodenkontakt bleiben an den bestehenden Spielauflagen; der Bettdurchgang bleibt transparent. Deckenleisten und zusätzliche weiße Fassungen sind native Rechtecke.
 
-[Gegenstände und Zustände](../../objects/bedroom/README.md). Die früheren Blockgrafiken bleiben als Entwürfe erhalten und werden im Spiel nicht mehr geladen.
+[Gegenstände und Zustände](../../objects/bedroom/README.md).
