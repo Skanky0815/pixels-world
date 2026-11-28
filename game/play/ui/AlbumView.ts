@@ -1,3 +1,8 @@
+import {
+  ACHIEVEMENT_FILTERS,
+  filteredAchievements,
+  type AchievementFilter,
+} from './achievement-filter';
 import { ACHIEVEMENTS } from '../content/achievements';
 import { achievementsMarkup, ACHIEVEMENT_PAGE_SIZE } from './achievement-markup';
 import { albumEntries } from '../content/album';
@@ -32,6 +37,7 @@ export class AlbumView {
   private room: AlbumChapter = 'living-room';
   private selected?: string;
   private selectedAchievement = ACHIEVEMENTS[0].id;
+  private achievementFilter: AchievementFilter = 'all';
   private page = 0;
   private detail = false;
 
@@ -147,15 +153,14 @@ export class AlbumView {
   }
 
   private achievementMarkup() {
-    const last = Math.ceil(ACHIEVEMENTS.length / ACHIEVEMENT_PAGE_SIZE) - 1;
+    const data = albumCollection.achievementSnapshot();
+    const last =
+      Math.ceil(filteredAchievements(data, this.achievementFilter).length / ACHIEVEMENT_PAGE_SIZE) -
+      1;
 
     this.page = Math.max(0, Math.min(this.page, last));
 
-    return achievementsMarkup(
-      albumCollection.achievementSnapshot(),
-      this.selectedAchievement,
-      this.page,
-    );
+    return achievementsMarkup(data, this.selectedAchievement, this.page, this.achievementFilter);
   }
 
   // eslint-disable-next-line max-lines-per-function -- Kapitel, Zähler und eine begrenzte Objektseite bilden einen gemeinsamen Buchaufbau.
@@ -201,12 +206,18 @@ export class AlbumView {
     if (!target) return;
     target.focus({ preventScroll: true });
 
+    if (this.selectFilter(target.dataset.achievementFilter as AchievementFilter)) return;
+
     if (target.dataset.action) {
       this.action(target.dataset.action);
 
       return;
     }
 
+    this.selectContent(target);
+  }
+
+  private selectContent(target: HTMLButtonElement) {
     if (ALBUM_CHAPTERS.includes(target.dataset.room as AlbumChapter))
       this.selectRoom(target.dataset.room as AlbumChapter);
 
@@ -217,6 +228,16 @@ export class AlbumView {
     const back = this.root.querySelector<HTMLElement>('.album-overview');
 
     if (this.detail && back?.getClientRects().length) back.focus();
+  }
+
+  private selectFilter(filter?: AchievementFilter) {
+    if (!filter || !ACHIEVEMENT_FILTERS.includes(filter)) return false;
+    this.achievementFilter = filter;
+    this.page = 0;
+    this.detail = false;
+    this.render();
+
+    return true;
   }
 
   private selectAchievement(id?: string) {
