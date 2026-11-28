@@ -47,17 +47,22 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
   await expect(page.locator('#loading-screen')).toHaveCount(0);
   await page.setViewportSize({ width: 568, height: 320 });
   await page.locator('.album-toggle').click();
-  expect(
-    await page
-      .locator('.album-screen')
-      .evaluate(
-        (node) =>
-          node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1,
-      ),
-  ).toBe(true);
+  const album = page.locator('.album-screen');
+  const header = await page.locator('main > header').boundingBox();
+  const footer = await page.locator('main > footer').boundingBox();
+
+  expect(await album.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
   await expect(page.locator('.album-screen .album-overall')).toContainText(
     'Album nur für diesen Besuch.',
   );
+  // The regular album view scrolls inside the shell on short screens.
+  await album.hover();
+  await page.mouse.wheel(0, 2000);
+  await expect.poll(() => album.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
+  expect(await page.locator('main > header').boundingBox()).toEqual(header);
+  expect(await page.locator('main > footer').boundingBox()).toEqual(footer);
+  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await expect(page.locator('main > header .pause-toggle')).toBeInViewport({ ratio: 1 });
   await page.keyboard.press('Escape');
   await page.locator('.pause-toggle').click();
   await page.locator('[data-menu-settings]').click();
