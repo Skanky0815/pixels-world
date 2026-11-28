@@ -118,7 +118,7 @@ function refreshCamera(scene: Phaser.Scene, target: Phaser.Physics.Arcade.Sprite
 }
 
 function cameraZoom(scene: Phaser.Scene, roomWidth: number) {
-  if (scene.scale.height > scene.scale.width) return 1;
+  if (matchMedia('(aspect-ratio < 1/1)').matches) return 1;
 
   if (matchMedia('(max-height: 300px)').matches || compactDialogueSide()) return 2;
 
@@ -135,7 +135,7 @@ function cameraMargins(scene: Phaser.Scene) {
 /** Keep the floor actors above portrait announcements without reducing the viewport. */
 // eslint-disable-next-line max-lines-per-function -- Overlayreserve und vorhandener Bodenabstand werden einmal in Weltkoordinaten umgerechnet.
 function portraitBottom(scene: Phaser.Scene, floorY: number) {
-  if (!followsPixel() || scene.scale.width >= scene.scale.height) return 0;
+  if (!followsPixel() || !matchMedia('(aspect-ratio < 1/1)').matches) return 0;
   const canvas = scene.game.canvas;
   const main = canvas.closest('main');
   const reserve = main

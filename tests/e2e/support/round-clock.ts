@@ -15,11 +15,28 @@ export async function seedRoundRandom(page: Page) {
 }
 
 /** The long lifecycle uses 10 Hz after setup; other browser scenarios retain normal RAF. */
+// eslint-disable-next-line max-lines-per-function -- Der vollständige Browseradapter wird gemeinsam in den Seitenkontext übertragen.
 export async function useIdleFrames(page: Page) {
+  // eslint-disable-next-line max-lines-per-function -- Der Browseradapter ordnet alte RAF- und neue Timeout-Handles ihren jeweiligen Abbruchfunktionen zu.
   await page.evaluate(() => {
-    window.requestAnimationFrame = (callback) =>
-      window.setTimeout(() => callback(performance.now()), 100);
-    window.cancelAnimationFrame = (id) => window.clearTimeout(id);
+    const cancelFrame = window.cancelAnimationFrame.bind(window);
+    const timers = new Set<number>();
+
+    window.requestAnimationFrame = (callback) => {
+      const id = window.setTimeout(() => {
+        timers.delete(id);
+        callback(performance.now());
+      }, 100);
+
+      timers.add(id);
+
+      return id;
+    };
+
+    window.cancelAnimationFrame = (id) => {
+      if (timers.delete(id)) window.clearTimeout(id);
+      else cancelFrame(id);
+    };
   });
 }
 

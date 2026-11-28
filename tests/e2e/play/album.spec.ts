@@ -547,6 +547,12 @@ test.describe('Album-Banner auf dem Handy', () => {
       await page.setViewportSize(viewport);
       await page.clock.runFor(100);
       await bannerFits(page);
+      const resized = await state(page);
+
+      await until(page, (s) => s.frame > resized.frame, 100);
+      await page.screenshot({
+        path: `test-results/album-banner-${viewport.width}x${viewport.height}.png`,
+      });
     }
 
     await test

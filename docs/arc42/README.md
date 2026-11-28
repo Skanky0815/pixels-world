@@ -152,7 +152,10 @@ begrenzt. Touchflächen und Spieloverlays bleiben am Spielhost. Im sehr flachen
 Querformat stehen Richtungstasten und Sprung neben dem scrollbar bleibenden
 Dialog; die Anordnung spiegelt dessen Raumanker links oder rechts. Die Kamera
 hält beide Figuren zwischen Inhalt und Touchflächen sichtbar; Touchzielgrößen
-bleiben erhalten.
+bleiben erhalten. Im Hochformat stehen am Rundenende die vorhandenen Folgeaktionen
+nebeneinander; die dann nicht mehr benötigten Bewegungstasten sind ausgeblendet.
+Im kompakten Querformat erscheint der Albumhinweis über den Touchflächen auf der
+dem Dialog gegenüberliegenden Seite.
 Die Informationsansicht kopiert den bereits übersetzten Footer mit aktuellen
 Tastaturhinweisen und entfernt Dokument-IDs.
 

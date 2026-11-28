@@ -129,14 +129,13 @@ test.describe('Ballspiel mit Touch', () => {
       );
       await expect(page.locator('.mobile-quote')).not.toBeEmpty();
       await expect(page.locator('.mobile-dialogue')).toHaveAttribute('data-placement', 'welcome');
-      expect(
-        await page
-          .locator('.mobile-dialogue')
-          .evaluate(
-            (panel) =>
-              panel.getBoundingClientRect().top - panel.parentElement!.getBoundingClientRect().top,
-          ),
-      ).toBeGreaterThan(60);
+      const panel = (await page.locator('.mobile-dialogue').boundingBox())!;
+      const header = (await page.locator('main > header').boundingBox())!;
+      const content = (await page.locator('#game').boundingBox())!;
+
+      expect(panel.y).toBeGreaterThanOrEqual(Math.max(content.y, header.y + header.height));
+      expect(panel.y + panel.height).toBeLessThanOrEqual(content.y + content.height);
+      await expect(page.locator('.mobile-dialogue')).toBeInViewport({ ratio: 1 });
       expect(playing.homecoming.stage).toBe('waiting');
       expect(playing.goalView.ballX).toBe(reduced ? found.goalView.ballX : 898);
 

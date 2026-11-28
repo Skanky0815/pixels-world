@@ -357,3 +357,92 @@ html:not(.follow-camera) #game > .room-selection-return {
     }
   }
 }
+
+/* Narrow result cards give their text the decorative portrait's space. */
+@media (max-width: 380px), (orientation: landscape) and (max-height: 380px) {
+  .follow-camera #play-area .mobile-dialogue:has(.mobile-result:not([hidden])) {
+    .mobile-portrait {
+      display: none;
+    }
+    .mobile-message {
+      padding-left: 0;
+      min-height: 0;
+    }
+    .result-headline {
+      font-size: 18px;
+    }
+    .result-reconciliation {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 380px) {
+  .follow-camera
+    body
+    main:has(#play-area)
+    #play-area
+    #game
+    > .mobile-dialogue:has(.mobile-result:not([hidden])) {
+    padding: 4px;
+
+    .mobile-message {
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+  }
+}
+
+/* Finished portrait rounds need their existing result actions, not movement inputs. */
+@media (aspect-ratio < 1/1) {
+  .follow-camera body main:has(#play-area) #play-area:has(.mobile-result:not([hidden])) {
+    .touch-directions {
+      display: none;
+    }
+    .touch-actions {
+      display: flex;
+      left: var(--overlay-left);
+      right: var(--overlay-right);
+      width: auto;
+      gap: var(--overlay-gap);
+    }
+    .touch-actions > button {
+      flex: 1;
+      min-width: var(--touch-target);
+      min-height: var(--touch-target);
+      padding-inline: 4px;
+    }
+  }
+}
+
+/* A finished compact round places its album notice above the input row. */
+@media (orientation: landscape) and (max-height: 380px) {
+  .follow-camera body main:has(#play-area):has(.mobile-result:not([hidden])) {
+    #play-area .album-banner {
+      top: var(--overlay-top);
+      bottom: auto;
+      left: calc(50% + var(--camera-pixel-half, 48px) + var(--overlay-gap));
+      right: calc(var(--overlay-right) + var(--overlay-actions-width, 0px) + var(--overlay-gap));
+      width: auto;
+      max-width: none;
+      min-height: 0;
+      padding: 6px;
+      gap: 6px;
+    }
+    #play-area .album-banner img {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  .follow-camera
+    body
+    main:has(#play-area):has(.mobile-result:not([hidden])):has(
+      .mobile-dialogue[data-dialogue-side='right']:not([hidden])
+    )
+    #play-area
+    .album-banner {
+    left: calc(var(--overlay-left) + var(--overlay-actions-width, 0px) + var(--overlay-gap));
+    right: calc(50% + var(--camera-pixel-half, 48px) + var(--overlay-gap));
+  }
+}

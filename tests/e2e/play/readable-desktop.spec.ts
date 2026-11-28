@@ -30,6 +30,7 @@ async function readable(page: Page) {
 }
 
 async function visibleRoomBelowDialogue(page: Page) {
+  await settledRoomFrame(page);
   const canvas = (await page.locator('canvas').boundingBox())!;
   const image = PNG.sync.read(await page.screenshot());
   const colors = new Set<string>();
@@ -46,6 +47,32 @@ async function visibleRoomBelowDialogue(page: Page) {
     colors.size,
     'Der sichtbare Raum darf unter dem DOM-Dialog nicht schwarz bleiben',
   ).toBeGreaterThan(8);
+}
+
+async function settledRoomFrame(page: Page) {
+  await expect
+    .poll(async () => {
+      await page.clock.runFor(100);
+
+      return page.locator('canvas').evaluate((canvas) => {
+        const host = canvas.parentElement!;
+        const frame = host.getBoundingClientRect();
+        const box = canvas.getBoundingClientRect();
+        const width = Math.min(host.clientWidth, (host.clientHeight * 16) / 9);
+
+        return (
+          box.width >= width - 1 &&
+          box.left >= frame.left &&
+          box.top >= frame.top &&
+          box.right <= frame.right + 1 &&
+          box.bottom <= frame.bottom + 1
+        );
+      });
+    })
+    .toBe(true);
+  const resized = await state(page);
+
+  await until(page, (snapshot) => snapshot.frame > resized.frame, 100);
 }
 
 async function rejectHeart(page: Page) {
