@@ -543,7 +543,7 @@ export class LivingRoomScene extends Phaser.Scene {
     this.goalRest = new GoalRest();
     this.mobile = new MobileReadout(this.room.dialogue);
     this.feedback = new GameFeedback(this, () => this.pixel.visualBounds);
-    this.controls = new InputController(this);
+    this.controls = new InputController(this, () => this.started);
     this.activity = new PlayActivity(() => this.syncActivity());
     this.audio = new GameAudio(this.sound);
     this.events.on('object-impact', this.audio.playObject, this.audio);

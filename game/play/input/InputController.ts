@@ -34,7 +34,10 @@ export class InputController {
   private readonly touch = new TouchControls(this.sources);
 
   // eslint-disable-next-line max-lines-per-function -- Bindungen, Optionswechsel und Fokusgrenzen teilen die Szenenlebensdauer.
-  constructor(private readonly scene: Phaser.Scene) {
+  constructor(
+    private readonly scene: Phaser.Scene,
+    private readonly acceptsPageFocus: () => boolean = () => false,
+  ) {
     const keyboard = scene.input.keyboard;
 
     if (!keyboard) throw new Error('Pixel’s World requires keyboard input.');
@@ -125,10 +128,12 @@ export class InputController {
 
     return (
       !!document.querySelector('dialog[open]') ||
-      document.documentElement.classList.contains('menu-open') ||
-      !focused?.closest('#game, [data-control]') ||
+      ['menu-open', 'room-selecting', 'album-open'].some((screen) =>
+        document.documentElement.classList.contains(screen),
+      ) ||
+      (!focused?.closest('#game, [data-control]') && !this.acceptsPageFocus()) ||
       !!focused?.closest(
-        'a, button:not([data-control]), input, textarea, select, [contenteditable]:not([contenteditable="false"])',
+        'a, button:not([data-control]), input, textarea, select, summary, [contenteditable]:not([contenteditable="false"])',
       )
     );
   }

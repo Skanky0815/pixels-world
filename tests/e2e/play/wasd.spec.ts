@@ -255,3 +255,69 @@ test('WASD-Versöhnung dedupliziert gleiche Richtungen und hält verschiedene Ri
   await page.keyboard.up(wasd[next.expected!]);
   await page.keyboard.up(arrows[other]);
 });
+
+test('Aktive Runde bleibt nach neutralen Seitenklicks steuerbar; Bedienfelder sperren alte Tasten @smoke', async ({
+  page,
+}) => {
+  await restoredWasd(page);
+  await start(page);
+  const title = page.locator('main > header h1');
+
+  await title.click();
+  await expect(page.locator('#game')).not.toBeFocused();
+  const before = (await state(page)).pixel.x;
+
+  await page.keyboard.down('d');
+  await until(page, (s) => s.pixel.x > before + 20);
+  await page.keyboard.up('d');
+  await until(page, (s) => s.pixel.grounded && s.pixel.velocityX === 0);
+  await page.keyboard.down('Space');
+  await until(page, (s) => s.pixel.velocityY < 0);
+  await page.keyboard.up('Space');
+  await until(page, (s) => s.pixel.grounded && s.pixel.velocityX === 0);
+  await page.locator('main > header .pause-toggle').focus();
+  await page.keyboard.down('d');
+  await page.clock.runFor(100);
+  expect((await state(page)).pixel.velocityX).toBe(0);
+  await title.click();
+  await page.clock.runFor(100);
+  expect((await state(page)).pixel.velocityX).toBe(0);
+  await page.keyboard.up('d');
+  await page.keyboard.down('d');
+  await until(page, (s) => s.pixel.velocityX > 0);
+  await page.keyboard.up('d');
+});
+
+test('WASD nach neutralem Klick startet keine Einführung und bewegt nicht im Hauptmenü @smoke', async ({
+  page,
+}) => {
+  await restoredWasd(page);
+  await page.goto('/play.html');
+  await waitForGame(page);
+  await page.locator('main > header h1').click();
+  await page.keyboard.down('d');
+  await page.clock.runFor(100);
+  expect((await state(page)).started).toBe(false);
+  expect((await state(page)).pixel.velocityX).toBe(0);
+  await page.keyboard.up('d');
+  await page.locator('#game').focus();
+  await page.keyboard.down('Space');
+  await until(page, (s) => s.started);
+  await page.keyboard.up('Space');
+  await page.locator('main > header .pause-toggle').click();
+  await page.locator('.game-menu h2').click();
+  const paused = await state(page);
+
+  await page.keyboard.down('d');
+  await page.clock.runFor(200);
+  expect((await state(page)).pixel.x).toBe(paused.pixel.x);
+  expect((await state(page)).round.elapsedMs).toBe(paused.round.elapsedMs);
+  await page.locator('[data-pause-resume]').click();
+  await page.clock.runFor(100);
+  expect((await state(page)).pixel.velocityX).toBe(0);
+  await page.keyboard.up('d');
+  await page.locator('main > header h1').click();
+  await page.keyboard.down('d');
+  await until(page, (s) => s.pixel.velocityX > 0);
+  await page.keyboard.up('d');
+});

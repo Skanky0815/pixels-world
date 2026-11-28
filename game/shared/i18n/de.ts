@@ -23,7 +23,7 @@ export const de = {
   settingsApplied: '✓ Einstellungen übernommen.',
   settingsAppliedNextRound: '✓ Übernommen. Der Schwierigkeitsgrad gilt ab der nächsten Runde.',
   pixelRoomWasd:
-    'Pixels Zimmer. Pfeile oder A/D zum Laufen und W/S zum Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',
+    'Pixels Zimmer. Pfeile oder A/D zum Laufen und W/S zum Klettern, Leertaste zum Springen.',
   keyboardSettings: 'Tastatur',
   wasdEnable: 'WASD zusätzlich verwenden',
   wasdHelp:
@@ -578,7 +578,7 @@ export const de = {
   climbCurtain: 'Klettern',
   restart: 'Neustart',
   pixelSLivingRoomUseArrow:
-    'Pixels Zimmer. Pfeiltasten zum Laufen und Klettern, Leertaste zum Springen. Zum Fokussieren ins Zimmer klicken.',
+    'Pixels Zimmer. Pfeiltasten zum Laufen und Klettern, Leertaste zum Springen.',
   saraInnocentLook: 'Da bist du ja. Den unschuldigen Blick hast du jedenfalls geübt.',
   saraYourVersion: 'Ich setze mich erst mal. Du erzählst mir dann deine Version.',
   saraLittleHousemate: 'Hallo, kleiner Mitbewohner. War’s ohne mich sehr langweilig?',

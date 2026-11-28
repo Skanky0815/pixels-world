@@ -40,6 +40,7 @@ Weitere Befehle und DEV-Werkzeuge: [CONTRIBUTING](CONTRIBUTING.md#lokal-entwicke
 **↑ / ↓** klettern an Vorhang, Tischdecke und Kühlschrank. **Esc** öffnet das Pause-Menü.
 Unter **Optionen → Tastatur** lässt sich zusätzlich **WASD** einschalten: **A/D** bewegen,
 **W/S** klettern und entsprechen in Menüs und bei der Versöhnung den Pfeilen.
+Während einer aktiven Runde ist kein erneuter Klick ins Spielfeld nötig.
 Pfeile bleiben parallel aktiv; Leertaste und Esc ändern sich nicht.
 Auf Touch-Geräten erscheinen Bildschirmtasten; die Tastatur bleibt zusätzlich nutzbar.
 
