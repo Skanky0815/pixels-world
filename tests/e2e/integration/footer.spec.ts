@@ -51,7 +51,8 @@ test(
           'noopener noreferrer',
         );
       } else await expect(footer.getByRole('link')).toHaveCount(0);
-      await expect(footer).toBeHidden();
+      await expect(footer).toBeInViewport({ ratio: 1 });
+      footerBelow(await page.locator('#game-content').boundingBox(), await footer.boundingBox());
       await page.locator('.pause-toggle').click();
       await page.locator('[data-menu-information]').click();
       await expect(page.locator('[data-game-information]')).toContainText(

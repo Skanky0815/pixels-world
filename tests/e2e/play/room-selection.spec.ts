@@ -134,7 +134,7 @@ for (const viewport of [
   test.describe(`Zimmerauswahl mit Touch ${viewport.width}×${viewport.height}`, () => {
     test.use({ viewport, hasTouch: true, isMobile: true });
     test(
-      'Vier Zimmer und beide Menübuttons passen; Antippen führt zur Einführung',
+      'Vier Zimmer und Menüaktionen bleiben im Inhaltsbereich erreichbar',
       { tag: '@smoke' },
       async ({ page }) => {
         await page.goto('/play.html');
@@ -142,15 +142,28 @@ for (const viewport of [
         await page.locator('[data-menu-play]').click();
         const rooms = page.locator('.room-selection');
 
-        expect(
-          await rooms.evaluate(
-            (root) =>
-              root.scrollHeight <= root.clientHeight + 1 && root.scrollWidth <= root.clientWidth,
-          ),
-        ).toBe(true);
+        expect(await rooms.evaluate((root) => root.scrollWidth <= root.clientWidth)).toBe(true);
         await expect(page.locator('main > header .pause-toggle')).toBeInViewport({ ratio: 1 });
         await expect(page.locator('main > header .album-toggle')).toBeInViewport({ ratio: 1 });
-        await expect(rooms.locator('[data-room-start]')).toBeInViewport({ ratio: 1 });
+        const header = await page.locator('main > header').boundingBox();
+        const footer = await page.locator('main > footer').boundingBox();
+
+        for (const choice of await rooms.locator('[data-room-choice]').all()) {
+          await choice.scrollIntoViewIfNeeded();
+          await expect(choice).toBeInViewport({ ratio: 1 });
+        }
+
+        await rooms.locator('[data-room-start]').scrollIntoViewIfNeeded();
+        // Native scroll offsets round fractional panel heights by less than half a pixel.
+        await expect(rooms.locator('[data-room-start]')).toBeInViewport({ ratio: 0.99 });
+        const panel = (await rooms.boundingBox())!;
+        const start = (await rooms.locator('[data-room-start]').boundingBox())!;
+
+        expect(start.y).toBeGreaterThanOrEqual(panel.y - 0.5);
+        expect(start.y + start.height).toBeLessThanOrEqual(panel.y + panel.height + 0.5);
+        expect(await page.locator('main > header').boundingBox()).toEqual(header);
+        expect(await page.locator('main > footer').boundingBox()).toEqual(footer);
+        expect(await page.evaluate(() => document.scrollingElement?.scrollTop)).toBe(0);
         await page.locator('main > header .pause-toggle').tap();
         await expect(page.locator('.pause-menu')).toBeVisible();
         await returnToMenu(page);

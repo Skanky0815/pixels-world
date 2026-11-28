@@ -36,6 +36,16 @@ test(
     await spriteLoaded;
     await waitForLoadingScreen(page);
     await enterSelectedRoom(page);
+    await expect
+      .poll(
+        async () => {
+          await page.clock.runFor(32);
+
+          return page.locator('canvas').isVisible();
+        },
+        { intervals: [0] },
+      )
+      .toBe(true);
     await expect(page.locator('canvas')).toBeVisible();
     expect(await page.evaluate(() => '__pixelTest' in window)).toBe(false);
     expect(await page.evaluate(() => '__visualFaultDraws' in window)).toBe(false);

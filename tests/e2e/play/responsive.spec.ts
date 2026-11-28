@@ -28,7 +28,16 @@ for (const viewport of [
     const canvas = await page.locator('canvas').boundingBox();
 
     expect(canvas).not.toBeNull();
-    expect(canvas!.width).toBeGreaterThanOrEqual(viewport.minRoomWidth);
+    const content = (await page.locator('#game-content').boundingBox())!;
+    const border = await page.locator('#game').evaluate((node) => {
+      const style = getComputedStyle(node);
+
+      return parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+    });
+
+    expect(canvas!.width).toBeGreaterThanOrEqual(
+      Math.min(viewport.minRoomWidth, ((content.height - border) * 16) / 9) - 1,
+    );
     expect(canvas!.width / canvas!.height).toBeCloseTo(16 / 9, 1);
     expect(
       await page.locator('canvas').evaluate((node) => getComputedStyle(node).imageRendering),
@@ -58,8 +67,8 @@ async function startLayout(page: Page, phone: boolean, inset: number) {
   const before = await frameGeometry(page);
 
   if (phone) {
-    await expect(page.locator('.start-age .age-rating')).toBeInViewport({ ratio: 0.99 });
-    await expect(page.locator('.start-age .age-rating')).toContainText('Ab 6 Jahren');
+    await expect(page.locator('main > footer .age-rating')).toBeInViewport({ ratio: 0.99 });
+    await expect(page.locator('main > footer .age-rating')).toContainText('Ab 6 Jahren');
   }
 
   await page.locator('[data-control="jump"]').tap();
@@ -80,7 +89,7 @@ async function frameGeometry(page: Page) {
 
 type Bounds = { x: number; y: number; width: number; height: number };
 
-// eslint-disable-next-line max-lines-per-function -- Kompakte Handyansicht und unveränderte Tablet-Seitenleisten prüfen getrennte reale Geometrieverträge.
+// eslint-disable-next-line max-lines-per-function -- Gemeinsamer Rahmen und verbleibende Raum-/Touch-Flächen werden getrennt geprüft.
 async function layoutGeometry(
   page: Page,
   height: number,
@@ -89,75 +98,34 @@ async function layoutGeometry(
   right: Bounds,
   inset: number,
 ) {
-  const main = (await page.locator('main').boundingBox())!;
-  const menu = (await page.locator('.game-menu-actions').first().boundingBox())!;
-  const info = (await page.locator('.mobile-hud').boundingBox())!;
+  const content = (await page.locator('#game-content').boundingBox())!;
+  const title = (await page.locator('main > header').boundingBox())!;
+  const footer = (await page.locator('main > footer').boundingBox())!;
 
-  expect(main.y).toBeGreaterThanOrEqual(0);
+  await expect(page.locator('.pause-toggle')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('.album-toggle')).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('main > footer')).toBeVisible();
+  expect(title.y).toBeGreaterThanOrEqual(0);
+  expect(title.y + title.height).toBeLessThanOrEqual(content.y);
+  expect(content.y + content.height).toBeLessThanOrEqual(footer.y + 1);
+  expect(footer.y + footer.height).toBeLessThanOrEqual(height + 1);
+  expect(left.x + left.width + 2).toBeLessThanOrEqual(room.x);
+  expect(room.x + room.width + 2).toBeLessThanOrEqual(right.x);
+  expect(left.x).toBeGreaterThanOrEqual(inset);
   expect(
     Math.max(room.y + room.height, left.y + left.height, right.y + right.height),
-  ).toBeLessThanOrEqual(height);
+  ).toBeLessThanOrEqual(content.y + content.height + 1);
+  expect((await state(page)).camera).toEqual({ x: 0, y: 0, width: 960, height: 540, zoom: 1 });
 
   if (height <= 550) {
-    expect(left.x + left.width + 2).toBeLessThanOrEqual(room.x);
-    expect(room.x + room.width + 2).toBeLessThanOrEqual(right.x);
-    expect(left.x).toBeGreaterThanOrEqual(inset);
-    expect(left.x).toBeLessThanOrEqual(inset + 4);
-    expect(right.x + right.width).toBeGreaterThanOrEqual(page.viewportSize()!.width - inset - 4);
-    expect(info.x).toBeGreaterThanOrEqual(room.x + room.width + 2);
-    expect(menu.x).toBeGreaterThanOrEqual(room.x + room.width + 2);
-    await expect(page.locator('.pause-toggle')).toBeInViewport({ ratio: 1 });
-    await expect(page.locator('.album-toggle')).toBeInViewport({ ratio: 1 });
-    await expect(page.locator('main > footer')).toBeHidden();
-    expect((await state(page)).camera).toEqual({ x: 0, y: 0, width: 960, height: 540, zoom: 1 });
-    await largestRoom(page, height, room, left, right);
-    await alignedSidebars(page, main, left, right, menu);
+    await largestRoom(content, room, left, right);
     expect(left.width).toEqual(right.width);
-    expect(Math.abs(room.x + room.width / 2 - main.x - main.width / 2)).toBeLessThan(1);
-  } else {
-    const title = (await page.locator('main > header').boundingBox())!;
-
-    expect(main.y).toBeGreaterThan(8);
-    expect(Math.abs(main.y - (height - main.y - main.height))).toBeLessThan(2);
-    expect(left.x + left.width + 16).toBeLessThanOrEqual(room.x);
-    expect(room.x + room.width + 16).toBeLessThanOrEqual(right.x);
-    expect(title.x + title.width).toBeLessThanOrEqual(room.x);
-    expect(title.y + title.height).toBeLessThanOrEqual(left.y);
-    expect(info.x).toBeGreaterThanOrEqual(room.x + room.width);
-    expect(info.y + info.height).toBeLessThanOrEqual(right.y);
+    expect(Math.abs(room.x + room.width / 2 - content.x - content.width / 2)).toBeLessThan(1);
   }
 }
 
-// eslint-disable-next-line max-lines-per-function -- Titel, mittige Steuerung und untere Anzeigen bilden einen gemeinsamen sichtbaren Layoutvertrag.
-async function alignedSidebars(
-  page: Page,
-  main: Bounds,
-  left: Bounds,
-  right: Bounds,
-  menu: Bounds,
-) {
-  const title = (await page.locator('main > header > div:first-child').boundingBox())!;
-  const info = (await page.locator('.mobile-hud').boundingBox())!;
-  const middle = main.y + main.height / 2;
-
-  await expect(page.locator('main > header h1')).toBeInViewport({ ratio: 1 });
-  expect(Math.abs(title.y - main.y)).toBeLessThan(1);
-  expect(Math.abs(left.y + left.height / 2 - middle)).toBeLessThan(1);
-  expect(Math.abs(right.y + right.height / 2 - middle)).toBeLessThan(1);
-  expect(Math.abs(menu.y + menu.height - main.y - main.height)).toBeLessThan(1);
-  expect(title.y + title.height + 2).toBeLessThanOrEqual(left.y);
-  expect(Math.abs(info.y - main.y)).toBeLessThan(1);
-  expect(info.y + info.height + 2).toBeLessThanOrEqual(right.y);
-  expect(right.y + right.height + 2).toBeLessThanOrEqual(menu.y);
-}
-
-async function largestRoom(page: Page, height: number, room: Bounds, left: Bounds, right: Bounds) {
-  const padding = await page.locator('body').evaluate((node) => {
-    const style = getComputedStyle(node);
-
-    return parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
-  });
-  const available = Math.min(right.x - left.x - left.width - 4, ((height - padding) * 16) / 9);
+async function largestRoom(content: Bounds, room: Bounds, left: Bounds, right: Bounds) {
+  const available = Math.min(right.x - left.x - left.width - 4, (content.height * 16) / 9);
 
   expect(room.width).toBeGreaterThanOrEqual(available - 4);
 }
