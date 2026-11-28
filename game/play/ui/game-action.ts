@@ -1,21 +1,18 @@
 import { t } from '../../shared/i18n/locale';
-import { roomIcon } from './album-room-icons';
 import './game-action.css';
 import { buttonMarkup, configureButton } from '../../shared/ui/button';
 
-type GameAction = 'album' | 'options' | 'menu';
-const LABELS = { album: 'albumOpen', options: 'gameOptions', menu: 'mainMenu' } as const;
+type GameAction = 'options' | 'menu';
+const LABELS = { options: 'gameOptions', menu: 'mainMenu' } as const;
 
 function icon(action: GameAction) {
-  return action === 'album' ? roomIcon('study') : action === 'menu' ? menuIcon() : optionsIcon();
+  return action === 'menu' ? menuIcon() : optionsIcon();
 }
 
 export function configureAction(button: HTMLButtonElement, action: GameAction) {
   configureButton(button, { label: t(LABELS[action]), icon: icon(action) });
 
   button.removeAttribute('aria-haspopup');
-
-  if (action === 'album') button.setAttribute('aria-controls', 'album-screen');
 }
 
 export function actionButton(action: GameAction, hook: string) {

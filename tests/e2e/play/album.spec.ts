@@ -15,7 +15,7 @@ import {
   waitForGame,
   waitForLoadingScreen,
 } from '../support/support';
-import { openPause, returnToMenu, changeLanguage } from '../support/pause-support';
+import { openPause, returnToMenu, changeLanguage, openAlbum } from '../support/pause-support';
 import { seedRoundRandom, useIdleFrames, advanceRoundTo } from '../support/round-clock';
 import { finishAlbumRound } from './album-support';
 import type { Page } from '@playwright/test';
@@ -30,8 +30,7 @@ test.beforeEach(async ({ page }, info) => {
 });
 
 async function openFromMenu(page: Page) {
-  await openPause(page);
-  await page.locator('.album-toggle').click();
+  await openAlbum(page);
   await expect(page.locator('.album-screen')).toBeVisible();
 }
 
@@ -103,6 +102,9 @@ for (const mobile of [false, true]) {
         .attach('album-geheim', { body: await page.screenshot(), contentType: 'image/png' });
       await page.keyboard.press('Escape');
       await expect(album).toBeHidden();
+      await expect(page.locator('[data-pause-album]')).toBeFocused();
+      await expect(page.locator('.pause-menu')).toBeVisible();
+      await page.locator('[data-pause-resume]').click();
       await expect(page.locator('.pause-menu')).toBeHidden();
       expect((await state(page)).started).toBe(false);
     });
@@ -140,7 +142,7 @@ for (const mobile of [false, true]) {
           body: await page.screenshot(),
           contentType: 'image/png',
         });
-        await page.locator('.album-toggle').click();
+        await openAlbum(page);
         await expect(page.locator('.album-overall')).toHaveText(
           `Insgesamt: 1 von ${albumEntries(true).length}`,
         );
@@ -291,8 +293,9 @@ test('Erst erfolgreiche Versöhnung bestätigt mehrere Funde; Pause, Reset, Relo
   await page.keyboard.press('Escape');
   await expect(album).toBeHidden();
   await expect(page.locator('.pause-menu')).toBeVisible();
+  await page.locator('[data-menu-settings]').click();
   await page.locator('[data-language="en"]').click();
-  await page.locator('.album-toggle').click();
+  await openAlbum(page);
   await expect(album.locator('.album-story')).toContainText('The cozy couch');
   await expect(album).toHaveAttribute('aria-label', 'Album of mischief');
   await page.keyboard.press('Escape');
@@ -440,7 +443,7 @@ test.describe('Mobile Buchseiten', () => {
       ),
     );
     await start(page);
-    await page.locator('.album-toggle').click();
+    await openAlbum(page);
     const album = page.locator('.album-screen');
 
     await expect(page.locator('.pause-menu')).toBeHidden();
@@ -468,9 +471,12 @@ test.describe('Mobile Buchseiten', () => {
     await expect(album.locator('.album-pagination')).toContainText('Seite 2 von 3');
     await page.keyboard.press('Escape');
     await expect(album).toBeHidden();
+    await expect(page.locator('.pause-menu')).toBeVisible();
+    expect((await state(page)).active).toBe(false);
+    await page.locator('[data-pause-resume]').click();
     await expect(page.locator('.pause-menu')).toBeHidden();
     expect((await state(page)).active).toBe(true);
-    await expect(page.locator('.album-toggle')).toHaveCount(1);
+    await expect(page.locator('.album-toggle')).toHaveCount(0);
     await page.clock.runFor(160);
     expect((await state(page)).round.elapsedMs).toBeGreaterThan(paused.round.elapsedMs);
   });
@@ -560,9 +566,10 @@ test.describe('Album-Banner auf dem Handy', () => {
       .attach('album-banner-quer', { body: await page.screenshot(), contentType: 'image/png' });
     const pausedEntry = (await banner.getAttribute('data-entry'))!;
 
-    await page.locator('.album-toggle').click();
+    await openAlbum(page);
     await page.clock.runFor(4000);
     await page.keyboard.press('Escape');
+    await page.locator('[data-pause-resume]').click();
     await expect(banner).toBeVisible();
     await expect(banner).toHaveAttribute('data-entry', pausedEntry);
     await waitForBanner(page, 'achievement.angel-1');

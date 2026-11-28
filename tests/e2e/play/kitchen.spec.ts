@@ -1,4 +1,4 @@
-import { returnToMenu } from '../support/pause-support';
+import { returnToMenu, openAlbum } from '../support/pause-support';
 /* eslint-disable max-lines-per-function -- Eine öffentliche Küchenrunde verbindet drei Aktionen mit Pause, Versöhnung, Album und anschließendem Reset. */
 import { test, expect, waitForGame } from '../support/support';
 import {
@@ -72,7 +72,7 @@ test('Küchenabschluss: Beutel, Mülleimer und Kühlschrank teilen Pause, Wertun
   });
   expect(reset.album.pending).toEqual([]);
   expect(reset.album.confirmed).toEqual([]);
-  await page.locator('.album-toggle').click();
+  await openAlbum(page);
   await expect(page.locator('.album-overall')).toContainText(
     `Insgesamt: ${finished.album.confirmed.length} von`,
   );

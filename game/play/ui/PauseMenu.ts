@@ -45,7 +45,6 @@ export class PauseMenu {
   private readonly updates: UpdatePanel;
   private readonly root = document.createElement('section');
   private readonly toggle = document.createElement('button');
-  private readonly albumToggle = document.createElement('button');
   private readonly headerActions = document.createElement('div');
   private readonly abort = new AbortController();
   private readonly unsubscribe: () => void;
@@ -55,14 +54,9 @@ export class PauseMenu {
   private readonly unsubscribeKeyboard: () => void;
   private readonly unsubscribeMotion: () => void;
 
-  // eslint-disable-next-line max-lines-per-function -- Zugänglicher Dialog und sämtliche Ereignisse teilen eine szenengebundene Lebensdauer.
+  // eslint-disable-next-line max-lines-per-function -- Menüansichten und sämtliche Ereignisse teilen eine szenengebundene Lebensdauer.
   constructor(private readonly actions: PauseActions) {
-    this.album = new AlbumView(() => {
-      if (this.root.hidden) {
-        this.actions.pause(false);
-        this.actions.focus();
-      } else this.restoreAlbumFocus();
-    });
+    this.album = new AlbumView(() => this.restoreAlbumFocus());
     this.root.className = 'pause-menu game-menu game-screen';
     this.root.hidden = true;
     this.root.inert = true;
@@ -81,7 +75,7 @@ export class PauseMenu {
     this.removeLanguage = createLanguageSetting(this.element('[data-pause-language]'));
     const options = { signal: this.abort.signal };
 
-    this.mountHeader(options);
+    this.mountHeader();
     this.storage = new StoragePanel(this.element('[data-pause-storage]'));
     this.updates = new UpdatePanel(this.element('[data-pause-updates]'), this.toggle);
 
@@ -132,13 +126,9 @@ export class PauseMenu {
     this.refreshMotion();
   }
 
-  private mountHeader(options: AddEventListenerOptions) {
+  private mountHeader() {
     this.headerActions.className = 'game-menu-actions';
-    this.albumToggle.type = 'button';
-    this.albumToggle.className = 'album-toggle';
-    configureAction(this.albumToggle, 'album');
-    this.albumToggle.addEventListener('click', () => this.openAlbum(), options);
-    this.headerActions.append(this.albumToggle, this.toggle);
+    this.headerActions.append(this.toggle);
     document.querySelector('main > header')?.append(this.headerActions);
   }
 
@@ -200,8 +190,8 @@ export class PauseMenu {
     this.show('home');
   }
 
-  openAlbum() {
-    if (this.album.opened) return;
+  private openAlbum() {
+    if (this.album.opened || this.root.hidden || this.view !== 'home') return;
     this.albumReturnFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.actions.pause(true);
@@ -327,7 +317,6 @@ export class PauseMenu {
 
   private refreshToggle() {
     configureAction(this.toggle, 'menu');
-    configureAction(this.albumToggle, 'album');
     this.element('[data-pause-album]').setAttribute('aria-label', t('albumOpen'));
     this.element('[data-pause-album]').textContent = t('albumTitle');
     this.refreshDifficulty();

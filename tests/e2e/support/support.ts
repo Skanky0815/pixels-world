@@ -52,10 +52,10 @@ async function state(page: Page): Promise<RoomTestState> {
 }
 
 export async function introAction(page: Page, action: 'options' | 'album') {
-  if (action === 'album') return page.locator('.album-toggle');
-  await page.locator('.pause-toggle').click();
+  if (!(await page.locator('.game-menu .pause-actions').isVisible()))
+    await page.locator('.pause-toggle').click();
 
-  return page.locator('[data-menu-settings]');
+  return page.locator(action === 'album' ? '[data-pause-album]' : '[data-menu-settings]');
 }
 
 async function loadIntro(page: Page, path = '/') {

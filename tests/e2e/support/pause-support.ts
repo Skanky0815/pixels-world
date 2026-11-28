@@ -23,3 +23,12 @@ export async function returnToMenu(page: Page) {
   )
     await page.locator('main > header .pause-toggle').click();
 }
+
+/** Open the album only through the visible main menu, preserving the real pause flow. */
+export async function openAlbum(page: Page) {
+  const actions = page.locator('.game-menu .pause-actions');
+
+  if (!(await actions.isVisible())) await page.locator('main > header .pause-toggle').click();
+  await page.locator('[data-pause-album]').click();
+  await expect(page.locator('.album-screen')).toBeVisible();
+}

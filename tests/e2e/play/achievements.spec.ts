@@ -14,7 +14,7 @@ import {
 } from '../support/support';
 import { finishAlbumRound } from './album-support';
 import { seedRoundRandom } from '../support/round-clock';
-import { changeLanguage, openPause, returnToMenu } from '../support/pause-support';
+import { changeLanguage, openPause, returnToMenu, openAlbum } from '../support/pause-support';
 import type { Page } from '@playwright/test';
 
 async function seed(
@@ -232,7 +232,7 @@ for (const mobile of [false, true])
       await openPause(page);
       await page.locator('[data-album-reset="ask"]').click();
       await page.locator('[data-album-reset="confirm"]').click();
-      await page.locator('.album-toggle').click();
+      await openAlbum(page);
       await page.getByRole('tab', { name: 'Achievements', exact: true }).click();
       await expect(album.locator('.achievement-tile:not(:disabled)')).toHaveCount(0);
       await expect(album.locator('.achievement-state')).toHaveCount(0);
@@ -382,7 +382,7 @@ test('Meisterwerk erscheint direkt hinter dem letzten noch fehlenden Erfolg', as
   await page.clock.runFor(3100);
   await expect(banner).toBeHidden();
   expect((await savedProgress(page)).unlocked).toHaveLength(56);
-  await page.locator('.album-toggle').click();
+  await openAlbum(page);
   await page.getByRole('tab', { name: 'Erfolge', exact: true }).click();
 
   for (let i = 0; i < 4; i++) await page.locator('[data-action="page-next"]').click();

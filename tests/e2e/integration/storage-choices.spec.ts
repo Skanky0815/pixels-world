@@ -1,3 +1,4 @@
+import { openAlbum } from '../support/pause-support';
 /* eslint-disable max-lines-per-function -- Explizite Auswahl, bestehende Daten, Reload und Rücknahme bilden den Datenschutzvertrag. */
 import { test, expect } from '@playwright/test';
 const base = 'http://127.0.0.1:4175/pixels-world/';
@@ -21,11 +22,12 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
     await page.evaluate(() => navigator.serviceWorker.getRegistrations().then((r) => r.length)),
   ).toBe(0);
   expect(await page.evaluate(() => caches.keys())).toEqual([]);
-  await page.locator('.album-toggle').click();
+  await openAlbum(page);
   await expect(page.locator('.album-overall')).toContainText('0 von');
   await page.keyboard.press('Escape');
+  await page.locator('[data-menu-settings]').click();
   await page.locator('[data-remember-album]').check();
-  await page.locator('.album-toggle').click();
+  await openAlbum(page);
   await expect(page.locator('.album-overall')).toContainText('1 von');
   await page.keyboard.press('Escape');
   const migrated = await page.evaluate(() => localStorage.getItem('pixels-world.album'));
@@ -41,12 +43,13 @@ test('Speicherwahl: alte Albumfunde erhalten, erst auf Wunsch übernehmen, Offli
       unlocked: [],
     },
   });
+  await page.locator('[data-menu-settings]').click();
   await page.locator('[data-remember-album]').uncheck();
   expect(await page.evaluate(() => localStorage.getItem('pixels-world.album'))).toBe(migrated);
   await page.reload();
   await expect(page.locator('#loading-screen')).toHaveCount(0);
   await page.setViewportSize({ width: 568, height: 320 });
-  await page.locator('.album-toggle').click();
+  await openAlbum(page);
   const album = page.locator('.album-screen');
   const header = await page.locator('main > header').boundingBox();
   const footer = await page.locator('main > footer').boundingBox();

@@ -1,3 +1,4 @@
+import { openAlbum } from '../support/pause-support';
 import { test, expect, waitForGame, until } from '../support/support';
 import type { Page } from '@playwright/test';
 
@@ -29,7 +30,7 @@ for (const viewport of [
       await shellFrame(page);
       await panelFillsContent(page, '.room-selection');
       await page.screenshot({ path: `test-results/shell-${viewport.width}-rooms.png` });
-      await page.locator('.album-toggle').click();
+      await openAlbum(page);
       const album = page.locator('#game-content > .album-screen');
 
       await expect(album).toBeVisible();
@@ -45,9 +46,10 @@ for (const viewport of [
       await expect(page.locator('.game-menu')).toBeVisible();
       await page.locator('[data-pause-resume]').click();
       await expect(page.locator('.room-selection')).toBeVisible();
-      await page.locator('.album-toggle').click();
+      await openAlbum(page);
       await page.screenshot({ path: `test-results/shell-${viewport.width}-album.png` });
       await page.keyboard.press('Escape');
+      await page.locator('[data-pause-resume]').click();
       await page.locator('[data-room-start]').click();
       await page.locator('#game').focus();
       await page.keyboard.down('Space');

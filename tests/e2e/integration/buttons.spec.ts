@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function -- Echte Tastatur-/Pointerabläufe prüfen gemeinsame Zustände über die bestehenden Seiten hinweg. */
 import { test, expect, loadIntro, start, waitForLoadingScreen } from '../support/support';
-import { openPause } from '../support/pause-support';
+import { openPause, openAlbum } from '../support/pause-support';
 import { TouchDriver } from '../support/touch-support';
 import type { Locator, Page } from '@playwright/test';
 
@@ -71,7 +71,7 @@ test('Sprachwahl, Iconbuttons und Albumaktionen behalten Namen, Fokus und gesper
     'aria-pressed',
     'false',
   );
-  await page.locator('.album-toggle').click();
+  await openAlbum(page);
   const menu = page.locator('main > header .pause-toggle');
 
   await expect(menu).toHaveAccessibleName('Main menu');
