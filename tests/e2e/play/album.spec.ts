@@ -74,8 +74,10 @@ for (const mobile of [false, true]) {
       await expect(album.locator('.album-tile:disabled')).toHaveCount(9);
       await expect(album.locator('img')).toHaveCount(0);
       await expect(album).not.toContainText('Dieser Raum hat noch keine Album-Einträge.');
-      await album.getByRole('tab', { name: 'Arbeitszimmer später' }).click();
-      await expect(album).toContainText('Dieser Raum hat noch keine Album-Einträge.');
+      await album.getByRole('tab', { name: 'Arbeitszimmer', exact: true }).click();
+      await expect(album.locator('.album-tile:disabled')).toHaveCount(9);
+      await expect(album.locator('img')).toHaveCount(0);
+      await expect(album).not.toContainText('Dieser Raum hat noch keine Album-Einträge.');
       await expect(album.locator('.album-overall')).toHaveText(
         `Insgesamt: 0 von ${albumEntries(true).length}`,
       );

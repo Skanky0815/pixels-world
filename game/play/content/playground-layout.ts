@@ -1,3 +1,4 @@
+import { STUDY } from './rooms/study.ts';
 import { BEDROOM } from './rooms/bedroom.ts';
 import { OBJECTS } from './objects/catalog.ts';
 import { LIVING_ROOM } from './rooms/living-room.ts';
@@ -23,6 +24,7 @@ export const PLAYGROUND_BASES = {
   'cozy-remix': COZY_REMIX,
   'kitchen-preview': KITCHEN_PREVIEW,
   bedroom: BEDROOM,
+  study: STUDY,
 } as const;
 export interface PlaygroundRecipe {
   readonly base: keyof typeof PLAYGROUND_BASES;
@@ -99,11 +101,13 @@ export function buildPlaygroundRecipe(recipe: PlaygroundRecipe): RoomDefinition 
 export function recipeForPlayground(layout: RoomDefinition): PlaygroundRecipe {
   return {
     base:
-      layout.environment === 'bedroom'
-        ? 'bedroom'
-        : layout.environment === 'kitchen-preview'
-          ? 'kitchen-preview'
-          : 'living-room',
+      layout.id === 'study' || layout.platforms.some((p) => p.appearance === 'study-desk')
+        ? 'study'
+        : layout.environment === 'bedroom'
+          ? 'bedroom'
+          : layout.environment === 'kitchen-preview'
+            ? 'kitchen-preview'
+            : 'living-room',
     id: layout.id,
     width: layout.width,
     spawn: layout.spawn,

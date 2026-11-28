@@ -1,3 +1,4 @@
+import { STUDY } from './study.ts';
 import { BEDROOM } from './bedroom.ts';
 import { KITCHEN } from './kitchen.ts';
 import { LIVING_ROOM } from './living-room.ts';
@@ -16,7 +17,7 @@ export const ROOM_CHOICES: readonly RoomChoice[] = [
   { id: LIVING_ROOM.id, name: copy('albumLivingRoom'), definition: LIVING_ROOM },
   { id: 'kitchen', name: copy('albumKitchen'), definition: KITCHEN },
   { id: 'bedroom', name: copy('albumBedroom'), definition: BEDROOM },
-  { id: 'study', name: copy('albumStudy') },
+  { id: 'study', name: copy('albumStudy'), definition: STUDY },
 ];
 
 export function playableRoom(id: string) {

@@ -19,6 +19,17 @@ import type { WallSlots } from '../../game/play/content/wall-slots.ts';
 
 // Test oracle only: production authorization stays in the authored room pools.
 const EXPECTED = {
+  study: {
+    random: [
+      'study-papers',
+      'study-pen-cup',
+      'reading-books',
+      'upright-books',
+      'bedroom-spiderplant',
+    ],
+    fixed: ['study-desk-lamp'],
+    goal: 'toy',
+  },
   bedroom: {
     random: [
       'small-vase',
@@ -70,6 +81,7 @@ const EXPECTED = {
 
 type Family = keyof typeof EXPECTED;
 const FAMILIES = {
+  study: 'study',
   bedroom: 'bedroom',
   'living-room': 'living-room',
   'cozy-remix': 'living-room',
@@ -124,7 +136,11 @@ function assertWallPools(room: RoomDefinition, family: Family) {
 
       if (variant.kind === 'picture') {
         assert.ok(variant.objectVariant, `${room.id}.${key}: missing picture mapping`);
-        assertVariants([variant.objectVariant], PICTURES, `${room.id}.${key}`);
+        assertVariants(
+          [variant.objectVariant],
+          family === 'study' ? ['study-space-poster', 'study-arcade-poster'] : PICTURES,
+          `${room.id}.${key}`,
+        );
       } else assert.equal(family, 'living-room', `${room.id}: unexpected random wall shelf`);
     }
 }
@@ -133,7 +149,7 @@ test('Alle Raumfamilien prüfen feste Objekte, Ziele und sämtliche Pools je Sch
   assert.deepEqual(CONTENT_ROOMS.map((room) => room.id).sort(), Object.keys(FAMILIES).sort());
   assert.deepEqual(
     ROOM_CHOICES.filter((choice) => choice.definition).map((choice) => choice.id),
-    ['living-room', 'kitchen', 'bedroom'],
+    ['living-room', 'kitchen', 'bedroom', 'study'],
   );
 
   for (const room of CONTENT_ROOMS)
@@ -180,7 +196,7 @@ test('Geometrisch passende Kräuter im Wohnzimmer und Katzengras in der Küche s
   for (const room of CONTENT_ROOMS) {
     const family = FAMILIES[room.id as keyof typeof FAMILIES];
 
-    if (family === 'bedroom') {
+    if (family === 'bedroom' || family === 'study') {
       for (const variant of ['catgrass', 'kitchen-basil'])
         assert.throws(
           () => assertRoomPools(withPlantPool(room, variant), family),

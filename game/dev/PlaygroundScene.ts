@@ -1,3 +1,4 @@
+import { preloadStudyArt } from '../play/assets/study-art';
 import { observeObjects } from '../play/content/object-observation';
 import { discoverAlbum } from '../play/content/album';
 import { angerFor } from '../play/domain/chaos';
@@ -82,6 +83,7 @@ export class PlaygroundScene extends Phaser.Scene {
     preloadObjectAudio(this);
     preloadVaseArt(this);
     preloadBedroomArt(this);
+    preloadStudyArt(this);
     preloadDishArt(this);
     preloadPantryArt(this);
     preloadTrashBinArt(this);

@@ -1,3 +1,4 @@
+import { STUDY_OBJECTS } from './study.ts';
 import { BEDROOM_OBJECTS } from './bedroom.ts';
 import { LAUNDRY } from './laundry.ts';
 import { TABLECLOTHS } from './tablecloth.ts';
@@ -33,6 +34,7 @@ const picture = {
 } as const;
 
 export const OBJECTS = {
+  ...STUDY_OBJECTS,
   ...BEDROOM_OBJECTS,
   ...LAUNDRY,
   ...TABLECLOTHS,
@@ -364,7 +366,7 @@ export const OBJECTS = {
     album: {
       id: 'books.stacked',
       asset: 'books-stacked',
-      rooms: ['living-room', 'bedroom'],
+      rooms: ['living-room', 'bedroom', 'study'],
       name: { de: 'Der Lesestapel', en: 'The reading pile' },
       condition: { kind: 'topple', stage: 1 },
       fluff: {
@@ -387,7 +389,7 @@ export const OBJECTS = {
     album: {
       id: 'books.upright',
       asset: 'books-upright',
-      rooms: ['living-room', 'bedroom'],
+      rooms: ['living-room', 'bedroom', 'study'],
       name: { de: 'Die standhaften Bücher', en: 'The steadfast books' },
       condition: { kind: 'topple', stage: 1 },
       fluff: { de: 'Die Buchrücken haben nachgegeben.', en: 'Their spines finally gave in.' },

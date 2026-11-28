@@ -19,6 +19,7 @@ test('Nur Grundaufbauten und Objektvarianten sind über Spielwiesen-URLs auswäh
     'cozy-remix',
     'kitchen-preview',
     'bedroom',
+    'study',
   ]);
 
   for (const [mode, catalog] of [

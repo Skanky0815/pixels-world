@@ -6,6 +6,7 @@ import {
 import livingRoomPreview from '../../../assets/landing/living-room.png';
 import kitchenPreview from '../../../assets/landing/kitchen.png';
 import bedroomPreview from '../../../assets/landing/bedroom.png';
+import studyPreview from '../../../assets/landing/study.png';
 import { ROOM_CHOICES, playableRoom } from '../content/rooms/selection';
 import { t, translateExact, onLanguageChange } from '../../shared/i18n/locale';
 import { roomIcon } from './album-room-icons';
@@ -15,6 +16,7 @@ const previews = {
   'living-room': { src: livingRoomPreview, alt: 'roomsPreview', width: 1100, height: 619 },
   kitchen: { src: kitchenPreview, alt: 'roomsKitchenPreview', width: 1100, height: 619 },
   bedroom: { src: bedroomPreview, alt: 'roomsBedroomPreview', width: 1100, height: 619 },
+  study: { src: studyPreview, alt: 'roomsStudyPreview', width: 1100, height: 619 },
 } as const;
 
 /** Menu presentation only: the scene owns room selection, reset and start state. */
@@ -136,7 +138,8 @@ export class RoomSelection {
 }
 
 function roomPicture(id: (typeof ROOM_CHOICES)[number]['id']) {
-  if (id !== 'living-room' && id !== 'kitchen' && id !== 'bedroom') return roomIcon(id);
+  if (id !== 'living-room' && id !== 'kitchen' && id !== 'bedroom' && id !== 'study')
+    return roomIcon(id);
   const preview = previews[id];
 
   return `<img src="${preview.src}" alt="${t(preview.alt)}" width="${preview.width}" height="${preview.height}">`;

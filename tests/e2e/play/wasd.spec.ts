@@ -67,6 +67,8 @@ test('WASD ist wählbar, lokalisiert und gespeichert; Menü, Raumraster und nati
   await page.keyboard.press('w');
   const kitchen = page.locator('[data-room-choice="kitchen"]');
 
+  await expect(page.locator('[data-room-choice="study"]')).toBeFocused();
+  await page.keyboard.press('w');
   await expect(kitchen).toBeFocused();
   await page.keyboard.press('a');
   await expect(page.locator('[data-room-choice="living-room"]')).toBeFocused();
@@ -76,6 +78,8 @@ test('WASD ist wählbar, lokalisiert und gespeichert; Menü, Raumraster und nati
   await expect(kitchen).toHaveAttribute('aria-pressed', 'true');
   await page.keyboard.press('Tab');
   await expect(page.locator('[data-room-choice="bedroom"]')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('[data-room-choice="study"]')).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.locator('[data-room-start]')).toBeFocused();
   await page.keyboard.press('Enter');

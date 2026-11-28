@@ -123,6 +123,34 @@ export const ACHIEVEMENT_CATEGORIES_V8 = [
     },
   },
 ] as const;
+export const ACHIEVEMENT_CATEGORIES_V9 = [
+  {
+    id: 'posters',
+    name: { de: 'Game over an der Wand', en: 'Game over on the wall' },
+    targets: ['picture.poster-space', 'picture.poster-arcade'],
+    description: {
+      de: 'Beide Poster über erfolgreich versöhnte Runden herunterholen.',
+      en: 'Knock down both posters across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Die Klebestreifen waren keine Herausforderung, Pixel.',
+      en: 'The tape was not a challenge, Pixel.',
+    },
+  },
+  {
+    id: 'desk',
+    name: { de: 'Schreibtischchaos', en: 'Desk chaos' },
+    targets: ['books.paper', 'container.pencils', 'lamp.study'],
+    description: {
+      de: 'Papierstapel, Stiftebecher und Arbeitslampe über erfolgreich versöhnte Runden ruinieren.',
+      en: 'Ruin the papers, pencil cup and desk lamp across successfully reconciled rounds.',
+    },
+    quote: {
+      de: 'Jetzt finde ich hier gar nichts mehr, Pixel.',
+      en: 'Now I cannot find anything, Pixel.',
+    },
+  },
+] as const;
 export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
   ...new Set(
     [
@@ -134,6 +162,7 @@ export const DESTRUCTION_VARIANTS: readonly string[] = Object.freeze([
       ...ACHIEVEMENT_CATEGORIES_V6,
       ...ACHIEVEMENT_CATEGORIES_V7,
       ...ACHIEVEMENT_CATEGORIES_V8,
+      ...ACHIEVEMENT_CATEGORIES_V9,
     ].flatMap((category) => [...category.targets]),
   ),
 ]);

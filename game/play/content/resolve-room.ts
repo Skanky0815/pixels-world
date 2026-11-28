@@ -188,7 +188,7 @@ function validateVase(value: Extract<ObjectDefinition, { kind: 'vase' }>, path: 
 }
 
 function validateBooks(value: Extract<ObjectDefinition, { kind: 'books' }>, path: string) {
-  if (!['stacked', 'upright'].includes(value.appearance ?? 'stacked'))
+  if (!['stacked', 'upright', 'paper'].includes(value.appearance ?? 'stacked'))
     fail(`${path}.appearance`, 'unknown book appearance');
   validateToppling(value.rules, path);
 }
@@ -274,9 +274,19 @@ function validatePlatformAppearance(platform: RoomDefinition['platforms'][number
   if (platform.appearance === undefined) return;
 
   if (
-    !['stool', 'table', 'counter', 'fridge', 'bed', 'nightstand', 'wardrobe'].includes(
-      platform.appearance,
-    )
+    ![
+      'stool',
+      'table',
+      'counter',
+      'fridge',
+      'bed',
+      'nightstand',
+      'wardrobe',
+      'study-desk',
+      'study-chair',
+      'study-bookcase',
+      'study-bookcase-board',
+    ].includes(platform.appearance)
   )
     fail(path, 'unknown furniture appearance');
 
@@ -1133,9 +1143,7 @@ function validateGoalProfile(goal: GoalDefinition, path: string) {
   if (
     goal.albumVariant !== undefined &&
     (!Object.hasOwn(GOAL_ALBUM, goal.albumVariant) ||
-      (goal.kind === 'rest'
-        ? goal.albumVariant !== 'sleep-pad'
-        : goal.kind !== 'food' || goal.albumVariant !== 'food-bowl'))
+      goal.albumVariant !== { rest: 'sleep-pad', food: 'food-bowl', toy: 'window-toy' }[goal.kind])
   )
     fail(`${path}.albumVariant`, 'unknown goal album variant');
 }

@@ -2,6 +2,15 @@ import type { GoalAlbumEntry } from './discovery.ts';
 
 /** Peaceful goal discoveries are never destruction or chaos events. */
 export const GOAL_ALBUM = {
+  'window-toy': {
+    id: 'goal.window-toy',
+    asset: 'favorite-ball',
+    rooms: ['study'],
+    name: { de: 'Das Spielzeug auf der Fensterbank', en: 'The windowsill toy' },
+    condition: { kind: 'goal-reached', stage: 1 },
+    fluff: { de: 'Beste Aussicht. Bestes Spielzeug.', en: 'Best view. Best toy.' },
+    sara: { de: 'Du hast es gefunden, Pixel.', en: 'You found it, Pixel.' },
+  },
   'sleep-pad': {
     id: 'goal.sleep-pad',
     asset: 'sleep-pad',

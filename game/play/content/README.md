@@ -2,6 +2,10 @@
 
 Das Standardzimmer steht in [rooms/living-room.ts](rooms/living-room.ts). [rooms/cozy-remix.ts](rooms/cozy-remix.ts) zeigt eine zweite handgebaute Variante mit verschobenen Objekten, zwei Instanzen derselben Sofavorlage und anderen Schadenswerten. Beide verwenden [objects/catalog.ts](objects/catalog.ts). Definitionen werden mit `satisfies` gegen die [reinen Datenverträge](definitions.ts) geprüft.
 
+## Arbeitszimmer
+
+[rooms/study.ts](rooms/study.ts) führt rechts durch die weiße Tür über den Gamingstuhl (y400), den niedrigeren Schreibtisch (y320) zur Fensterbank (y222). Das Lieblingsspielzeug ist das einzige friedliche Ziel. Bücherregal und Bretter sind feste Auflagen; Regalbretter und Sitz bleiben an die [finalen Rastergrafiken](../../../assets/environment/study/README.md) gebunden. Der Bildschirm mit Tastatur ist Kulisse. Lampe, Papierstapel und Stiftebecher stehen auf dem Tisch; Bücher, Grünlilien und Poster werden aus den [vorhandenen Slot-Verträgen](rooms/study-slots.ts) gewählt. Weitere Poster mit Raumbezug `study` werden automatisch in den Wand-Pool aufgenommen. Papier und Stifte nutzen die gegenseitigen Kontaktmodelle von Büchern und Behältern; Poster das Bildmodell. Neue Albumfunde und versionierte Raum-/Kategorieerfolge ergänzen die bestehenden Fassungen. Die Spielwiese bietet denselben Grundraum und alle Objektzustände.
+
 ## Öffentliche Zimmerauswahl
 
 Die öffentliche Küche und das Spielwiesen-Szenario
@@ -36,7 +40,7 @@ frisst Pixel kurz, bevor die gemeinsame Heimkehr beginnt. Der optionale Futterbe
 steht darunter im vorhandenen Boden-Slot als eigener Chaosgegenstand. Die Vorschau verwendet eine eigene Raum-ID,
 zählt nicht für Küchen-/Raumerfolge. Die öffentliche Definition `kitchen` ist in der Raumauswahl freigeschaltet und zählt für die neuen Raumziele. Produktions-URLs ignorieren die DEV-Raumauswahl weiterhin.
 
-[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Wohnzimmer, Küche und die erste Schlafzimmerfassung sind auswählbar; das Arbeitszimmer bleibt bis zu seiner Umsetzung deaktiviert. Die gewählte Karte und der Startknopf beziehen sich auf dieselbe Raum-ID. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ im Hauptmenü, in der Einführung und im Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
+[rooms/selection.ts](rooms/selection.ts) verbindet stabile Raum-IDs und Namen mit den tatsächlich verfügbaren Raumdefinitionen. Nur Einträge mit Definition sind spielbar; Wohnzimmer, Küche, Schlafzimmer und Arbeitszimmer sind auswählbar. Die gewählte Karte und der Startknopf beziehen sich auf dieselbe Raum-ID. DEV-Varianten stehen unabhängig davon weiterhin im Diagnosebereich bereit. Die Auswahl startet einen eigenständigen Raumdurchlauf über die bestehende Einführung. „Zimmer wechseln“ im Hauptmenü, in der Einführung und im Ergebnis setzt den Durchlauf zurück; gespeicherte Albumfunde und Einstellungen bleiben erhalten.
 
 ## Schlafzimmer
 

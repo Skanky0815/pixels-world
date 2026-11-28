@@ -78,6 +78,8 @@ test('Pflanzen beachten ihre Auflagen; mehrere benötigte Fähigkeiten gelten ge
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, floor), [
+    'study-papers',
+    'study-pen-cup',
     'bedroom-spiderplant',
     ...PANTRY_VARIANTS,
     ...HERB_VARIANTS,
@@ -88,6 +90,8 @@ test('Pflanzen beachten ihre Auflagen; mehrere benötigte Fähigkeiten gelten ge
     ...books,
   ]);
   assert.deepEqual(filterSpawnCandidates(OBJECTS, { ...floor, support: 'raised' }), [
+    'study-papers',
+    'study-pen-cup',
     'bedroom-spiderplant',
     ...PANTRY_VARIANTS,
     ...HERB_VARIANTS,
@@ -103,11 +107,11 @@ test('Pflanzen beachten ihre Auflagen; mehrere benötigte Fähigkeiten gelten ge
   ]);
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['automatic', 'damage'] }),
-    ['bedroom-spiderplant', ...HERB_VARIANTS, 'dry-food-bag', 'catgrass', ...books],
+    ['study-papers', 'bedroom-spiderplant', ...HERB_VARIANTS, 'dry-food-bag', 'catgrass', ...books],
   );
   assert.deepEqual(
     filterSpawnCandidates(OBJECTS, { ...floor, requiredCapabilities: ['push', 'damage'] }),
-    [...PANTRY_VARIANTS, ...dishes, ...vases],
+    ['study-pen-cup', ...PANTRY_VARIANTS, ...dishes, ...vases],
   );
   assert.equal(
     fitsSpawnSlot(OBJECTS['small-vase'].spawn, ['push'], {
@@ -128,6 +132,8 @@ test('Hauptziel, feste Raumausstattung, Figuren und Träger werden nicht zufäll
   };
 
   assert.deepEqual(filterSpawnCandidates(OBJECTS, all), [
+    'study-papers',
+    'study-pen-cup',
     'bedroom-spiderplant',
     ...PANTRY_VARIANTS,
     'cream-trash-bin',

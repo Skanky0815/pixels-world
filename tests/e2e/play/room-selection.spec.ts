@@ -32,8 +32,8 @@ test(
     await expect(page.locator('main > header')).toHaveCount(1);
     await expect(page.locator('main > footer')).toHaveCount(1);
     await expect(rooms.locator('.room-choice')).toHaveCount(4);
-    await expect(rooms.locator('.room-choice:disabled')).toHaveCount(1);
-    await expect(rooms.locator('img')).toHaveCount(3);
+    await expect(rooms.locator('.room-choice:disabled')).toHaveCount(0);
+    await expect(rooms.locator('img')).toHaveCount(4);
     await expect
       .poll(() =>
         rooms
@@ -87,6 +87,8 @@ test(
     await rooms.locator('[data-room-choice="kitchen"]').focus();
     await page.keyboard.press('Tab');
     await expect(rooms.locator('[data-room-choice="bedroom"]')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(rooms.locator('[data-room-choice="study"]')).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(rooms.locator('[data-room-start]')).toBeFocused();
     await page.keyboard.press('Enter');
