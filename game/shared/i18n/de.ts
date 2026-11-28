@@ -370,6 +370,7 @@ export const de = {
     'Sara mag Pixel. Ihre Einrichtung allerdings auch. Jede Runde erzählt ein kleines Stück von den beiden.',
   landingPrototype: 'Ein spielbarer Prototyp, der weiterwächst. Dein Feedback hilft uns dabei.',
   landingReady: 'Bereit für ein bisschen Chaos?',
+  feedbackDamageCombo: 'Kleine Chaoskette',
   feedbackStart: 'Los geht’s!',
   feedbackEating: 'Lass es dir schmecken!',
   feedbackPlaying: 'Lieblingsball gefunden!',
